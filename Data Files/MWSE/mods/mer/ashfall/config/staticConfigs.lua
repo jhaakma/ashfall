@@ -173,19 +173,19 @@ this.bottleConfig = {
 
     --expensive, small, good weight efficiency
     flask = { 
-        capacity = 90, 
+        capacity = 80, 
         value = 9,
         weight = 3 ,
     }, --waterPerDollar = 10, waterPerWeight = 30
 
     limewareFlask = { 
-        capacity = 90,
+        capacity = 80,
         weight = 4 ,
     }, --waterPerDollar = 10, waterPerWeight = 30
 
     --cheap, small, medium weight efficiency
     bottle = { 
-        capacity = 100, 
+        capacity = 90, 
         value = 3,
         weight = 4,
     },-- waterPerDollar = 33, waterPerWeight = 25
@@ -193,20 +193,20 @@ this.bottleConfig = {
     --Pots: cheap, medium sized, low weight efficiency
     pot = {
         holdsStew = true,
-        capacity = 120,
+        capacity = 100,
         value = 4,
         weight = 6
     },--waterPerDollar = 30, waterPerWeight = 20
     redwarePot = {
         holdsStew = true,
-        capacity = 120,
+        capacity = 100,
         value = 7,
         weight = 5
     },--waterPerDollar = 17, waterPerWeight = 24
 
     --cheap, very large, low weight efficiency
     jug = { 
-        capacity = 220, 
+        capacity = 200, 
         value = 5, 
         weight = 10 
     },--waterPerDollar = 44, waterPerWeight = 22
@@ -215,28 +215,28 @@ this.bottleConfig = {
 
     --cheap, large, low weight efficiency
     pitcher = { 
-        capacity = 200, 
+        capacity = 190, 
         value = 7, 
         weight = 8,
     },--waterPerDollar = 25, waterPerWeight = 25
 
     --very cheap, large, very low weight efficiency
     metalPitcher = {
-        capacity = 200, 
+        capacity = 190, 
         value = 5, 
         weight = 8 
     },--waterPerDollar = 100, waterPerWeight = 25
 
     --expensive, large, medium weight efficiency
     redwarePitcher = { 
-        capacity = 220, 
+        capacity = 200, 
         value = 12, 
         weight = 8 
     },--waterPerDollar = 25, waterPerWeight = 27.5
 
     --Expensive, large, medium weight efficiency
     silverwarePitcher = { 
-        capacity = 210, 
+        capacity = 200, 
         value = 30, 
         weight = 7,
     },--waterPerDollar = 7, waterPerWeight = 28.5
@@ -244,7 +244,7 @@ this.bottleConfig = {
 
     --Expensive, large, medium weight efficiency
     dwarvenPitcher = { 
-        capacity = 240, 
+        capacity = 220, 
         value = 40, 
         weight = 8 
     }, --waterPerDollar = 5.5, waterPerWeight = 30

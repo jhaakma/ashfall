@@ -20,15 +20,14 @@ return {
                 title = "Select Water Container:",
                 noResultsText = "You do not have any water.",
                 filter = function(e)
-                    return (
-                        e.itemData and 
+                    if not e.itemData then return false end
+                    local hasWater = (
                         e.itemData.data.waterAmount and 
-                        e.itemData.data.waterAmount > 0 and
-                        ( 
-                            not e.itemData.data.waterType or 
-                            e.itemData.data.waterType == "dirty"
-                        )
-                    ) == true
+                        e.itemData.data.waterAmount > 0
+                    )
+                    local hasStew = e.itemData.data.stewLevels
+                    local hasTea = e.itemData.data.waterType and e.itemData.data.waterType ~= "dirty"
+                    return (hasWater and (not hasStew) and (not hasTea)) == true
                 end,
                 callback = function(e)
                     if e.item then

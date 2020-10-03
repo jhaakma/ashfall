@@ -15,7 +15,7 @@ return {
         local function doDrink()
             --tes3.playSound{ reference = tes3.player, sound = "Swallow" }
             local amountToDrink = math.min(common.staticConfigs.capacities[campfire.data.utensil], campfire.data.waterAmount)
-            local amountDrank = thirstController.drinkAmount(amountToDrink, campfire.data.waterType)
+            local amountDrank = thirstController.drinkAmount{ amount = amountToDrink, waterType = campfire.data.waterType,}
             campfire.data.waterAmount = campfire.data.waterAmount - amountDrank
             if campfire.data.waterAmount == 0 then
                 event.trigger("Ashfall:Campfire_clear_utensils", { campfire = campfire})

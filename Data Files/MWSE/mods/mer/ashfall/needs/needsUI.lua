@@ -224,8 +224,9 @@ event.register("Ashfall:updateNeedsUI", updateNeedsUI)
 function this.addNeedsBlockToMenu(e, needId)
     local need = conditionConfig[needId]
     local data = this.UIData[needId]
-    if not not need:isActive() then
+    if not need:isActive() then
         --this need is disabled
+        common.log:debug("%s is disabled", needId)
         return
     end
 

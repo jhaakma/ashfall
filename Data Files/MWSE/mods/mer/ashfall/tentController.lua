@@ -149,7 +149,6 @@ local function setTent(e)
     if tent then
         local switchNode = tent.sceneNode:getObjectByName("SWITCH_CANVAS")
         if switchNode then
-        
             switchNode.switchIndex = insideTent and 1 or 0
         end
     end

@@ -5,15 +5,11 @@ local teaConfig = common.staticConfigs.teaConfig
 return  {
     text = "Fill Container",
     requirements = function(campfire)
-        return (
-            campfire.data.waterAmount and 
-            campfire.data.waterAmount > 0 and
-            not campfire.data.stewLevels and
-            ( 
-                (not teaConfig.teaTypes[campfire.data.waterType]) or
-                campfire.data.teaProgress >= 100
-            )
-        )
+        local hasWaterAmount = campfire.data.waterAmount and campfire.data.waterAmount > 0
+        local hasJustWater = (not teaConfig.teaTypes[campfire.data.waterType]) and ( not campfire.data.stewLevels )
+        local hasBrewedTea = campfire.data.teaProgress and campfire.data.teaProgress >= 100
+        local hasCookedStew = campfire.data.stewProgress and campfire.data.stewProgress >= 100
+        return hasWaterAmount and hasJustWater or hasBrewedTea or hasCookedStew 
     end,
     callback = function(campfire)
         --fill bottle
@@ -26,9 +22,20 @@ return  {
         if hasBrewedTea  then
             teaType = campfire.data.waterType
         end
+
+        local stewLevels
+        local hasStew = (
+            campfire.data.stewProgress and
+            campfire.data.stewProgress >= 100 and
+            campfire.data.stewLevels
+        )
+        if hasStew then
+            stewLevels = campfire.data.stewLevels
+        end
         thirstController.fillContainer{
             source = campfire,
             teaType = teaType,
+            stewLevels = stewLevels,
             callback = function()
                 if campfire.data.waterAmount <= 0 then
                     common.log:debug("Clearing utensil data")

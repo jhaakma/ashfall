@@ -80,7 +80,10 @@ local function addDysentry()
     dysentery:setValue(dysentery:getValue() + dysentryAmount)
 end
 
-function this.drinkAmount( amount, waterType )
+function this.drinkAmount(e)
+    local amount = e.amount
+    local waterType = e.waterType
+
     if not conditionConfig.thirst:isActive() then return end
     local currentThirst = thirst:getValue()
     
@@ -101,6 +104,7 @@ function this.drinkAmount( amount, waterType )
         current = magickaIncrease,
         name = "magicka",
     }
+    common.log:debug("UPDATING THIRST")
     conditionsCommon.updateCondition("thirst")
     this.update()
     event.trigger("Ashfall:updateTemperature", { source = "drinkAmount" } )
@@ -115,11 +119,7 @@ function this.drinkAmount( amount, waterType )
     return amountDrank
 end
 
-
-local function onDrink(e)
-    this.drinkAmount( e.amount, e.waterType )
-end
-event.register("Ashfall:Drink", onDrink, {reference = tes3.player})
+event.register("Ashfall:Drink", this.drinkAmount, {reference = tes3.player})
 
 function this.callWaterMenuAction(callback)
     common.log:debug("if common.data.drinkingRain then")
@@ -139,6 +139,7 @@ function this.fillContainer(params)
     local source = params.source
     local callback = params.callback
     local teaType = params.teaType
+    local stewLevels = params.stewLevels
     timer.delayOneFrame(function()
         local noResultsText = "You have no containers to fill."
         if teaType then
@@ -148,25 +149,47 @@ function this.fillContainer(params)
             title = "Select Water Container",
             noResultsText = noResultsText,
             filter = function(e)
+                local hasWater = (
+                    e.itemData and
+                    e.itemData.data.waterAmount and 
+                    e.itemData.data.waterAmount > 0
+                )
 
-                --Can only fill empty bottles with tea
-                if teaType and e.itemData and e.itemData.data.waterAmount and e.itemData.data.waterAmount > 0 then 
+                local hasTea = (
+                    e.itemData and 
+                    teaConfig.teaTypes[e.itemData.data.waterType]
+                )
+                local hasStew = (
+                    e.itemData and
+                    e.itemData.data.stewLevels
+                )
+
+                --Can only fill empty bottles with tea/stew
+                if (stewLevels or teaType) and hasWater then 
                     return false 
                 end
 
-                --Can't fill bottles that already have tea
-                if e.itemData and teaConfig.teaTypes[e.itemData.data.waterType] then
+                --Can't fill bottles that already have tea/stew
+                if hasTea or hasStew then
                     return false
                 end
 
+                --Check if we have a valid bottle
                 local bottleData = this.getBottleData(e.item.id)
                 if bottleData then
                     local capacity = bottleData.capacity
                     local currentAmount = e.itemData and e.itemData.data.waterAmount or 0
+                    
+                    --If adding a stew, check it's a valid pot
+                    if stewLevels and not bottleData.holdsStew then
+                        return false
+                    end
                     return currentAmount < capacity
                 else
                     return false
                 end
+
+            
             end,
             callback = function(e)
                 if e.item then 
@@ -193,8 +216,11 @@ function this.fillContainer(params)
                         itemData.data.waterAmount = itemData.data.waterAmount or 0
                         
                         if source then
+                            --add tea or stew
                             if source.data.waterType then
                                 itemData.data.waterType = source.data.waterType
+                            elseif source.data.stewLevels then
+                                itemData.data.stewLevels = table.copy(source.data.stewLevels, {} )
                             end
 
                             fillAmount = math.min(
@@ -216,9 +242,10 @@ function this.fillContainer(params)
                         local contents = "water"
                         if itemData.data.waterType == "dirty" then
                             contents = "dirty water"
-                        end
-                        if teaConfig.teaTypes[itemData.data.waterType] then
+                        elseif teaConfig.teaTypes[itemData.data.waterType] then
                             contents = teaConfig.teaTypes[itemData.data.waterType].teaName
+                        elseif itemData.data.stewLevels then
+                            contents = "stew"
                         end
                         tes3.messageBox(
                             "%s filled with %s.",

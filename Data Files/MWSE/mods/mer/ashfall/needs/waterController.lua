@@ -26,7 +26,7 @@ local function menuButtonPressed(e)
             tes3.messageBox("You are fully hydrated.")
         else
             thirstController.callWaterMenuAction(function()
-                thirstController.drinkAmount(100, common.data.drinkingDirtyWater)
+                thirstController{amount = 100, waterType = common.data.drinkingDirtyWater}
             end)
         end
     --refill
@@ -129,10 +129,14 @@ local function doDrinkWater(data)
     local hydrationNeeded = thirst:getValue()
     thisSipSize = math.min( hydrationNeeded, thisSipSize)
 
-    local amountDrank = thirstController.drinkAmount(thisSipSize, data.waterType)
-    --Tea effects if you drank enough
-    if teaConfig.teaTypes[data.waterType] and hydrationNeeded > 0.1 then
-        event.trigger("Ashfall:DrinkTea", { teaType = data.waterType, amountDrank = amountDrank})
+    local amountDrank = thirstController.drinkAmount{amount = thisSipSize, waterType = data.waterType}
+    --Tea and stew effects if you drank enough
+    if hydrationNeeded > 0.1 then
+        if teaConfig.teaTypes[data.waterType] then
+            event.trigger("Ashfall:DrinkTea", { teaType = data.waterType, amountDrank = amountDrank})
+        elseif data.stewLevels then
+            event.trigger("Ashfall:eatStew",{data = data})
+        end
     end
     --Reduce liquid in bottle
     data.waterAmount = data.waterAmount - thisSipSize
@@ -147,7 +151,7 @@ local function drinkFromContainer(e)
     if e.item.objectType == tes3.objectType.alchemy then
         local thisSipSize = common.staticConfigs.capacities.potion
         thisSipSize = math.min( thirst:getValue(), thisSipSize)
-        thirstController.drinkAmount(thisSipSize)
+        thirstController.drinkAmount{amount = thisSipSize}
     
     else
         local liquidLevel = (
@@ -161,11 +165,15 @@ local function drinkFromContainer(e)
         if doDrink then
             --If fully hydrated, bring up option to empty bottle
             if thirst:getValue() < 0.1 then
-                local waterName = "Water"
+                local waterName = ""
                 if e.itemData.data.waterType == "dirty" then
                     waterName = "Dirty Water"
                 elseif teaConfig.teaTypes[e.itemData.data.waterType] then
                     waterName = teaConfig.teaTypes[e.itemData.data.waterType].teaName
+                elseif e.itemData.data.stewLevels then
+                    waterName = "Stew"
+                else
+                    waterName = "Water"
                 end
 
                 common.helper.messageBox{
