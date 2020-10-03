@@ -61,8 +61,15 @@ local function onActivateCampfire(e)
 
     local addButton = function(tbl, button)
         if button.requirements(campfire) then
+            local text
+            if type(button.text) == "function" then
+                text = button.text(campfire)
+            else
+                text = button.text
+            end
+
             table.insert(tbl, {
-                text = button.text, 
+                text = text, 
                 callback = function()
                     button.callback(campfire)
                     event.trigger("Ashfall:registerReference", { reference = campfire})

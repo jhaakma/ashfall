@@ -87,18 +87,18 @@ local function updateTooltip(e)
             end
 
             if campfire.data.stewLevels then
-
+                local stewName = foodConfig.isStewNotSoup(campfire.data.stewLevels) and "Stew" or "Soup"
                 labelBorder:createDivider()
 
                 local progress = ( campfire.data.stewProgress or 0 )
                 local progressText
 
                 if campfire.data.waterHeat < common.staticConfigs.hotWaterHeatValue then
-                    progressText = "Stew (Cold)"
+                    progressText = string.format("%s (Cold)", stewName)
                 elseif progress < 100 then
-                    progressText = string.format("Stew (%d%% Cooked)", progress ) 
+                    progressText = string.format("%s (%d%% Cooked)", stewName, progress ) 
                 else 
-                    progressText = "Stew (Cooked)"
+                    progressText = string.format("%s (Cooked)", stewName)
                 end
                 local stewProgressLabel = labelBorder:createLabel({ text = progressText })
                 stewProgressLabel.color = tes3ui.getPalette("header_color")

@@ -54,8 +54,8 @@ return {
             tes3.playSound{ reference = companion, sound = "Swallow" }
             event.trigger("Ashfall:Eat", { reference = companion.reference, amount = stewPerCompanion})
         end
-
-        tes3.messageBox("Your companions eat the stew.")
+        local stewName = foodConfig.isStewNotSoup(campfire.data.stewLevels) and "stew" or "soup"
+        tes3.messageBox("Your companions eat the %s.", stewName)
         
         campfire.data.waterAmount = campfire.data.waterAmount - maxAvailable
 

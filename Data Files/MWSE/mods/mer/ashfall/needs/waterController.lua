@@ -8,6 +8,7 @@
 
 local thirstController = require("mer.ashfall.needs.thirstController")
 local common = require("mer.ashfall.common.common")
+local foodConfig = common.staticConfigs.foodConfig
 local teaConfig = common.staticConfigs.teaConfig
 local activatorConfig = common.staticConfigs.activatorConfig
 
@@ -171,7 +172,7 @@ local function drinkFromContainer(e)
                 elseif teaConfig.teaTypes[e.itemData.data.waterType] then
                     waterName = teaConfig.teaTypes[e.itemData.data.waterType].teaName
                 elseif e.itemData.data.stewLevels then
-                    waterName = "Stew"
+                    waterName = foodConfig.isStewNotSoup(e.itemData.data.stewLevels) and "Stew" or "Soup"
                 else
                     waterName = "Water"
                 end

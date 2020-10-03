@@ -1,6 +1,7 @@
 
 local this = {}
 local common = require("mer.ashfall.common.common")
+local foodConfig = common.staticConfigs.foodConfig
 local teaConfig = common.staticConfigs.teaConfig
 local conditionsCommon = require("mer.ashfall.conditionController")
 local hud = require("mer.ashfall.ui.hud")
@@ -245,7 +246,7 @@ function this.fillContainer(params)
                         elseif teaConfig.teaTypes[itemData.data.waterType] then
                             contents = teaConfig.teaTypes[itemData.data.waterType].teaName
                         elseif itemData.data.stewLevels then
-                            contents = "stew"
+                            contents = foodConfig.isStewNotSoup(stewLevels) and "stew" or "soup"
                         end
                         tes3.messageBox(
                             "%s filled with %s.",

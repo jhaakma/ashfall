@@ -264,7 +264,8 @@ local function createNeedsTooltip(e)
             
             --Stew
             elseif e.itemData and e.itemData.data.stewLevels then
-                labelText = string.format('Stew: %d/%d', math.ceil(liquidLevel), bottleData.capacity)
+                local stewName = foodConfig.isStewNotSoup(e.itemData.data.stewLevels) and "Stew" or "Soup"
+                labelText = string.format('%s: %d/%d', stewName, math.ceil(liquidLevel), bottleData.capacity)
                 for foodType, ingredLevel in pairs(e.itemData.data.stewLevels) do
                     local value = math.min(ingredLevel, 100)
                     local stewBuff = foodConfig.getStewBuffForFoodType(foodType)

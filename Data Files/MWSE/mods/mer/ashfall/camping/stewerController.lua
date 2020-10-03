@@ -82,20 +82,18 @@ end
 
 local function eatStew(e)
     local stewBuffs = foodConfig.getStewBuffList()
-    --remove old sbuffs
+    --remove old buffs
     for foodType, buff in pairs(stewBuffs) do
         if e.data.stewLevels[foodType] == nil then
             mwscript.removeSpell{ reference = tes3.player, spell = buff.id }
         end
     end
 
-
-
     --add up ingredients, mulitplying nutrition by % in the pot
     local nutritionLevel = 0
     local maxNutritionLevel = 0
-    for foodType, _ in pairs(stewBuffs) do
-        local nutrition = foodConfig.getNutritionForFoodType(foodType)
+    for foodType, data in pairs(stewBuffs) do
+        local nutrition = foodConfig.getNutritionForFoodType(foodType) * data.stewNutrition
         nutritionLevel = nutritionLevel + ( nutrition * ( e.data.stewLevels[foodType] or 0 ) / 100 )
         maxNutritionLevel = nutritionLevel + nutrition
     end

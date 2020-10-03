@@ -1,7 +1,10 @@
 local common = require ("mer.ashfall.common.common")
-
+local foodConfig = common.staticConfigs.foodConfig
 return {
-    text = "Eat Stew",
+    text = function(campfire)
+        local stewName = foodConfig.isStewNotSoup(campfire.data.stewLevels) and "Stew" or "Soup" 
+        return string.format("Eat %s", stewName)
+    end,
     requirements = function(campfire)
         return (
             campfire.data.stewLevels and 

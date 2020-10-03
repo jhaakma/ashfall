@@ -55,6 +55,15 @@ function this.getFoodData(id, resolveMeat)
     }
 end
 
+function this.isStewNotSoup(stewLevels)
+    local isStew = false
+    for stewType, _ in pairs(stewLevels) do
+        local data = this.getStewBuffForFoodType(stewType)
+        if data.notSoup then isStew = true end
+    end
+    return isStew
+end
+
 this.TYPE = {
     meat = "Meat",
     cookedMeat = "Meat (Cooked)",
@@ -68,11 +77,11 @@ this.TYPE = {
 }
 
 this.stewBuffs = {
-    [this.TYPE.meat] = { min = 15, max = 50, id = "ashfall_stew_hearty"}, -- fortify health
-    [this.TYPE.vegetable] = { min = 15, max = 50, id = "ashfall_stew_nutritious"}, --fortify fatigue
-    [this.TYPE.mushroom] = { min = 10, max = 40, id = "ashfall_stew_chunky"}, --fortify magicka
-    [this.TYPE.seasoning] = { min = 5, max = 20, id = "ashfall_stew_tasty"}, --fortify agility
-    [this.TYPE.herb] = { min = 5, max = 20, id = "ashfall_stew_aromatic"} -- fortify personality
+    [this.TYPE.meat] = { notSoup = true, stewNutrition = 1.0, min = 10, max = 30, id = "ashfall_stew_hearty"}, -- fortify health
+    [this.TYPE.vegetable] = { notSoup = true, stewNutrition = 0.9, min = 10, max = 30, id = "ashfall_stew_nutritious"}, --fortify fatigue
+    [this.TYPE.mushroom] = { notSoup = true, stewNutrition = 0.8, min = 10, max = 25, id = "ashfall_stew_chunky"}, --fortify magicka
+    [this.TYPE.seasoning] = { stewNutrition = 0.1, min = 5, max = 20, id = "ashfall_stew_tasty"}, --fortify agility
+    [this.TYPE.herb] = { stewNutrition = 0.2, min = 5, max = 20, id = "ashfall_stew_aromatic"} -- fortify personality
 }
 
 --min: fully cooked multi at lowest cooking skill
