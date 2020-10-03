@@ -250,10 +250,10 @@ end
 
 
 local function replaceCampfire(e)
-    local safeRef = tes3.makeSafeObjectHandle(e.reference)
+    --local safeRef = tes3.makeSafeObjectHandle(e.reference)
     event.register("simulate", function()
         
-        if not safeRef:valid() then return end
+        --if not safeRef:valid() then return end
         if e.reference.disabled or e.reference.deleted then return end
         local vanillaConfig = vanillaCampfires[e.reference.object.id:lower()]
         local campfireReplaced = e.reference.data and e.reference.data.campfireReplaced

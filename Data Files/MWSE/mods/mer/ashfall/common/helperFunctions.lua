@@ -128,17 +128,15 @@ end
 function this.yeet(reference)
     timer.delayOneFrame(function()
         reference:disable()
-        
-        -- mwscript.setDelete{ reference = reference}
+        mwscript.setDelete{ reference = reference}
     end)
-
-
 end
 
 
 
 function this.isStack(reference)
     return ( 
+        reference.attachments and
         reference.attachments.variables and 
         reference.attachments.variables.count > 1 
     )

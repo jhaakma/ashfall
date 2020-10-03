@@ -27,6 +27,8 @@ this.controllers = {
     campfire = ReferenceController:new{
         requirements = function(self, ref)
             return (
+                ref.object and
+                ref.object.id and
                 activatorConfig.list.campfire:isActivator(ref.object.id)
             )
         end

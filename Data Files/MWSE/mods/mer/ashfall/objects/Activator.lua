@@ -14,9 +14,9 @@ function Activator:new(data)
     self.__index = self
     return t
 end
-
+ 
 function Activator:isActivator(id)
-
+    
     if self.ids then
         if self.ids[string.lower(id)] == true then
             return true

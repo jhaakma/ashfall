@@ -97,15 +97,20 @@ event.register("Ashfall:ingredCooked", updateIngredient)
 
 
 local function ingredPlaced(e)
-    local isIngredient = (
-        e.reference and
-        (not common.helper.isStack(e.reference) ) and
-        ( e.reference.object.objectType == tes3.objectType.ingredient or 
-        e.reference.baseObject.objectType == tes3.objectType.ingredient)
-    )
-    if isIngredient then
-        common.log:debug("Updating decals for %s", e.reference.object.id)
-        updateIngredient{ reference = e.reference}
+    --local safeRef = tes3.makeSafeObjectHandle(e.reference)
+    local function f()
+        --if not safeRef:valid() then return end
+        local isIngredient = (
+            e.reference and
+            (not common.helper.isStack(e.reference) ) and
+            ( e.reference.object.objectType == tes3.objectType.ingredient or 
+            e.reference.baseObject.objectType == tes3.objectType.ingredient)
+        )
+        if isIngredient then
+            common.log:debug("Updating decals for %s", e.reference.object.id)
+            updateIngredient{ reference = e.reference}
+        end
     end
+    event.register("enterFrame", f, {doOnce=true})
 end
 event.register("referenceSceneNodeCreated", ingredPlaced)

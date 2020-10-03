@@ -50,9 +50,9 @@ event.register("itemDropped", onDropGear)
     For any mesh with the "verticalise" flag, find nodes to set to vertical
 ]]
 local function verticaliseNodes(e)
-    local safeRef = tes3.makeSafeObjectHandle(e.reference)
+    --local safeRef = tes3.makeSafeObjectHandle(e.reference)
     local function f() 
-        if not safeRef:valid() then return end
+        --if not safeRef:valid() then return end
         if e.reference.disabled then return end
         if e.reference.sceneNode and e.reference.sceneNode:hasStringDataWith("verticalise") then
             local vertNode = e.reference.sceneNode:getObjectByName("ALIGN_VERTICAL")
