@@ -20,9 +20,32 @@ local hunger = conditionConfig.hunger
 local thirst = conditionConfig.thirst
 local tiredness = conditionConfig.tiredness
 
-local function setInBed(inBed)
-    common.data.usingBed = inBed
-    common.data.bedTempMulti = inBed and bedTempMulti or 1.0
+local function setInBedValues(isInBed)
+    common.data.usingBed = isInBed
+    common.data.bedTempMulti = isInBed and bedTempMulti or 1.0
+end
+
+
+
+local function hideSleepItems(restMenu)
+    local hiddenList = {}
+    hiddenList.scrollbar = restMenu:findChild( tes3ui.registerID("MenuRestWait_scrollbar") )
+    hiddenList.hourText = restMenu:findChild( tes3ui.registerID("MenuRestWait_hour_text") )
+    hiddenList.hourActualText = hiddenList.hourText.parent.children[2]
+    hiddenList.untilHealed = restMenu:findChild( tes3ui.registerID("MenuRestWait_untilhealed_button") )
+    hiddenList.wait = restMenu:findChild( tes3ui.registerID("MenuRestWait_wait_button") )
+    hiddenList.rest = restMenu:findChild( tes3ui.registerID("MenuRestWait_rest_button") )
+
+    for _, element in pairs(hiddenList) do
+        element.visible = false
+    end
+end
+
+--Prevent Resting, enable Wait button
+local function forceWait(restMenu)
+    restMenu:findChild( tes3ui.registerID("MenuRestWait_wait_button") ).visible = true
+    restMenu:findChild( tes3ui.registerID("MenuRestWait_untilhealed_button") ).visible = false
+    restMenu:findChild( tes3ui.registerID("MenuRestWait_rest_button") ).visible = false
 end
 
 
@@ -41,31 +64,11 @@ local function setRestValues(e)
 end
 event.register("uiShowRestMenu", setRestValues )
 
-
-local function hideSleepItems(restMenu)
-    local hiddenList = {}
-    hiddenList.scrollbar = restMenu:findChild( tes3ui.registerID("MenuRestWait_scrollbar") )
-    hiddenList.hourText = restMenu:findChild( tes3ui.registerID("MenuRestWait_hour_text") )
-    hiddenList.hourActualText = hiddenList.hourText.parent.children[2]
-    hiddenList.untilHealed = restMenu:findChild( tes3ui.registerID("MenuRestWait_untilhealed_button") )
-    hiddenList.wait = restMenu:findChild( tes3ui.registerID("MenuRestWait_wait_button") )
-    hiddenList.rest = restMenu:findChild( tes3ui.registerID("MenuRestWait_rest_button") )
-
-    for _, element in pairs(hiddenList) do
-        element.visible = false
-    end
-end
-
-local function forceWait(restMenu)
-    restMenu:findChild( tes3ui.registerID("MenuRestWait_wait_button") ).visible = true
-    restMenu:findChild( tes3ui.registerID("MenuRestWait_untilhealed_button") ).visible = false
-    restMenu:findChild( tes3ui.registerID("MenuRestWait_rest_button") ).visible = false
-end
-
---Prevent tiredness if ENVIRONMENT is too cold/hot
+--Prevent tiredness if env is too cold/hot
 --We do this by tapping into the Rest Menu,
 --replacing the text and removing rest/wait buttons
 local function activateRestMenu (e)
+    common.log:debug("activateRestMenu")
     if not common.data then return end
 
     if isUsingBed then
@@ -83,22 +86,29 @@ local function activateRestMenu (e)
     local labelText = restMenu:findChild( tes3ui.registerID("MenuRestWait_label_text") )
 
     --Prevent rest if not using a bed
-    if not isUsingBed and not common.helper.getInside(tes3.player) then 
+    if isUsingBed ~= true and common.helper.getInside(tes3.player) ~= true then 
         forceWait(restMenu)
         labelText.text = "You must find a bed or go indoors to rest."
     end
 
     if ( tempLimit < coldRestLimit ) or ( tempLimit > hotRestLimit ) then
-        labelText.text = interruptText
+        labelText.text = string.format("It is too %s to %s, you must find shelter!", 
+            ( tempLimit < 0 and "cold" or "hot"), 
+            ( isWaiting and "rest" or "wait" )
+        )
         hideSleepItems(restMenu)
     elseif hunger:getValue() > hunger.states.starving.min then
-        labelText.text = "You are too hungry to " .. ( isWaiting and "wait." or "rest.")
+        labelText.text = string.format("You are too hungry to %s.", 
+            ( isWaiting and "wait" or "rest")
+        )
         hideSleepItems(restMenu)
     elseif thirst:getValue() > thirst.states.dehydrated.min then
-        labelText.text = "You are too thirsty to " .. ( isWaiting and "wait." or "rest.")
+        labelText.text = string.format("You are too thirsty to %s.", 
+            ( isWaiting and "wait" or "rest")
+        )
         hideSleepItems(restMenu)
     elseif tiredness:getValue() > tiredness.states.exhausted.min and isWaiting then
-        labelText.text = "You are too tired to wait."
+        labelText.text = "You are too tired to wait, you must find a bed."
         hideSleepItems(restMenu)
     end
 
@@ -107,7 +117,6 @@ local function activateRestMenu (e)
     if tes3.mobilePlayer.health.current >= maxHealth then
         e.element:findChild( tes3ui.registerID("MenuRestWait_untilhealed_button") ).visible = false
     end
-
 
     needsUI.addNeedsBlockToMenu(e, "tiredness")
     restMenu:updateLayout()
@@ -123,19 +132,9 @@ local function wait(n)  -- seconds
     while clock() - t0 <= n do end
 end
 
-local function checkSleeping(interval)
-    --whether waiting or sleeping, wake up
-    local restingOrWaiting = (
-        interval > 0 and 
-        tes3.menuMode() and 
-        common.config.getConfig().enableTemperatureEffects and 
-        tes3.player.data.Ashfall.fadeBlock ~= true
-    )
+local function checkInterruptSleep()
 
-    if restingOrWaiting then
-
-        --Slow down real time it takes to wait. This gives us room to breath, 
-        -- see the weather change, react to conditions etc.
+    if tes3.mobilePlayer.sleeping or tes3.mobilePlayer.waiting then
         --wait(interval * 0.10)
 
         local tempLimit = common.data.tempLimit
@@ -143,9 +142,8 @@ local function checkSleeping(interval)
         if tempLimit < coldRestLimit or tempLimit > hotRestLimit then
             tes3.runLegacyScript({ command = "WakeUpPC" })
             tes3.messageBox({ message = interruptText, buttons = { "Okay" } })
-
-            --needs
         end
+        --Needs
         if hunger:getValue() > hunger.states.starving.min then
             --Cap the hunger loss
             hunger:setValue(hunger.states.starving.min)
@@ -168,26 +166,25 @@ local function checkSleeping(interval)
             --Message PC
             tes3.messageBox({ message = "You are exhausted.", buttons = { "Okay" } }) 
         end
-
+        
         if tes3.mobilePlayer.sleeping and isUsingBed then
             if not common.data.usingBed then
                 common.log:debug("setting inBed to true")
-                setInBed(true)
+                setInBedValues(true)
             end
         end 
-    end
-    if not tes3ui.menuMode() then
+    else
         --Reset the bedTemp when player wakes up
         if common.data.usingBed then
             common.log:debug("setting inBed to false")
-            setInBed(false) 
+            setInBedValues(false) 
         end
      end
 end
 
 
 function this.calculate(scriptInterval, forceUpdate)
-    checkSleeping(scriptInterval)
+    checkInterruptSleep()
 
     if scriptInterval == 0 and not forceUpdate then return end
     if not tiredness:isActive() then

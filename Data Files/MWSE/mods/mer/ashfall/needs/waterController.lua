@@ -13,6 +13,7 @@ local teaConfig = common.staticConfigs.teaConfig
 local activatorConfig = common.staticConfigs.activatorConfig
 
 local thirst = common.staticConfigs.conditionConfig.thirst
+local hunger = common.staticConfigs.conditionConfig.hunger
 
 local buttons = {}
 local bDrink = "Drink"
@@ -166,7 +167,18 @@ local function drinkFromContainer(e)
         )
         if doDrink then
             --If fully hydrated, bring up option to empty bottle
-            if thirst:getValue() < 0.1 then
+            local isStew = e.itemData.data.stewLevels
+            local hungerFull = hunger:getValue() < 1
+            local thirstFull = thirst:getValue() < 1
+
+            local doPrompt
+            if isStew then
+                doPrompt = hungerFull and thirstFull
+            else
+                doPrompt = thirstFull
+            end
+
+            if doPrompt then
                 local waterName = ""
                 if e.itemData.data.waterType == "dirty" then
                     waterName = "Dirty Water"
