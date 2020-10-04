@@ -186,7 +186,6 @@ this.teaTypes["ingred_kresh_fiber_01"] = {
     priceMultiplier = 5.0,
     onCallback = function()
         conditions.foodPoison:setValue(conditions.foodPoison:getValue() - 50)
-        
     end
 }
 
@@ -213,15 +212,22 @@ this.teaTypes["ingred_comberry_01"] = {
 }
 
 --Ashlands, dry regions
--- this.teaTypes["ingred_scathecraw_01"] = { 
---     teaName = "Scathecraw Tea",
---     teaDescription = "Scathecraw tea .",
---     effectDescription = "Scathecraw tea is an analgesic which lessens the drinker's sensitivity to heat. ",
---priceMultiplier = 5.0,
---     onCallback = function()
-        
---     end,
--- }
+this.teaTypes["ingred_scathecraw_01"] = { 
+    teaName = "Scathecraw Tea",
+    teaDescription = "Scathecraw Tea provides a modest resistance against blight disease.",
+    effectDescription = "Resist Blight 40 Points",
+    priceMultiplier = 5.0,
+    duration = 4,
+    spell = {
+        id = "ashfall_tea_scathecraw",
+        effects = {
+            {
+                id = tes3.effect.resistBlightDisease,
+                amount = 40
+            }
+        }
+    }
+}
 
 
 --Ashlands, Molar Amur
