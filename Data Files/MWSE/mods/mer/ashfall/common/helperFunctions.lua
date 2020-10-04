@@ -79,8 +79,6 @@ function this.checkRefSheltered(reference)
         return true
     end
 
-    local oldCulledValue = reference.sceneNode.appCulled
-    reference.sceneNode.appCulled = true
     local results = tes3.rayTest{
         position = reference.position,
         direction = {0, 0, 1},
@@ -88,7 +86,6 @@ function this.checkRefSheltered(reference)
         maxDistance = 1000,
         ignore = {reference}
     }
-    reference.sceneNode.appCulled = oldCulledValue
     if results then
         for _, result in ipairs(results) do
             if result and result.reference and result.reference.object then
@@ -150,29 +147,46 @@ end
         ]
     }
 ]]
+local messageBoxId = tes3ui.registerID("Ashfall:MessageBox")
 function this.messageBox(params)
     --[[
         Button = { text = string, callback = function }
     ]]--
     local message = params.message
     local buttons = params.buttons
-    local function callback(e)
-        --get button from 0-indexed MW param
-        local button = buttons[e.button+1]
-        if button.callback then
-            button.callback()
+    -- local function callback(e)
+    --     --get button from 0-indexed MW param
+    --     local button = buttons[e.button+1]
+    --     if button.callback then
+    --         button.callback()
+    --     end
+    -- end
+    -- --Make list of strings to insert into buttons
+    -- local buttonStrings = {}
+    -- for _, button in ipairs(buttons) do
+    --     table.insert(buttonStrings, button.text)
+    -- end
+
+    local menu = tes3ui.createMenu{ id = messageBoxId, fixedFrame = true }
+    menu:getContentElement().childAlignX = 0.5
+    tes3ui.enterMenuMode(messageBoxId)
+    local title = menu:createLabel{id = tes3ui.registerID("Ashfall:MessageBox_Title"), text = message}
+    title.borderBottom = 4
+    for _, data in ipairs(buttons) do
+        local button = menu:createButton{ text = data.text}
+        button:register( "mouseClick", function()
+            if data.callback then
+                data.callback()
+            end
+            tes3ui.leaveMenuMode()
+            menu:destroy()
+        end)
+        if data.tooltip then
+            button:register( "help", function()
+                this.createTooltip(data.tooltip.header, data.tooltip.text)
+            end)
         end
     end
-    --Make list of strings to insert into buttons
-    local buttonStrings = {}
-    for _, button in ipairs(buttons) do
-        table.insert(buttonStrings, button.text)
-    end
-    tes3.messageBox({
-        message = message,
-        buttons = buttonStrings,
-        callback = callback
-    })
 end
 
 --Generic Tooltip with header and description

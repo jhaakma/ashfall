@@ -157,12 +157,12 @@ function this.callRayTest()
         local waterLevel = cell.waterLevel or 0
         local intersection = result.intersection
         local adjustedIntersection = tes3vector3.new( intersection.x, intersection.y, waterLevel )
-        local adjustedDistance = tes3.player.position:distance(adjustedIntersection)
+        local adjustedDistance = tes3.getCameraPosition():distance(adjustedIntersection)
         if adjustedDistance < 300 and cell.hasWater then
             local blockedBySomething =
                 result.reference and
                 result.reference.object.objectType ~= tes3.objectType.static
-            local cameraIsAboveWater = tes3.player.position.z > waterLevel
+            local cameraIsAboveWater = tes3.getCameraPosition().z > waterLevel
             local isLookingAtWater = intersection.z < waterLevel
             if cameraIsAboveWater and isLookingAtWater and not blockedBySomething then
                 this.current = "water"

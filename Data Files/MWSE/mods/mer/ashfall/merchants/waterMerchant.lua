@@ -21,7 +21,6 @@ local function getWaterText(merchantObj)
     return string.format("Refill (%d gold)", cost)
 end
 
-local skipUpdate
 
 local function onWaterServiceClick()
     common.log:debug("Activating water menu")

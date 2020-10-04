@@ -114,7 +114,7 @@ local function calculateFlu(scriptInterval)
     -- -30: break even (right in the middle of chilly, perfect)
     -- 40: 1.0x recovery
     local playerTemp = math.min(common.staticConfigs.conditionConfig.temp:getValue(), 40)
-    local tempEffect = math.remap(playerTemp, -100, 0, 1.0, 0)
+    local tempEffect = math.remap(playerTemp, -100, 0, 1.0, -0.5)
     common.log:trace("tempEffect: %s", tempEffect)
 
     local wetness = common.data.wetness
@@ -169,8 +169,8 @@ local function getSneezeSound()
 end
 
 
-local sneezeMinInterval = 20
-local sneezeMaxInterval = 120
+local sneezeMinInterval = 30
+local sneezeMaxInterval = 180
 local function sneezeTimer()
     timer.start{
         type = timer.simulate,

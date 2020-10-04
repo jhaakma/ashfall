@@ -96,7 +96,6 @@ local function initialiseLocalSettings()
     end
 end
 
-
 --INITIALISE COMMON--
 local dataLoadedOnce = false
 local function onLoaded()

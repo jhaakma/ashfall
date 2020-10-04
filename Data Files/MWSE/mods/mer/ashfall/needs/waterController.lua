@@ -115,6 +115,7 @@ local function handleEmpties(data)
     if data.waterAmount and data.waterAmount <= 0 then
         data.waterType = nil
         data.waterAmount = nil
+        data.stewLevels = nil
         --restack
         tes3ui.updateInventoryTiles()
     end

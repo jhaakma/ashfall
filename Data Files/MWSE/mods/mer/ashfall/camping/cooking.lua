@@ -183,6 +183,7 @@ event.register("referenceSceneNodeCreated" , ingredientPlaced)
 
 --Empty a cooking pot or kettle, reseting all data
 local function clearUtensilData(e)
+    
     common.log:debug("Clearing Utensil Data")
     local campfire = e.campfire
     campfire.data.stewProgress = nil
@@ -196,10 +197,12 @@ local function clearUtensilData(e)
     if e.removeUtensil then
         campfire.data.utensil = nil
     end
-    tes3.removeSound{ 
-        reference = campfire, 
-        sound = "ashfall_boil"
-    }
-    --event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})
+    if not e.isContainer then
+        tes3.removeSound{ 
+            reference = campfire, 
+            sound = "ashfall_boil"
+        }
+        --event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})
+    end
 end
 event.register("Ashfall:Campfire_clear_utensils", clearUtensilData)

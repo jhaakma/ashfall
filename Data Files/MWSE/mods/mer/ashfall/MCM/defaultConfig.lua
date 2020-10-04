@@ -40,7 +40,8 @@ return {
         ["moroni uvelas"] = true,--Vivec St. Brewer's and Fishmongers
         ["sedam omalen"] = true,--ald velothi's only trader
     },
-    waterBaseCost = 1, 
+    waterBaseCost = 1,
+    stewBaseCost = 15,
     enableTemperatureEffects = true,
     enableHunger = true,
     enableThirst = true,

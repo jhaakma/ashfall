@@ -77,11 +77,41 @@ this.TYPE = {
 }
 
 this.stewBuffs = {
-    [this.TYPE.meat] = { notSoup = true, stewNutrition = 1.0, min = 10, max = 30, id = "ashfall_stew_hearty"}, -- fortify health
-    [this.TYPE.vegetable] = { notSoup = true, stewNutrition = 0.9, min = 10, max = 30, id = "ashfall_stew_nutritious"}, --fortify fatigue
-    [this.TYPE.mushroom] = { notSoup = true, stewNutrition = 0.8, min = 10, max = 25, id = "ashfall_stew_chunky"}, --fortify magicka
-    [this.TYPE.seasoning] = { stewNutrition = 0.1, min = 5, max = 20, id = "ashfall_stew_tasty"}, --fortify agility
-    [this.TYPE.herb] = { stewNutrition = 0.2, min = 5, max = 20, id = "ashfall_stew_aromatic"} -- fortify personality
+    [this.TYPE.meat] = { 
+        notSoup = true,
+        stewNutrition = 1.0,
+        min = 10, max = 30, 
+        id = "ashfall_stew_hearty",
+        tooltip = "A hearty meat stew that fortifies your health.",
+    }, -- fortify health
+    [this.TYPE.vegetable] = { 
+        notSoup = true,
+        stewNutrition = 0.9,
+        min = 10, max = 30, 
+        id = "ashfall_stew_nutritious",
+        tooltip = "A nutritious vegetable stew that fortifies your fatigue.",
+    }, --fortify fatigue
+    [this.TYPE.mushroom] = { 
+        notSoup = true,
+        stewNutrition = 0.8,
+        min = 10, max = 25, 
+        id = "ashfall_stew_chunky",
+        tooltip = "A chunky mushroom stew that fortifies your magicka.",
+    }, --fortify magicka
+    [this.TYPE.seasoning] = { 
+        notSoup = false,
+        stewNutrition = 0.3,
+        min = 5, max = 20, 
+        id = "ashfall_stew_tasty",
+        tooltip = "A tasty seasoned soup that fortifies your agility.",
+    }, --fortify agility
+    [this.TYPE.herb] = { 
+        notSoup = false,
+        stewNutrition = 0.4,
+        min = 5, max = 20, 
+        id = "ashfall_stew_aromatic",
+        tooltip = "An aromatic soup, rich in herbs,that fortifies your personality.",
+        } -- fortify personality
 }
 
 --min: fully cooked multi at lowest cooking skill

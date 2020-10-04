@@ -32,6 +32,7 @@ local function initialized()
         require("mer.ashfall.merchants.merchantController")
         require("mer.ashfall.merchants.priceController")
         require("mer.ashfall.merchants.waterMerchant")
+        require("mer.ashfall.merchants.stewMerchant")
         
         require("mer.ashfall.referenceController")
         local versionFile = io.open("Data Files/MWSE/mods/mer/ashfall/version.txt", "r")

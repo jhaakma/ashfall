@@ -25,9 +25,9 @@ local function registerDataValues(campfire)
 end
 
 local function registerCampfire(e)
-   -- local safeRef = tes3.makeSafeObjectHandle(e.reference)
+    local safeRef = tes3.makeSafeObjectHandle(e.reference)
     event.register("enterFrame", function()
-        --if not safeRef:valid() then return end
+        if not safeRef:valid() then return end
         if e.reference.disabled then return end
         local dynamicConfig = campfireConfig.getConfig(e.reference.object.id)
         local isActivator = activatorConfig.list.campfire:isActivator(e.reference.object.id)

@@ -171,7 +171,6 @@ local function createMenuStatNeedsUI(e)
 end
 event.register("uiActivated", createMenuStatNeedsUI, { filter = "MenuStat" })
 
-
 local function updateTooltips()
     local helpMenu = tes3ui.findHelpLayerMenu(tes3ui.registerID("HelpMenu"))
     if helpMenu and helpMenu.visible == true then

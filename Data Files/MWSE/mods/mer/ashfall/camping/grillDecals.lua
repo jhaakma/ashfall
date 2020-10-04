@@ -97,9 +97,9 @@ event.register("Ashfall:ingredCooked", updateIngredient)
 
 
 local function ingredPlaced(e)
-    --local safeRef = tes3.makeSafeObjectHandle(e.reference)
+    local safeRef = tes3.makeSafeObjectHandle(e.reference)
     local function f()
-        --if not safeRef:valid() then return end
+        if not safeRef:valid() then return end
         local isIngredient = (
             e.reference and
             (not common.helper.isStack(e.reference) ) and
