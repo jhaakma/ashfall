@@ -41,7 +41,7 @@ return {
         ["sedam omalen"] = true,--ald velothi's only trader
     },
     waterBaseCost = 1,
-    stewBaseCost = 15,
+    stewBaseCost = 8,
     enableTemperatureEffects = true,
     enableHunger = true,
     enableThirst = true,

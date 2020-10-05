@@ -134,6 +134,7 @@ this.list = {
             ["t_de_sethla_x_well_01"] = true,
             ["t_de_setind_x_well_01"] = true,
             ["t_de_setind_x_waterspray_01"] = true,
+            ["t_de_setveloth_x_well_01"] = true,
 
             --well diversified
             ["_ex_hlaalu_well"] = true,
@@ -180,7 +181,9 @@ this.list = {
             ["vurt_unicy"] = true,
             ["floraat_tree_"] = true,
             ["pine_tree"] = true,--vsw
-            ["mr_flora_graze_tree "] = true --Rebirth
+            ["mr_flora_graze_tree "] = true, --Rebirth
+            ["t_mw_floraat_tree"] = true, --TR
+
         },
     },
     wood = Activator:new{ 

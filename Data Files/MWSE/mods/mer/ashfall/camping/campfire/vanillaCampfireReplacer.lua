@@ -250,10 +250,10 @@ end
 
 
 local function replaceCampfire(e)
-    local safeRef = tes3.makeSafeObjectHandle(e.reference)
-    event.register("simulate", function()
+    -- local safeRef = tes3.makeSafeObjectHandle(e.reference)
+    -- event.register("simulate", function()
         
-        if not safeRef:valid() then return end
+    --     if not safeRef:valid() then return end
         if e.reference.disabled or e.reference.deleted then return end
         local vanillaConfig = vanillaCampfires[e.reference.object.id:lower()]
         local campfireReplaced = e.reference.data and e.reference.data.campfireReplaced
@@ -316,10 +316,8 @@ local function replaceCampfire(e)
             common.log:debug("Campfire final supports: %s\n\n", campfire.data.dynamicConfig.supports)
 
         end
-    end,{ doOnce = true })
+    -- end,{ doOnce = true })
 end
---event.register("referenceSceneNodeCreated", replaceCampfire)
-
 
 local function replaceCampfires(e)
         for ref in e.cell:iterateReferences() do

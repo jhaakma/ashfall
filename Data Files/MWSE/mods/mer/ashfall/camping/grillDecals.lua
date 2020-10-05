@@ -97,9 +97,9 @@ event.register("Ashfall:ingredCooked", updateIngredient)
 
 
 local function ingredPlaced(e)
-    local safeRef = tes3.makeSafeObjectHandle(e.reference)
-    local function f()
-        if not safeRef:valid() then return end
+    -- local safeRef = tes3.makeSafeObjectHandle(e.reference)
+    -- local function f()
+    --     if not safeRef:valid() then return end
         local isIngredient = (
             e.reference and
             (not common.helper.isStack(e.reference) ) and
@@ -110,7 +110,7 @@ local function ingredPlaced(e)
             common.log:debug("Updating decals for %s", e.reference.object.id)
             updateIngredient{ reference = e.reference}
         end
-    end
-    event.register("enterFrame", f, {doOnce=true})
+    -- end
+    -- event.register("enterFrame", f, {doOnce=true})
 end
 event.register("referenceSceneNodeCreated", ingredPlaced)
