@@ -28,7 +28,7 @@ jobs:
           # Filename for archive
           filename: ashfall.zip
           # Base path for archive files
-          path: Data Files
+          path: "Data Files"
           # Working directory before zipping
           #directory: # optional, default is .
           # List of excluded files / directories
