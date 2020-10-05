@@ -26,7 +26,7 @@ jobs:
         uses: TheDoctor0/zip-release@0.4.1
         with:
           # Filename for archive
-          filename: ashfall.7z
+          filename: ashfall.zip
           # Base path for archive files
           path: Data Files
           # Working directory before zipping
@@ -34,4 +34,4 @@ jobs:
           # List of excluded files / directories
           #exclusions: # optional, default is 
           # Tool to use for archiving
-          type: 7z
+          type: zip
