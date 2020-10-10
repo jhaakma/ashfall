@@ -3,7 +3,7 @@ local thirstController = require("mer.ashfall.needs.thirstController")
 local conditions = require("mer.ashfall.conditionController")
 return {
     text = "Drink",
-    requirements = function(campfire)
+    showRequirements = function(campfire)
         return (
             campfire.data.waterAmount and 
             campfire.data.waterAmount > 0 and

@@ -1,15 +1,19 @@
 local common = require ("mer.ashfall.common.common")
 return {
-    text = "Add Supports (requires 3 wood)",
-    requirements = function(campfire)
-        local numWood = mwscript.getItemCount{ reference = tes3.player, item = common.staticConfigs.objectIds.firewood}
+    text = "Add Supports (requires 3 firewood)",
+    showRequirements = function(campfire)
         return (
             campfire.data.hasSupports ~= true and 
-            numWood >= 3 and
             campfire.data.dynamicConfig and
             campfire.data.dynamicConfig.supports == "dynamic"
         )
     end,
+    enableRequirements = function()
+        return mwscript.getItemCount{ reference = tes3.player, item = common.staticConfigs.objectIds.firewood} >= 3
+    end,
+    tooltipDisabled = { 
+        text = "You don't have enough firewood."
+    },
     callback = function(campfire)
         mwscript.removeItem{
             reference = tes3.player, 

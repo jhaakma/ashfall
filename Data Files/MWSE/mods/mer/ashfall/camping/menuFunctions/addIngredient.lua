@@ -4,7 +4,7 @@ local skillSurvivalStewIngredIncrement  = 5
 local stewIngredientCooldownAmount = 20
 return {
     text = "Add Ingredient",
-    requirements = function(campfire)
+    showRequirements = function(campfire)
         return (
             campfire.data.utensil == "cookingPot" and
             campfire.data.waterAmount and
@@ -20,8 +20,7 @@ return {
                     noResultsText = string.format("You do not have any %ss.", string.lower(foodType)),
                     filter = function(e)
                         return (
-                            e.item.objectType == tes3.objectType.ingredient and
-                            foodConfig.getFoodTypeResolveMeat(e.item.id) == foodType
+                            foodConfig.getFoodTypeResolveMeat(e.item) == foodType
                             --Can only grill meat and veges
                         )
                     end,
@@ -83,7 +82,7 @@ return {
             if hasCapacityForIngred then
                 local hasIngredient = false
                 for _, stack in pairs(tes3.player.object.inventory) do
-                    if foodConfig.getFoodTypeResolveMeat(stack.object.id) == foodType then
+                    if foodConfig.getFoodTypeResolveMeat(stack.object) == foodType then
                         hasIngredient = true
                         break
                     end

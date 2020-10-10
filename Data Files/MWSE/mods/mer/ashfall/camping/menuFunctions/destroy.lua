@@ -2,7 +2,7 @@ local common = require ("mer.ashfall.common.common")
 
 return {
     text = "Destroy Campfire",
-    requirements = function(campfire)
+    showRequirements = function(campfire)
         return (
             not campfire.data.hasGrill and 
             not campfire.data.utensil and

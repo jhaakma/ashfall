@@ -136,6 +136,9 @@ this.list = {
             ["t_de_setind_x_waterspray_01"] = true,
             ["t_de_setveloth_x_well_01"] = true,
 
+            --rebirth
+            ["mr_hlaalu_fountain"] = true,
+
             --well diversified
             ["_ex_hlaalu_well"] = true,
             ["izi_hlaalu_well"] = true,
@@ -143,6 +146,9 @@ this.list = {
             ["ex_s_well_01"] = true,
             ["bw_ex_hlaalu_well"] = true,
             ["rp_wooden_well"] = true,
+
+            --MD
+            ["ab_ex_velwellfountain"] = true
         } 
     },
     keg = Activator:new{ 
@@ -189,7 +195,7 @@ this.list = {
     wood = Activator:new{ 
         name = "Wood",
         type = this.types.woodSource,
-        mcmSetting = "enableTemperatureEffects",
+        mcmSetting = nil,
         patterns = {
             ["flora_ashtree"] = true,
             ["flora_ash_log"] = true,

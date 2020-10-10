@@ -3,7 +3,7 @@ local skillSurvivalLightFireIncrement = 5
 
 return {
     text = "Light Fire",
-    requirements = function(campfire)
+    showRequirements = function(campfire)
         return (
             not campfire.data.isLit and
             campfire.data.fuelLevel and

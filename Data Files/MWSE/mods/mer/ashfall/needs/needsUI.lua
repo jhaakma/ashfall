@@ -187,10 +187,10 @@ local function createNeedsUI(e)
         setupConditionLabel(conditionLabel)
 
         fillBar:register("help", function()
-            common.helper.createTooltip(data.name, data.getTooltip() )
+            common.helper.createTooltip({ header = data.name, text = data.getTooltip() })
         end)
         conditionLabel:register("help", function()
-            common.helper.createTooltip(data.name, data.getTooltip() )
+            common.helper.createTooltip({ header = data.name, text = data.getTooltip() })
         end)
     end
 

@@ -1,6 +1,6 @@
 return {
     text = "Remove Grill",
-    requirements = function(campfire)
+    showRequirements = function(campfire)
         return ( 
             campfire.data.hasGrill and
             campfire.data.dynamicConfig and

@@ -2,14 +2,20 @@ local common = require ("mer.ashfall.common.common")
 
 return {
     text = "Add Grill",
-    requirements = function(campfire)
+    showRequirements = function(campfire)
         return ( 
             not campfire.data.hasGrill and
             campfire.data.dynamicConfig and
-            campfire.data.dynamicConfig.grill == "dynamic" and
-            mwscript.getItemCount{ reference = tes3.player, item = common.staticConfigs.objectIds.grill } > 0
+            campfire.data.dynamicConfig.grill == "dynamic"
+           
         )
     end,
+    enableRequirements = function(campfire)
+        return mwscript.getItemCount{ reference = tes3.player, item = common.staticConfigs.objectIds.grill } > 0
+    end,
+    tooltipDisabled = {
+        text = "You have no Grill."
+    },
     callback = function(campfire)
         mwscript.removeItem{
             reference = tes3.player, 

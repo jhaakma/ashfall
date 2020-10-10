@@ -34,7 +34,8 @@ function this.getBurnLimit()
 end
 
 function this.getNutrition(object, itemData)
-    local foodData = foodConfig.getFoodData(object.id)
+    local foodData = foodConfig.getFoodData(object)
+    if not foodData then return end
 
     local foodValue = foodData.nutrition
     --scale by weight
@@ -176,7 +177,7 @@ end
 
 local function addFoodPoisoning(e)
     --Check for food poisoning
-    if foodConfig.getFoodType(e.item.id) == foodConfig.TYPE.meat then
+    if foodConfig.getFoodType(e.item) == foodConfig.TYPE.meat then
         local cookedAmount = e.itemData and e.itemData.data.cookedAmount or 0
         local foodPoison = common.staticConfigs.conditionConfig.foodPoison
         local poisonAmount = math.random(100 - cookedAmount)
@@ -204,9 +205,10 @@ local function onEquipFood(e)
         common.log:debug("Is Blocked")
         return 
     end
-    if e.item.objectType == tes3.objectType.ingredient then
+    local nutrition = this.getNutrition(e.item, e.itemData)
+    if nutrition then
         common.log:debug("Is ingredient")
-        this.eatAmount(this.getNutrition(e.item, e.itemData))
+        this.eatAmount(nutrition)
         applyFoodBuff(e.item.id)
         addFoodPoisoning(e)
         addDisease(e)

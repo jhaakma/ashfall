@@ -151,7 +151,11 @@ local function drinkFromContainer(e)
     
     if common.getIsBlocked(e.item) then return end
     --First check potions, gives a little hydration
-    if e.item.objectType == tes3.objectType.alchemy then
+    local isPotion = (
+        e.item.objectType == tes3.objectType.alchemy and
+        not foodConfig.getFoodType(e.item)
+    )
+    if isPotion then
         local thisSipSize = common.staticConfigs.capacities.potion
         thisSipSize = math.min( thirst:getValue(), thisSipSize)
         thirstController.drinkAmount{amount = thisSipSize}
@@ -288,14 +292,26 @@ local function onShiftActivateWater(e)
 end
 event.register("activate", onShiftActivateWater, { filter = tes3.player })
 
+local function getUniqueCellId(cell)
+    if cell.isInterior then
+        return cell.id:lower()
+    else
+        return string.format("%s (%s,%s)",
+        cell.id:lower(), 
+        cell.gridX, 
+        cell.gridY)
+    end
+end
+
 --First time entering a cell, add water to random bottles/containers
 local chanceToFill = 0.2
 local teaChance = 0.1
 local fillMin = 5
 local function addWaterToWorld(e)
     local wateredCells = common.data.wateredCells
-    if not wateredCells[string.lower(e.cell.id)] then
-        wateredCells[string.lower(e.cell.id)] = true
+    local cellId = getUniqueCellId(e.cell)
+    if not wateredCells[cellId] then
+        wateredCells[cellId] = true
 
         for ref in e.cell:iterateReferences(tes3.objectType.miscItem) do
             local bottleData = thirstController.getBottleData(ref.object.id)

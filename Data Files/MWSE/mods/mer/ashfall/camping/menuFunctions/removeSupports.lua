@@ -1,7 +1,7 @@
 local common = require ("mer.ashfall.common.common")
 return {
     text = "Remove Supports",
-    requirements = function(campfire)
+    showRequirements = function(campfire)
         return ( 
             campfire.data.dynamicConfig and
             campfire.data.dynamicConfig.supports == "dynamic" and

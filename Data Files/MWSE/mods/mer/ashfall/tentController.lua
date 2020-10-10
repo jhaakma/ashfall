@@ -16,36 +16,30 @@ end
 event.register("calcRestInterrupt", calcRestInterrupt)
 
 
-local function getPlacementBlocked()
-    return (
+local function canUnpack()
+    return not (
         tes3.player.cell.restingIsIllegal or
         common.helper.getInside(tes3.player)
     )
 end
 
 local function unpackTent(miscRef)
-    --Can't unpack in towns/indoors
-    if getPlacementBlocked() then
-        tes3.messageBox("You can't do that here, resting is illegal.")
-        return
-    else
-        timer.delayOneFrame(function()
-            tes3.createReference {
-                object = common.helper.getTentActiveFromMisc(miscRef),
-                position = {
-                    miscRef.position.x,
-                    miscRef.position.y,
-                    miscRef.position.z - 10,
-                },
-                orientation = miscRef.orientation:copy(),
-                cell = miscRef.cell
-            }
-        
-            tes3.runLegacyScript{ command = 'Player->Drop "ashfall_resetlight" 1'}
+    timer.delayOneFrame(function()
+        tes3.createReference {
+            object = common.helper.getTentActiveFromMisc(miscRef),
+            position = {
+                miscRef.position.x,
+                miscRef.position.y,
+                miscRef.position.z - 10,
+            },
+            orientation = miscRef.orientation:copy(),
+            cell = miscRef.cell
+        }
+    
+        tes3.runLegacyScript{ command = 'Player->Drop "ashfall_resetlight" 1'}
 
-            common.helper.yeet(miscRef)
-        end) 
-    end
+        common.helper.yeet(miscRef)
+    end) 
 end
 
 local function packTent(activeRef)
@@ -73,6 +67,10 @@ local function packedTentMenu(miscRef)
     local buttons = {
         {
             text = "Unpack",
+            requirements = canUnpack,
+            tooltipDisabled = { 
+                text = "You can't unpack your tent here."
+            },
             callback = function()
                 unpackTent(miscRef)
             end
@@ -86,7 +84,7 @@ local function packedTentMenu(miscRef)
                 end)
             end
         },
-        { text = "Do Nothing"}
+        { text = "Cancel", doesCancel = true}
     }
     common.helper.messageBox{
         message = message, 
@@ -97,15 +95,11 @@ end
 local function activeTentMenu(activeRef)
     local message = activeRef.object.name
     local buttons = {
-        -- { 
-        --     text = "Sleep",
-        --     callback = callRestMenu
-        -- },
         {
             text = "Pack Up",
             callback = function() packTent(activeRef) end
         },
-        { text = "Do Nothing"}
+        { text = "Cancel", doesCancel = true}
     }
     common.helper.messageBox{
         message = message, 
@@ -144,8 +138,8 @@ local function setTent(e)
     if e.tent then tent = e.tent end
     if (not tent) or (not tent.sceneNode) then tent = nil end
 
-    tes3.player.data.Ashfall.tentTempMulti = insideTent and 0.7 or 1.0
-    
+    common.data.tentTempMulti = insideTent and 0.7 or 1.0
+    common.data.insideTent = insideTent
     if tent then
         local switchNode = tent.sceneNode:getObjectByName("SWITCH_CANVAS")
         if switchNode then

@@ -140,57 +140,109 @@ function this.isStack(reference)
 end
 --[[
     Allows the creation of messageboxes using buttons that each have their own callback.
+
+    callback: optional function that gets called when the button is clicked
+
+    tooltip: optional table with header and text that will display as a tooltip when the
+        button is hovered over
+
+    tooltipDisabled: optional tooltip for when a button has been disabled
+
+    requirements: optional function that, if provided, determines whether the button will be
+        call the callback when clicked, or be disabled + greyed out
+
     {
-        message = "Message",
-        buttons = [
-            { text = "Button text", callback = function() }
+        message: string,
+        buttons: [
+            { 
+                text: string, 
+                callback?: function, 
+                tooltip?: { 
+                    header: string, 
+                    text: string
+                },
+                tooltipDisabled: { 
+                    header: string, 
+                    text: string
+                },
+                requirements?: function
+            }
         ]
     }
 ]]
-local messageBoxId = tes3ui.registerID("Ashfall:MessageBox")
+local messageBoxId = tes3ui.registerID("CustomMessageBox")
 function this.messageBox(params)
     --[[
-        Button = { text = string, callback = function }
+        button = 
     ]]--
     local message = params.message
     local buttons = params.buttons
-    -- local function callback(e)
-    --     --get button from 0-indexed MW param
-    --     local button = buttons[e.button+1]
-    --     if button.callback then
-    --         button.callback()
-    --     end
-    -- end
-    -- --Make list of strings to insert into buttons
-    -- local buttonStrings = {}
-    -- for _, button in ipairs(buttons) do
-    --     table.insert(buttonStrings, button.text)
-    -- end
 
     local menu = tes3ui.createMenu{ id = messageBoxId, fixedFrame = true }
     menu:getContentElement().childAlignX = 0.5
     tes3ui.enterMenuMode(messageBoxId)
     local title = menu:createLabel{id = tes3ui.registerID("Ashfall:MessageBox_Title"), text = message}
     title.borderBottom = 4
-    for _, data in ipairs(buttons) do
-        local button = menu:createButton{ text = data.text}
-        button:register( "mouseClick", function()
-            if data.callback then
-                data.callback()
+    for i, data in ipairs(buttons) do
+
+        --If last button is a Cancel (no callback), register it for Right Click Menu Exit
+        local buttonId = tes3ui.registerID("CustomMessageBox_Button")
+        if data.doesCancel then
+            mwse.log("Adding id to cancel button")
+            buttonId = tes3ui.registerID("CustomMessageBox_CancelButton")
+        end
+
+        local button = menu:createButton{ id = buttonId, text = data.text}
+
+        local disabled = false
+        if data.requirements then
+            if data.requirements() ~= true then
+                disabled = true
             end
-            tes3ui.leaveMenuMode()
-            menu:destroy()
-        end)
-        if data.tooltip then
+        end
+
+        if disabled then
+            button.widget.state = 2
+        else
+            button:register( "mouseClick", function()
+                if data.callback then
+                    data.callback()
+                end
+                tes3ui.leaveMenuMode()
+                menu:destroy()
+            end)
+        end
+
+        if not disabled and data.tooltip then
             button:register( "help", function()
-                this.createTooltip(data.tooltip.header, data.tooltip.text)
+                this.createTooltip(data.tooltip)
+            end)
+        elseif disabled and data.tooltipDisabled then
+            button:register( "help", function()
+                this.createTooltip(data.tooltipDisabled)
             end)
         end
     end
 end
 
+--[[
+    Checks if two refs are near each other, with 
+    separate horizontal and vertical distance checks
+    params:
+        ref1, ref2
+        distVertical, distHorizontal
+]]
+function this.getCloseEnough(e)
+    local pos1 = tes3vector3.new(e.ref1.position.x, e.ref1.position.y, 0)
+    local pos2 = tes3vector3.new(e.ref2.position.x, e.ref2.position.y, 0)
+    local distHorizontal = pos1:distance(pos2)
+    local distVertical = math.abs(e.ref1.position.z - e.ref2.position.z)
+    return (distHorizontal < e.distHorizontal and distVertical < e.distVertical)
+end
+
 --Generic Tooltip with header and description
-function this.createTooltip(thisHeader, thisLabel)
+function this.createTooltip(e)
+    local thisHeader, thisLabel = e.header, e.text
     local tooltip = tes3ui.createTooltipMenu()
     
     local outerBlock = tooltip:createBlock({ id = tes3ui.registerID("Ashfall:temperatureIndicator_outerBlock") })
@@ -199,22 +251,26 @@ function this.createTooltip(thisHeader, thisLabel)
     outerBlock.paddingBottom = 12
     outerBlock.paddingLeft = 6
     outerBlock.paddingRight = 6
-    outerBlock.width = 300
+    outerBlock.maxWidth = 300
+    outerBlock.autoWidth = true
     outerBlock.autoHeight = true    
     
-    local headerText = thisHeader
-    local headerLabel = outerBlock:createLabel({ id = tes3ui.registerID("Ashfall:temperatureIndicator_header"), text = headerText })
-    headerLabel.autoHeight = true
-    headerLabel.width = 285
-    headerLabel.color = tes3ui.getPalette("header_color")
-    headerLabel.wrapText = true
-    --header.justifyText = "center"
-    
-    local descriptionText = thisLabel
-    local descriptionLabel = outerBlock:createLabel({ id = tes3ui.registerID("Ashfall:temperatureIndicator_description"), text = descriptionText })
-    descriptionLabel.autoHeight = true
-    descriptionLabel.width = 285
-    descriptionLabel.wrapText = true   
+    if thisHeader then
+        local headerText = thisHeader
+        local headerLabel = outerBlock:createLabel({ id = tes3ui.registerID("Ashfall:temperatureIndicator_header"), text = headerText })
+        headerLabel.autoHeight = true
+        headerLabel.width = 285
+        headerLabel.color = tes3ui.getPalette("header_color")
+        headerLabel.wrapText = true
+        --header.justifyText = "center"
+    end
+    if thisLabel then
+        local descriptionText = thisLabel
+        local descriptionLabel = outerBlock:createLabel({ id = tes3ui.registerID("Ashfall:temperatureIndicator_description"), text = descriptionText })
+        descriptionLabel.autoHeight = true
+        descriptionLabel.width = 285
+        descriptionLabel.wrapText = true
+    end
     
     tooltip:updateLayout()
 end

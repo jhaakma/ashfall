@@ -5,14 +5,19 @@ return {
         local stewName = foodConfig.isStewNotSoup(campfire.data.stewLevels) and "Stew" or "Soup" 
         return string.format("Eat %s", stewName)
     end,
-    requirements = function(campfire)
+    showRequirements = function(campfire)
         return (
             campfire.data.stewLevels and 
             campfire.data.stewProgress and
-            campfire.data.stewProgress == 100 and
-            common.staticConfigs.conditionConfig.hunger:getValue() > 0.01
+            campfire.data.stewProgress == 100
         )
     end,
+    enableRequirements = function(campfire)
+        return common.staticConfigs.conditionConfig.hunger:getValue() > 0.01
+    end,
+    tooltipDisabled = { 
+        text = "You are full."
+    },
     callback = function(campfire)
         event.trigger("Ashfall:eatStew", { data = campfire.data})
         timer.delayOneFrame(function()

@@ -214,7 +214,7 @@ local function createTempHUD(parent)
                             local playerTemp = common.staticConfigs.conditionConfig.temp
                             local headerText = string.format("Player Temperature: %.2f", playerTemp:getValue() )
                             local labelText = "Your current temperature. This directly determines hot and cold condition effects."
-                            common.helper.createTooltip(headerText, labelText)
+                            common.helper.createTooltip({header = headerText, text = labelText})
                         end )
                         leftTempPlayerBar.widget.showText = false
                         leftTempPlayerBar.height = tempBarHeight
@@ -231,7 +231,7 @@ local function createTempHUD(parent)
                         leftTempLimitBar:register( "help", function()
                             local headerText = string.format("Temperature Limit: %.2f", common.data.tempLimit)
                             local labelText = "Represents the temperature you will reach if the current conditions remain."
-                            common.helper.createTooltip(headerText, labelText)
+                            common.helper.createTooltip({header = headerText, text = labelText})
                         end)
                         leftTempLimitBar.widget.showText = false
                         leftTempLimitBar.height = limitBarHeight
@@ -253,7 +253,7 @@ local function createTempHUD(parent)
                             local playerTemp = common.staticConfigs.conditionConfig.temp
                             local headerText = string.format("Player Temperature: %.2f", playerTemp:getValue()  )
                             local labelText = "Your current temperature. This directly determines hot and cold condition effects."
-                            common.helper.createTooltip(headerText, labelText)  
+                            common.helper.createTooltip({header = headerText, text = labelText})  
                         end)
                         rightTempPlayerBar.widget.showText = false
                         rightTempPlayerBar.height = tempBarHeight
@@ -266,7 +266,7 @@ local function createTempHUD(parent)
                         rightTempLimitBar:register( "help", function()
                             local headerText = string.format("Temperature Limit: %.2f", common.data.tempLimit)
                             local labelText = "Represents the temperature you will reach if the current conditions remain."
-                            common.helper.createTooltip(headerText, labelText)
+                            common.helper.createTooltip({header = headerText, text = labelText})
                         end)
                         rightTempLimitBar.widget.showText = false
                         rightTempLimitBar.height = limitBarHeight
@@ -326,7 +326,7 @@ local function createWetnessIndicator(parentBlock)
     wetnessBlock:register("help", function()
         local headerText = common.staticConfigs.conditionConfig.wetness.states[common.data.currentStates.wetness].text
         local labelText = "The wetter you are, the longer it takes to warm up, the quicker you cool down, and the more susceptible you are to shock damage."
-        common.helper.createTooltip(headerText, labelText)
+        common.helper.createTooltip({header = headerText, text = labelText})
     end)
     wetnessBlock = quickFormat(wetnessBlock, 0)
     ---\
@@ -361,7 +361,7 @@ local function createShelteredIndicator(parentBlock)
     shelteredBlock:register("help", function()
         local headerText = common.data.isSheltered and "Sheltered" or "Not Sheltered"
         local labelText = "Find shelter to avoid getting wet from the rain."
-        common.helper.createTooltip(headerText, labelText)
+        common.helper.createTooltip({header = headerText, text = labelText})
     end)
     
     local unshelteredIcon = shelteredBlock:createImage({path="Icons/ashfall/hud/unsheltered.dds", id = IDs.unshelteredIcon})
@@ -388,7 +388,7 @@ local function createConditionStateIndicator(parentBlock)
     conditionLabelBlock:register("help", function()
         local headerText = common.staticConfigs.conditionConfig.temp.states[common.data.currentStates.temp].text
         local labelText = "Your current temperature condition."
-        common.helper.createTooltip(headerText, labelText)
+        common.helper.createTooltip({header = headerText, text = labelText})
     end)
 end
 

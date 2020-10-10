@@ -24,19 +24,16 @@ local function findGriller(ingredient)
 
     local campfire
     local function checkDistance(ref)
-        local minHeight = ref.data.grillMinHeight or 0
         local maxHeight = ref.data.grillMaxHeight or 0
         local distance = ref.data.grillDistance or 0
-        --food sitting on grill
-        local heightDistance = ingredient.position.z - ref.position.z
-        if heightDistance < maxHeight and heightDistance > minHeight then
-            
-            local thisDistance = ingredient.position:distance(ref.position)
-            if thisDistance < distance then
-                distance = thisDistance
+
+            if common.helper.getCloseEnough{
+                ref1 = ref, ref2 = ingredient, 
+                distVertical = maxHeight,
+                distHorizontal = distance
+            } then
                 campfire = ref
             end
-        end
     end
     common.helper.iterateRefType("griller", checkDistance)
     return campfire
@@ -75,74 +72,72 @@ end
 
 
 local function grillFoodItem(ingredient, timestamp)
-    if ingredient.object.objectType == tes3.objectType.ingredient then
-        --Can only grill certain types of food
-        if foodConfig.getGrillValues(ingredient.object.id) then
-            local campfire = findGriller(ingredient)
-            if campfire then
-                if campfire.data.hasGrill and campfire.data.isLit then
-                    
-                    if common.helper.isStack(ingredient) or ingredient.data.lastCookUpdated == nil then 
-                        startCookingIngredient(ingredient, timestamp) 
-                        return
-                    end
-
-                    ingredient.data.lastCookUpdated = ingredient.data.lastCookUpdated or timestamp
-                    ingredient.data.cookedAmount = ingredient.data.cookedAmount or 0
-
-                    local difference = timestamp - ingredient.data.lastCookUpdated
-                    if difference > 0.008 then
-                        ingredient.data.lastCookUpdated = timestamp
-
-                        local thisCookMulti = calculateCookMultiplier(campfire.data.fuelLevel)
-                        local weightMulti = calculateCookWeightModifier(ingredient.object)
-                        ingredient.data.cookedAmount = ingredient.data.cookedAmount + ( difference * thisCookMulti * weightMulti)
-                        local cookedAmount = ingredient.data.cookedAmount
-
-                        local burnLimit = hungerController.getBurnLimit()
-                        --Cooked your food
-                        local justCooked = (
-                            cookedAmount > 100 and 
-                            cookedAmount < burnLimit and
-                            ingredient.data.grillState ~= "cooked"
-                        )
-                        if justCooked then
-                            ingredient.data.grillState = "cooked"
-                            tes3.playSound{ sound = "potion fail", pitch = 0.7, reference = ingredient }
-                            common.skills.survival:progressSkill(skillSurvivalGrillingIncrement)
-                        
-                            event.trigger("Ashfall:ingredCooked", { reference = ingredient})
-                        end
-                        --burned your food
-                        local justBurnt = (
-                            cookedAmount > burnLimit and 
-                            ingredient.data.grillState ~= "burnt"
-                        )
-                        if justBurnt then
-                            ingredient.data.grillState = "burnt"
-                            tes3.playSound{ sound = "potion fail", pitch = 0.9, reference = ingredient }
-                            event.trigger("Ashfall:ingredCooked", { reference = ingredient})
-                        end
-
-                        --Only play sounds/messages if not transitioning from cell
-                        --Check how long has passed as a bit of a hack
-                        if difference < 0.01 then
-                            if justCooked then
-                                tes3.messageBox("%s is fully cooked.", ingredient.object.name)
-                            elseif justBurnt then
-                                tes3.messageBox("%s has become burnt.", ingredient.object.name)
-                            end
-                        end
-                        
-                        local helpMenu = tes3ui.findHelpLayerMenu(tes3ui.registerID("HelpMenu"))
-                        if helpMenu and helpMenu.visible == true then
-                            tes3ui.refreshTooltip()
-                        end
-                    end
-                else
-                    --reset grill time if campfire is unlit
-                    resetCookingTime(ingredient)
+    --Can only grill certain types of food
+    if foodConfig.getGrillValues(ingredient.object) then
+        local campfire = findGriller(ingredient)
+        if campfire then
+            if campfire.data.hasGrill and campfire.data.isLit then
+                
+                if common.helper.isStack(ingredient) or ingredient.data.lastCookUpdated == nil then 
+                    startCookingIngredient(ingredient, timestamp) 
+                    return
                 end
+
+                ingredient.data.lastCookUpdated = ingredient.data.lastCookUpdated or timestamp
+                ingredient.data.cookedAmount = ingredient.data.cookedAmount or 0
+
+                local difference = timestamp - ingredient.data.lastCookUpdated
+                if difference > 0.008 then
+                    ingredient.data.lastCookUpdated = timestamp
+
+                    local thisCookMulti = calculateCookMultiplier(campfire.data.fuelLevel)
+                    local weightMulti = calculateCookWeightModifier(ingredient.object)
+                    ingredient.data.cookedAmount = ingredient.data.cookedAmount + ( difference * thisCookMulti * weightMulti)
+                    local cookedAmount = ingredient.data.cookedAmount
+
+                    local burnLimit = hungerController.getBurnLimit()
+                    --Cooked your food
+                    local justCooked = (
+                        cookedAmount > 100 and 
+                        cookedAmount < burnLimit and
+                        ingredient.data.grillState ~= "cooked"
+                    )
+                    if justCooked then
+                        ingredient.data.grillState = "cooked"
+                        tes3.playSound{ sound = "potion fail", pitch = 0.7, reference = ingredient }
+                        common.skills.survival:progressSkill(skillSurvivalGrillingIncrement)
+                    
+                        event.trigger("Ashfall:ingredCooked", { reference = ingredient})
+                    end
+                    --burned your food
+                    local justBurnt = (
+                        cookedAmount > burnLimit and 
+                        ingredient.data.grillState ~= "burnt"
+                    )
+                    if justBurnt then
+                        ingredient.data.grillState = "burnt"
+                        tes3.playSound{ sound = "potion fail", pitch = 0.9, reference = ingredient }
+                        event.trigger("Ashfall:ingredCooked", { reference = ingredient})
+                    end
+
+                    --Only play sounds/messages if not transitioning from cell
+                    --Check how long has passed as a bit of a hack
+                    if difference < 0.01 then
+                        if justCooked then
+                            tes3.messageBox("%s is fully cooked.", ingredient.object.name)
+                        elseif justBurnt then
+                            tes3.messageBox("%s has become burnt.", ingredient.object.name)
+                        end
+                    end
+                    
+                    local helpMenu = tes3ui.findHelpLayerMenu(tes3ui.registerID("HelpMenu"))
+                    if helpMenu and helpMenu.visible == true then
+                        tes3ui.refreshTooltip()
+                    end
+                end
+            else
+                --reset grill time if campfire is unlit
+                resetCookingTime(ingredient)
             end
         end
     end
@@ -155,6 +150,9 @@ local function grillFoodSimulate(e)
         for ingredient in cell:iterateReferences(tes3.objectType.ingredient) do
             grillFoodItem(ingredient, e.timestamp)
         end
+        for ingredient in cell:iterateReferences(tes3.objectType.alchemy) do
+            grillFoodItem(ingredient, e.timestamp)
+        end
     end
 end
 event.register("simulate", grillFoodSimulate)
@@ -162,20 +160,20 @@ event.register("simulate", grillFoodSimulate)
 
 
 --Reset grill time when item is placed
-local function ingredientPlaced(e)
+local function foodPlaced(e)
     if e.reference and e.reference.object then
-        if foodConfig.getGrillValues(e.reference.object.id) then
+        if foodConfig.getGrillValues(e.reference.object) then
             local timestamp = tes3.getSimulationTimestamp()
             local ingredient = e.reference
                 --Reset grill time for meat and veges
             timer.frame.delayOneFrame(function()
-                resetCookingTime(ingredient, timestamp)
+                resetCookingTime(ingredient)
                 grillFoodItem(ingredient, timestamp)
             end) 
         end
     end
 end
-event.register("referenceSceneNodeCreated" , ingredientPlaced)
+event.register("referenceSceneNodeCreated" , foodPlaced)
 
 
 

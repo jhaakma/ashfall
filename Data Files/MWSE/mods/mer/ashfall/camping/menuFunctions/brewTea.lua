@@ -3,7 +3,7 @@ local teaConfig = common.staticConfigs.teaConfig
 local skillSurvivalTeaBrewIncrement = 5
 return {
     text = "Brew Tea",
-    requirements = function(campfire)
+    showRequirements = function(campfire)
         return (
             campfire.data.utensil == "kettle" and
             campfire.data.waterAmount and

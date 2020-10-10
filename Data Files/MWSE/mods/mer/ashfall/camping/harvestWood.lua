@@ -48,8 +48,10 @@ local function onAttack(e)
                 local axeDamageMultiplier = math.min(weapon.object.chopMax, chopCeiling) / chopCeiling
 
                 local woodAxeMulti = 0.0
+                local woodAxeConditionMulti = 1.0
                 if weapon.object.id == common.staticConfigs.objectIds.woodaxe then
                     woodAxeMulti = 0.5
+                    woodAxeConditionMulti = 0.2
                 end
 
                 --If attacking the same target, accumulate swings
@@ -72,7 +74,7 @@ local function onAttack(e)
 
                     tes3.playSound({reference=tes3.player, sound="ashfall_chop"})
                     --Weapon degradation, unequip if below 0
-                    weapon.variables.condition = weapon.variables.condition - (10 * swingStrength)
+                    weapon.variables.condition = weapon.variables.condition - (20 * swingStrength * woodAxeConditionMulti)
                     if weapon.variables.condition <= 0 then
                         weapon.variables.condition = 0
                         tes3.mobilePlayer:unequip{ type = tes3.objectType.weapon }

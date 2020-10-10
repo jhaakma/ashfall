@@ -59,21 +59,36 @@ local function onActivateCampfire(e)
     local campfire = e.ref
     local node = e.node
 
-    local addButton = function(tbl, button)
-        if button.requirements(campfire) then
+    local addButton = function(tbl, buttonData)
+        local showButton = (
+            buttonData.showRequirements == nil or
+            buttonData.showRequirements(campfire)
+        )
+        if showButton then
             local text
-            if type(button.text) == "function" then
-                text = button.text(campfire)
+            if type(buttonData.text) == "function" then
+                text = buttonData.text(campfire)
             else
-                text = button.text
+                text = buttonData.text
             end
-
+            local enableButton = (
+                buttonData.enableRequirements == nil or
+                buttonData.enableRequirements(campfire)
+            )
             table.insert(tbl, {
                 text = text, 
                 callback = function()
-                    button.callback(campfire)
+                    if buttonData.callback then
+                        buttonData.callback(campfire)
+                    end
                     event.trigger("Ashfall:registerReference", { reference = campfire})
-                end
+                end,
+                tooltip = buttonData.tooltip,
+                tooltipDisabled = buttonData.tooltipDisabled,
+                requirements = function()
+                    return enableButton
+                end,
+                doesCancel = buttonData.doesCancel
             })
         end
     end
@@ -89,10 +104,13 @@ local function onActivateCampfire(e)
     end
 
     for _, buttonType in ipairs(buttonList) do
-        local button = require(string.format("mer.ashfall.camping.menuFunctions.%s", buttonType))
-        addButton(buttons, button)
+        local buttonData = require(string.format("mer.ashfall.camping.menuFunctions.%s", buttonType))
+        addButton(buttons, buttonData)
     end
-    common.helper.messageBox({ message = text, buttons = buttons })
+    common.helper.messageBox({ 
+        message = text, 
+        buttons = buttons 
+    })
 end
 
 event.register(

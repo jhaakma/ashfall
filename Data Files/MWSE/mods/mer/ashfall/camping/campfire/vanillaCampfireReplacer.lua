@@ -175,13 +175,6 @@ local function setInitialState(campfire, vanillaRef, data, hasSupports)
     end
 end
 
-local function getCloseEnough(e)
-    local pos1 = tes3vector3.new(e.ref1.position.x, e.ref1.position.y, 0)
-    local pos2 = tes3vector3.new(e.ref2.position.x, e.ref2.position.y, 0)
-    local distHorizontal = pos1:distance(pos2)
-    local distVertical = math.abs(e.ref1.position.z - e.ref2.position.z)
-    return (distHorizontal < e.distHorizontal and distVertical < e.distVertical)
-end
 
 
 --[[
@@ -199,7 +192,7 @@ local function checkKitBashObjects(vanillaRef)
     for ref in vanillaRef.cell:iterateReferences() do
         local id = ref.object.id:lower()
         
-        if getCloseEnough({ref1 = ref, ref2 = vanillaRef, distHorizontal = 75, distVertical = 200}) then
+        if common.helper.getCloseEnough({ref1 = ref, ref2 = vanillaRef, distHorizontal = 75, distVertical = 200}) then
             
             common.log:debug("Nearby ref: %s", ref.object.id)
 

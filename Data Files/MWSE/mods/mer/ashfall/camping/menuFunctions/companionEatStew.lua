@@ -13,7 +13,7 @@ end
 
 return {
     text = "Feed Companions",
-    requirements = function(campfire)
+    showRequirements = function(campfire)
         getNearbyCompanions()
         return (
             campfire.data.stewLevels and 

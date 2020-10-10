@@ -1,12 +1,17 @@
 local this = {}
 
-function this.getFoodType(id)
-    return this.ingredTypes[id] or this.TYPE.misc
+function this.getFoodType(obj)
+    local foodType =  this.ingredTypes[obj.id]
+    -- if not foodType and obj.objectType == tes3.objectType.ingredient then
+    --     foodType = this.TYPE.misc
+    -- end
+    return foodType
 end
 
---Handles special case for TR cooked meat
-function this.getFoodTypeResolveMeat(id)
-    local foodType = this.getFoodType(id)
+--Handles special case for pre-cooked meat
+function this.getFoodTypeResolveMeat(obj)
+
+    local foodType = this.getFoodType(obj)
     if foodType == this.TYPE.cookedMeat then
         foodType = this.TYPE.meat
     end
@@ -14,24 +19,24 @@ function this.getFoodTypeResolveMeat(id)
 end
 
 
-function this.getNutrition(id)
-    return this.nutrition[this.getFoodType(id)]
+function this.getNutrition(obj)
+    return this.nutrition[this.getFoodType(obj)]
 end
 
 function this.getNutritionForFoodType(foodType)
     return this.nutrition[foodType]
 end
 
-function this.getGrillValues(id)
-    return this.grillValues[this.getFoodType(id)]
+function this.getGrillValues(obj)
+    return this.grillValues[this.getFoodType(obj)]
 end
 
 function this.getGrillValuesForFoodType(foodType)
     return this.grillValues[foodType]
 end
 
-function this.getStewBuffForId(id)
-    return this.stewBuffs[this.getFoodType(id)]
+function this.getStewBuffForId(obj)
+    return this.stewBuffs[this.getFoodType(obj)]
 end
 
 function this.getStewBuffForFoodType(foodType)
@@ -45,8 +50,9 @@ function this.getStewBuffList()
     return this.stewBuffs
 end
 
-function this.getFoodData(id, resolveMeat)
-    local foodType = resolveMeat and this.getFoodTypeResolveMeat(id) or this.getFoodType(id)
+function this.getFoodData(obj, resolveMeat)
+    local foodType = resolveMeat and this.getFoodTypeResolveMeat(obj) or this.getFoodType(obj)
+    if not foodType then return nil end
     return {
         foodType = foodType,
         nutrition = this.getNutritionForFoodType(foodType),
@@ -73,7 +79,7 @@ this.TYPE = {
     seasoning = "Seasoning",
     herb = "Herb",
     food = "Food",
-    misc = "Other"
+    misc = nil
 }
 
 this.stewBuffs = {
@@ -133,7 +139,7 @@ this.nutrition = {
     [this.TYPE.seasoning] = 8,
     [this.TYPE.herb] = 10,
     [this.TYPE.food] = 30,
-    [this.TYPE.misc] = 0,
+    --[this.TYPE.misc] = 0,
 }
 
 this.ingredTypes = {
@@ -566,6 +572,7 @@ this.ingredTypes = {
 	["T_IngFlor_Cabbage_02"] = this.TYPE.vegetable,
 	["T_IngFlor_Cabbage_01"] = this.TYPE.vegetable,
     ["T_IngFlor_AspyrTea_01"] = this.TYPE.herb,
+    ["T_IngFlor_TempleDome_01"] = this.TYPE.mushroom,
     
 
     --NOM (UL)
@@ -642,7 +649,61 @@ this.ingredTypes = {
     ["ingred_wolf_meat_SA"] = this.TYPE.meat,
     ["ingred_wolf_ribs_SA"] = this.TYPE.misc,
     ["TM_honeycomb"] = this.TYPE.food,
+
+    --Morrowind Crafting (alchemy)
+    ["mc_ashyam_baked"] = this.TYPE.food,--"Baked Ash Yam"
+    ["mc_berry_pie"] = this.TYPE.food,--"Mixed Berry Pie"
+    ["mc_potluckstew"] = this.TYPE.food,--"Pot Luck Stew"
+    ["mc_bubble_squeak"] = this.TYPE.food,--"Bubble and Squeak"
+    ["mc_chefsalad"] = this.TYPE.food,--"Chef Salad"
+    ["mc_cookie"] = this.TYPE.food,--"Gramcookie"
+    ["mc_crabmeat_cooked"] = this.TYPE.cookedMeat,--"Steamed Crab"
+    ["mc_durzog_cooked"] = this.TYPE.cookedMeat,--"Cooked Durzog Meat"
+    ["mc_felaril"] = this.TYPE.food,--"Felaril"
+    ["mc_fish_cooked"] = this.TYPE.cookedMeat,--"Grilled Slaughterfish"
+    ["mc_fried_mushroom"] = this.TYPE.food,--"Fried Mushrooms"
+    ["mc_glowpotsoup"] = this.TYPE.food,--"Glowpot Soup"
+    ["mc_guar_cooked"] = this.TYPE.cookedMeat,--"Cooked Guar Meat"
+    ["mc_kagarine"] = this.TYPE.food,--"Kagarine"
+    ["mc_guarherdpie"] = this.TYPE.food,--"Guarherd Pie"
+    ["mc_guarstew"] = this.TYPE.food,--"Guar Stew"
+    ["mc_mushroomsoup"] = this.TYPE.food,--"Mushroom Soup"
+    ["mc_plains_pie"] = this.TYPE.food,--"Plains Pie"
+    ["mc_pot_pie"] = this.TYPE.food,--"Pot Pie"
+    ["mc_potatosalad"] = this.TYPE.food,--"Potato Salad"
+    ["mc_quiche"] = this.TYPE.food,--"Quiche"
+    ["mc_racerrevenge"] = this.TYPE.food,--"Racer Revenge Soup"
+    ["mc_root_soup"] = this.TYPE.food,--"Root Soup"
+    ["mc_ryebread"] = this.TYPE.food,--"Rye Bread"
+    ["mc_scuttle_soup"] = this.TYPE.food,--"Scuttle Soup"
+    ["mc_seafood_medley"] = this.TYPE.food,--"Seafood Medley"
+    ["mc_seafood_stew"] = this.TYPE.food,--"Seafood Stew"
+    ["mc_spice_soup"] = this.TYPE.food,--"Spice Soup"
+    ["mc_suncake"] = this.TYPE.food,--"Suncake"
+    ["mc_swamproll"] = this.TYPE.food,--"Swamp Roll"
+    ["mc_sweetyam_pie"] = this.TYPE.food,--"Sweet Yam Pie"
+    ["mc_trailbroth"] = this.TYPE.food,--"Trail Broth"
+    ["mc_wheatroll"] = this.TYPE.food,--"Wheat Roll"
+    ["mc_hound_cooked"] = this.TYPE.cookedMeat,--"Cooked Hound Steak"
+    ["mc_kagouti_cooked"] = this.TYPE.cookedMeat,--"Cooked Kagouti Steak"
+    ["mc_kwamalarge"] = this.TYPE.food,--"Large Boiled Kwama Egg"
+    ["mc_kwamasmall"] = this.TYPE.food,--"Small Boiled Kwama Egg"
+    ["mc_mixedgreens"] = this.TYPE.food,--"Mixed Greens Salad"
+    ["mc_potato_baked"] = this.TYPE.food,--"Baked Potato"
+    ["mc_racer_cooked"] = this.TYPE.food,--"Cooked Cliff Racer Breast"
+    ["mc_ricetreat"] = this.TYPE.food,--"Saltrice Crispy Treat"
+    ["mc_rat_cooked"] = this.TYPE.food,--"Cooked Rat Steak"
+    ["mc_sweetbread"] = this.TYPE.food,--"Sweetbread"
+    ["mc_sweetcake"] = this.TYPE.food,--"Sweetcake"
+    ["mc_trailcake"] = this.TYPE.food,--"Trailcake"
+    ["mc_ricebread"] = this.TYPE.food,--"Rice Bread"
+    ["mc_wheatbread"] = this.TYPE.food,--"Wheat Bread"
+    ["mc_sow_milk"] = this.TYPE.food,--"Bottle of Sow's Milk"
+
+    p_dispel_s = this.TYPE.meat
 }
+
+
 
 
 

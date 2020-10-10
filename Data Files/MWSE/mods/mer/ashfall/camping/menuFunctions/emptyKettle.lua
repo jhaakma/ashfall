@@ -1,7 +1,7 @@
 local common = require ("mer.ashfall.common.common")
 return {
     text = "Empty Kettle",
-    requirements = function(campfire)
+    showRequirements = function(campfire)
         return (
             campfire.data.utensil == "kettle" and
             ( campfire.data.waterAmount and

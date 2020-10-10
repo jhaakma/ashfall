@@ -8,14 +8,17 @@ local function createTableVar(id)
     return mwse.mcm.createTableVariable{ id = id, table = config }
 end
 
-local function registerModConfig()
-    
-    local sideBarDefault = (
-        "Welcome to Ashfall, the ultimate survival mod for Morrowind! \n\n" ..
-        "Use the configuration menu to turn various mechanics, features and udpate messages on or off.\n\n" ..
-        "Hover over individual settings to see more information."
-    )
+local sideBarDefault =
+[[
+Welcome to Ashfall, the ultimate survival mod for Morrowind!
 
+Use the configuration menu to turn various mechanics, features and udpate messages on or off.
+
+Hover over individual settings to see more information.
+
+]]
+
+local function registerModConfig()
     local function addSideBar(component)
         component.sidebar:createInfo{ text = sideBarDefault}
         component.sidebar:createHyperLink{

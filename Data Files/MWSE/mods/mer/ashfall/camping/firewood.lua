@@ -63,7 +63,7 @@ local function onActivateFirewood(e)
             buttons = {
                 { text = "Create Campfire", callback = function() placeCampfire(e) end },
                 { text = "Pick Up", callback = function() pickupFirewood(e.target) end },
-                { text = "Cancel" }
+                { text = "Cancel", doesCancel = true}
             }
         })
         return true

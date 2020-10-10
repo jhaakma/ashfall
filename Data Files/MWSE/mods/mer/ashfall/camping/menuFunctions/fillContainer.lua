@@ -4,7 +4,7 @@ local teaConfig = common.staticConfigs.teaConfig
 
 return  {
     text = "Fill Container",
-    requirements = function(campfire)
+    showRequirements = function(campfire)
         local hasWaterAmount = campfire.data.waterAmount and campfire.data.waterAmount > 0
         local hasJustWater = (not teaConfig.teaTypes[campfire.data.waterType]) and ( not campfire.data.stewLevels )
         local hasBrewedTea = campfire.data.teaProgress and campfire.data.teaProgress >= 100

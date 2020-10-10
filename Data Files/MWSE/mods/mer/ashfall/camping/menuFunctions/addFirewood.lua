@@ -7,16 +7,19 @@ local function getWoodFuel()
 end
 return {
     text = "Add Firewood",
-    requirements = function(campfire)
-        return (
-            mwscript.getItemCount{ reference = tes3.player, item = common.staticConfigs.objectIds.firewood } > 0 and
-            ( 
-                campfire.data.fuelLevel < common.staticConfigs.maxWoodInFire or 
-                campfire.data.burned == true 
-            ) and
-            campfire.data.dynamicConfig
-        )
+    showRequirements = function(campfire)
+        return ( 
+            campfire.data.fuelLevel < common.staticConfigs.maxWoodInFire or 
+            campfire.data.burned == true 
+        ) and
+        campfire.data.dynamicConfig
     end,
+    enableRequirements = function(campfire)
+        return mwscript.getItemCount{ reference = tes3.player, item = common.staticConfigs.objectIds.firewood } > 0 
+    end,
+    tooltipDisabled = {
+        text = "You have no Firewood."
+    },
     callback = function(campfire)
         tes3.playSound{ reference = tes3.player, sound = "ashfall_add_wood"  }
         campfire.data.fuelLevel = campfire.data.fuelLevel + getWoodFuel()

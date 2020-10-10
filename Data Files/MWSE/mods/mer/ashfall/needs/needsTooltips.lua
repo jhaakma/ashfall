@@ -79,7 +79,7 @@ local function updateFoodAndWaterTile(e)
         levelIndicator.absolutePosAlignY = 1.0
     end
 
-    if foodConfig.getGrillValues(e.item.id) then
+    if foodConfig.getGrillValues(e.item) then
         local maxHeight = 32
 
         local indicatorBlock = e.element:createThinBorder()
@@ -167,7 +167,8 @@ local function createNeedsTooltip(e)
 
     --Food tooltips
     local labelText
-    if e.object.objectType == tes3.objectType.ingredient then
+    local thisFoodType = foodConfig.getFoodType(e.object)
+    if thisFoodType then
         if common.config.getConfig().enableHunger  then
             --hunger value
             local nutrition = hungerController.getNutrition(e.object, e.itemData)
@@ -177,7 +178,7 @@ local function createNeedsTooltip(e)
             end
 
             --cook state
-            local thisFoodType = foodConfig.getFoodType(e.object.id)
+            
 
             --Remove cook state from the ingredient name for TR foods
             local cookStrings = {
@@ -195,7 +196,7 @@ local function createNeedsTooltip(e)
 
             --Add Food type and Cook state label to Tooltip
             local cookedLabel = ""
-            if foodConfig.getGrillValues(e.object.id) then
+            if foodConfig.getGrillValues(e.object) then
                 local cookedAmount = e.itemData and e.itemData.data.cookedAmount
                 if cookedAmount and e.itemData.data.grillState == nil then
                     cookedLabel = string.format(" (%d%% Cooked)", cookedAmount)
