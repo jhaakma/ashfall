@@ -49,7 +49,11 @@ this.tentActiveToMiscMap = {}
 for miscId, activeId in pairs(this.tentMiscToActiveMap) do
     this.tentActiveToMiscMap[activeId] = miscId
 end
-
+this.bedrolls = {
+    ashfall_bedroll_ashl = true,
+    ashfall_cbroll_misc = true,
+    ashfall_bedroll = true
+}
 
 --Ids for various fallen branches
 this.branchIds = {
@@ -138,9 +142,9 @@ this.branchRegions = {
 
 --For placement magic
 this.placementConfig = {
-    ashfall_bedroll_ashl = { blockIllegal = true, maxSteepness = 0.4 },
-    ashfall_bedroll = { blockIllegal = true, maxSteepness = 0.4 },
-    ashfall_cbroll_misc = { blockIllegal = true, maxSteepness = 0.4, drop = -15 },
+    ashfall_bedroll_ashl = { maxSteepness = 0.4 },
+    ashfall_bedroll = { maxSteepness = 0.4 },
+    ashfall_cbroll_misc = { maxSteepness = 0.4, drop = -15 },
     
     ashfall_tent_misc = { maxSteepness = 0.4, drop = -8},
     ashfall_tent_ashl_misc = { maxSteepness = 0.4, drop = -8},
@@ -152,7 +156,7 @@ this.placementConfig = {
     ashfall_tent_canv_b_active = { maxSteepness = 0.4, drop = 50},
     ashfall_tent_test_active = { maxSteepness = 0.4, drop = 50},
 
-    a_bed_roll = { blockIllegal = true, maxSteepness = 0.4 },
+    a_bed_roll = { maxSteepness = 0.4 },
 
     ashfall_firewood = { maxSteepness = 0.5, hasVertAlign  = true }
 }

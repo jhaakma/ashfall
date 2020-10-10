@@ -28,6 +28,9 @@ local function initialized()
         require("mer.ashfall.ui.itemTooltips")
         require("mer.ashfall.tempEffects.ratings.ratingEffects")
 
+
+        require("mer.ashfall.tentController")
+        require("mer.ashfall.bedrollController")        
         require("mer.ashfall.backpackController")
         require("mer.ashfall.merchants.merchantController")
         require("mer.ashfall.merchants.priceController")

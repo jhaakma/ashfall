@@ -16,7 +16,6 @@ local frostBreath = require("mer.ashfall.effects.frostBreath")
 local statsEffect = require("mer.ashfall.needs.statsEffect")
 
 --Survival stuff
-local tentController = require("mer.ashfall.tentController")
 local activators = require("mer.ashfall.activators.activatorController")
 
 --Needs

@@ -1,6 +1,5 @@
 local common = require("mer.ashfall.common.common")
 
-local this = {}
 local temperatureController = require("mer.ashfall.temperatureController")
 --temperatureController.registerExternalHeatSource{ id = "tentTemp" }
 temperatureController.registerBaseTempMultiplier{ id = "tentTempMulti"}
@@ -148,5 +147,3 @@ local function setTent(e)
     end
 end
 event.register("Ashfall:SetTent", setTent)
-
-return this

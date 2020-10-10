@@ -340,19 +340,35 @@ function this.createSliderPopup(params)
     menu:getTopLevelMenu():updateLayout()
 end
 
-
+function this.disableControls()
+    tes3.runLegacyScript{command = "DisablePlayerControls"}
+    tes3.runLegacyScript{command = "DisablePlayerJumping"}
+    tes3.runLegacyScript{command = "DisablePlayerViewSwitch"}
+    tes3.runLegacyScript{command = "DisableVanityMode"}
+    tes3.runLegacyScript{command = "DisablePlayerFighting"}
+    tes3.runLegacyScript{command = "DisablePlayerMagic"}
+end
+function this.enableControls()
+    tes3.runLegacyScript{command = "EnablePlayerViewSwitch"}
+    tes3.runLegacyScript{command = "EnablePlayerControls"}
+    tes3.runLegacyScript{command = "EnablePlayerLooking"}
+    tes3.runLegacyScript{command = "EnablePlayerFighting"}
+    tes3.runLegacyScript{command = "EnablePlayerJumping"}
+    tes3.runLegacyScript{command = "EnablePlayerMagic"}
+    tes3.runLegacyScript{command = "EnableInventoryMenu"}
+end
 --[[
     Fades out, passes time then runs callback when finished
 ]]--
 function this.fadeTimeOut( hoursPassed, secondsTaken, callback )
     local function fadeTimeIn()
-        tes3.runLegacyScript({command = "EnablePlayerControls"})
+        this.enableControls()
         callback()
         tes3.player.data.Ashfall.fadeBlock = false
     end
     tes3.player.data.Ashfall.fadeBlock = true
     tes3.fadeOut({ duration = 0.5 })
-    tes3.runLegacyScript({command = "DisablePlayerControls"})
+    this.disableControls()
     --Halfway through, advance gamehour
     local iterations = 10
     timer.start({
