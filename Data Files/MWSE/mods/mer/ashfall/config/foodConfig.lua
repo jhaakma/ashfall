@@ -699,8 +699,6 @@ this.ingredTypes = {
     ["mc_ricebread"] = this.TYPE.food,--"Rice Bread"
     ["mc_wheatbread"] = this.TYPE.food,--"Wheat Bread"
     ["mc_sow_milk"] = this.TYPE.food,--"Bottle of Sow's Milk"
-
-    p_dispel_s = this.TYPE.meat
 }
 
 
