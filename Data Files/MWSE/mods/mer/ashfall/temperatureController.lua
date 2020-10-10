@@ -1,7 +1,6 @@
 --move to common---------------------------------
 --Also... refactor all temps to point to this----
 local common = require("mer.ashfall.common.common")
-local hud = require("mer.ashfall.ui.hud")
 -------------------------------------------------
 --Move to Config file
 local INT_MULTI = 100 --Rate of change for player temp
@@ -263,7 +262,7 @@ function this.calculate(interval, forceUpdate)
         common.data.tempLimit = 0
         common.data.baseTemp = 0
         common.data.temp = 0
-        hud.updateHUD()
+        event.trigger("Ashfall:UpdateHud")
         return
     end
     common.data.tempLimit = common.data.tempLimit or 0
@@ -291,7 +290,7 @@ function this.calculate(interval, forceUpdate)
         ( common.data.tempLimit - common.data.temp ) * getInternalChangeMultiplier(interval) * differenceMulti
     )
 
-    hud.updateHUD()
+    event.trigger("Ashfall:UpdateHud")
 end
 
 local function update(e)

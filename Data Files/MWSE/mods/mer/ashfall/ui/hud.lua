@@ -38,8 +38,6 @@ local function findElementInMultiMenu(id, menu)
 end
 
 function this.updateHUD()
-    
-    tempUI.updateHUD()
     local function updateNeed(needData, menu)
         local id = needData.needId
         local blockerBar = findElementInMultiMenu(string.format(blockerIdPattern, id), menu)
@@ -71,6 +69,7 @@ function this.updateHUD()
         menu:updateLayout()
     end
 end
+event.register("Ashfall:UpdateHud", this.updateHUD)
 
 local function addBlockerBar(parent, needData)
     local blockBar = parent:createThinBorder{ id  = tes3ui.registerID(string.format(blockerIdPattern, needData.needId)) }

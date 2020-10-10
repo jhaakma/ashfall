@@ -4,7 +4,6 @@ local common = require("mer.ashfall.common.common")
 local foodConfig = common.staticConfigs.foodConfig
 local teaConfig = common.staticConfigs.teaConfig
 local conditionsCommon = require("mer.ashfall.conditionController")
-local hud = require("mer.ashfall.ui.hud")
 local statsEffect = require("mer.ashfall.needs.statsEffect")
 local temperatureController = require("mer.ashfall.temperatureController")
 temperatureController.registerBaseTempMultiplier({ id = "thirstEffect", warmOnly = true })
@@ -110,7 +109,7 @@ function this.drinkAmount(e)
     this.update()
     event.trigger("Ashfall:updateTemperature", { source = "drinkAmount" } )
     event.trigger("Ashfall:updateNeedsUI")
-    hud.updateHUD()
+    event.trigger("Ashfall:UpdateHud")
 
     tes3.playSound({reference = tes3.player, sound = "Drink"})
 

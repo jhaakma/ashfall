@@ -11,7 +11,15 @@ local function canRest()
 end
 
 local function doRestMenu()
+    common.log:debug("Setting inTent for covered bedroll to true")
+    common.data.insideCoveredBedroll = true
     tes3.runLegacyScript{ command = "ShowRestMenu"}
+    event.trigger("Ashfall:CheckForShelter")
+    event.trigger("Ashfall:UpdateHud")
+    timer.delayOneFrame(function()
+        common.log:debug("Setting inTent for covered bedroll to false")
+        common.data.insideCoveredBedroll = false
+    end)
 end
 
 local function bedrollMenu(ref)

@@ -83,7 +83,7 @@ end
 --As fuel levels change, update the radius of light given off by the campfire
 local function updateLightingRadius(campfire)
     if campfire.light then
-        local radius = campfire.object.radius
+        local radius = 500 --get this from string data when it ain't fucked
         if not campfire.data.isLit then
             campfire.light:setAttenuationForRadius(0)
         else

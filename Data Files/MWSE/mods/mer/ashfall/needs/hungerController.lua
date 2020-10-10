@@ -1,7 +1,6 @@
 local this = {}
 local common = require("mer.ashfall.common.common")
 local conditionsCommon = require("mer.ashfall.conditionController")
-local hud = require("mer.ashfall.ui.hud")
 
 local meals = require("mer.ashfall.cooking.meals")
 local statsEffect = require("mer.ashfall.needs.statsEffect")
@@ -90,7 +89,7 @@ function this.eatAmount( amount )
     this.update()
     event.trigger("Ashfall:updateTemperature", { source = "eatAmount" })
     event.trigger("Ashfall:updateNeedsUI")
-    hud.updateHUD()
+    event.trigger("Ashfall:UpdateHud")
     return amountAte
 end
 

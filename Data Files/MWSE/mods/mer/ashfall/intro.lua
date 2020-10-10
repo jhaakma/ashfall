@@ -1,6 +1,5 @@
 local common = require("mer.ashfall.common.common")
 local overrides = require("mer.ashfall.config.overrides")
-local tempUI = require("mer.ashfall.ui.tempUI")
 local this = {}
 local config = common.config.getConfig()
 local newGame
@@ -16,7 +15,7 @@ function this.doNeeds(needs)
         common.log:debug("Setting %s to %s", need, value)
         common.config.saveConfigValue(need, value)
     end
-    tempUI:updateHUD()
+    event.trigger("Ashfall:UpdateHud")
 end
 
 function this.doTimeScale()

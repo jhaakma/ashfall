@@ -563,6 +563,7 @@ function this.orientRefToGround(params)
     local maxSteepness = params.maxSteepness
     local ignoreList = params.ignoreList or {}
 
+    table.insert(ignoreList, tes3.player)
     for thisRef in ref.cell:iterateReferences() do
         if thisRef.object.objectType ~= tes3.objectType.static then
             table.insert(ignoreList, thisRef)

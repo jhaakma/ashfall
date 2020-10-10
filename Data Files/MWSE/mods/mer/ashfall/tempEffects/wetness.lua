@@ -34,9 +34,8 @@ local wetTempMax = -25
 
 function this.checkForShelter()
     local sheltered = common.helper.checkRefSheltered()
-    local inTentGlobal = tes3.findGlobal("a_inside_tent").value
-    if inTentGlobal == 1 then 
-        common.log:debug("Inside Covered Bedroll")
+
+    if common.data.insideCoveredBedroll then 
         sheltered = true 
     end
 
@@ -44,13 +43,13 @@ function this.checkForShelter()
         common.data.isSheltered = sheltered
     end
 end
-
+event.register("Ashfall:CheckForShelter", this.checkForShelter)
 
 
 --[[ 
     Called by tempTimer
 ]]--
-function this.calculateWetTemp(timeSinceLastRan)
+function this.calculateWetTemp(interval)
     if not common.data then
         return 
     end
@@ -103,16 +102,16 @@ function this.calculateWetTemp(timeSinceLastRan)
     if isSheltered or not isRaining then
         local dryCoverageEffect = math.remap(common.data.coverageRating, 0, 1.0, 1.0, 0.5)
         local tempMultiplier = math.remap(math.max(playerTemp, 0), 0, 100, 1.0, 3.0)
-        local dryChange = ( tempMultiplier * timeSinceLastRan * dryCoverageEffect * DRYING_MULTI )
+        local dryChange = ( tempMultiplier * interval * dryCoverageEffect * DRYING_MULTI )
         currentWetness = currentWetness - dryChange
     else
         --Raining
         if weather.index == tes3.weather.rain then
-            currentWetness = currentWetness + rainEffect * timeSinceLastRan * ( 1.0 - coverage )
+            currentWetness = currentWetness + rainEffect * interval * ( 1.0 - coverage )
     
         --Thunder
         elseif weather.index == tes3.weather.thunder then
-            currentWetness = currentWetness + thunderEffect * timeSinceLastRan * ( 1.0 - coverage )
+            currentWetness = currentWetness + thunderEffect * interval * ( 1.0 - coverage )
         end
     end
     

@@ -177,26 +177,24 @@ local function createNeedsTooltip(e)
                 createTooltip(tooltip, labelText)
             end
 
-            --cook state
-            
-
-            --Remove cook state from the ingredient name for TR foods
-            local cookStrings = {
-                "raw ",
-                "cooked ",
-                "grilled ",
-                "roasted "
-            }
-            local nameLabel = e.tooltip:findChild(tes3ui.registerID("HelpMenu_name"))
-            for _, pattern in ipairs(cookStrings) do
-                if string.startswith(nameLabel.text:lower(), pattern) then
-                    nameLabel.text = nameLabel.text:sub(string.len(pattern) + 1, -1)
-                end
-            end
-
-            --Add Food type and Cook state label to Tooltip
             local cookedLabel = ""
             if foodConfig.getGrillValues(e.object) then
+
+                --Remove cook state from the ingredient name for TR foods
+                local cookStrings = {
+                    "raw ",
+                    "cooked ",
+                    "grilled ",
+                    "roasted "
+                }
+                local nameLabel = e.tooltip:findChild(tes3ui.registerID("HelpMenu_name"))
+                for _, pattern in ipairs(cookStrings) do
+                    if string.startswith(nameLabel.text:lower(), pattern) then
+                        nameLabel.text = nameLabel.text:sub(string.len(pattern) + 1, -1)
+                    end
+                end
+
+                --Add Food type and Cook state label to Tooltip
                 local cookedAmount = e.itemData and e.itemData.data.cookedAmount
                 if cookedAmount and e.itemData.data.grillState == nil then
                     cookedLabel = string.format(" (%d%% Cooked)", cookedAmount)

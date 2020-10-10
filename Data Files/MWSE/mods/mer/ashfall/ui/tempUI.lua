@@ -171,13 +171,9 @@ function this.updateHUD()
         else
             needsBlock.visible = false
         end
-        
-       
-
     end
-
 end
-
+event.register("Ashfall:UpdateHud", this.updateHUD)
 
 local function quickFormat(element, padding)
     element.paddingAllSides = padding
