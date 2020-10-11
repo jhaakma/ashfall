@@ -54,6 +54,14 @@ local buttonMapping = {
     }
 }
 
+local function getDisabledText(disabledText, campfire)
+    if type(disabledText) == "function" then
+        return disabledText(campfire)
+    else
+        return disabledText
+    end
+end
+
 local function onActivateCampfire(e)
 
     local campfire = e.ref
@@ -84,7 +92,7 @@ local function onActivateCampfire(e)
                     event.trigger("Ashfall:registerReference", { reference = campfire})
                 end,
                 tooltip = buttonData.tooltip,
-                tooltipDisabled = buttonData.tooltipDisabled,
+                tooltipDisabled = getDisabledText(buttonData.tooltipDisabled, campfire),
                 requirements = function()
                     return enableButton
                 end,

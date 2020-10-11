@@ -140,7 +140,7 @@ local function checkInterruptSleep()
         local tempLimit = common.data.tempLimit
         --Temperature
         if tempLimit < coldRestLimit or tempLimit > hotRestLimit then
-            tes3.runLegacyScript({ command = "WakeUpPC" })
+            tes3.wakeUp()
             tes3.messageBox({ message = interruptText, buttons = { "Okay" } })
         end
         --Needs
@@ -148,12 +148,12 @@ local function checkInterruptSleep()
             --Cap the hunger loss
             hunger:setValue(hunger.states.starving.min)
             --Wake PC
-            tes3.runLegacyScript({ command = "WakeUpPC" })
+            tes3.wakeUp()
             --Message PC
             tes3.messageBox({ message = "You are starving.", buttons = { "Okay" } }) 
         elseif thirst:getValue() > thirst.states.dehydrated.min then
             --Cap the thirst loss
-            tes3.runLegacyScript({ command = "WakeUpPC" })
+            tes3.wakeUp()
             --Wake PC
             thirst:setValue(thirst.states.dehydrated.min)
             --Message PC
@@ -162,7 +162,7 @@ local function checkInterruptSleep()
             --Cap the tiredness loss
             tiredness:setValue(tiredness.states.exhausted.min)
             --Rouse PC
-            tes3.runLegacyScript({ command = "WakeUpPC" })
+            tes3.wakeUp()
             --Message PC
             tes3.messageBox({ message = "You are exhausted.", buttons = { "Okay" } }) 
         end
@@ -237,5 +237,17 @@ function this.calculate(scriptInterval, forceUpdate)
     tiredness:setValue(currentTiredness)
 end
 
+local function checkTentEnemyPreventRest(e)
+    if common.data.insideTent then
+        local doAllowRest = (
+            e.mobile.inCombat ~= true and
+            e.reference.position:distance(tes3.player.position) > 1000
+        )
+        if doAllowRest then
+            return false
+        end
+    end
+end
+event.register("preventRest", checkTentEnemyPreventRest)
 
 return this

@@ -19,9 +19,10 @@ local originalTimeScale
 local cancelTimer
 local function cancelWait()
     if currentSpeed ~= 1 then
-        tes3.runLegacyScript({command = "TVM"})
-        tes3.mobilePlayer.controlsDisabled = false
-        tes3.mobilePlayer.mouseLookDisabled = false
+        common.helper.enableControls()
+        tes3.setVanityMode({ enabled = false })
+        
+        
         currentSpeed = 1
         tes3.findGlobal("TimeScale").value = originalTimeScale
     end
@@ -50,9 +51,9 @@ local function startFastTime(durationMinutes, newSpeed)
         newSpeed = 1.1
     end
 
-    tes3.runLegacyScript({command = "TVM"})
-    tes3.mobilePlayer.controlsDisabled = true
-    tes3.mobilePlayer.mouseLookDisabled = true
+    tes3.setVanityMode({ enabled = true })
+    common.helper.disableControls()
+    
     if newSpeed then
         currentSpeed = newSpeed
     else

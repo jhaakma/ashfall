@@ -138,6 +138,7 @@ this.list = {
 
             --rebirth
             ["mr_hlaalu_fountain"] = true,
+            ["mr_redoran_well"] = true,
 
             --well diversified
             ["_ex_hlaalu_well"] = true,

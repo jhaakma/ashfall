@@ -5,21 +5,34 @@ local function getWoodFuel()
     local survivalEffect = math.min( math.remap(common.skills.survival.value, 0, 100, 1, 1.5), 1.5)
     return common.staticConfigs.firewoodFuelMulti * survivalEffect
 end
+
+local function getFirewoodCount()
+    return mwscript.getItemCount{ reference = tes3.player, item = common.staticConfigs.objectIds.firewood }
+end
+
+local function canAddFireWoodToCampfire(campfire)
+    return ( 
+        campfire.data.fuelLevel < common.staticConfigs.maxWoodInFire or 
+        campfire.data.burned == true 
+    )
+end
+
+local function getDisabledText(campfire)
+    return {
+        text = canAddFireWoodToCampfire(campfire) and "You have no Firewood." or "Max fuel level reached."
+    }
+end
+
 return {
     text = "Add Firewood",
     showRequirements = function(campfire)
-        return ( 
-            campfire.data.fuelLevel < common.staticConfigs.maxWoodInFire or 
-            campfire.data.burned == true 
-        ) and
-        campfire.data.dynamicConfig
+        return campfire.data.dynamicConfig ~= nil
     end,
     enableRequirements = function(campfire)
-        return mwscript.getItemCount{ reference = tes3.player, item = common.staticConfigs.objectIds.firewood } > 0 
+        return getFirewoodCount() > 0 and canAddFireWoodToCampfire(campfire)
+
     end,
-    tooltipDisabled = {
-        text = "You have no Firewood."
-    },
+    tooltipDisabled = getDisabledText,
     callback = function(campfire)
         tes3.playSound{ reference = tes3.player, sound = "ashfall_add_wood"  }
         campfire.data.fuelLevel = campfire.data.fuelLevel + getWoodFuel()

@@ -11,13 +11,14 @@ local function canRest()
 end
 
 local function doRestMenu()
-    common.log:debug("Setting inTent for covered bedroll to true")
+    common.log:trace("Setting inTent for covered bedroll to true")
     common.data.insideCoveredBedroll = true
+    --tes3.showRestMenu({resting = true})
     tes3.runLegacyScript{ command = "ShowRestMenu"}
     event.trigger("Ashfall:CheckForShelter")
     event.trigger("Ashfall:UpdateHud")
     timer.delayOneFrame(function()
-        common.log:debug("Setting inTent for covered bedroll to false")
+        common.log:trace("Setting inTent for covered bedroll to false")
         common.data.insideCoveredBedroll = false
     end)
 end
@@ -30,7 +31,7 @@ local function bedrollMenu(ref)
             callback = doRestMenu,
             requirements = canRest,
             tooltipDisabled = { 
-                text = "You can't rest here."
+                text = tes3.canRest() and "It is illegal to rest here." or "You can't rest here; enemies are nearby."
             },
         },
         {

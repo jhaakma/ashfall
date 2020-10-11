@@ -699,6 +699,17 @@ this.ingredTypes = {
     ["mc_ricebread"] = this.TYPE.food,--"Rice Bread"
     ["mc_wheatbread"] = this.TYPE.food,--"Wheat Bread"
     ["mc_sow_milk"] = this.TYPE.food,--"Bottle of Sow's Milk"
+
+    --Morrowind Crafting - Raw Ingredients
+    ["mc_onion"] = this.TYPE.vegetable,--"Raw Onion"
+    ["mc_garlic"] = this.TYPE.seasoning,--"Raw Garlic"
+    ["mc_potato_raw"] = this.TYPE.vegetable,--"Raw Potato"
+    ["mc_fish_raw"] = this.TYPE.meat,--"Raw Slaughterfish Filet"
+    ["mc_kagouti_raw"] = this.TYPE.meat,--"Raw Kagouti"
+    ["mc_fish_bladder"] = this.TYPE.meat,--"Slaughterfish Bladder"
+    ["mc_sausagepod"] = this.TYPE.mushroom,--"Sausagepod"
+    ["mc_sugar"] = this.TYPE.seasoning,--"Sugar"
+    ["mc_kanet_butter"] = this.TYPE.seasoning,--"Kanet Butter"
 }
 
 

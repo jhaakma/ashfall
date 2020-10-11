@@ -51,7 +51,7 @@ local function onAttack(e)
                 local woodAxeConditionMulti = 1.0
                 if weapon.object.id == common.staticConfigs.objectIds.woodaxe then
                     woodAxeMulti = 0.5
-                    woodAxeConditionMulti = 0.2
+                    woodAxeConditionMulti = 0.1
                 end
 
                 --If attacking the same target, accumulate swings

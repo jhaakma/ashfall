@@ -188,7 +188,6 @@ function this.messageBox(params)
         --If last button is a Cancel (no callback), register it for Right Click Menu Exit
         local buttonId = tes3ui.registerID("CustomMessageBox_Button")
         if data.doesCancel then
-            mwse.log("Adding id to cancel button")
             buttonId = tes3ui.registerID("CustomMessageBox_CancelButton")
         end
 
@@ -340,21 +339,21 @@ function this.createSliderPopup(params)
     menu:getTopLevelMenu():updateLayout()
 end
 
-function this.disableControls()
-    tes3.runLegacyScript{command = "DisablePlayerControls"}
-    tes3.runLegacyScript{command = "DisablePlayerJumping"}
-    tes3.runLegacyScript{command = "DisablePlayerViewSwitch"}
-    tes3.runLegacyScript{command = "DisableVanityMode"}
-    tes3.runLegacyScript{command = "DisablePlayerFighting"}
-    tes3.runLegacyScript{command = "DisablePlayerMagic"}
+local function setControlsDisabled(state)
+    tes3.mobilePlayer.controlsDisabled = state
+    tes3.mobilePlayer.jumpingDisabled = state
+   -- tes3.mobilePlayer.viewSwitchDisabled = state
+   -- tes3.mobilePlayer.vanityDisabled = state
+    tes3.mobilePlayer.attackDisabled = state
+    tes3.mobilePlayer.magicDisabled = state
+    tes3.mobilePlayer.mouseLookDisabled = state
 end
+function this.disableControls()
+    setControlsDisabled(true)
+end
+
 function this.enableControls()
-    tes3.runLegacyScript{command = "EnablePlayerViewSwitch"}
-    tes3.runLegacyScript{command = "EnablePlayerControls"}
-    tes3.runLegacyScript{command = "EnablePlayerLooking"}
-    tes3.runLegacyScript{command = "EnablePlayerFighting"}
-    tes3.runLegacyScript{command = "EnablePlayerJumping"}
-    tes3.runLegacyScript{command = "EnablePlayerMagic"}
+    setControlsDisabled(false)
     tes3.runLegacyScript{command = "EnableInventoryMenu"}
 end
 --[[
