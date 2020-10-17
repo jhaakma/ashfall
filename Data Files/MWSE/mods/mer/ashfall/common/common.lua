@@ -85,20 +85,7 @@ end
 event.register("OtherSkills:Ready", onSkillsReady)
 
 
---Setup local configs. 
-local function initialiseLocalSettings()
-    --this.log:info("initialising category %s", category.id)
-    for setting, value in pairs(this.defaultValues) do
-        if this.config.getConfig()[setting] == nil then
-            this.config.getConfig()[setting] = value
-            this.log:info( "Initialising local data %s to %s", setting, value )
-        end
-    end
-end
-
---INITIALISE COMMON--
-local dataLoadedOnce = false
-local function onLoaded()
+local function checkSkillModule()
     if not skillModule then
         this.helper.messageBox({
             message = "Skills Module is not installed! This is a requirement for Ashfall and the mod will NOT work without it.", 
@@ -135,19 +122,41 @@ local function onLoaded()
             } 
         })
     end
+end
 
-    --Persistent data stored on player reference 
+local function initData()
+        --Persistent data stored on player reference 
     -- ensure data table exists
     local data = tes3.player.data
     data.Ashfall = data.Ashfall or {}
-
     -- create a public shortcut
     this.data = data.Ashfall
-
     this.data.currentStates = this.data.currentStates or {}
     this.data.wateredCells = this.data.wateredCells or {}
-    --initialise mod config
-    initialiseLocalSettings()
+end
+
+local function doUpgrades()
+    this.log:debug("Doing upgrades from previous version")
+    --timer.delayOneFrame(function()
+        local cookingPotCount = mwscript.getItemCount{ reference = tes3.player, item = "ashfall_cooking_pot"}
+        if cookingPotCount and cookingPotCount >= 1 then
+            this.log:debug("Found cooking pots in inventory")
+            mwscript.removeItem{ reference = tes3.player, item = "ashfall_cooking_pot", count = cookingPotCount }
+            mwscript.addItem{ reference = tes3.player, item = "Misc_Com_Bucket_Metal", count = cookingPotCount }
+            mwscript.addItem{ reference = tes3.player, item = "misc_com_iron_ladle", count = cookingPotCount }
+            tes3.messageBox("[Ashfall] Your cooking pots have been replaced with a metal bucket and ladle.")
+        end
+    --end)
+
+end
+
+--INITIALISE COMMON--
+local dataLoadedOnce = false
+local function onLoaded()
+
+    checkSkillModule()
+    initData()
+    doUpgrades()
 
     this.log:info("Common Data loaded successfully")
     event.trigger("Ashfall:dataLoaded")

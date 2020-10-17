@@ -11,13 +11,13 @@ return  {
         )
     end,
     enableRequirements = function()
-        return mwscript.getItemCount{ reference = tes3.player, item = common.staticConfigs.objectIds.cookingPot} > 0
+        return mwscript.getItemCount{ reference = tes3.player, item = "Misc_Com_Bucket_Metal" } > 0
     end,
     tooltipDisabled = { 
-        text = "You have no Cooking Pot."
+        text = "Requires 1 Metal Bucket."
     },
     callback = function(campfire)
-        mwscript.removeItem{ reference = tes3.player, item = common.staticConfigs.objectIds.cookingPot }
+        mwscript.removeItem{ reference = tes3.player, item = "Misc_Com_Bucket_Metal" }
         campfire.data.utensil = "cookingPot"
         tes3.playSound{ reference = tes3.player, sound = "Item Misc Down"  }
         --event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})

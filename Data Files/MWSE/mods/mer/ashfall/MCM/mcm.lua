@@ -611,6 +611,12 @@ local function registerModConfig()
             end
         }
 
+        pageDevOptions:createOnOffButton{
+            label = "Enable Development Features",
+            description = "Enable unfinished features currently in development. Not recommended unless you know what you're doing.",
+            variable = createTableVar("devFeatures")
+        }
+
         pageDevOptions:createButton{
             buttonText = "Print data to log",
             description = "Print all Ashfall data to Morrowind/MWSE.log. If you are having issues with Ashfall, recreate the issue in-game, press this button, then send the MWSE.log file to Merlord at the Morrowind Modding Discord channel.",

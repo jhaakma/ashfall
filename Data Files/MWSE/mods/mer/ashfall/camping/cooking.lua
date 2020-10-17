@@ -193,7 +193,9 @@ local function clearUtensilData(e)
 
 
     if e.removeUtensil then
+        mwse.log("setting ladle to nil")
         campfire.data.utensil = nil
+        campfire.data.ladle = nil
     end
     if not e.isContainer then
         tes3.removeSound{ 

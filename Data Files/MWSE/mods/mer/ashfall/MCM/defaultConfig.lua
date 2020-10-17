@@ -7,6 +7,7 @@ return {
     overrideFood = false,
 
     logLevel = "INFO",
+    devFeatures = false,
     blocked = {},
     campingMerchants = {
         ["arrille"] = true,--seyda neen trader

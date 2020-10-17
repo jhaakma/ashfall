@@ -1,5 +1,5 @@
 local common = require("mer.ashfall.common.common")
-
+local animCtrl = require("mer.ashfall.effects.animationController")
 local skipActivate
 
 
@@ -13,8 +13,7 @@ end
 local function doRestMenu()
     common.log:trace("Setting inTent for covered bedroll to true")
     common.data.insideCoveredBedroll = true
-    --tes3.showRestMenu({resting = true})
-    tes3.runLegacyScript{ command = "ShowRestMenu"}
+    tes3.showRestMenu()
     event.trigger("Ashfall:CheckForShelter")
     event.trigger("Ashfall:UpdateHud")
     timer.delayOneFrame(function()
@@ -32,6 +31,29 @@ local function bedrollMenu(ref)
             requirements = canRest,
             tooltipDisabled = { 
                 text = tes3.canRest() and "It is illegal to rest here." or "You can't rest here; enemies are nearby."
+            },
+        },
+        {
+            text = "Lay Down",
+            requirements = canRest,
+            showRequirements = function()
+                return common.config.getConfig().devFeatures
+            end,
+            callback = function()
+                tes3.positionCell{
+                    cell = ref.cell,
+                    reference = tes3.player,
+                    position = tes3vector3.new(
+                        ref.position.x, 
+                        ref.position.y,
+                        ref.position.z + 20
+                    ),
+                    orientation = ref.orientation:copy(),
+                }
+                animCtrl.layDown()
+            end,
+            tooltipDisabled = { 
+                text = tes3.canRest() and "It is illegal to rest here." or "You can't wait here; enemies are nearby."
             },
         },
         {

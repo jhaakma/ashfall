@@ -171,7 +171,7 @@ local function checkCharGen()
             callback = this.startAshfall
         }
         if config.startingEquipment then
-            mwscript.addItem{reference=tes3.player, item="ashfall_cooking_pot"}
+            mwscript.addItem{reference=tes3.player, item="misc_com_bucket_metal"}
             mwscript.addItem{reference=tes3.player, item="ashfall_bedroll"}
             mwscript.addItem{reference=tes3.player, item="ashfall_woodaxe"}
         end

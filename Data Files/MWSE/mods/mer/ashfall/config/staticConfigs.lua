@@ -256,6 +256,9 @@ this.bottleConfig = {
 
 
 this.bottleList = {
+    --vial
+    misc_skooma_vial = this.bottleConfig.glass,
+
     --glasses
     misc_de_glass_green_01 = this.bottleConfig.glass,
     misc_de_glass_yellow_01 = this.bottleConfig.glass,

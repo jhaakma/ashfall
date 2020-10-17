@@ -184,42 +184,49 @@ function this.messageBox(params)
     local title = menu:createLabel{id = tes3ui.registerID("Ashfall:MessageBox_Title"), text = message}
     title.borderBottom = 4
     for i, data in ipairs(buttons) do
-
-        --If last button is a Cancel (no callback), register it for Right Click Menu Exit
-        local buttonId = tes3ui.registerID("CustomMessageBox_Button")
-        if data.doesCancel then
-            buttonId = tes3ui.registerID("CustomMessageBox_CancelButton")
-        end
-
-        local button = menu:createButton{ id = buttonId, text = data.text}
-
-        local disabled = false
-        if data.requirements then
-            if data.requirements() ~= true then
-                disabled = true
+        local doAddButton = true
+        if data.showRequirements then
+            if data.showRequirements() ~= true then
+                doAddButton = false
             end
         end
+        if doAddButton then
+            --If last button is a Cancel (no callback), register it for Right Click Menu Exit
+            local buttonId = tes3ui.registerID("CustomMessageBox_Button")
+            if data.doesCancel then
+                buttonId = tes3ui.registerID("CustomMessageBox_CancelButton")
+            end
 
-        if disabled then
-            button.widget.state = 2
-        else
-            button:register( "mouseClick", function()
-                if data.callback then
-                    data.callback()
+            local button = menu:createButton{ id = buttonId, text = data.text}
+
+            local disabled = false
+            if data.requirements then
+                if data.requirements() ~= true then
+                    disabled = true
                 end
-                tes3ui.leaveMenuMode()
-                menu:destroy()
-            end)
-        end
+            end
 
-        if not disabled and data.tooltip then
-            button:register( "help", function()
-                this.createTooltip(data.tooltip)
-            end)
-        elseif disabled and data.tooltipDisabled then
-            button:register( "help", function()
-                this.createTooltip(data.tooltipDisabled)
-            end)
+            if disabled then
+                button.widget.state = 2
+            else
+                button:register( "mouseClick", function()
+                    if data.callback then
+                        data.callback()
+                    end
+                    tes3ui.leaveMenuMode()
+                    menu:destroy()
+                end)
+            end
+
+            if not disabled and data.tooltip then
+                button:register( "help", function()
+                    this.createTooltip(data.tooltip)
+                end)
+            elseif disabled and data.tooltipDisabled then
+                button:register( "help", function()
+                    this.createTooltip(data.tooltipDisabled)
+                end)
+            end
         end
     end
 end
@@ -342,8 +349,6 @@ end
 local function setControlsDisabled(state)
     tes3.mobilePlayer.controlsDisabled = state
     tes3.mobilePlayer.jumpingDisabled = state
-   -- tes3.mobilePlayer.viewSwitchDisabled = state
-   -- tes3.mobilePlayer.vanityDisabled = state
     tes3.mobilePlayer.attackDisabled = state
     tes3.mobilePlayer.magicDisabled = state
     tes3.mobilePlayer.mouseLookDisabled = state

@@ -5,12 +5,16 @@ local stewIngredientCooldownAmount = 20
 return {
     text = "Add Ingredient",
     showRequirements = function(campfire)
-        return (
-            campfire.data.utensil == "cookingPot" and
-            campfire.data.waterAmount and
-            campfire.data.waterAmount > 0
-        )
+        return campfire.data.utensil == "cookingPot"
+            and campfire.data.waterAmount 
+            and campfire.data.waterAmount > 0
     end,
+    enableRequirements = function(campfire)
+        return  campfire.data.ladle == true
+    end,
+    tooltipDisabled = {
+        text = "An Iron Ladle is required to make Stew."
+    },
     callback = function(campfire)
         local function ingredientSelect(foodType)
             common.data.inventorySelectStew = true

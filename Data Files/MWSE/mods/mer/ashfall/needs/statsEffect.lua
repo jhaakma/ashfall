@@ -7,18 +7,22 @@ local conditionConfig = common.staticConfigs.conditionConfig
 local function getMaxHealth()
     local minHeath = common.data and config.needsCanKill and 0 or 1
     local multiplier = conditionConfig.hunger:getStatMultiplier()
-    local maxHealth = math.max( minHeath, math.floor(tes3.mobilePlayer.health.base * multiplier ) )
-    return maxHealth
+    local maxHealth = tes3.mobilePlayer.health.base
+    local limit = math.max( minHeath, math.floor( maxHealth * multiplier ) )
+    return limit
 end
 local function getMaxMagicka()
     local minMagicka = 0
     local multiplier = conditionConfig.thirst:getStatMultiplier()
-    return math.max(minMagicka, math.floor(tes3.mobilePlayer.magicka.base * multiplier) )
+    local maxMagicka = tes3.mobilePlayer.magicka.base
+    local limit = math.max(minMagicka, math.floor(maxMagicka * multiplier) )
+    return limit
 end
 local function getMaxFatigue()
     local minFatigue = 0
     local multiplier = conditionConfig.tiredness:getStatMultiplier()
-    return math.max(minFatigue, math.floor(tes3.mobilePlayer.fatigue.base * multiplier ) )
+    local maxFatigue = tes3.mobilePlayer.fatigue.base
+    return math.max(minFatigue, math.floor(maxFatigue * multiplier) )
 end
 
 local baseHealthCache
@@ -33,8 +37,11 @@ local function calcHealth()
         baseHealthCache = nil
     else
         if not tes3.menuMode() then
-            
-            local max =  getMaxHealth()
+            local fortifyEffect = tes3.getEffectMagnitude({
+                reference = tes3.player,
+                effect = tes3.effect.fortifyHealth,
+            })
+            local max =  getMaxHealth() + fortifyEffect
             if tes3.mobilePlayer.health.current > max then
                 tes3.setStatistic({
                     reference = tes3.mobilePlayer,
@@ -53,7 +60,11 @@ local function calcHealth()
 end
 
 local function calcMagicka()
-    local max = getMaxMagicka()
+    local fortifyEffect = tes3.getEffectMagnitude({
+        reference = tes3.player,
+        effect = tes3.effect.fortifyMagicka,
+    })
+    local max = getMaxMagicka() + fortifyEffect
     if tes3.mobilePlayer.magicka.current > max then
         tes3.setStatistic({
             reference = tes3.mobilePlayer,
@@ -65,7 +76,11 @@ end
 
 local function calcFatigue()
     if not tes3ui.menuMode() then
-        local max = getMaxFatigue() 
+        local fortifyEffect =  tes3.getEffectMagnitude({
+            reference = tes3.player,
+            effect = tes3.effect.fortifyFatigue,
+        })
+        local max = getMaxFatigue() + fortifyEffect
         if tes3.mobilePlayer.fatigue.current > max then
             tes3.setStatistic({
                 reference = tes3.mobilePlayer,

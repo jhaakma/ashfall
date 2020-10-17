@@ -28,6 +28,10 @@ local switchNodeValues = {
         local state = { OFF = 0, ON = 1 }
         return campfire.data.utensil == "cookingPot" and state.ON or state.OFF
     end,
+    SWITCH_LADLE = function(campfire)
+        local state = { OFF = 0, ON = 1 }
+        return campfire.data.ladle == true and state.ON or state.OFF
+    end,
     SWITCH_KETTLE = function(campfire)
         local state = { OFF = 0, ON = 1 }  
         return campfire.data.utensil == "kettle" and state.ON or state.OFF

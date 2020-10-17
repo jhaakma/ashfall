@@ -14,7 +14,7 @@ return {
         return mwscript.getItemCount{ reference = tes3.player, item = common.staticConfigs.objectIds.grill } > 0
     end,
     tooltipDisabled = {
-        text = "You have no Grill."
+        text = "Requires 1 Grill."
     },
     callback = function(campfire)
         mwscript.removeItem{

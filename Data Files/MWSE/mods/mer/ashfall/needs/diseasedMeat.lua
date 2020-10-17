@@ -38,7 +38,6 @@ local function addDiseaseToMeat(reference, disease)
     end
 end
 
-
 local function addDiseaseOnDeath(e)
     if common.config.getConfig().enableDiseasedMeat then
         local baseObj = e.reference.baseObject or e.reference.object
@@ -46,10 +45,10 @@ local function addDiseaseOnDeath(e)
             
             local disease = getDiseaseFromCreature(e.reference.object)
             if disease then
-                common.log:debug("Creature %s has %s", baseObj.name, disease.name)
+                common.log:debug("addDiseaseOnDeath() - Creature %s has %s", baseObj.name, disease.name)
                 addDiseaseToMeat(e.reference, disease)
             end
         end
     end
 end
-event.register("death", addDiseaseOnDeath)
+event.register("death", addDiseaseOnDeath, {priority = -100})

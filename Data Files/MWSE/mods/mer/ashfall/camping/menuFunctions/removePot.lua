@@ -19,7 +19,10 @@ return  {
         text = "Cooking Pot must be emptied before it can be removed."
     },
     callback = function(campfire)
-        mwscript.addItem{ reference = tes3.player, item = common.staticConfigs.objectIds.cookingPot }
+        mwscript.addItem{ reference = tes3.player, item = "Misc_Com_Bucket_Metal" }
+        if campfire.data.ladle == true then
+            mwscript.addItem{ reference = tes3.player, item = "misc_com_iron_ladle" }
+        end
         event.trigger("Ashfall:Campfire_clear_utensils", { campfire = campfire, removeUtensil = true})
         tes3.playSound{ reference = tes3.player, sound = "Item Misc Up"  }
         --event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})

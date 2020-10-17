@@ -1,7 +1,7 @@
 local common = require ("mer.ashfall.common.common")
 local teaConfig = common.staticConfigs.teaConfig
 return {
-    text = "Add water",
+    text = "Add Water",
     showRequirements = function(campfire)
         local needsWater = (
             not campfire.data.waterAmount or

@@ -42,7 +42,9 @@ function this.updateHUD()
         local id = needData.needId
         local blockerBar = findElementInMultiMenu(string.format(blockerIdPattern, id), menu)
         if blockerBar then
-            local ratio = statsEffect.getMaxStat(needData.stat) / tes3.mobilePlayer[needData.stat].base
+            local limit = statsEffect.getMaxStat(needData.stat) / tes3.mobilePlayer[needData.stat].base
+
+            local ratio = math.min(1, limit)
             local parentWidth = blockerBar.parent.width
             local newWidth =  parentWidth - parentWidth * ratio
             if newWidth > 0 then

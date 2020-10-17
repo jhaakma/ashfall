@@ -38,11 +38,8 @@ local function initialized()
         require("mer.ashfall.merchants.stewMerchant")
         
         require("mer.ashfall.referenceController")
-        local versionFile = io.open("Data Files/MWSE/mods/mer/ashfall/version.txt", "r")
-        local version = ""
-        for line in versionFile:lines() do -- Loops over all the lines in an open text file
-            version = line
-        end
+
+        local version = require("mer.ashfall.version")
         mwse.log("[Ashfall %s] Initialized", version)
     end
 end
