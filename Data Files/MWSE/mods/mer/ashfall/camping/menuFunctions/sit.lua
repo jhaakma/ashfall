@@ -8,6 +8,7 @@ return {
     end,
     showRequirements = function()
         return common.config.getConfig().devFeatures
+            and animCtrl.hasAnimFiles()
     end,
     tooltipDisabled = {
         header = "Sit Down",

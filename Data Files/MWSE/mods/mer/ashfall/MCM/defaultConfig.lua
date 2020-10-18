@@ -6,9 +6,11 @@ return {
     overrideTimeScale = false,
     overrideFood = false,
 
+    --dev stuff
     logLevel = "INFO",
     devFeatures = false,
     blocked = {},
+
     campingMerchants = {
         ["arrille"] = true,--seyda neen trader
         ["ra'virr"] = true,--balmora trader
@@ -41,6 +43,8 @@ return {
         ["moroni uvelas"] = true,--Vivec St. Brewer's and Fishmongers
         ["sedam omalen"] = true,--ald velothi's only trader
     },
+
+
     waterBaseCost = 1,
     stewBaseCost = 8,
     enableTemperatureEffects = true,
@@ -65,10 +69,12 @@ return {
     modifierHotKey = {
         keyCode = tes3.scanCode.lShift
     },
-    enableBranchPlacement = true,
+
+    --Misc
     needsCanKill = false,
     showFrostBreath = true,
     illegalHarvest = true,
+    showBackpacks = true,
 
     hungerRate = 20,
     thirstRate = 30,

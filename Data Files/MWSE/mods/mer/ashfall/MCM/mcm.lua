@@ -216,6 +216,13 @@ local function registerModConfig()
                 ),
                 variable = createTableVar("showFrostBreath"),
             }
+
+            categoryMisc:createYesNoButton{
+                label = "Display Backpacks",
+                description = "Disable this to prevent backpacks from being displayed on your back.",
+                variable = createTableVar("showBackpacks"),
+            }
+
             categoryMisc:createYesNoButton{
                 label = "Harvest Wood in Wilderness Only",
                 description = (

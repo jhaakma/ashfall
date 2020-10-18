@@ -1,6 +1,7 @@
 local Parent = require("mer.ashfall.objects.Object")
 local Condition = Parent:new()
 local config = require("mer.ashfall.config.config")
+local log = require("mer.ashfall.common.logger")
 Condition.type = "Condition"
 Condition.fields = {
     id = true,
@@ -145,7 +146,7 @@ end
 
 function Condition:getValue()
     if not tes3.player or not tes3.player.data.Ashfall then
-        mwse.log("ERROR: trying to get condition value %s before player was loaded", self.id)
+        log:error("trying to get condition value %s before player was loaded", self.id)
         return 0
     end
     return tes3.player.data.Ashfall[self.id] or 0
@@ -154,7 +155,7 @@ end
 
 function Condition:setValue(newVal)
     if not tes3.player or not tes3.player.data.Ashfall then
-        --mwse.log("ERROR: trying to set condition value %s before player was loaded", self.id)
+        --log:error("trying to set condition value %s before player was loaded", self.id)
         return
     end
     tes3.player.data.Ashfall[self.id] = math.clamp(newVal, self.min, self.max)
@@ -166,7 +167,7 @@ function Condition:getStatMultiplier()
         local value = math.max(self:getValue(), minVal)
         return math.remap(value, minVal, 100, 1.0, 0.0)
     else
-        mwse.log("[Asfall ERROR] getStatMultiplier(): %s does not have a debuffState", self.id)
+        log:error("getStatMultiplier(): %s does not have a debuffState", self.id)
     end
 end
 

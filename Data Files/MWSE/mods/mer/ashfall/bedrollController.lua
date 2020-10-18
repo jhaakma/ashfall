@@ -38,6 +38,7 @@ local function bedrollMenu(ref)
             requirements = canRest,
             showRequirements = function()
                 return common.config.getConfig().devFeatures
+                    and animCtrl.hasAnimFiles()
             end,
             callback = function()
                 tes3.positionCell{

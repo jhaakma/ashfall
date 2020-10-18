@@ -20,7 +20,7 @@ local originalTimeScale
 local cancelTimer
 local function cancelWait(doSit)
     if currentSpeed ~= 1 then
-        if doSit then
+        if doSit and animCtrl.hasAnimFiles() then
             animCtrl.cancelAnimation()
         else
             common.helper.enableControls()
@@ -52,7 +52,7 @@ event.register("keyDown", checkKeyPress)
 local function startFastTime(durationMinutes, doSit)
     local timeScale = tes3.findGlobal("TimeScale")
 
-    if doSit then
+    if doSit and animCtrl.hasAnimFiles() then
         animCtrl.sitDown()
     else
         tes3.setVanityMode({ enabled = true })

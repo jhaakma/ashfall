@@ -1,13 +1,10 @@
---[[
-    ...
---]]
-
+local config = require("mer.ashfall.config.config")
+local backpackSlot = 11
 local backpacks = {
     ["ashfall_backpack_b"] = true,
     ["ashfall_backpack_w"] = true,
     ["ashfall_backpack_n"] = true,
 }
-
 local switchNodes = {
     SWITCH_AXE = {
         items = { ashfall_woodaxe = true },
@@ -25,7 +22,25 @@ local switchNodes = {
     }
 }
 
-local backpackSlot = 11
+
+local function registerBackpacks()
+    pcall(function()
+        tes3.addArmorSlot{slot=backpackSlot, name="Backpack"}
+    end)
+    for id in pairs(backpacks) do
+        local obj = tes3.getObject(id)
+        -- remap slot to custom backpackSlot
+        obj.slot = backpackSlot
+        -- store the bodypart mesh for later
+        backpacks[id] = obj.mesh:sub(1, -9) .. ".NIF"
+        -- clear bodypart so it doesn't overwrite left pauldron
+         obj.parts[1].type = 255
+         obj.parts[1].male = nil
+    end
+end
+registerBackpacks()
+
+
 
 local m1 = tes3matrix33.new()
 m1:fromEulerXYZ(90, 0, 0)
@@ -96,24 +111,9 @@ local function setSwitchNodes(e)
 end
 
 
-local function registerBackpacks()
-    pcall(function()
-        tes3.addArmorSlot{slot=backpackSlot, name="Backpack"}
-    end)
-    for id in pairs(backpacks) do
-        local obj = tes3.getObject(id)
-        -- remap slot to custom backpackSlot
-        obj.slot = backpackSlot
-        -- store the bodypart mesh for later
-        backpacks[id] = obj.mesh:sub(1, -9) .. ".NIF"
-        -- clear bodypart so it doesn't overwrite left pauldron
-         obj.parts[1].type = 255
-         obj.parts[1].male = nil
-    end
-end
-
 
 local function attachBackpack(parent, fileName)
+    if not config.getConfig().showBackpacks then return end
     local node = tes3.loadMesh(fileName)
     if node then
         node = node:clone()
@@ -203,8 +203,6 @@ local function onLoaded(e)
     end
 end
 
-
-registerBackpacks()
 event.register("loaded", onLoaded)
 event.register("equipped", onEquipped)
 event.register("unequipped", onUnequipped)
@@ -216,10 +214,9 @@ event.register("activate", function(e)
         end)
     end
 end)
-
+ 
 local function updatePlayer()
     if tes3.player and tes3.mobilePlayer then
-    --if not tes3ui.menuMode() then
         setSwitchNodes{ reference = tes3.player }
     end
 end

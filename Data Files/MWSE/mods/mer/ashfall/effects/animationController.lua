@@ -1,8 +1,15 @@
 local helper = require("mer.ashfall.common.helperFunctions")
 local this = {}
+local nifName = "VA_sitting.nif"
+
+function this.hasAnimFiles()
+    local path = lfs.currentdir() .. "\\Data Files\\meshes\\" .. nifName
+    local fileExists = lfs.attributes(path, "mode") == "file"
+    return fileExists
+end
 
 local anims = {
-    sitForward = tes3.animationGroup.idle3,
+    sitForward = tes3.animationGroup.idle5,
     sitCrossed = tes3.animationGroup.idle4,
     sitSide = tes3.animationGroup.idle3,
     layDownLeft = tes3.animationGroup.idle7,
@@ -11,10 +18,13 @@ local anims = {
 }
 
 local function doAnimation(animGroup)
+    if not this.hasAnimFiles() then
+        error("[Ashfall] ERROR - missing animation files")
+    end
     tes3.player.data.Ashfall.previousAnimationMesh = tes3.player.mesh
     tes3.playAnimation({
         reference = tes3.player,
-        mesh = "Ashfall\\sit\\VA_sitting.nif",
+        mesh = nifName,
         group = animGroup,
         startFlag = 1
     })
@@ -35,7 +45,7 @@ function this.sitDown()
 end
 
 function this.layDown()
-    doAnimation(anims.layDownRight)
+    doAnimation(anims.layDownBack)
 end
 
 function this.cancelAnimation()

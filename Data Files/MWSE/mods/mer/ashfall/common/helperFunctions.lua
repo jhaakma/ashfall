@@ -587,7 +587,6 @@ function this.orientRefToGround(params)
     local newOrientation = this.rotationDifference(UP, result.normal)
     
     if maxSteepness then
-        --mwse.log("Applying max steepness of %s", maxSteepness)
         newOrientation.x = math.clamp(newOrientation.x, (0-maxSteepness), maxSteepness)
         newOrientation.y = math.clamp(newOrientation.y, (0-maxSteepness), maxSteepness)
         
