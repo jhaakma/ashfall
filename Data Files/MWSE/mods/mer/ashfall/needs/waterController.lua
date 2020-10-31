@@ -42,7 +42,9 @@ end
 
 
 --Create messageBox for water menu
-local function callWatermenu()
+local function callWaterMenu(e)
+    common.data.drinkingDirtyWater = e.dirty == true and true or false
+    common.data.drinkingRain = e.rain == true and true or false
     buttons = { bDrink, bFillBottle, bNothing }
     tes3.messageBox{
         message = "What would you like to do?",
@@ -50,15 +52,13 @@ local function callWatermenu()
         callback = menuButtonPressed
     }
 end
-
+event.register("Ashfall:WaterMenu", callWaterMenu)
 
 --Register events
 event.register(
     "Ashfall:ActivatorActivated", 
     function()
-        common.log:debug("CLEAN water")
-        common.data.drinkingDirtyWater = false
-        callWatermenu()
+        callWaterMenu()
     end,
     { filter = activatorConfig.types.waterSource } 
 )
@@ -66,9 +66,7 @@ event.register(
 event.register(
     "Ashfall:ActivatorActivated", 
     function()
-        common.log:debug("DIRTY water")
-        common.data.drinkingDirtyWater = true
-        callWatermenu()
+        callWaterMenu({ dirty = true })
     end, 
     { filter = activatorConfig.types.dirtyWaterSource } 
 )
@@ -104,9 +102,7 @@ local function checkDrinkRain()
         uncovered
     )
     if doDrink then
-        common.log:debug("common.data.drinkingRain = true")
-        common.data.drinkingRain = true
-        callWatermenu()
+        callWaterMenu({ rain = true })
     end
 end
 event.register("keyDown", checkDrinkRain )
@@ -146,93 +142,89 @@ local function doDrinkWater(data)
     handleEmpties(data)
 end
 
+local function getIsPotion(e)
+    return (
+        e.item.objectType == tes3.objectType.alchemy and
+        not foodConfig.getFoodType(e.item)
+    )
+end
 
 local function drinkFromContainer(e)
     
     if common.getIsBlocked(e.item) then return end
+    if not common.config.getConfig().enableThirst then return end
     --First check potions, gives a little hydration
-    local isPotion = (
-        e.item.objectType == tes3.objectType.alchemy and
-        not foodConfig.getFoodType(e.item)
-    )
-    if isPotion then
+    if getIsPotion(e) then
         local thisSipSize = common.staticConfigs.capacities.potion
         thisSipSize = math.min( thirst:getValue(), thisSipSize)
         thirstController.drinkAmount{amount = thisSipSize}
-    
     else
-        local liquidLevel = (
-            e.itemData and
-            e.itemData.data.waterAmount
-        )
-        local doDrink = (
-            common.config.getConfig().enableThirst and
-            liquidLevel
-        )
-        if doDrink then
-            --If fully hydrated, bring up option to empty bottle
-            local isStew = e.itemData.data.stewLevels
-            local hungerFull = hunger:getValue() < 1
-            local thirstFull = thirst:getValue() < 1
+        local liquidLevel = e.itemData and e.itemData.data.waterAmount
+        if not liquidLevel then return end
 
-            local doPrompt
-            if isStew then
-                doPrompt = hungerFull and thirstFull
-            else
-                doPrompt = thirstFull
-            end
+        --If fully hydrated, bring up option to empty bottle
+        local isStew = e.itemData.data.stewLevels
+        local hungerFull = hunger:getValue() < 1
+        local thirstFull = thirst:getValue() < 1
 
-            if doPrompt then
-                local waterName = ""
-                if e.itemData.data.waterType == "dirty" then
-                    waterName = "Dirty Water"
-                elseif teaConfig.teaTypes[e.itemData.data.waterType] then
-                    waterName = teaConfig.teaTypes[e.itemData.data.waterType].teaName
-                elseif e.itemData.data.stewLevels then
-                    waterName = foodConfig.isStewNotSoup(e.itemData.data.stewLevels) and "Stew" or "Soup"
-                else
-                    waterName = "Water"
-                end
-
-                common.helper.messageBox{
-                    message = "You are fully hydrated.",
-                    buttons = {
-                        { 
-                            text = string.format("Empty %s", waterName), 
-                            callback = function()
-                                e.itemData.data.waterAmount = 0
-                                handleEmpties(e.itemData.data)
-                                tes3.playSound({reference = tes3.player, sound = "Swim Left"})
-                            end
-                        },
-                        { text = tes3.findGMST(tes3.gmst.sCancel).value }
-                    }
-                }
-            --If water is dirty, give option to drink or empty
-            elseif e.itemData.data.waterType == "dirty" then
-                common.helper.messageBox{
-                    message = "Dirty Water",
-                    buttons = {
-                        { 
-                            text = "Drink", 
-                            callback = function() doDrinkWater(e.itemData.data) end 
-                        },
-                        { 
-                            text = "Empty", 
-                            callback = function()
-                                e.itemData.data.waterAmount = 0
-                                handleEmpties(e.itemData.data)
-                                tes3.playSound({reference = tes3.player, sound = "Swim Left"})
-                            end
-                        },
-                        { text = tes3.findGMST(tes3.gmst.sCancel).value }
-                    }
-                }
-            --Otherwise drink straight away
-            else
-                doDrinkWater(e.itemData.data)
-            end
+        local doPrompt
+        if isStew then
+            doPrompt = hungerFull and thirstFull
+        else
+            doPrompt = thirstFull
         end
+
+        if doPrompt then
+            local waterName = ""
+            if e.itemData.data.waterType == "dirty" then
+                waterName = "Dirty Water"
+            elseif teaConfig.teaTypes[e.itemData.data.waterType] then
+                waterName = teaConfig.teaTypes[e.itemData.data.waterType].teaName
+            elseif e.itemData.data.stewLevels then
+                waterName = foodConfig.isStewNotSoup(e.itemData.data.stewLevels) and "Stew" or "Soup"
+            else
+                waterName = "Water"
+            end
+
+            common.helper.messageBox{
+                message = "You are fully hydrated.",
+                buttons = {
+                    { 
+                        text = string.format("Empty %s", waterName), 
+                        callback = function()
+                            e.itemData.data.waterAmount = 0
+                            handleEmpties(e.itemData.data)
+                            tes3.playSound({reference = tes3.player, sound = "Swim Left"})
+                        end
+                    },
+                    { text = tes3.findGMST(tes3.gmst.sCancel).value }
+                }
+            }
+        --If water is dirty, give option to drink or empty
+        elseif e.itemData.data.waterType == "dirty" then
+            common.helper.messageBox{
+                message = "Dirty Water",
+                buttons = {
+                    { 
+                        text = "Drink", 
+                        callback = function() doDrinkWater(e.itemData.data) end 
+                    },
+                    { 
+                        text = "Empty", 
+                        callback = function()
+                            e.itemData.data.waterAmount = 0
+                            handleEmpties(e.itemData.data)
+                            tes3.playSound({reference = tes3.player, sound = "Swim Left"})
+                        end
+                    },
+                    { text = tes3.findGMST(tes3.gmst.sCancel).value }
+                }
+            }
+        --Otherwise drink straight away
+        else
+            doDrinkWater(e.itemData.data)
+        end
+
     end
 end
 event.register("equip", drinkFromContainer, { filter = tes3.player, priority = -100 } )
@@ -321,10 +313,10 @@ local function addWaterToWorld(e)
                     ref.data.waterAmount = fillAmount
                     
                     if math.random() < teaChance then
-                        local teaType = table.choice(teaConfig.validTeas)
+                        local waterType = table.choice(teaConfig.validTeas)
                         --Make sure it's not a tea added by a mod the player doesn't have
-                        if tes3.getObject(teaType) then
-                            ref.data.waterType = teaType
+                        if tes3.getObject(waterType) then
+                            ref.data.waterType = waterType
                         end
                     end
 

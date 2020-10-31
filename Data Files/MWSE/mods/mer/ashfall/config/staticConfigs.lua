@@ -51,8 +51,11 @@ for miscId, activeId in pairs(this.tentMiscToActiveMap) do
 end
 this.bedrolls = {
     ashfall_bedroll_ashl = true,
+    ashfall_bedroll = true,
     ashfall_cbroll_misc = true,
-    ashfall_bedroll = true
+}
+this.coveredBedrolls = {
+    ashfall_cbroll_misc = true,
 }
 
 --Ids for various fallen branches

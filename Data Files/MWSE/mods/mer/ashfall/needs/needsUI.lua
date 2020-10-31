@@ -93,7 +93,6 @@ local needsBlockId = tes3ui.registerID("Ashfall:needsBlock")
 
 local function updateNeedsBlock(menu, data)
     local need = conditionConfig[data.need]
-
     local block = menu:findChild(data.blockID)
     
     if not need:isActive() then
@@ -103,18 +102,15 @@ local function updateNeedsBlock(menu, data)
             block.visible = true
         end
     end
-    --Update Hunger
+    
     local fillBar = menu:findChild(data.fillBarID)
-
     local conditionLabel = menu:findChild(data.conditionID)
     if fillBar and conditionLabel then
-
         --update condition
-        conditionLabel.text =  need:getCurrentStateData().text
-            
+        conditionLabel.text =  need:getCurrentStateData().text       
         --update fillBar
         local needsLevel
-        needsLevel = need:getValue()
+        needsLevel = math.floor(need:getValue())
         fillBar.widget.current = need.max - needsLevel
     end
 end
@@ -193,7 +189,6 @@ local function createNeedsUI(e)
             common.helper.createTooltip({ header = data.name, text = data.getTooltip() })
         end)
     end
-
     event.trigger("Ashfall:updateNeedsUI")
 end
 event.register("uiCreated", createNeedsUI, { filter = "MenuInventory" } )

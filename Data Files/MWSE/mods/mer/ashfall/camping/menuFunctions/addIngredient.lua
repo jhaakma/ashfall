@@ -66,11 +66,11 @@ return {
             end)
         end
         local ingredButtons = {
-            { text = foodConfig.TYPE.meat, callback = function() ingredientSelect(foodConfig.TYPE.meat) end },
-            { text = foodConfig.TYPE.vegetable, callback = function() ingredientSelect(foodConfig.TYPE.vegetable) end },
-            { text = foodConfig.TYPE.mushroom, callback = function() ingredientSelect(foodConfig.TYPE.mushroom) end },
-            { text = foodConfig.TYPE.seasoning, callback = function() ingredientSelect(foodConfig.TYPE.seasoning) end },
-            { text = foodConfig.TYPE.herb, callback = function() ingredientSelect(foodConfig.TYPE.herb) end },
+            { text = foodConfig.type.meat, callback = function() ingredientSelect(foodConfig.type.meat) end },
+            { text = foodConfig.type.vegetable, callback = function() ingredientSelect(foodConfig.type.vegetable) end },
+            { text = foodConfig.type.mushroom, callback = function() ingredientSelect(foodConfig.type.mushroom) end },
+            { text = foodConfig.type.seasoning, callback = function() ingredientSelect(foodConfig.type.seasoning) end },
+            { text = foodConfig.type.herb, callback = function() ingredientSelect(foodConfig.type.herb) end },
 
         }
         local buttons = {}

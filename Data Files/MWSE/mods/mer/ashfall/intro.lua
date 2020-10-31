@@ -157,8 +157,6 @@ function this.startAshfall()
 end
 
 
-
-
 local function checkCharGen()
     if charGen.value == charGenValues.newGame then
         newGame = true

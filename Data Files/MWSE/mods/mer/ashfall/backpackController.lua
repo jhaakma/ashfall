@@ -1,4 +1,5 @@
 local config = require("mer.ashfall.config.config")
+local log = require("mer.ashfall.common.common").log
 local backpackSlot = 11
 local backpacks = {
     ["ashfall_backpack_b"] = true,
@@ -216,8 +217,18 @@ event.register("activate", function(e)
 end)
  
 local function updatePlayer()
+    log:trace("updating player backpack")
     if tes3.player and tes3.mobilePlayer then
-        setSwitchNodes{ reference = tes3.player }
+        --check for existing backpack and equip it
+        local equippedBackpack = tes3.getEquippedItem{
+            actor = tes3.player, 
+            objectType = tes3.objectType.armor,
+            slot = backpackSlot
+        }
+        if equippedBackpack then
+            log:trace("re-equipping %s", equippedBackpack.object.name)
+            onEquipped{reference = tes3.player, item = equippedBackpack.object}
+        end
     end
 end
 

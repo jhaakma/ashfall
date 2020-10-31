@@ -1,5 +1,7 @@
 local staticConfigs = require("mer.Ashfall.config.staticConfigs")
 local overrides = {
+
+    --food
     ["ingred_bread_01"] = {
         weight = 0.5,
         value = 10,
@@ -21,7 +23,7 @@ local overrides = {
         weight = 0.4,
         value = 2
     },
-    ["ingred_crab_meat_01"] = {
+    ["ingred_crab_meat_01"] = { 
         weight = 0.5,
         value = 2
     },
@@ -40,7 +42,17 @@ local overrides = {
     ["ingred_scuttle_01"] = {
         weight = 0.5,
         value = 10,
-    }, 
+    },
+
+    --cooking equipment
+    ["misc_com_bucket_metal"] = {
+        weight = 7,
+        value = 15
+    },
+    ["misc_com_iron_ladle"] = {
+        weight = 1,
+        value = 5
+    }
 }
 
 --add bottles from bottle data

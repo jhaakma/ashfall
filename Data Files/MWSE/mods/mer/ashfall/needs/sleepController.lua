@@ -5,7 +5,7 @@ local statsEffect = require("mer.ashfall.needs.statsEffect")
 
 local interruptText = ""
 local isUsingBed
-local isWaiting
+local mustWait
 local werewolfSleepMulti = 0.6
 local bedTempMulti = 0.8
 
@@ -53,7 +53,7 @@ local function setRestValues(e)
     if not common.data then return end
     --scripted means the player has activated a bed or bedroll
     isUsingBed = e.scripted
-    isWaiting = not e.allowRest
+    mustWait = not e.allowRest
     --Set interrupt text
     local tempLimit = common.data.tempLimit
     local tempText = ( tempLimit < 0 ) and "cold" or "hot"
@@ -94,20 +94,20 @@ local function activateRestMenu (e)
     if ( tempLimit < coldRestLimit ) or ( tempLimit > hotRestLimit ) then
         labelText.text = string.format("It is too %s to %s, you must find shelter!", 
             ( tempLimit < 0 and "cold" or "hot"), 
-            ( isWaiting and "rest" or "wait" )
+            ( mustWait and "rest" or "wait" )
         )
         hideSleepItems(restMenu)
     elseif hunger:getValue() > hunger.states.starving.min then
         labelText.text = string.format("You are too hungry to %s.", 
-            ( isWaiting and "wait" or "rest")
+            ( mustWait and "wait" or "rest")
         )
         hideSleepItems(restMenu)
     elseif thirst:getValue() > thirst.states.dehydrated.min then
         labelText.text = string.format("You are too thirsty to %s.", 
-            ( isWaiting and "wait" or "rest")
+            ( mustWait and "wait" or "rest")
         )
         hideSleepItems(restMenu)
-    elseif tiredness:getValue() > tiredness.states.exhausted.min and isWaiting then
+    elseif tiredness:getValue() > tiredness.states.exhausted.min and mustWait then
         labelText.text = "You are too tired to wait, you must find a bed."
         hideSleepItems(restMenu)
     end
@@ -132,37 +132,48 @@ local function wait(n)  -- seconds
     while clock() - t0 <= n do end
 end
 
-local function checkInterruptSleep()
+local function wakeUp()
+    tes3.wakeUp()
+    event.trigger("Ashfall:WakeUp")
+end
 
-    if tes3.mobilePlayer.sleeping or tes3.mobilePlayer.waiting then
+local function getIsSleeping()
+    return tes3.mobilePlayer.sleeping or common.data.isSleeping
+end
+local function getIsWaiting()
+    return tes3.mobilePlayer.waiting or common.data.isWaiting
+end
+
+local function checkInterruptSleep()
+    if getIsSleeping() or getIsWaiting() then
         --wait(interval * 0.10)
 
         local tempLimit = common.data.tempLimit
         --Temperature
         if tempLimit < coldRestLimit or tempLimit > hotRestLimit then
-            tes3.wakeUp()
+            wakeUp()
             tes3.messageBox({ message = interruptText, buttons = { "Okay" } })
         end
         --Needs
-        if hunger:getValue() > hunger.states.starving.min then
+        if hunger:getValue() >= hunger.states.starving.min - 1 then
             --Cap the hunger loss
             hunger:setValue(hunger.states.starving.min)
             --Wake PC
-            tes3.wakeUp()
+            wakeUp()
             --Message PC
             tes3.messageBox({ message = "You are starving.", buttons = { "Okay" } }) 
-        elseif thirst:getValue() > thirst.states.dehydrated.min then
+        elseif thirst:getValue() > thirst.states.dehydrated.min - 1  then
             --Cap the thirst loss
-            tes3.wakeUp()
+            wakeUp()
             --Wake PC
             thirst:setValue(thirst.states.dehydrated.min)
             --Message PC
             tes3.messageBox({ message = "You are dehydrated.", buttons = { "Okay" } }) 
-        elseif tiredness:getValue() > tiredness.states.exhausted.min and isWaiting then
+        elseif (tiredness:getValue() > tiredness.states.exhausted.min - 1) and getIsWaiting() then
             --Cap the tiredness loss
             tiredness:setValue(tiredness.states.exhausted.min)
             --Rouse PC
-            tes3.wakeUp()
+            wakeUp()
             --Message PC
             tes3.messageBox({ message = "You are exhausted.", buttons = { "Okay" } }) 
         end
@@ -209,8 +220,8 @@ function this.calculate(scriptInterval, forceUpdate)
     --speeds up tiredness recovery while sleeping
     local tramaRootTeaEffect = common.data.tramaRootTeaEffect or 1
 
-    if tes3.mobilePlayer.sleeping then
-        local usingBed = common.data.usingBed or false
+    if getIsSleeping() then
+        local usingBed = common.data.usingBed or common.data.isSleeping or false
         if usingBed then
             currentTiredness = currentTiredness - ( scriptInterval * gainSleepBed * tramaRootTeaEffect )
         else

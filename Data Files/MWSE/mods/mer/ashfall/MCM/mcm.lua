@@ -18,21 +18,34 @@ Hover over individual settings to see more information.
 
 ]]
 
+local function postFormat(self)
+    self.elements.outerContainer.borderAllSides = self.indent
+    self.elements.outerContainer.alignY = 1.0
+    --self.elements.outerContainer.layoutHeightFraction = 1.0
+    self.elements.info.layoutOriginFractionX = 0.5
+end
+
 local function registerModConfig()
     local function addSideBar(component)
         component.sidebar:createInfo{ text = sideBarDefault}
         component.sidebar:createHyperLink{
             text = "Made by Merlord",
             exec = "start https://www.nexusmods.com/users/3040468?tab=user+files",
-            postCreate = (
-                function(self)
-                    self.elements.outerContainer.borderAllSides = self.indent
-                    self.elements.outerContainer.alignY = 1.0
-                    self.elements.outerContainer.layoutHeightFraction = 1.0
-                    self.elements.info.layoutOriginFractionX = 0.5
-                end
-            ),
+            postCreate = postFormat,
         }
+
+        component.sidebar:createHyperLink{
+            text = "Graphic Design by XeroFoxx",
+            exec = "start https://www.youtube.com/channel/UCcx5oYt3NtLtadZTSjI3KEw",
+            postCreate = postFormat,
+        }
+
+        component.sidebar:createHyperLink{
+            text = "Animations by Vidi Aquam",
+            exec = "start https://www.nexusmods.com/morrowind/mods/48782",
+            postCreate = postFormat,
+        }
+
 
     end
 

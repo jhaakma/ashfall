@@ -13,7 +13,7 @@ end
 local function addDiseaseToMeat(reference, disease)
     local obj = reference.object
     for stack in tes3.iterate(obj.inventory.iterator) do
-        if foodConfig.getFoodType(stack.object) == foodConfig.TYPE.meat then
+        if foodConfig.getFoodType(stack.object) == foodConfig.type.meat then
             common.log:trace("Found %s, adding disease", stack.object.id)
             local count = stack.count
             --First itemData items

@@ -8,11 +8,13 @@ return {
     end,
     showRequirements = function()
         return common.config.getConfig().devFeatures
-            and animCtrl.hasAnimFiles()
     end,
     tooltipDisabled = {
-        header = "Sit Down",
+        header = "Sit Down (Real Time)",
         text = "You can't wait here; enemies are nearby."
     },
-    callback = animCtrl.sitDown
+    callback = function()
+        common.data.recoveringFatigue = true
+        animCtrl.sitDown{ recovering = true }
+    end 
 }

@@ -13,14 +13,14 @@ return  {
     end,
     callback = function(campfire)
         --fill bottle
-        local teaType
+        local waterType
         local hasBrewedTea = (
             campfire.data.teaProgress and
             campfire.data.teaProgress >= 100 and
             teaConfig.teaTypes[campfire.data.waterType]
         )
         if hasBrewedTea  then
-            teaType = campfire.data.waterType
+            waterType = campfire.data.waterType
         end
 
         local stewLevels
@@ -34,7 +34,7 @@ return  {
         end
         thirstController.fillContainer{
             source = campfire,
-            teaType = teaType,
+            waterType = waterType,
             stewLevels = stewLevels,
             callback = function()
                 if campfire.data.waterAmount <= 0 then

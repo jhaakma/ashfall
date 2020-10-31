@@ -49,7 +49,6 @@ local buttonMapping = {
         "addPot",
         "removeKettle",
         "removePot",
-        "sit",
         "wait",
         "extinguish",
         "destroy",

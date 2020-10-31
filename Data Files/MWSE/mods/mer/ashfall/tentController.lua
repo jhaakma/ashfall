@@ -131,19 +131,37 @@ local function activateTent(e)
 end
 event.register("activate", activateTent)
 
-local tent
+local currentTent
 local function setTent(e)
     local insideTent = e.insideTent
-    if e.tent then tent = e.tent end
-    if (not tent) or (not tent.sceneNode) then tent = nil end
+    if e.tent then currentTent = e.tent end
+    if (not currentTent) or (not currentTent.sceneNode) then currentTent = nil end
 
     common.data.tentTempMulti = insideTent and 0.7 or 1.0
     common.data.insideTent = insideTent
-    if tent then
-        local switchNode = tent.sceneNode:getObjectByName("SWITCH_CANVAS")
+    if currentTent then
+        local switchNode = currentTent.sceneNode:getObjectByName("SWITCH_CANVAS")
         if switchNode then
             switchNode.switchIndex = insideTent and 1 or 0
         end
     end
 end
 event.register("Ashfall:SetTent", setTent)
+
+
+local function toggleTentCollision(e)
+    common.log:debug("toggleTentCollision")
+    if currentTent and currentTent.sceneNode then
+        local collisionNode = currentTent.sceneNode:getObjectByName("Collision")
+        if collisionNode then
+            common.log:debug("setting tent collision to %s", e.collision)
+            if e.collision == true then
+                collisionNode.scale = 1.0
+            else
+                collisionNode.scale = 0.0
+            end
+            currentTent:updateSceneGraph()
+        end
+    end
+end
+event.register("Ashfall:ToggleTentCollision", toggleTentCollision)

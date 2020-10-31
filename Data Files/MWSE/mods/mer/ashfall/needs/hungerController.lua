@@ -176,7 +176,7 @@ end
 
 local function addFoodPoisoning(e)
     --Check for food poisoning
-    if foodConfig.getFoodType(e.item) == foodConfig.TYPE.meat then
+    if foodConfig.getFoodType(e.item) == foodConfig.type.meat then
         local cookedAmount = e.itemData and e.itemData.data.cookedAmount or 0
         local foodPoison = common.staticConfigs.conditionConfig.foodPoison
         local poisonAmount = math.random(100 - cookedAmount)

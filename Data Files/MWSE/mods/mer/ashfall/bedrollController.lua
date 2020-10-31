@@ -10,9 +10,11 @@ local function canRest()
     )
 end
 
-local function doRestMenu()
-    common.log:trace("Setting inTent for covered bedroll to true")
-    common.data.insideCoveredBedroll = true
+local function doRestMenu(isCoveredBedroll)
+    if isCoveredBedroll then
+        common.log:debug("Setting inTent for covered bedroll to true")
+        common.data.insideCoveredBedroll = true
+    end
     tes3.showRestMenu()
     event.trigger("Ashfall:CheckForShelter")
     event.trigger("Ashfall:UpdateHud")
@@ -23,11 +25,14 @@ local function doRestMenu()
 end
 
 local function bedrollMenu(ref)
+    local isCoveredBedroll = common.staticConfigs.coveredBedrolls[ref.object.id:lower()]
     local message = ref.object.name
     local buttons = {
         {
             text = "Sleep",
-            callback = doRestMenu,
+            callback = function()
+                doRestMenu(isCoveredBedroll)
+            end,
             requirements = canRest,
             tooltipDisabled = { 
                 text = tes3.canRest() and "It is illegal to rest here." or "You can't rest here; enemies are nearby."
@@ -36,22 +41,49 @@ local function bedrollMenu(ref)
         {
             text = "Lay Down",
             requirements = canRest,
-            showRequirements = function()
-                return common.config.getConfig().devFeatures
-                    and animCtrl.hasAnimFiles()
-            end,
+            --showRequirement = function()
+            --    return not isCoveredBedroll
+            --end,
             callback = function()
-                tes3.positionCell{
-                    cell = ref.cell,
-                    reference = tes3.player,
-                    position = tes3vector3.new(
-                        ref.position.x, 
-                        ref.position.y,
-                        ref.position.z + 20
-                    ),
-                    orientation = ref.orientation:copy(),
+                local location
+                if isCoveredBedroll then
+                    location = {
+                        position = tes3vector3.new(
+                            ref.position.x, 
+                            ref.position.y,
+                            ref.position.z
+                        ),
+                        orientation = {
+                            ref.orientation.x,
+                            ref.orientation.y,
+                            ref.orientation.z,
+                        },
+                        cell = ref.cell
+                    }
+                else
+                    location = {
+                        position = tes3vector3.new(
+                            ref.position.x, 
+                            ref.position.y,
+                            ref.position.z + 7
+                        ),
+                        orientation = {
+                            ref.orientation.x,
+                            ref.orientation.y,
+                            ref.orientation.z + math.pi,
+                        },
+                        cell = ref.cell
+                    }
+                end
+                animCtrl.showFastTimeMenu{
+                    message = "Lay Down",
+                    anim = "layingDown",
+                    location = location,
+                    recovering = true,
+                    sleeping = true,
+                    covered = isCoveredBedroll,
+                    speeds = { 5, 10, 20}
                 }
-                animCtrl.layDown()
             end,
             tooltipDisabled = { 
                 text = tes3.canRest() and "It is illegal to rest here." or "You can't wait here; enemies are nearby."

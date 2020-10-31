@@ -35,7 +35,7 @@ local wetTempMax = -25
 function this.checkForShelter()
     local sheltered = common.helper.checkRefSheltered()
 
-    if common.data.insideCoveredBedroll then 
+    if common.data.insideCoveredBedroll then
         sheltered = true 
     end
 

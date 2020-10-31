@@ -129,7 +129,28 @@ function this.yeet(reference)
     end)
 end
 
-
+--[[
+    Moves the player, designed for short movements 
+    which probably won't change cell. but if a cell change
+    is required, it uses positionCell as a fallback
+]]
+function this.movePlayer(e)
+    --use positionCell if changing cell
+    if tes3.player.cell ~= e.cell then
+        mwse.log("Using Position Cell")
+        tes3.positionCell{
+            reference = tes3.player,
+            position = e.position,
+            orientation = e.orientation,
+            cell = e.cell,
+            teleportCompanions = false
+        }
+    else -- avoid positionCell because it sucks
+        mwse.log("Setting position to %s", e.position)
+        tes3.player.position = e.position
+        tes3.player.orientation = e.orientation
+    end
+end
 
 function this.isStack(reference)
     return ( 
@@ -177,12 +198,23 @@ function this.messageBox(params)
     ]]--
     local message = params.message
     local buttons = params.buttons
+    local sideBySide = params.sideBySide
 
     local menu = tes3ui.createMenu{ id = messageBoxId, fixedFrame = true }
     menu:getContentElement().childAlignX = 0.5
     tes3ui.enterMenuMode(messageBoxId)
     local title = menu:createLabel{id = tes3ui.registerID("Ashfall:MessageBox_Title"), text = message}
-    title.borderBottom = 4
+
+    local buttonsBlock = menu:createBlock()
+    buttonsBlock.borderTop = 4
+    buttonsBlock.autoHeight = true
+    buttonsBlock.autoWidth = true
+    if sideBySide then
+        buttonsBlock.flowDirection = "left_to_right"
+    else
+        buttonsBlock.flowDirection = "top_to_bottom"
+        buttonsBlock.childAlignX = 0.5
+    end
     for i, data in ipairs(buttons) do
         local doAddButton = true
         if data.showRequirements then
@@ -197,7 +229,7 @@ function this.messageBox(params)
                 buttonId = tes3ui.registerID("CustomMessageBox_CancelButton")
             end
 
-            local button = menu:createButton{ id = buttonId, text = data.text}
+            local button = buttonsBlock:createButton{ id = buttonId, text = data.text}
 
             local disabled = false
             if data.requirements then
@@ -280,6 +312,33 @@ function this.createTooltip(e)
     
     tooltip:updateLayout()
 end
+
+function this.recoverStats(e)
+    local interval = e.interval
+    local isResting = e.resting
+    local endurance = tes3.mobilePlayer.endurance.base
+    local isStunted = tes3.isAffectedBy{ reference = tes3.player, effect = tes3.effect.stuntedMagicka}
+    local fFatigueReturnBase = tes3.findGMST(tes3.gmst.fFatigueReturnBase).value
+    local fFatigueReturnMult = tes3.findGMST(tes3.gmst.fFatigueReturnMult).value
+    local fEndFatigueMult = tes3.findGMST(tes3.gmst.fEndFatigueMult).value
+    if isResting then
+        local healthRecovery = interval * 0.1 * endurance
+        tes3.modStatistic{ reference = tes3.player, name = "health", current = healthRecovery }
+        if not isStunted then
+            local intelligence = tes3.mobilePlayer.intelligence.base
+            local fRestMagicMult = tes3.findGMST(tes3.gmst.fRestMagicMult).value
+            local magickaRecovery = fRestMagicMult * intelligence * interval
+        
+            tes3.modStatistic{ reference = tes3.player, name = "magicka", current = magickaRecovery }
+        end
+    end
+    local normalisedEndurance = math.clamp(endurance/100, 0.0, 1.0)
+    local fatigueRecoveryBase = fFatigueReturnBase + fFatigueReturnMult * ( 1 - normalisedEndurance)
+    local fatigueRecovery = fatigueRecoveryBase * fEndFatigueMult * endurance * interval
+
+    tes3.modStatistic{ reference = tes3.player, name = "fatigue", current = fatigueRecovery }
+end
+
 
 --[[
     Create a popup with a slider that sets a table value
