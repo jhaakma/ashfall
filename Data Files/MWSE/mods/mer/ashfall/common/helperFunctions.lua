@@ -123,10 +123,10 @@ end
 
 --TODO: Null needs to fix collision crashes on Disable/Delete
 function this.yeet(reference)
-    timer.delayOneFrame(function()
+    --timer.delayOneFrame(function()
         reference:disable()
         mwscript.setDelete{ reference = reference}
-    end)
+    --end)}
 end
 
 --[[
@@ -605,9 +605,13 @@ function this.rotationDifference(vec1, vec2)
     return m:toEulerXYZ()
 end
 
-function this.getGroundBelowRef(ref, ignoreList)
+function this.getGroundBelowRef(e)
+    local ref = e.ref 
+    local rootHeight = e.rootHeight or 50
+    local ignoreList = e.ignoreList
     if not ref then return end
-    local height = 100
+    mwse.log("Root height: %s", rootHeight)
+    local height = rootHeight + 10
     local result = tes3.rayTest{
         position = {ref.position.x, ref.position.y, ref.position.z + height}, 
         direction = {0, 0, -1},
@@ -623,6 +627,7 @@ function this.orientRefToGround(params)
     local ref = params.ref
     local maxSteepness = params.maxSteepness
     local ignoreList = params.ignoreList or {}
+    local rootHeight = params.rootHeight or 0
 
     table.insert(ignoreList, tes3.player)
     for thisRef in ref.cell:iterateReferences() do
@@ -631,7 +636,7 @@ function this.orientRefToGround(params)
         end
     end
 
-    local result = this.getGroundBelowRef(ref, ignoreList)
+    local result = this.getGroundBelowRef({ref = ref, ignoreList = ignoreList, rootHeight = rootHeight})
     if not result then 
         --This only happens when the ref is 
         --beyond the edge of the active cells

@@ -43,6 +43,7 @@ end
 
 --Create messageBox for water menu
 local function callWaterMenu(e)
+    e = e or {}
     common.data.drinkingDirtyWater = e.dirty == true and true or false
     common.data.drinkingRain = e.rain == true and true or false
     buttons = { bDrink, bFillBottle, bNothing }

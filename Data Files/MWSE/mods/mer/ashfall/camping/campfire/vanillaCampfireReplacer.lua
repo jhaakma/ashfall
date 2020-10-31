@@ -11,23 +11,25 @@ local randomStuffChances = {
 
 local vanillaCampfires = {
     --Ugly ones
-    light_pitfire00 =  { supports = false, scale = 0.9},  
-    light_pitfire01 =  { supports = false, scale = 0.9 },
+    light_pitfire00 =  { supports = false, scale = 0.9, rootHeight = 5 },  
+    light_pitfire01 =  { supports = false, scale = 0.9, rootHeight = 5 },
 
     --unlit supports
-    furn_de_firepit =  { supports = true },
-    furn_de_firepit_01 =  { supports = false },
+    furn_de_firepit =  { supports = true, rootHeight = 85 },
+    --unlit
+    furn_de_firepit_01 =  { supports = false, rootHeight = 15 },
 
     --Supports
-    furn_de_firepit_f =  { supports = true },
-    furn_de_firepit_f_128 = { supports = true },
-    furn_de_firepit_f_200 = { supports = true },
-    furn_de_firepit_f_323 = { supports = true },
-    furn_de_firepit_f_400 = { supports = true },
+    furn_de_firepit_f =  { supports = true, rootHeight = 85 },
+    furn_de_firepit_f_128 = { supports = true, rootHeight = 85 },
+    furn_de_firepit_f_200 = { supports = true, rootHeight = 85 },
+    furn_de_firepit_f_323 = { supports = true, rootHeight = 85 },
+    furn_de_firepit_f_400 = { supports = true, rootHeight = 85 },
 
     --No Supports
-    furn_de_firepit_f_01 = { supports = false },
-    furn_de_firepit_f_01_400 = { supports = false },
+    furn_de_firepit_f_01 = { supports = false, rootHeight = 85 },
+    furn_de_firepit_f_01_400 = { supports = false, rootHeight = 85 },
+    
     
 }
 
@@ -126,6 +128,7 @@ local function attachRandomStuff(campfire)
                 --add random stew to cooking pots
                 elseif campfire.data.utensil == "cookingPot" then
                     if math.random() < randomStuffChances.stew then
+                        campfire.data.ladle = true
                         campfire.data.stewLevels = {}
                         local stewTypes = {}
                         for stewType, _ in pairs(foodConfig.getStewBuffList()) do
@@ -215,14 +218,17 @@ local function checkKitBashObjects(vanillaRef)
                 end
                 
                 if cauldrons[id] then
+                    common.log:debug("Found existing cooking pot")
                     hasCookingPot = true
                     common.helper.yeet(ref)
                 end
                 if grills[id] then
+                    common.log:debug("Found existing grill")
                     hasGrill = true
                     common.helper.yeet(ref)
                 end
                 if kitBashObjects[id] then      
+                    common.log:debug("Found existing %s", id)
                     common.helper.yeet(ref)
                     table.insert(ignoreList, ref)
                 end
@@ -304,7 +310,8 @@ local function replaceCampfire(e)
             common.helper.orientRefToGround{ 
                 ref = campfire, 
                 maxSteepness = (data.hasPlatform and 0.0 or 0.2),
-                ignoreList = data.ignoreList
+                ignoreList = data.ignoreList,
+                rootHeight = vanillaConfig.rootHeight
             }
             common.log:debug("Campfire final supports: %s\n\n", campfire.data.dynamicConfig.supports)
 

@@ -13,7 +13,7 @@ return {
             message = "Sit Down", 
             anim = "sitting", 
             recovering = true, 
-            speeds = { 5, 10} 
+            speeds = { 2, 5, 10 } 
         }
     end,
 } 

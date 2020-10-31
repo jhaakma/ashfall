@@ -39,6 +39,15 @@ local animConfig = {
     }
 }
 
+function this.sitDown(e)
+    table.copy(animConfig.sitCrossed, e)
+    this.doAnimation(e)
+end
+
+function this.layDown(e)
+    table.copy(animConfig.layBack, e)
+    this.doAnimation(e)
+end
 
 function this.hasAnimFile(animFile)
     local fileToCheck = animFile
@@ -216,17 +225,6 @@ function this.doAnimation(e)
     else
         common.data.isWaiting = true
     end
-end
-
-
-function this.sitDown(e)
-    table.copy(animConfig.sitCrossed, e)
-    this.doAnimation(e)
-end
-
-function this.layDown(e)
-    table.copy(animConfig.layBack, e)
-    this.doAnimation(e)
 end
 
 function this.cancel()

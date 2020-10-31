@@ -126,16 +126,18 @@ function this.callRayTest()
     this.current = nil
     this.currentRef = nil
 
+    local eyePos = tes3.getPlayerEyePosition()
+    local eyeDirection = tes3.getPlayerEyeVector()
+
     local result = tes3.rayTest{
-        position = tes3.getPlayerEyePosition(),
-        direction = tes3.getPlayerEyeVector(),
+        position = eyePos,
+        direction = eyeDirection,
         ignore = { tes3.player }
     }
 
     if result then
-        
         if (result and result.reference ) then 
-            local distance = tes3.player.position:distance(result.intersection)
+            local distance = eyePos:distance(result.intersection)
 
             --Look for activators from list
             if distance < 200 then
