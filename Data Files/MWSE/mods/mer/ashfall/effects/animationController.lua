@@ -129,8 +129,9 @@ end
 
 --handle keypress to cancel animation
 local function checkKeyPress(e)
+    common.log:debug("togglePOV key: %s", tes3.getInputBinding(tes3.keybind.togglePOV).code)
     if e.keyCode == 183 then return end
-    if e.keyCode == tes3.scanCode.tab then
+    if e.keyCode == tes3.getInputBinding(tes3.keybind.togglePOV).code then
         onTabDown()
     else
         common.log:debug("Detected Key Press, cancelling")
@@ -163,7 +164,7 @@ function this.doAnimation(e)
         startAnimation{ mesh = data.mesh, group = data.group}
     end
     if data.timeScaleMulti or data.deltaMulti  then
-        common.log:debug("for %s minutes", e.minutes)
+        common.log:debug("do fast time")
         startFastTime(data)
     end
     if data.location then
@@ -203,9 +204,8 @@ function this.doAnimation(e)
     
     tes3.setVanityMode({ enabled = true })
     helper.disableControls()
-    
     event.register("save", blockSave)
-    event.register("keyUp", onTabUp, { filter = tes3.scanCode.tab})
+    event.register("keyUp", onTabUp, { filter = tes3.getInputBinding(tes3.keybind.togglePOV).code })
     event.register("keyDown", checkKeyPress)
     event.register("Ashfall:WakeUp", this.cancel)
     event.trigger("Ashfall:triggerPackUpdate")
@@ -265,7 +265,7 @@ function this.cancel()
     tes3.setVanityMode({ enabled = false })
     event.unregister("save", blockSave)
     event.unregister("keyDown", checkKeyPress)
-    event.unregister("keyUp", onTabUp, { filter = tes3.scanCode.tab})
+    event.unregister("keyUp", onTabUp, { filter = tes3.getInputBinding(tes3.keybind.togglePOV).code })
     event.unregister("Ashfall:WakeUp", this.cancel)
     event.trigger("Ashfall:triggerPackUpdate")
     if data.callback then

@@ -137,7 +137,6 @@ end
 function this.movePlayer(e)
     --use positionCell if changing cell
     if tes3.player.cell ~= e.cell then
-        mwse.log("Using Position Cell")
         tes3.positionCell{
             reference = tes3.player,
             position = e.position,
@@ -146,7 +145,6 @@ function this.movePlayer(e)
             teleportCompanions = false
         }
     else -- avoid positionCell because it sucks
-        mwse.log("Setting position to %s", e.position)
         tes3.player.position = e.position
         tes3.player.orientation = e.orientation
     end
