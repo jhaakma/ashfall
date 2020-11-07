@@ -138,7 +138,6 @@ local function detachBackpack(parent)
 end
 
 
-
 local function onEquipped(e)
     -- must be a valid backpack
     local fileName = backpacks[e.item.id]
@@ -154,11 +153,10 @@ local function onEquipped(e)
     -- attach new backpack mesh
     attachBackpack(parent, fileName)
 
-    timer.delayOneFrame(function() 
+    --timer.delayOneFrame(function() 
         setSwitchNodes{reference=e.reference}
-    end)
+    --end)
     
-
     -- update parent scene node
     parent:update()
     parent:updateNodeEffects()

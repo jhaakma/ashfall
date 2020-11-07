@@ -63,13 +63,25 @@ function this.getBottleData(id)
     return common.staticConfigs.bottleList[string.lower(id)]
 end
 
-local function addDysentry()
+local function addDysentry(amountDrank)
+    local survival = common.skills.survival.value
+    local survivalRoll = math.random(100)
+    if survivalRoll < survival then
+        common.log:debug("Survival Effect of %s bypassed dysentery with a roll of %s", survival, survivalRoll)
+        return
+    end
+
+    local amountDrankEffect = math.remap(amountDrank, 0, 100, 0.5, 1.0)
+
     local dysentery = common.staticConfigs.conditionConfig.dysentery
-    local dysentryAmount = math.random(100)
+    local maxDysentery = amountDrankEffect * 120
+    local dysentryAmount = math.random(maxDysentery)
+    common.log:debug("Adding %s dysentery. Max was %s", dysentryAmount, maxDysentery)
     dysentery:setValue(dysentery:getValue() + dysentryAmount)
 end
 
 function this.drinkAmount(e)
+    common.log:debug("drinkAmount. WaterType: %s", e.waterType)
     local amount = e.amount or 100
     local waterType = e.waterType
     if not conditionConfig.thirst:isActive() then return end
@@ -101,7 +113,7 @@ function this.drinkAmount(e)
     tes3.playSound({reference = tes3.player, sound = "Drink"})
 
     if waterType == "dirty" then
-        addDysentry()
+        addDysentry(amountDrank)
     end
     return amountDrank
 end
@@ -109,7 +121,6 @@ end
 event.register("Ashfall:Drink", this.drinkAmount, {reference = tes3.player})
 
 function this.callWaterMenuAction(callback)
-    common.log:debug("if common.data.drinkingRain then")
     if common.data.drinkingRain then
         common.data.drinkingRain = false
         common.helper.fadeTimeOut( 0.25, 2, callback )

@@ -54,8 +54,7 @@ end
 ]]
 
 function this.getInTent()
-    tes3.player.data.Ashfall.tentTemp = tes3.player.data.Ashfall.tentTemp or 0
-    return tes3.player.data.Ashfall.tentTemp > 0
+    return (tes3.player.data.Ashfall.insideTent or tes3.player.data.Ashfall.insideCoveredBedroll)
 end
 
 
@@ -136,17 +135,18 @@ end
 ]]
 function this.movePlayer(e)
     --use positionCell if changing cell
+    local orientation = e.orientation or tes3.player.orientation:copy()
     if tes3.player.cell ~= e.cell then
         tes3.positionCell{
             reference = tes3.player,
             position = e.position,
-            orientation = e.orientation,
+            orientation = orientation,
             cell = e.cell,
             teleportCompanions = false
         }
     else -- avoid positionCell because it sucks
         tes3.player.position = e.position
-        tes3.player.orientation = e.orientation
+        tes3.player.orientation = orientation
     end
 end
 

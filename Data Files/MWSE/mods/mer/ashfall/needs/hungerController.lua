@@ -177,13 +177,29 @@ end
 local function addFoodPoisoning(e)
     --Check for food poisoning
     if foodConfig.getFoodType(e.item) == foodConfig.type.meat then
-        local cookedAmount = e.itemData and e.itemData.data.cookedAmount or 0
+
+        --survival affect gives chance to bypass completely
+        local survival = common.skills.survival.value
+        local survivalRoll = math.random(100)
+        if survivalRoll < survival then
+            common.log:debug("Survival Effect of %s bypassed food poisoning with a roll of %s",survival, survivalRoll)
+            return
+        end
+
         local foodPoison = common.staticConfigs.conditionConfig.foodPoison
-        local poisonAmount = math.random(100 - cookedAmount)
-        common.log:debug("Adding %s food poisoning", poisonAmount)
+        local cookedAmount = e.itemData and e.itemData.data.cookedAmount or 0
+        local cookedEffect = math.remap(
+            cookedAmount,
+            0, 100,--min in, max in
+            1.0, 0.0
+        )
+        local minPoison = 50 
+        local maxPoison = 120
+        local poisonAmount = math.random(minPoison, maxPoison) * cookedEffect
+        common.log:debug("Adding %s food poisoning. Min/Max: %s/%s", poisonAmount, minPoison, maxPoison)
         foodPoison:setValue(foodPoison:getValue() + poisonAmount)
     end
-end
+end 
 
 local function addDisease(e)
     if common.config.getConfig().enableDiseasedMeat then

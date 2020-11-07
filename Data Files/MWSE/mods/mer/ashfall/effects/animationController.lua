@@ -80,13 +80,14 @@ local function startAnimation(e)
         common.log:error("missing animation files")
         return
     end
-    data.previousAnimationMesh = tes3.player.mesh
+    data.previousAnimationMesh = tes3.player.object.mesh
     tes3.playAnimation({
         reference = tes3.player,
         mesh = e.mesh,
         group = e.group,
         startFlag = 1
     })
+    event.trigger("Ashfall:triggerPackUpdate")
 end
 
 local function stopAnimation()
@@ -97,6 +98,7 @@ local function stopAnimation()
         group = tes3.animationGroup.idle,
         startFlag = 1
     })
+    event.trigger("Ashfall:triggerPackUpdate")
     data.previousAnimationMesh = nil
 end
 
@@ -115,11 +117,6 @@ local function startFastTime(e)
     local timeScale = tes3.findGlobal("TimeScale")
     data.originalTimeScale = timeScale.value
     timeScale.value = timeScale.value * timeScaleMulti
-    -- data.fastTimer = timer.start({
-    --     type = timer.game,
-    --     duration = e.minutes / 60,
-    --     callback = this.cancel
-    -- })
     event.register("enterFrame", doSlowTime)
 
     common.log:debug("Starting Fast Time with timescale at %sx speed, new timescale = %s",
@@ -132,14 +129,15 @@ local function stopFastTime()
     common.log:debug("Stopping fast time, setting timescale back to %s", data.originalTimeScale)
     local timeScale = tes3.findGlobal("TimeScale")
     timeScale.value = data.originalTimeScale
-    --data.fastTimer:cancel()
     event.unregister("enterFrame", doSlowTime)
 end
 
 --handle keypress to cancel animation
 local function checkKeyPress(e)
     common.log:debug("togglePOV key: %s", tes3.getInputBinding(tes3.keybind.togglePOV).code)
-    if e.keyCode == 183 then return end
+    if e.keyCode == 183 then return end --allow screenshots
+    
+    --If this is tab being pressed down
     if e.keyCode == tes3.getInputBinding(tes3.keybind.togglePOV).code then
         onTabDown()
     else
@@ -153,6 +151,7 @@ local function getHoursPassed()
 end
 --local wasIn3rdPerson
 function this.doAnimation(e)
+    
     common.log:debug("do animation")
     data = {
         mesh = e.mesh,
@@ -179,7 +178,7 @@ function this.doAnimation(e)
     if data.location then
         data.previousLocation = {
             position = tes3.player.position:copy(),
-            orientation = tes3.player.orientation:copy(),
+            --orientation = tes3.player.orientation:copy(),
             cell = tes3.player.cell
         }
         event.trigger("Ashfall:ToggleTentCollision", {collision = false })
@@ -210,14 +209,13 @@ function this.doAnimation(e)
         }
     end
     
-    
     tes3.setVanityMode({ enabled = true })
     helper.disableControls()
     event.register("save", blockSave)
     event.register("keyUp", onTabUp, { filter = tes3.getInputBinding(tes3.keybind.togglePOV).code })
     event.register("keyDown", checkKeyPress)
     event.register("Ashfall:WakeUp", this.cancel)
-    event.trigger("Ashfall:triggerPackUpdate")
+    
 
     if data.sleeping then
         common.log:debug("Enabling isSleeping")
@@ -229,7 +227,7 @@ end
 
 function this.cancel()
     common.log:debug("Cancelling")
-
+    tes3.runLegacyScript({command = 'DisablePlayerLooking'});
     event.trigger("Ashfall:ToggleTentCollision", {collision = true })
     if data.covered then
         common.log:debug("Setting InsideCoveredBedroll to false")
@@ -265,12 +263,13 @@ function this.cancel()
     event.unregister("keyDown", checkKeyPress)
     event.unregister("keyUp", onTabUp, { filter = tes3.getInputBinding(tes3.keybind.togglePOV).code })
     event.unregister("Ashfall:WakeUp", this.cancel)
-    event.trigger("Ashfall:triggerPackUpdate")
+    
     if data.callback then
         common.log:debug("Callback")
         data.callback()
     end
     data = nil
+    tes3.runLegacyScript({command = 'EnablePlayerLooking'});
 end
 
 
@@ -292,6 +291,7 @@ function this.showFastTimeMenu(e)
     end
     if not e.speeds then
         this.doAnimation(e)
+        return
     end
 
     local buttons = {

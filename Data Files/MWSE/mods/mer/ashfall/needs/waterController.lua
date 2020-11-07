@@ -28,7 +28,7 @@ local function menuButtonPressed(e)
             tes3.messageBox("You are fully hydrated.")
         else
             thirstController.callWaterMenuAction(function()
-                thirstController.drinkAmount{amount = 100, waterType = common.data.drinkingDirtyWater}
+                thirstController.drinkAmount{amount = 100, waterType = common.data.drinkingDirtyWater }
             end)
         end
     --refill
@@ -36,15 +36,15 @@ local function menuButtonPressed(e)
         thirstController.fillContainer()
         return
     end
-    common.data.drinkingRain = false
-    common.data.drinkingDirtyWater = false
+    common.data.drinkingRain = nil
+    common.data.drinkingDirtyWater = nil
 end
 
 
 --Create messageBox for water menu
 local function callWaterMenu(e)
     e = e or {}
-    common.data.drinkingDirtyWater = e.dirty == true and true or false
+    common.data.drinkingDirtyWater = e.dirty and "dirty"
     common.data.drinkingRain = e.rain == true and true or false
     buttons = { bDrink, bFillBottle, bNothing }
     tes3.messageBox{
