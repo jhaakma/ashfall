@@ -121,13 +121,13 @@ end
 event.register("Ashfall:Drink", this.drinkAmount, {reference = tes3.player})
 
 function this.callWaterMenuAction(callback)
-    if common.data.drinkingRain then
-        common.data.drinkingRain = false
+    if common.data.drinkingRain == true then
+        common.data.drinkingRain = nil
         common.helper.fadeTimeOut( 0.25, 2, callback )
     else
         callback()
     end
-    common.data.drinkingDirtyWater = nil
+    common.data.drinkingWaterType = nil
 end
 
 --[[
@@ -151,10 +151,10 @@ local function doRefillContainer(e)
     end
 
     --dirty container if drinking from raw water
-    if common.data.drinkingDirtyWater == true then
+    if common.data.drinkingWaterType then
         common.log:debug("Fill water DIRTY")
-        itemData.data.waterType = "dirty"
-        common.data.drinkingDirtyWater = nil
+        itemData.data.waterType = common.data.drinkingWaterType
+        common.data.drinkingWaterType = nil
     end
     local fillAmount
     local bottleData = this.getBottleData(item.id)
@@ -301,7 +301,7 @@ function this.fillContainer(params)
         timer.delayOneFrame(function()
             common.log:debug("common.data.drinkingRain = false fill")
             common.data.drinkingRain = false
-            common.data.drinkingDirtyWater = false
+            common.data.drinkingWaterType = nil
         end)
     end)
 end

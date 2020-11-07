@@ -414,6 +414,18 @@ function this.disableControls()
     setControlsDisabled(true)
 end
 
+function this.getUniqueCellId(cell)
+    if cell.isInterior then
+        return cell.id:lower()
+    else
+        return string.format("%s (%s,%s)",
+        cell.id:lower(), 
+        cell.gridX, 
+        cell.gridY)
+    end
+end
+
+
 function this.enableControls()
     setControlsDisabled(false)
     tes3.runLegacyScript{command = "EnableInventoryMenu"}

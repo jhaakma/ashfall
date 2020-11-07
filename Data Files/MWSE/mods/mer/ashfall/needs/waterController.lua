@@ -28,24 +28,25 @@ local function menuButtonPressed(e)
             tes3.messageBox("You are fully hydrated.")
         else
             thirstController.callWaterMenuAction(function()
-                thirstController.drinkAmount{amount = 100, waterType = common.data.drinkingDirtyWater }
+                local waterType = common.data.drinkingWaterType
+                thirstController.drinkAmount{amount = 100, waterType = waterType }
             end)
         end
+        common.data.drinkingRain = nil
+        common.data.drinkingWaterType = nil
     --refill
     elseif buttons[buttonIndex] == bFillBottle then
         thirstController.fillContainer()
-        return
     end
-    common.data.drinkingRain = nil
-    common.data.drinkingDirtyWater = nil
 end
 
 
 --Create messageBox for water menu
 local function callWaterMenu(e)
     e = e or {}
-    common.data.drinkingDirtyWater = e.dirty and "dirty"
-    common.data.drinkingRain = e.rain == true and true or false
+    common.log:debug("callWaterMenu: Water Type: %s", e.waterType)
+    common.data.drinkingWaterType = e.waterType
+    common.data.drinkingRain = e.rain
     buttons = { bDrink, bFillBottle, bNothing }
     tes3.messageBox{
         message = "What would you like to do?",
@@ -67,7 +68,7 @@ event.register(
 event.register(
     "Ashfall:ActivatorActivated", 
     function()
-        callWaterMenu({ dirty = true })
+        callWaterMenu({ waterType = "dirty" })
     end, 
     { filter = activatorConfig.types.dirtyWaterSource } 
 )
@@ -285,16 +286,6 @@ local function onShiftActivateWater(e)
 end
 event.register("activate", onShiftActivateWater, { filter = tes3.player })
 
-local function getUniqueCellId(cell)
-    if cell.isInterior then
-        return cell.id:lower()
-    else
-        return string.format("%s (%s,%s)",
-        cell.id:lower(), 
-        cell.gridX, 
-        cell.gridY)
-    end
-end
 
 --First time entering a cell, add water to random bottles/containers
 local chanceToFill = 0.2
@@ -302,7 +293,7 @@ local teaChance = 0.1
 local fillMin = 5
 local function addWaterToWorld(e)
     local wateredCells = common.data.wateredCells
-    local cellId = getUniqueCellId(e.cell)
+    local cellId = common.helper.getUniqueCellId(e.cell)
     if not wateredCells[cellId] then
         wateredCells[cellId] = true
 
