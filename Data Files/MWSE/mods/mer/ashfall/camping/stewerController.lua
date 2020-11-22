@@ -105,8 +105,6 @@ local function eatStew(e)
     local amountAte = hungerController.eatAmount(maxDrinkAmount * foodRatio)
     local amountDrank = thirstController.drinkAmount{amount = maxDrinkAmount, waterType = e.data.waterType}
     
-
-
     if amountAte >= 1 or amountDrank >= 1 then
         tes3.playSound{ reference = tes3.player, sound = "Swallow" }
         e.data.waterAmount = math.max( (e.data.waterAmount - amountDrank), 0)

@@ -67,7 +67,7 @@ end
 
 function this.eatAmount( amount ) 
     if not common.config.getConfig().enableHunger then
-        return
+        return 0
     end
 
     local currentHunger = hunger:getValue()
@@ -84,7 +84,7 @@ function this.eatAmount( amount )
         reference = tes3.mobilePlayer,
         current = healthIncrease,
         name = "health",
-    }
+    } 
     conditionsCommon.updateCondition("hunger")
     this.update()
     event.trigger("Ashfall:updateTemperature", { source = "eatAmount" })

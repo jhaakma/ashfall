@@ -84,7 +84,9 @@ function this.drinkAmount(e)
     common.log:debug("drinkAmount. WaterType: %s", e.waterType)
     local amount = e.amount or 100
     local waterType = e.waterType
-    if not conditionConfig.thirst:isActive() then return end
+    if not conditionConfig.thirst:isActive() then 
+        return 0 
+    end
     
     local currentThirst = thirst:getValue()
     if currentThirst <= 0.1 then

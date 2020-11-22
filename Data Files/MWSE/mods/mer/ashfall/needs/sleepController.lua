@@ -20,11 +20,12 @@ local hunger = conditionConfig.hunger
 local thirst = conditionConfig.thirst
 local tiredness = conditionConfig.tiredness
 
-local function setInBedValues(isInBed)
-    common.data.usingBed = isInBed
-    common.data.bedTempMulti = isInBed and bedTempMulti or 1.0
+local function setBedTemp(e)
+    common.data.usingBed = e.isUsingBed
+    common.log:debug("===========================Checking Bed Temp: %s", common.data.usingBed)
+    common.data.bedTempMulti = common.data.usingBed and bedTempMulti or 1.0
 end
-
+event.register("Ashfall:SetBedTemp", setBedTemp)
 
 
 local function hideSleepItems(restMenu)
@@ -181,14 +182,14 @@ local function checkInterruptSleep()
         if tes3.mobilePlayer.sleeping and isUsingBed then
             if not common.data.usingBed then
                 common.log:debug("setting inBed to true")
-                setInBedValues(true)
+                event.trigger("Ashfall:SetBedTemp", { isUsingBed = true})
             end
         end 
     else
         --Reset the bedTemp when player wakes up
         if common.data.usingBed then
             common.log:debug("setting inBed to false")
-            setInBedValues(false) 
+            event.trigger("Ashfall:SetBedTemp", { isUsingBed = false})
         end
      end
 end

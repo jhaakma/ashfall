@@ -24,13 +24,14 @@ end
 
 local function onWaterServiceClick()
     common.log:debug("Activating water menu")
-    skipUpdate = true
     local menuDialog = tes3ui.findMenu(GUID_MenuDialog)
     local merchant = menuDialog:getPropertyObject("PartHyperText_actor")
     local cost = getWaterCost(merchant.object)
 
-    tes3ui.leaveMenuMode()
-    menuDialog:destroy()
+    if menuDialog then
+        tes3ui.leaveMenuMode()
+        menuDialog:destroy()
+    end
     thirstController.fillContainer{ cost = cost }
 end
 
@@ -76,7 +77,7 @@ local function getDisabled(cost)
     return true
 end
 
-local function makeTooltip(e)
+local function makeTooltip()
     local menuDialog = tes3ui.findMenu(GUID_MenuDialog)
     if not menuDialog then return end
     local merchant = menuDialog:getPropertyObject("PartHyperText_actor")
@@ -137,7 +138,7 @@ end
 
 
 
-local function onMenuDialogActivated(e)
+local function onMenuDialogActivated()
     local config = common.config.getConfig()
     if config.enableThirst ~= true then return end
     

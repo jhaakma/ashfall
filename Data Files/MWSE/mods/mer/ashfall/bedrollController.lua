@@ -14,13 +14,15 @@ local function doRestMenu(isCoveredBedroll)
     if isCoveredBedroll then
         common.log:debug("Setting inTent for covered bedroll to true")
         common.data.insideCoveredBedroll = true
+        event.trigger("Ashfall:SetBedTemp", { isUsingBed = true})
     end
     tes3.showRestMenu()
     event.trigger("Ashfall:CheckForShelter")
     event.trigger("Ashfall:UpdateHud")
     timer.delayOneFrame(function()
-        common.log:trace("Setting inTent for covered bedroll to false")
+        common.log:debug("Setting inTent for covered bedroll to false")
         common.data.insideCoveredBedroll = false
+        event.trigger("Ashfall:SetBedTemp",  { isUsingBed = false })
     end)
 end
 
@@ -54,8 +56,8 @@ local function bedrollMenu(ref)
                             ref.position.z
                         ),
                         orientation = {
-                            ref.orientation.x,
-                            ref.orientation.y,
+                            0,--ref.orientation.x,
+                            0,--ref.orientation.y,
                             ref.orientation.z,
                         },
                         cell = ref.cell
@@ -65,11 +67,11 @@ local function bedrollMenu(ref)
                         position = tes3vector3.new(
                             ref.position.x, 
                             ref.position.y,
-                            ref.position.z + 7
+                            ref.position.z + 12
                         ),
                         orientation = {
-                            ref.orientation.x,
-                            ref.orientation.y,
+                            0,--ref.orientation.x,
+                            0,--ref.orientation.y,
                             ref.orientation.z + math.pi,
                         },
                         cell = ref.cell
@@ -82,6 +84,7 @@ local function bedrollMenu(ref)
                     recovering = true,
                     sleeping = true,
                     covered = isCoveredBedroll,
+                    usingBed = true,
                     speeds = { 5, 10, 20}
                 }
             end,

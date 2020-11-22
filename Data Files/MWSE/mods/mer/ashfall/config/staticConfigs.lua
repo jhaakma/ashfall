@@ -145,9 +145,9 @@ this.branchRegions = {
 
 --For placement magic
 this.placementConfig = {
-    ashfall_bedroll_ashl = { maxSteepness = 0.4 },
-    ashfall_bedroll = { maxSteepness = 0.4 },
-    ashfall_cbroll_misc = { maxSteepness = 0.4, drop = -15 },
+    ashfall_bedroll_ashl = { maxSteepness = 01 },
+    ashfall_bedroll = { maxSteepness = 0.1 },
+    ashfall_cbroll_misc = { maxSteepness = 0.1, drop = -15 },
     
     ashfall_tent_misc = { maxSteepness = 0.4, drop = -8},
     ashfall_tent_ashl_misc = { maxSteepness = 0.4, drop = -8},
@@ -159,7 +159,7 @@ this.placementConfig = {
     ashfall_tent_canv_b_active = { maxSteepness = 0.4, drop = 50},
     ashfall_tent_test_active = { maxSteepness = 0.4, drop = 50},
 
-    a_bed_roll = { maxSteepness = 0.4 },
+    a_bed_roll = { maxSteepness = 0.1 },
 
     ashfall_firewood = { maxSteepness = 0.5, hasVertAlign  = true }
 }

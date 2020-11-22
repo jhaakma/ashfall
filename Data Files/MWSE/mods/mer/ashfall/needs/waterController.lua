@@ -145,10 +145,9 @@ local function doDrinkWater(data)
 end
 
 local function getIsPotion(e)
-    return (
-        e.item.objectType == tes3.objectType.alchemy and
-        not foodConfig.getFoodType(e.item)
-    )
+    return e.item.objectType == tes3.objectType.alchemy 
+        and not foodConfig.getFoodType(e.item)
+        and not mwscript.getScript()
 end
 
 local function drinkFromContainer(e)

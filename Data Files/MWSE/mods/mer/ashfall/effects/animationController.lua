@@ -1,10 +1,6 @@
 local helper = require("mer.ashfall.common.helperFunctions")
 local common = require("mer.ashfall.common.common")
 local this = {}
-local DELTA_MIN = 2.5
-local DELTA_MAX = 3.0
-local TIMESCALE_MIN = 100
-local TIMESCALE_MAX = 200
 
 local data = {
     mesh = nil, 
@@ -56,20 +52,41 @@ function this.hasAnimFile(animFile)
     return fileExists
 end
 
-
 local function onTabUp()
     common.log:debug("Tab pressed up, back to vanity mode")
-    tes3.mobilePlayer.controlsDisabled = true
-    tes3.setVanityMode({ enabled = true })
+    timer.delayOneFrame(function()
+        tes3.mobilePlayer.controlsDisabled = true
+        tes3.setVanityMode({ enabled = true })
+    end)
 end
 
 local function onTabDown()
     common.log:debug("Tab pressed down, allowing mouse look")
-    tes3.mobilePlayer.controlsDisabled = false
-    tes3.setVanityMode({ enabled = false })
+    timer.delayOneFrame(function()
+        tes3.mobilePlayer.controlsDisabled = false
+        tes3.setVanityMode({ enabled = false })
+    end)
 end
 
 
+--handle keypress to cancel animation
+local function checkKeyPress(e)
+    if e.keyCode == 183 then return end --allow screenshots
+    --If this is tab being pressed down --only for non-location, moving messing up camera
+    local inputController = tes3.worldController.inputController
+    local togglePovKey = tes3.getInputBinding(tes3.keybind.togglePOV).code
+
+    if e.keyCode == togglePovKey then
+        common.log:debug("Pressed toggle POV key")
+        onTabDown()
+        return
+    end
+    if inputController:isKeyDown(togglePovKey) then
+        return
+    end
+    common.log:debug("Detected Key Press, cancelling")
+    this.cancel()
+end
 
 local function blockSave()
     return false
@@ -89,6 +106,8 @@ local function startAnimation(e)
     })
     event.trigger("Ashfall:triggerPackUpdate")
 end
+
+
 
 local function stopAnimation()
     common.log:debug("Cancelling animation")
@@ -132,37 +151,17 @@ local function stopFastTime()
     event.unregister("enterFrame", doSlowTime)
 end
 
---handle keypress to cancel animation
-local function checkKeyPress(e)
-    common.log:debug("togglePOV key: %s", tes3.getInputBinding(tes3.keybind.togglePOV).code)
-    if e.keyCode == 183 then return end --allow screenshots
-    
-    --If this is tab being pressed down
-    if e.keyCode == tes3.getInputBinding(tes3.keybind.togglePOV).code then
-        onTabDown()
-    else
-        common.log:debug("Detected Key Press, cancelling")
-        this.cancel()
-    end
-end
 
 local function getHoursPassed()
     return ( tes3.worldController.daysPassed.value * 24 ) + tes3.worldController.hour.value
 end
 --local wasIn3rdPerson
 function this.doAnimation(e)
-    
     common.log:debug("do animation")
-    data = {
-        mesh = e.mesh,
-        group = e.group,
-        timeScaleMulti = e.timeScaleMulti,
-        location = e.location,
-        callback = e.callback,
-        recovering = e.recovering,
-        sleeping = e.sleeping,
-        covered = e.covered
-    }
+    data = e
+    if data.usingBed then
+        event.trigger("Ashfall:SetBedTemp", { isUsingBed = true})
+    end
     if data.covered then
         common.log:debug("Setting InsideCoveredBedroll to true")
         common.data.insideCoveredBedroll = true
@@ -178,7 +177,7 @@ function this.doAnimation(e)
     if data.location then
         data.previousLocation = {
             position = tes3.player.position:copy(),
-            --orientation = tes3.player.orientation:copy(),
+            orientation = tes3.player.orientation:copy(),
             cell = tes3.player.cell
         }
         event.trigger("Ashfall:ToggleTentCollision", {collision = false })
@@ -229,6 +228,9 @@ function this.cancel()
     common.log:debug("Cancelling")
     tes3.runLegacyScript({command = 'DisablePlayerLooking'});
     event.trigger("Ashfall:ToggleTentCollision", {collision = true })
+    if data.usingBed then
+        event.trigger("Ashfall:SetBedTemp", { isUsingBed = false })
+    end
     if data.covered then
         common.log:debug("Setting InsideCoveredBedroll to false")
         common.data.insideCoveredBedroll = false
@@ -304,7 +306,8 @@ function this.showFastTimeMenu(e)
                     location = e.location,
                     recovering = e.recovering,
                     sleeping = e.sleeping,
-                    covered = e.covered
+                    covered = e.covered,
+                    usingBed = e.usingBed
                 }
             end
         }
@@ -320,7 +323,8 @@ function this.showFastTimeMenu(e)
                     location = e.location,
                     recovering = e.recovering,
                     sleeping = e.sleeping,
-                    covered = e.covered
+                    covered = e.covered,
+                    usingBed = e.usingBed
                 }
             end
         })

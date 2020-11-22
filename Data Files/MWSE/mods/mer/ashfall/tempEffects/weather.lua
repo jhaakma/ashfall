@@ -13,7 +13,7 @@ local temperatureController = require("mer.ashfall.temperatureController")
 temperatureController.registerExternalHeatSource("weatherTemp")
 
 local SEASON_MIN = 0.8
-local SEASON_MAX = 1.2
+local SEASON_MAX = 1.2 
 
 local currentWeather
 
@@ -51,36 +51,26 @@ local function getTimeEffect()
     local convertedTime = gameHour < 12 and gameHour or (12 - (gameHour - 12))
     --Clamp so temp stays the same for an hour at midday and midnight
     local timeEffect = math.clamp(convertedTime, 0.5, 11.5)
-    --remap to temperature based on weather ranges and region effects
-    local min = (climateConfig.regions[regionID] and climateConfig.regions[regionID].min or 0)
-    local max = (climateConfig.regions[regionID] and climateConfig.regions[regionID].max or 0)
-    timeEffect = math.remap(timeEffect, 0.5, 11.5, min, max)
+    --remap to temperature based on region effects
+    local regionData = climateConfig.getRegionData(regionID)
+    timeEffect = math.remap(timeEffect, 0.5, 11.5, regionData.min, regionData.max)
 
     return timeEffect
 end
 
 local function getWeatherEffect()
-    currentWeather = currentWeather or tes3.weather.clear
-    return  climateConfig.weathers[currentWeather]
+    return  climateConfig.getWeatherTemperature(currentWeather)
 end
 
 local lastCellWasInterior
 function this.calculateWeatherEffect(interval)
-
-
     if common.helper.getInside(tes3.player) then
         common.data.weatherTemp = common.data.intWeatherEffect or 0
         lastCellWasInterior = true
     else
-        
+        local weatherTemp = ( getTimeEffect() + getWeatherEffect() ) * getSeasonEffect()
 
-        local weatherTemp = ( 
-            getTimeEffect() + 
-            getWeatherEffect()
-        ) * getSeasonEffect()
-
-        --Check if indoors
-        
+        --If we just transitioned outside, instantly update the weather temp
         if lastCellWasInterior then
             common.data.weatherTemp = weatherTemp
         else
@@ -91,9 +81,6 @@ function this.calculateWeatherEffect(interval)
         end
         lastCellWasInterior = false
     end
-
-    
-    
 end
 
 local function cellChanged()
@@ -113,7 +100,6 @@ local function cellChanged()
     common.data.intWeatherEffect = intWeatherEffect
 end
 
-local registerOnce
 local function dataLoaded()
     updateWeather(tes3.getCurrentWeather())
     common.data.weatherTemp = common.data.weatherTemp or common.staticConfigs.interiorTempValues.default

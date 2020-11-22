@@ -157,6 +157,7 @@ this.list = {
         type = this.types.waterSource,
         mcmSetting = "enableThirst",
         ids = {
+            "ashfall_kegstand_00"
             --"kegstand",
             --"nom_kegstand_emp_de", 
             --"nom_kegstand_emp",
@@ -248,15 +249,6 @@ this.list = {
         grillMaxHeight = 50,
         grillDistance = 40
     },
-
-    -- cookingPot = Activator:new{ 
-    --     name = "Cooking Pot", 
-    --     type = this.types.cookingUtensil,
-    --     mcmSetting = "enableCooking",
-    --     ids = {
-    --         ["furn_com_cauldron_01"] = true,
-    --     },
-    -- },
 
     cauldron = Activator:new{
         name = "Cauldron",

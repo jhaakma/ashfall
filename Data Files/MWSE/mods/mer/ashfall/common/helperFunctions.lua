@@ -82,7 +82,7 @@ function this.checkRefSheltered(reference)
         position = reference.position,
         direction = {0, 0, 1},
         findAll = true,
-        maxDistance = 1000,
+        maxDistance = 5000,
         ignore = {reference}
     }
     if results then
@@ -189,7 +189,7 @@ end
         ]
     }
 ]]
-local messageBoxId = tes3ui.registerID("CustomMessageBox")
+local messageBoxId = tes3ui.registerID("CustomMessageBox_")
 function this.messageBox(params)
     --[[
         button = 
@@ -530,8 +530,7 @@ function this.tryContractDisease(spellID)
     local catchChance = defaultChance * resistEffect * survivalEffect
     local roll= math.random()
     if roll < catchChance then
-        if tes3.player.object.spells:contains(spell) then
-        else
+        if not tes3.player.object.spells:contains(spell) then
             tes3.messageBox(tes3.findGMST(tes3.gmst.sMagicContractDisease).value, spell.name)
             mwscript.addSpell{ reference = tes3.player, spell = spell  }
         end

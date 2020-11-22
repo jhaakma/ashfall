@@ -48,8 +48,10 @@ local function stewSelectMenu()
                 mwscript.removeItem({ reference = tes3.player, item = "Gold_001", count = cost})
                 --tes3.playSound{ reference = tes3.player, sound = "Item Gold Down"}
 
-                tes3ui.leaveMenuMode()
-                menuDialog:destroy()
+                if menuDialog then
+                    tes3ui.leaveMenuMode()
+                    menuDialog:destroy()
+                end
             end,
             tooltip = {
                 header = string.format("%s %s", spell.name, stewName),
@@ -59,10 +61,6 @@ local function stewSelectMenu()
     end
     table.insert(buttons, { 
         text = "Cancel",
-        callback = function()
-            tes3ui.leaveMenuMode()
-            menuDialog:destroy()
-        end
     })
     common.helper.messageBox{ message = menuMessage, buttons = buttons}
 end
@@ -90,7 +88,7 @@ local function getDisabled(cost)
     return false
 end
 
-local function makeTooltip(e)
+local function makeTooltip()
     local menuDialog = tes3ui.findMenu(GUID_MenuDialog)
     if not menuDialog then return end
     local merchant = menuDialog:getPropertyObject("PartHyperText_actor")
@@ -150,8 +148,8 @@ local function updateStewServiceButton(e)
 end
 
 
-
-local function onMenuDialogActivated(e)
+ 
+local function onMenuDialogActivated()
     local config = common.config.getConfig()
     if config.enableThirst ~= true then return end
     

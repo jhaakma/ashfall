@@ -128,7 +128,7 @@ function this.startAshfall()
             --     callback = this.confirmManualConfigure
             -- },
             {
-                text = "Use Default Settings",
+                text = "Use Default Settings (Recommended)",
                 callback = this.confirmDefaultSettings
             },
             {

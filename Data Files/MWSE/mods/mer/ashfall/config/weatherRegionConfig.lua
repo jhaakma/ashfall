@@ -1,16 +1,18 @@
 local this = {}
+
 local CLIMATE = {
-    polar     = { min = -80, max = -40 },
-    cold      = { min = -65, max = -30 },
+    polar     = { min = -80, max = -50 },
+    cold      = { min = -65, max = -40 },
     mild      = { min = -40, max = -20 },
     temperate = { min = -30, max = -10 },
     tropical  = { min = -20, max =   5 },
     dry       = { min = -35, max =  10 },
     volcanic  = { min =   0, max =  15 },
 }
+local defaultClimate = CLIMATE.temperate
 
 this.weathers = {
-    [tes3.weather.blight] = 40,
+    [tes3.weather.blight] = 40, 
     [tes3.weather.ash] = 30,
     [tes3.weather.clear] = 0,
     [tes3.weather.cloudy] = -10,
@@ -19,8 +21,17 @@ this.weathers = {
     [tes3.weather.rain] = -35,
     [tes3.weather.thunder] = -45,
     [tes3.weather.snow] = -55,
-    [tes3.weather.blizzard] = -70
+    [tes3.weather.blizzard] = -65,
 }
+local defaultWeatherTemp = 0
+
+function this.getWeatherTemperature(weatherId)
+    return this.weathers[weatherId] or defaultWeatherTemp
+end
+
+function this.getRegionData(regionId)
+    return this.regions[regionId] or defaultClimate
+end
 --Alter min/max weather values
 this.regions = {
     --Solstheim
