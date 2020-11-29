@@ -659,12 +659,7 @@ function this.orientRefToGround(params)
     if not result then 
         --This only happens when the ref is 
         --beyond the edge of the active cells
-        mwse.log("no results found")
         return false
-    end
-
-    if result.reference then
-        mwse.log("Ashfall: --------------- OrientToGround reference hit: %s", result.reference)
     end
     ref.position = { ref.position.x, ref.position.y, result.intersection.z }
     local UP = tes3vector3.new(0,0,1)
