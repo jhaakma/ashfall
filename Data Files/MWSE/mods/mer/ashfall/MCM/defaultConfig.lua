@@ -71,10 +71,12 @@ return {
     },
 
     --Misc
+
     needsCanKill = false,
     showFrostBreath = true,
     illegalHarvest = true,
     showBackpacks = true,
+    atronachRecoverMagickaDrinking = true,
 
     hungerRate = 20,
     thirstRate = 30,

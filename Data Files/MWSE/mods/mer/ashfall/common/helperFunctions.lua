@@ -634,6 +634,14 @@ function this.getGroundBelowRef(e)
 end
 
 
+local function doIgnoreMesh(ref)
+    local objType = ref.object.objectType
+    if objType == tes3.objectType.static or objType == tes3.objectType.activator then
+        return false
+    end
+    return true
+end
+
 function this.orientRefToGround(params)
     local ref = params.ref
     local maxSteepness = params.maxSteepness
@@ -642,7 +650,7 @@ function this.orientRefToGround(params)
 
     table.insert(ignoreList, tes3.player)
     for thisRef in ref.cell:iterateReferences() do
-        if thisRef.object.objectType ~= tes3.objectType.static then
+        if doIgnoreMesh(thisRef) then
             table.insert(ignoreList, thisRef)
         end
     end
@@ -651,9 +659,13 @@ function this.orientRefToGround(params)
     if not result then 
         --This only happens when the ref is 
         --beyond the edge of the active cells
+        mwse.log("no results found")
         return false
     end
 
+    if result.reference then
+        mwse.log("Ashfall: --------------- OrientToGround reference hit: %s", result.reference)
+    end
     ref.position = { ref.position.x, ref.position.y, result.intersection.z }
     local UP = tes3vector3.new(0,0,1)
     

@@ -712,7 +712,30 @@ this.ingredTypes = {
     ["mc_sugar"] = this.type.seasoning,--"sugar"
     ["mc_kanet_butter"] = this.type.seasoning,--"kanet butter",
 
-    
+    --Morrowind Jobs
+    ["jobcookedashyam"] = this.type.food,
+    ["jobcookedbittergreenpetals"] = this.type.food,
+    ["jobcookedcrabmeat"] = this.type.cookedMeat,
+    ["jobcookeddurzogmeat"] = this.type.cookedMeat,
+    ["jobcookedhackleloleaf"] = this.type.food,
+    ["jobcookedhoundmeat"] = this.type.cookedMeat,
+    ["jobcookedlargekwamaegg"] = this.type.food,
+    ["jobcookedmarshmerrow"] = this.type.food,
+    ["jobcookedratmeat"] = this.type.cookedMeat,
+    ["jobcookedsaltrice"] = this.type.food,
+    ["jobcookedscales"] = this.type.food,
+    ["jobcookedsmallkwamaegg"] = this.type.food,
+    ["jobsalt"] = this.type.seasoning,
+    ["jobssashyamsoup"] = this.type.food,
+    ["jobssbittergreensoup"] = this.type.food,
+    ["jobssgoblinstew"] = this.type.food,
+    ["jobsshackleloleafsoup"] = this.type.food,
+    ["jobsshoundstew"] = this.type.food,
+    ["jobssmarshmerrowsoup"] = this.type.food,
+    ["jobssratstew"] = this.type.food,
+    ["jobssvegetablesoup"] = this.type.food,
+    ["jobslaughterfishsmallfood"] = this.type.meat,
+    ["jobslaughterfishfood"] = this.type.meat,
 }
 
 

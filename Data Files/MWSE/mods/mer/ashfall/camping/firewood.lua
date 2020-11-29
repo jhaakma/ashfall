@@ -41,6 +41,7 @@ local function placeCampfire(e)
             e.target.orientation.y,
             tes3.player.orientation.z
         },
+        scale = 0.8,
         cell = e.target.cell
     }
     common.helper.yeet(e.target)

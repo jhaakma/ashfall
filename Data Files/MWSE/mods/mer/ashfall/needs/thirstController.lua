@@ -80,6 +80,20 @@ local function addDysentry(amountDrank)
     dysentery:setValue(dysentery:getValue() + dysentryAmount)
 end
 
+
+local function blockMagickaAtronach()
+    common.log:debug("Checking atronach settings")
+    if tes3.isAffectedBy{ reference = tes3.player, effect = tes3.effect.stuntedMagicka} then
+        common.log:debug("Is an atronach")
+        if common.config.getConfig().atronachRecoverMagickaDrinking ~= true then
+            common.log:debug("Atronachs not allowed to recover magicka from drinking")
+            return true
+        end
+    end
+    return false
+end
+
+
 function this.drinkAmount(e)
     common.log:debug("drinkAmount. WaterType: %s", e.waterType)
     local amount = e.amount or 100
@@ -99,13 +113,15 @@ function this.drinkAmount(e)
     thirst:setValue(currentThirst - amountDrank)
     local after = statsEffect.getMaxStat("magicka")
 
-    --local magickaIncrease = tes3.mobilePlayer.magicka.base * ( amountDrank / 100 )
-    local magickaIncrease = after - before
-    tes3.modStatistic{
-        reference = tes3.mobilePlayer,
-        current = magickaIncrease,
-        name = "magicka",
-    }
+    if not blockMagickaAtronach() then
+        --local magickaIncrease = tes3.mobilePlayer.magicka.base * ( amountDrank / 100 )
+        local magickaIncrease = after - before
+        tes3.modStatistic{
+            reference = tes3.mobilePlayer,
+            current = magickaIncrease,
+            name = "magicka",
+        }
+    end
     conditionsCommon.updateCondition("thirst")
     this.update()
     event.trigger("Ashfall:updateTemperature", { source = "drinkAmount" } )

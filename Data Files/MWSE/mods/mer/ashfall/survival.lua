@@ -3,7 +3,7 @@ local temperatureController = require("mer.ashfall.temperatureController")
 temperatureController.registerBaseTempMultiplier({ id ="survivalEffect"})
 local this = {}
 
-local CHECK_INTERVAL = 0.20
+local CHECK_INTERVAL = 0.50
 local MAX_EFFECT = 0.7
 
 --Calculate survival's effect on temperature
@@ -36,7 +36,7 @@ local function checkConditions()
 
     --Increase when warming up next to a campfire
     if common.data.nearCampfire then
-        local fireInc = math.remap(common.data.fireTemp, 0, 100, 1, 5)
+        local fireInc = math.remap(common.data.fireTemp, 0, 100, 0.5, 3)
         
         totalIncrease = totalIncrease + fireInc
     end

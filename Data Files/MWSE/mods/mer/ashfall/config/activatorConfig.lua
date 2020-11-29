@@ -45,6 +45,14 @@ this.list = {
             ["act_basin_telv_wood"] = true --UL
         }
     },
+    waterJug = Activator:new{
+        name = "Water Jug",
+        type = this.types.waterSource,
+        mcmSetting = "enableThirst",
+        ids = {
+            ["a_water_jug"] = true --Yurts
+        }
+    },
     well = Activator:new{ 
         name = "Well", 
         type = this.types.waterSource,

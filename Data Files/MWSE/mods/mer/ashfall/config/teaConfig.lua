@@ -86,16 +86,16 @@ this.teaTypes["ingred_gold_kanet_01"] = {
 --Ascadian Isles
 this.teaTypes["ingred_heather_01"] = {
     teaName = "Heather Tea",
-    teaDescription = "Heather tea is a relaxing beverage that helps take the weight off your shoulders.",
-    effectDescription = "Feather 20 Points",
+    teaDescription = "Heather tea is a relaxing beverage that makes you light on your feet.",
+    effectDescription = "Sanctuary 5 Points",
     priceMultiplier = 5.0,
     duration = 4,
     spell = {
         id = "ashfall_tea_heather",
         effects = {
             {
-                id = tes3.effect.feather,
-                amount = 20
+                id = tes3.effect.sanctuary,
+                amount = 5
             }
         }
     }

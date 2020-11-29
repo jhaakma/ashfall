@@ -237,6 +237,12 @@ local function registerModConfig()
             }
 
             categoryMisc:createYesNoButton{
+                label = "Atronachs Regain Magicka from Drinking",
+                description = "When you get thirsty, your maximum magicka (and, therefore, your current magicka) decreases. By default, recovering from thirst recovers the same amount of current magicka as what was lost from being thirsty, even if you have the Atronach sign. Disable this setting to prevent this magicka gain. Be warned, this means as an Atronach you will need to find ways to recover your magicka after drinking.",
+                variable = createTableVar("atronachRecoverMagickaDrinking")
+            }
+
+            categoryMisc:createYesNoButton{
                 label = "Harvest Wood in Wilderness Only",
                 description = (
                     "If this is enabled, you can not harvest wood with an axe while in town."   

@@ -8,11 +8,11 @@ local randomStuffChances = {
     stew = 0.7
 }
 
-
 local vanillaCampfires = {
     --Ugly ones
     light_pitfire00 =  { supports = false, scale = 0.9, rootHeight = 5 },  
     light_pitfire01 =  { supports = false, scale = 0.9, rootHeight = 5 },
+    _ser_pitfire =  { supports = false, scale = 0.9, rootHeight = 5 },
 
     --unlit supports
     furn_de_firepit =  { supports = true, rootHeight = 85 },
@@ -25,12 +25,14 @@ local vanillaCampfires = {
     furn_de_firepit_f_200 = { supports = true, rootHeight = 85 },
     furn_de_firepit_f_323 = { supports = true, rootHeight = 85 },
     furn_de_firepit_f_400 = { supports = true, rootHeight = 85 },
+    --yurt
+    a_fire_big  = { supports = true, rootHeight = 85 },
+    a_fire_cooking  = { supports = true, rootHeight = 85 },
+    a_fire_doused  = { supports = true, rootHeight = 85 },
 
     --No Supports
     furn_de_firepit_f_01 = { supports = false, rootHeight = 85 },
     furn_de_firepit_f_01_400 = { supports = false, rootHeight = 85 },
-    
-    
 }
 
 --A list of shit that campfires can be composed of
@@ -47,16 +49,21 @@ local kitBashObjects = {
     furn_coals_hot = true,
     furn_de_shack_hook = true,
     chimney_smoke_small = true,
+    a_log_04 = true,
+    a_cooking_ladle = true,
+    a_fire_coals = true,
 }
 
 local cauldrons = {
     furn_com_cauldron_01 = true,
     furn_com_cauldron_02 = true,
     misc_com_bucket_metal = true,
-    pot_01 = true
+    pot_01 = true,
+    a_cooking_pot = true,
 }
 local grills = {
     furn_de_minercave_grill_01 = true,
+    a_cooking_grille = true
 }
 
 
@@ -68,13 +75,17 @@ local platforms = {
     ex_t_rock_coastal_01 = true,
     furn_firepit00 = true,
     in_redoran_ashpit_01 = true,
-    furn_de_forge_01 = true
+    furn_de_forge_01 = true,
+    a_yurt_int_01 = true,
+    a_yurt_int_01_d = true,
 }
 
 local lightPatterns = {
     "light_fire",
     "light_logpile",
-    "flame light"
+    "flame light",
+    "a_fire_light",
+    "a_hearth_smoke",
 }
 
 
@@ -193,51 +204,67 @@ local function checkKitBashObjects(vanillaRef)
     local isLit = false
     local ignoreList = {}
     for ref in vanillaRef.cell:iterateReferences() do
-        local id = ref.object.id:lower()
-        
-        if common.helper.getCloseEnough({ref1 = ref, ref2 = vanillaRef, distHorizontal = 75, distVertical = 200}) then
+        if ref.disabled then 
+            common.log:debug("%s is disabled, adding to ignore list", ref.object.id)
+            table.insert(ignoreList, ref)
+        else
+                
+            local id = ref.object.id:lower()
             
-            common.log:debug("Nearby ref: %s", ref.object.id)
-
-            if ref ~= vanillaRef then
-                --don't mess with campfires that have unique things nearby
-                if string.find(id, "_unique") then
-                    common.log:debug("Found a unique mesh, ignoring campfire replacement")
-                    return false
-                end
-
-                if platforms[id] then
-                    common.log:debug("Has platform")
-                    hasPlatform = true
-                end
+            if common.helper.getCloseEnough({ref1 = ref, ref2 = vanillaRef, distHorizontal = 75, distVertical = 200}) then
                 
-                --if you find an existing campfire, get rid of it
-                if campfireConfig.getConfig(id) then
-                    common.log:debug("Found replaced campfire")
-                    common.helper.yeet(ref)
-                end
                 
-                if cauldrons[id] then
-                    common.log:debug("Found existing cooking pot")
-                    hasCookingPot = true
-                    common.helper.yeet(ref)
-                end
-                if grills[id] then
-                    common.log:debug("Found existing grill")
-                    hasGrill = true
-                    common.helper.yeet(ref)
-                end
-                if kitBashObjects[id] then      
-                    common.log:debug("Found existing %s", id)
-                    common.helper.yeet(ref)
-                    table.insert(ignoreList, ref)
-                end
+                if ref ~= vanillaRef then
+                    common.log:debug("Nearby ref: %s", ref.object.id)
+                    --don't mess with campfires that have unique things nearby
+                    if string.find(id, "_unique") then
+                        common.log:debug("Found a unique mesh, ignoring campfire replacement")
+                        return false
+                    end
 
-                for _, pattern in ipairs(lightPatterns) do
-                    if string.startswith(id, pattern)then
-                        common.log:debug("Found a fire")
-                        isLit = true
+                    if platforms[id] then
+                        common.log:debug("Has platform")
+                        hasPlatform = true
+                    end
+                    
+                    --if you find an existing campfire, get rid of it
+                    if campfireConfig.getConfig(id) then
+                        common.log:debug("removing existing replaced campfire %s", ref.object.id)
+                        table.insert(ignoreList, ref)
                         common.helper.yeet(ref)
+                    end
+
+                    if vanillaCampfires[id] then
+                        common.log:debug("Found another campfire that wants to be replaced, yeeting now: %s", ref.object.id)
+                        table.insert(ignoreList, ref)
+                        common.helper.yeet(ref)
+                    end
+                    
+                    if cauldrons[id] then
+                        common.log:debug("Found existing cooking pot")
+                        table.insert(ignoreList, ref)
+                        hasCookingPot = true
+                        common.helper.yeet(ref)
+                    end
+                    if grills[id] then
+                        common.log:debug("Found existing grill")
+                        table.insert(ignoreList, ref)
+                        hasGrill = true
+                        common.helper.yeet(ref)
+                    end
+                    if kitBashObjects[id] then      
+                        common.log:debug("Found existing kitbash %s", id)
+                        common.helper.yeet(ref)
+                        table.insert(ignoreList, ref)
+                    end
+
+                    for _, pattern in ipairs(lightPatterns) do
+                        if string.startswith(id, pattern)then
+                            common.log:debug("Found a fire")
+                            isLit = true
+                            table.insert(ignoreList, ref)
+                            common.helper.yeet(ref)
+                        end
                     end
                 end
             end
@@ -253,10 +280,15 @@ local function replaceCampfire(e)
     -- event.register("simulate", function()
         
     --     if not safeRef:valid() then return end
-        if e.reference.disabled or e.reference.deleted then return end
+
         local vanillaConfig = vanillaCampfires[e.reference.object.id:lower()]
         local campfireReplaced = e.reference.data and e.reference.data.campfireReplaced
         if vanillaConfig and not campfireReplaced then
+            common.log:debug("replaceCampfire() %s", e.reference.object.id)
+            if e.reference.disabled or e.reference.deleted then
+                common.log:debug("%s is disabled, not replacing", e.reference.object.id)
+                return 
+            end
             e.reference.data.campfireReplaced = true
             --decide which campfire to replace with
             local data = checkKitBashObjects(e.reference)
@@ -307,21 +339,28 @@ local function replaceCampfire(e)
             e.reference:disable()
             common.helper.yeet(e.reference)
 
-            common.helper.orientRefToGround{ 
+            local orientedCorrectly = common.helper.orientRefToGround{ 
                 ref = campfire, 
                 maxSteepness = (data.hasPlatform and 0.0 or 0.2),
                 ignoreList = data.ignoreList,
                 rootHeight = vanillaConfig.rootHeight
             }
+            if not orientedCorrectly then
+                common.log:debug("Wasn't able to find the ground, setting z height to match original")
+                campfire.position = {
+                    campfire.position.x,
+                    campfire.position.y,
+                    campfire.position.z - vanillaConfig.rootHeight,
+                }
+            end
             common.log:debug("Campfire final supports: %s\n\n", campfire.data.dynamicConfig.supports)
-
         end
     -- end,{ doOnce = true })
 end
 
 local function replaceCampfires(e)
-        for ref in e.cell:iterateReferences() do
-            replaceCampfire{reference = ref}
-        end
+    for ref in e.cell:iterateReferences() do
+        replaceCampfire{reference = ref}
+    end
 end
 event.register("cellChanged", replaceCampfires)
