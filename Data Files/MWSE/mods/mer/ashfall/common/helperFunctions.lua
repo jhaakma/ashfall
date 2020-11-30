@@ -621,7 +621,6 @@ function this.getGroundBelowRef(e)
     local rootHeight = e.rootHeight or 50
     local ignoreList = e.ignoreList
     if not ref then return end
-    mwse.log("Root height: %s", rootHeight)
     local height = rootHeight + 10
     local result = tes3.rayTest{
         position = {ref.position.x, ref.position.y, ref.position.z + height}, 

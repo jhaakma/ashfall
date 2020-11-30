@@ -70,6 +70,10 @@ function this.isStewNotSoup(stewLevels)
     return isStew
 end
 
+function this.addFood(id, foodType)
+    this.ingredTypes[id:lower()] = this.type[foodType]
+end
+
 this.type = {
     meat = "Meat",
     cookedMeat = "Meat (Cooked)",
@@ -736,10 +740,26 @@ this.ingredTypes = {
     ["jobssvegetablesoup"] = this.type.food,
     ["jobslaughterfishsmallfood"] = this.type.meat,
     ["jobslaughterfishfood"] = this.type.meat,
+
+    --OAAB
+    ["ab_ingcrea_guarmeat_01"] = this.type.meat,
+    ["ab_ingcrea_horsemeat01"] = this.type.foomeatd,
+    ["ab_ingcrea_sfmeat_01"] = this.type.meat,
+    ["ab_ingflor_bloodgrass_01"] = this.type.herb,
+    ["ab_ingflor_bloodgrass_02"] = this.type.herb,
+    ["ab_ingflor_bluekanet_01"] = this.type.herb,
+    ["ab_ingflor_dustcap"] = this.type.mushroom,
+    ["ab_ingflor_fomentarius"] = this.type.mushroom,
+    ["ab_ingflor_glmuscaria_01"] = this.type.mushroom,
+    ["ab_ingflor_urnula"] = this.type.mushroom,
+    ["ab_ingflor_vimuscaria_01"] = this.type.mushroom,
+    ["ab_ingfood_kwamaeggcentcut"] = this.type.food,
+    ["ab_ingfood_kwamaeggcentwrap"] = this.type.food,
+    ["ab_ingfood_kwamaloaf"] = this.type.food,
+    ["ab_ingfood_saltricebread"] = this.type.food,
+    ["ab_ingfood_saltriceporridge"] = this.type.food,
+    ["ab_ingfood_scuttlepie"] = this.type.food,
+    ["ab_ingfood_sweetroll"] = this.type.food,
 }
-
-
-
-
 
 return this

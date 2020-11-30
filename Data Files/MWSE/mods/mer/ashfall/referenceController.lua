@@ -1,5 +1,4 @@
-
-local activatorConfig = require("mer.ashfall.config.activatorConfig")
+local activatorConfig = require("mer.ashfall.config.staticConfigs").activatorConfig
 local this = {}
 
 local ReferenceController = {

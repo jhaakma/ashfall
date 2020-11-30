@@ -17,7 +17,6 @@ local config =  {
         cookingPot = attachType.dynamic,
         kettle = attachType.dynamic,
         grill = attachType.dynamic,
-
     },
     ["ashfall_campfire_static"] = {
         campfire = attachType.static,

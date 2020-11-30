@@ -9,7 +9,7 @@ return  {
         local hasJustWater = (not teaConfig.teaTypes[campfire.data.waterType]) and ( not campfire.data.stewLevels )
         local hasBrewedTea = campfire.data.teaProgress and campfire.data.teaProgress >= 100
         local hasCookedStew = campfire.data.stewProgress and campfire.data.stewProgress >= 100
-        return hasWaterAmount and hasJustWater or hasBrewedTea or hasCookedStew 
+        return hasWaterAmount and (hasJustWater or hasBrewedTea or hasCookedStew)
     end,
     callback = function(campfire)
         --fill bottle

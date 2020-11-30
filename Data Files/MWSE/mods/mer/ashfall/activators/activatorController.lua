@@ -26,14 +26,12 @@ function this.getCurrentType()
 end
 
 function this.getRefActivator(reference)
-    for activatorType, activator in pairs(this.list) do
+    for _, activator in pairs(this.list) do
         if activator:isActivator(reference.object.id) then
             return activator
         end 
     end
 end
-
-
 
 
 --[[

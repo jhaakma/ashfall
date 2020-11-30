@@ -91,7 +91,7 @@ this.teaTypes["ingred_heather_01"] = {
     priceMultiplier = 5.0,
     duration = 4,
     spell = {
-        id = "ashfall_tea_heather",
+        id = "ashfall_tea_heather_v2",
         effects = {
             {
                 id = tes3.effect.sanctuary,

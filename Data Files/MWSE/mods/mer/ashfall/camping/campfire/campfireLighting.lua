@@ -133,11 +133,13 @@ local function addLighting(e)
     local campfire = e.campfire
     local lightNode = createLightFromRef(campfire)
     local attachLight = campfire.sceneNode:getObjectByName("attachLight")
-    attachLight:attachChild(lightNode)
-    campfire.sceneNode:update()
-    campfire.sceneNode:updateNodeEffects()
-    campfire:deleteDynamicLightAttachment()
-    campfire:getOrCreateAttachedDynamicLight(lightNode, 1.0)
+    if attachLight then
+        attachLight:attachChild(lightNode)
+        campfire.sceneNode:update()
+        campfire.sceneNode:updateNodeEffects()
+        campfire:deleteDynamicLightAttachment()
+        campfire:getOrCreateAttachedDynamicLight(lightNode, 1.0)
+    end
 end
 event.register("Ashfall:Campfire_Enablelight", addLighting)
 

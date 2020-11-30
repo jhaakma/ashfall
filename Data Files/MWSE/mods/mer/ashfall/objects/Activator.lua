@@ -10,13 +10,15 @@ Activator.hideTooltip = false
 
 function Activator:new(data)
     local t = data or {}
+    t.ids = t.ids or {}
+    t.patterns = t.patterns or {}
     setmetatable(t, self)
     self.__index = self
     return t
 end
- 
+
+
 function Activator:isActivator(id)
-    
     if self.ids then
         if self.ids[string.lower(id)] == true then
             return true
@@ -31,6 +33,14 @@ function Activator:isActivator(id)
     end
 
     return false
+end
+
+function Activator:addId(id)
+    self.ids[id:lower()] = true
+end
+
+function Activator:addPattern(pattern)
+    self.patterns[pattern:lower()] = true
 end
 
 return Activator

@@ -1,15 +1,15 @@
 local common = require ("mer.ashfall.common.common")
 local thirstController = require("mer.ashfall.needs.thirstController")
-local conditions = require("mer.ashfall.conditionController")
+local teaConfig = common.staticConfigs.teaConfig
+
 return {
     text = "Drink",
     showRequirements = function(campfire)
-        return (
-            campfire.data.waterAmount and 
-            campfire.data.waterAmount > 0 and
-            not campfire.data.stewLevels --and
-            --conditions.thirst:getValue() <= 99
-        )
+        local hasWaterAmount = campfire.data.waterAmount and campfire.data.waterAmount > 0
+        local hasJustWater = (not teaConfig.teaTypes[campfire.data.waterType]) and ( not campfire.data.stewLevels )
+        local hasBrewedTea = campfire.data.teaProgress and campfire.data.teaProgress >= 100
+        local hasStew = campfire.data.stewProgress
+        return hasWaterAmount and not hasStew and (hasJustWater or hasBrewedTea)
     end,
     callback = function(campfire)
         local function doDrink()

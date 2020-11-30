@@ -6,10 +6,11 @@ if not mwse.loadConfig("ashfall") then
     mwse.saveConfig("ashfall", {})
 end
 
-
 local function initialized()
 
     if tes3.isModActive("Ashfall.esp") then
+        require ("mer.ashfall.common.interopEvents")
+
         require("mer.ashfall.survival")
         -- load modules
         require ("mer.ashfall.common.common")
@@ -39,13 +40,15 @@ local function initialized()
         
         require("mer.ashfall.referenceController")
 
+        
+
         local version = require("mer.ashfall.version")
         mwse.log("[Ashfall %s] Initialized", version)
     end
 end
 
 
---Need to initialise faders immediately
+--Need to initialise immediately
 require ("mer.ashfall.effects.faderController")
 
 event.register("initialized", initialized)

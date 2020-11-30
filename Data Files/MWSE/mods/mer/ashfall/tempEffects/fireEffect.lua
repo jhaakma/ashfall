@@ -6,21 +6,10 @@
 ]]--
 local this = {}
 local common = require("mer.ashfall.common.common")
+local staticConfigs = common.staticConfigs
 local activatorConfig = common.staticConfigs.activatorConfig
 ---CONFIGS----------------------------------------
 --max distance where fire has an effect
-local heatValues = {
-    lantern = 3,
-    lamp = 1,
-    candle = 1, 
-    chandelier = 1,
-    sconce = 5,
-    torch = 12,
-    fire = 18,
-    flame = 20,
-}
-
-
 
 local heatDefault = 5
 local maxFirepitHeat = 40
@@ -47,21 +36,13 @@ local function checkWarmHands()
     end
 end
 
---Check Ids to see if this light is a firepit of some kind
-local function checkForFirePit(id)
-    if activatorConfig.list.fire:isActivator(id) then
-        return true
-    end
-    return false
-end
-
 function this.calculateFireEffect()
-    if not common.staticConfigs.conditionConfig.temp:isActive() then return end
+    if not staticConfigs.conditionConfig.temp:isActive() then return end
     local totalHeat = 0
     local closeEnough
     common.data.nearCampfire = false
     for _, cell in pairs( tes3.getActiveCells() ) do
-        for ref in cell:iterateReferences(tes3.objectType.light) do
+        for ref in cell:iterateReferences() do
             if not ref.disabled then
             --if ref.object.isFire then
                 local distance = mwscript.getDistance({reference = "player", target = ref})
@@ -69,7 +50,7 @@ function this.calculateFireEffect()
                     local maxHeat = heatDefault
                     --Firepits have special logic for hand warming
                     
-                    if activatorConfig.list.campfire.ids[ref.object.id:lower()] then
+                    if activatorConfig.list.campfire:isActivator(ref.object.id) then
                         if ref.data.isLit then
                             local fuel = ref.data.fuelLevel
                             if fuel then
@@ -87,7 +68,7 @@ function this.calculateFireEffect()
                         else
                             maxHeat = 0
                         end
-                    elseif checkForFirePit(ref.object.id) then
+                    elseif activatorConfig.list.fire:isActivator(ref.object.id) then
                         maxHeat = maxFirepitHeat
                         closeEnough = true
                         
@@ -97,7 +78,7 @@ function this.calculateFireEffect()
                         end
                     --other fires
                     else
-                        for pattern, heatValue in pairs(heatValues) do
+                        for pattern, heatValue in pairs(staticConfigs.heatSourceValues) do
                             if string.find(string.lower(ref.object.id), pattern) then
                                 maxHeat = heatValue
                                 --common.log:info("Fire source: %s", ref.object.id)

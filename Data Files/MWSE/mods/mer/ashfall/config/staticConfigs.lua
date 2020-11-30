@@ -49,6 +49,8 @@ this.tentActiveToMiscMap = {}
 for miscId, activeId in pairs(this.tentMiscToActiveMap) do
     this.tentActiveToMiscMap[activeId] = miscId
 end
+
+
 this.bedrolls = {
     ashfall_bedroll_ashl = true,
     ashfall_bedroll = true,
@@ -355,6 +357,50 @@ this.bottleList = {
 
     misc_dwrv_pitcher00 = this.bottleConfig.dwarvenPitcher,
     misc_dwrv_pitcher00_uni = this.bottleConfig.dwarvenPitcher,
+
+    --MODS
+
+    --seydaneen gateway
+    misc_com_bottle_water = this.bottleConfig.bottle,
+    --OAAB
+    ab_misc_6thmug = this.bottleConfig.mug,
+    ab_misc_combottle_01 = this.bottleConfig.bottle,
+    ab_misc_combottle_02 = this.bottleConfig.bottle,
+    ab_misc_combottle_03 = this.bottleConfig.bottle,
+    ab_misc_compewtercup_01 = this.bottleConfig.cup,
+    ab_misc_compewterpot_01 = this.bottleConfig.pot,
+    ab_misc_comsilverpot_01 = this.bottleConfig.pot,
+    ab_misc_comsilvertank_01 = this.bottleConfig.tankard,
+    ab_misc_comwoodtankard = this.bottleConfig.tankard,
+    ab_misc_debluecup_01 = this.bottleConfig.cup,
+    ab_misc_deblueflask_01 = this.bottleConfig.flask,
+    ab_misc_deblueflask_02 = this.bottleConfig.flask,
+    ab_misc_deblueglass_01 = this.bottleConfig.glass,
+    ab_misc_deblueglasscup_01 = this.bottleConfig.cup,
+    ab_misc_debluetankard_01 = this.bottleConfig.tankard,
+    ab_misc_deceramiccup_01 = this.bottleConfig.cup,
+    ab_misc_deceramiccup_02 = this.bottleConfig.cup,
+    ab_misc_deceramicflask_01 = this.bottleConfig.flask,
+    ab_misc_deceramicpot_01 = this.bottleConfig.pot,
+    ab_misc_declaycup_01 = this.bottleConfig.cup,
+    ab_misc_declayflask_01 = this.bottleConfig.flask,
+    ab_misc_declayflask_02 = this.bottleConfig.flask,
+    ab_misc_deebonycup_01 = this.bottleConfig.cup,
+    ab_misc_deebonyflask_01 = this.bottleConfig.flask,
+    ab_misc_deebonyglass_01 = this.bottleConfig.glass,
+    ab_misc_degreenglasscup_01 = this.bottleConfig.cup,
+    ab_misc_degreenpitcher = this.bottleConfig.pitcher,
+    ab_misc_degreenpot = this.bottleConfig.pot,
+    ab_misc_depeachglascup_01 = this.bottleConfig.cup,
+    ab_misc_deyelglasscup_01 = this.bottleConfig.cup,
+    ab_misc_deyelglassflask_01 = this.bottleConfig.flask,
+    ab_misc_deyelglasspot_01 = this.bottleConfig.pot,
+    ab_misc_drinkcyrobrandy = this.bottleConfig.cup,
+    ab_misc_drinkflin = this.bottleConfig.bottle,
+    ab_misc_drinkgreef = this.bottleConfig.bottle,
+    ab_misc_drinkmazte = this.bottleConfig.bottle,
+    ab_misc_drinkshein = this.bottleConfig.bottle,
+    ab_misc_drinksujamma = this.bottleConfig.bottle,
 }
 
 
@@ -500,5 +546,15 @@ this.interiorTempPatterns = {
     ["vemynal"] = this.interiorTempValues.ruin,
 }
 
+this.heatSourceValues = {
+    lantern = 3,
+    lamp = 1,
+    candle = 1, 
+    chandelier = 1,
+    sconce = 5,
+    torch = 12,
+    fire = 18,
+    flame = 20,
+}
 
 return this
