@@ -34,6 +34,14 @@ this.list.water = Activator:new{
         ["terrwater_circle"] = true,
     }
 }
+this.list.waterDirty = this.list.water
+this.list.waterClean = Activator:new{ 
+    name = "Water", 
+    type = this.types.waterSource,
+    mcmSetting = "enableThirst",
+    ids = {
+    }
+}
 this.list.basin = Activator:new{
     name = "Basin",
     type = this.types.waterSource,

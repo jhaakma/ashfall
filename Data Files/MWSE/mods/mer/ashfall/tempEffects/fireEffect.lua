@@ -42,7 +42,7 @@ function this.calculateFireEffect()
     local closeEnough
     common.data.nearCampfire = false
     for _, cell in pairs( tes3.getActiveCells() ) do
-        for ref in cell:iterateReferences() do
+        for ref in cell:iterateReferences(tes3.objectType.light) do
             if not ref.disabled then
             --if ref.object.isFire then
                 local distance = mwscript.getDistance({reference = "player", target = ref})
