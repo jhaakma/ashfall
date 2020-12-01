@@ -56,21 +56,7 @@ end
 event.register("Ashfall:RegisterActivators", registerActivators)
 
 local function registerWaterContainers(e)
-    --[[
-        Example:
-        event.trigger("Ashfall:RegisterWaterContainers", {
-            --set values to what other vanilla cups are set to
-            my_bottle_02: "cup", 
-            --set capacity to 25
-            my_bottle_03: 25 
-            --set values manually
-            my_bottle_01: {
-                capacity = 25, --required
-                weight = 2, --optional
-                value = 10 --optional
-            },
-        })
-    ]]
+    local includeOverrides = e.includeOverrides
     common.log:debug("Registering the following water containers:")
     for id, data in pairs(e.data) do
         assert(type(id) == "string", "Water container ID must be a string.")
@@ -83,12 +69,14 @@ local function registerWaterContainers(e)
             staticConfigs.bottleList[id] = {
                 capacity = data.capacity,
                 weight = data.weight,
-                value = data.value
+                value = data.value,
+                holdsStew = data.holdsStew
             }
-            common.log:debug("    %s: { capacity: %d%s%s }",
+            common.log:debug("    %s: { capacity: %d%s%s%s }",
                 data.capacity, 
                 data.weight and (", weight: " .. data.weight) or "",
-                data.value and (", weight: " .. data.value) or ""
+                data.value and (", weight: " .. data.value) or "",
+                data.holdsStew and (", holdsStew: " .. data.holdsStew) or ""
             )
         elseif type(data) == "number" then
             --Number for just setting a capacity
@@ -104,13 +92,20 @@ local function registerWaterContainers(e)
                     data, listValidWaterContainers())
             )
 
-            staticConfigs.bottleList[id] = thisBottleConfig
+            staticConfigs.bottleList[id] = {
+                capacity = thisBottleConfig.capacity,
+                holdsStew = thisBottleConfig.holdsStew,
+                value = includeOverrides and thisBottleConfig.value or nil,
+                weight = includeOverrides and thisBottleConfig.weight or nil,
+            }
             
+            local finalConfig = staticConfigs.bottleList[id]
             common.log:debug("    %s: { capacity: %d%s%s }",
                 id,
-                thisBottleConfig.capacity, 
-                thisBottleConfig.weight and (", weight: " .. thisBottleConfig.weight) or "",
-                thisBottleConfig.value and (", weight: " .. thisBottleConfig.value) or ""
+                finalConfig.capacity, 
+                finalConfig.weight and (", weight: " .. finalConfig.weight) or "",
+                finalConfig.value and (", weight: " .. finalConfig.value) or "",
+                finalConfig.holdsStew and (", holdsStew: " .. finalConfig.holdsStew) or ""
             )
         end
     end
@@ -168,8 +163,8 @@ event.trigger("Ashfall:Interop", {
     registerActivators = function(data, usePatterns)
         registerActivators({ data = data, usePatterns = usePatterns})
     end,
-    registerWaterContainers = function(data)
-        registerWaterContainers({ data = data })
+    registerWaterContainers = function(data, includeOverrides)
+        registerWaterContainers({ data = data, includeOverrides = includeOverrides })
     end,
     registerFoods = function(data)
         registerFoods({ data = data })
