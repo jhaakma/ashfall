@@ -86,6 +86,7 @@ this.type = {
     misc = nil
 }
 
+
 this.stewBuffs = {
     [this.type.meat] = { 
         notSoup = true,

@@ -1,18 +1,10 @@
 local this = {}
 local common = require("mer.ashfall.common.common")
-
+local staticConfigs = common.staticConfigs
 --Register heat source
 local temperatureController = require("mer.ashfall.temperatureController")
 temperatureController.registerExternalHeatSource("hazardTemp")
 
-local hazardTemps = {
-    ["in_lava_1"] = 250,
-    ["in_lava_2"] = 250,
-    ["in_lava_5"] = 250,
-    ["in_lava_oval"] = 250,
-    ["lava_vent"] = 50,
-    ["volcano_steam"] = 80,
-}
 local maxDistance = 1000
 local function getHeat(ref, hazardTemp)
     local heat = 0
@@ -27,21 +19,24 @@ local function getHeat(ref, hazardTemp)
 end
 
 
+local function doCalculateHazard(ref)
+    local maxHeat = staticConfigs.heatSourceValues[ref.object.id:lower()]
+    if maxHeat then
+        return getHeat(ref, maxHeat)
+    else
+        return 0
+    end
+end
 
 function this.calculateHazards()
     local totalHeat = 0
     for _, cell in pairs( tes3.getActiveCells() ) do
-        for ref in cell:iterateReferences(tes3.objectType.activator) do
-            for pattern, val in pairs(hazardTemps) do
-                if string.find(string.lower(ref.object.id), pattern) then
-                    totalHeat = totalHeat + getHeat(ref, val)
-                end
-            end
+        for ref in cell:iterateReferences() do
+            totalHeat = totalHeat + doCalculateHazard(ref)
         end
     end
     --tes3.messageBox("%s", totalHeat)
     totalHeat = math.min( 100, totalHeat)
-
     common.data.hazardTemp = totalHeat
 end
 

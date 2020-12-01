@@ -1,4 +1,3 @@
-
 local common = require("mer.ashfall.common.common")
 local staticConfigs = common.staticConfigs
 local activatorConfig = staticConfigs.activatorConfig
@@ -28,8 +27,7 @@ local function listValidFoodTypes()
     return message
 end
 
-
-event.register("Ashfall:RegisterActivators", function(e)
+local function registerActivators(e)
     --[[
         Example:
         event.trigger("Ashfall:RegisterActivators", {
@@ -53,29 +51,24 @@ event.register("Ashfall:RegisterActivators", function(e)
         
         common.log:debug("    %s as %s", id, activatorType)
     end
-    --Register a logger to event to check if they registered properly
-    event.trigger("Ashfall:ActivatorsRegistered", { ids = e.ids})
-end)
+    
+end
+event.register("Ashfall:RegisterActivators", registerActivators)
 
-
-event.register("Ashfall:RegisterWaterContainers", function(e)
+local function registerWaterContainers(e)
     --[[
         Example:
         event.trigger("Ashfall:RegisterWaterContainers", {
-
             --set values to what other vanilla cups are set to
             my_bottle_02: "cup", 
-
             --set capacity to 25
             my_bottle_03: 25 
-
             --set values manually
             my_bottle_01: {
                 capacity = 25, --required
                 weight = 2, --optional
                 value = 10 --optional
             },
-
         })
     ]]
     common.log:debug("Registering the following water containers:")
@@ -121,9 +114,10 @@ event.register("Ashfall:RegisterWaterContainers", function(e)
             )
         end
     end
-end)
+end
+event.register("Ashfall:RegisterWaterContainers", registerWaterContainers)
 
-event.register("Ashfall:RegisterFoods", function(e)
+local function registerFoods(e)
     --[[
         Example:
         event.trigger("Ashfall:RegisterFoods", {
@@ -142,10 +136,11 @@ event.register("Ashfall:RegisterFoods", function(e)
         foodConfig.addFood(id, foodType)
         common.log:debug("    %s: %s", id, foodType)
     end
-end)
+end
+event.register("Ashfall:RegisterFoods", registerFoods)
 
-event.register("Ashfall:RegisterHeatSources", function(e)
-    --[[
+local function registerHeatSources(e)
+        --[[
         event.trigger("Ashfall:RegisterHeatSources", { data = {
             myHeatSourceId = 50
         }})
@@ -157,7 +152,9 @@ event.register("Ashfall:RegisterHeatSources", function(e)
         staticConfigs.heatSourceValues[id:lower()] = temp
         common.log:debug("    %s: %s", id, temp)
     end
-end)
+end
+event.register("Ashfall:RegisterHeatSources", registerHeatSources)
+
 
 -- local function registerTeas(e)
 --     for _, teaData in ipairs(e) do
@@ -167,4 +164,17 @@ end)
 -- end
 -- event.register("Ashfall:RegisterTeas", registerTeas)
 
-event.trigger("Ashfall:Interop")
+event.trigger("Ashfall:Interop", {
+    registerActivators = function(data, usePatterns)
+        registerActivators({ data = data, usePatterns = usePatterns})
+    end,
+    registerWaterContainers = function(data)
+        registerWaterContainers({ data = data })
+    end,
+    registerFoods = function(data)
+        registerFoods({ data = data })
+    end,
+    registerHeatSources = function(data)
+        registerHeatSources({data = data})
+    end
+})

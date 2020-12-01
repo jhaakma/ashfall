@@ -11,6 +11,17 @@ local activatorConfig = common.staticConfigs.activatorConfig
 ---CONFIGS----------------------------------------
 --max distance where fire has an effect
 
+local fireValues = {
+    lantern = 3,
+    lamp = 1,
+    candle = 1, 
+    chandelier = 1,
+    sconce = 5,
+    torch = 12,
+    fire = 18,
+    flame = 20,
+}
+
 local heatDefault = 5
 local maxFirepitHeat = 40
 local maxDistance = 340
@@ -78,7 +89,7 @@ function this.calculateFireEffect()
                         end
                     --other fires
                     else
-                        for pattern, heatValue in pairs(staticConfigs.heatSourceValues) do
+                        for pattern, heatValue in pairs(fireValues) do
                             if string.find(string.lower(ref.object.id), pattern) then
                                 maxHeat = heatValue
                                 --common.log:info("Fire source: %s", ref.object.id)
