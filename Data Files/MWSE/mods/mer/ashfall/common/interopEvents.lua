@@ -28,12 +28,6 @@ local function listValidFoodTypes()
 end
 
 local function registerActivators(e)
-    --[[
-        Example:
-        event.trigger("Ashfall:RegisterActivators", {
-            my_Well_id_01 = "well"
-        })
-    ]]
     common.log:debug("Registering the following activator %s: ", (e.usePatterns and "patterns" or "ids"))
     for id, activatorType in pairs(e.data) do
 
@@ -51,7 +45,7 @@ local function registerActivators(e)
         
         common.log:debug("    %s as %s", id, activatorType)
     end
-    
+    return true
 end
 event.register("Ashfall:RegisterActivators", registerActivators)
 
@@ -73,10 +67,11 @@ local function registerWaterContainers(e)
                 holdsStew = data.holdsStew
             }
             common.log:debug("    %s: { capacity: %d%s%s%s }",
+                id,
                 data.capacity, 
-                data.weight and (", weight: " .. data.weight) or "",
-                data.value and (", weight: " .. data.value) or "",
-                data.holdsStew and (", holdsStew: " .. data.holdsStew) or ""
+                data.weight and string.format(", weight: %s", data.weight) or "",
+                data.value and string.format(", weight: %s", data.value) or "",
+                data.holdsStew and string.format(", holdsStew: %s", data.holdsStew) or ""
             )
         elseif type(data) == "number" then
             --Number for just setting a capacity
@@ -103,43 +98,30 @@ local function registerWaterContainers(e)
             common.log:debug("    %s: { capacity: %d%s%s }",
                 id,
                 finalConfig.capacity, 
-                finalConfig.weight and (", weight: " .. finalConfig.weight) or "",
-                finalConfig.value and (", weight: " .. finalConfig.value) or "",
-                finalConfig.holdsStew and (", holdsStew: " .. finalConfig.holdsStew) or ""
+                finalConfig.weight and string.format(", weight: %s", finalConfig.weight) or "",
+                finalConfig.value and string.format(", weight: %s", finalConfig.value) or "",
+                finalConfig.holdsStew and string.format(", holdsStew: %s", finalConfig.holdsStew) or ""
             )
         end
     end
+    return true
 end
 event.register("Ashfall:RegisterWaterContainers", registerWaterContainers)
 
 local function registerFoods(e)
-    --[[
-        Example:
-        event.trigger("Ashfall:RegisterFoods", {
-            myFoodId_01 = "meat",
-            myFoodId_02 = "meat",
-            myFoodId_03 = "vegetable",
-            myFoodId_04 = "mushroom",
-        })
-    ]]
-
     common.log:debug("Registering the following food items: ")
     for id, foodType in pairs(e.data) do
         assert(type(id) == "string", "Water container ID must be a string.")
-        assert(foodConfig.type[foodType], "%s is not a valid food type. Valid types include: " .. listValidFoodTypes())
+        assert(foodConfig.type[foodType], string.format("%s is not a valid food type. Valid types include: %s", foodType, listValidFoodTypes() ))
 
         foodConfig.addFood(id, foodType)
         common.log:debug("    %s: %s", id, foodType)
     end
+    return true
 end
 event.register("Ashfall:RegisterFoods", registerFoods)
 
 local function registerHeatSources(e)
-        --[[
-        event.trigger("Ashfall:RegisterHeatSources", { data = {
-            myHeatSourceId = 50
-        }})
-    ]]
     common.log:debug("Registering the following heat sources: ")
     for id, temp in pairs(e.data) do
         assert(type(id) == "string", "RegisterHeatSources: id must be a string")
@@ -147,6 +129,7 @@ local function registerHeatSources(e)
         staticConfigs.heatSourceValues[id:lower()] = temp
         common.log:debug("    %s: %s", id, temp)
     end
+    return true
 end
 event.register("Ashfall:RegisterHeatSources", registerHeatSources)
 

@@ -9,7 +9,9 @@ end
 local function initialized()
 
     if tes3.isModActive("Ashfall.esp") then
-        require ("mer.ashfall.common.interopEvents")
+
+
+
 
         require("mer.ashfall.survival")
         -- load modules
@@ -40,7 +42,8 @@ local function initialized()
         
         require("mer.ashfall.referenceController")
 
-        
+        local Interop = require ("mer.ashfall.interop")
+        event.trigger("Ashfall:Interop", Interop)
 
         local version = require("mer.ashfall.version")
         mwse.log("[Ashfall %s] Initialized", version)

@@ -13,7 +13,7 @@ this.types = {
 }
 
 this.list = {}
-this.list.water = Activator:new{ 
+this.list.waterDirty = Activator:new{ 
     name = "Water (Dirty)", 
     type = this.types.dirtyWaterSource,
     mcmSetting = "enableThirst",
@@ -34,7 +34,7 @@ this.list.water = Activator:new{
         ["terrwater_circle"] = true,
     }
 }
-this.list.waterDirty = this.list.water
+this.list.water = this.list.waterDirty
 this.list.waterClean = Activator:new{ 
     name = "Water", 
     type = this.types.waterSource,
