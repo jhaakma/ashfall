@@ -208,7 +208,10 @@ local function checkKitBashObjects(vanillaRef)
             common.log:debug("%s is disabled, adding to ignore list", ref.object.id)
             table.insert(ignoreList, ref)
         else
-                
+        if ref.baseObject.objectType ~= tes3.objectType.static then
+            common.log:debug("Ignore all non statics: %s", ref)
+            table.insert(ignoreList, ref)
+        end
             local id = ref.object.id:lower()
             
             if common.helper.getCloseEnough({ref1 = ref, ref2 = vanillaRef, distHorizontal = 75, distVertical = 200}) then
@@ -219,6 +222,11 @@ local function checkKitBashObjects(vanillaRef)
                     --don't mess with campfires that have unique things nearby
                     if string.find(id, "_unique") then
                         common.log:debug("Found a unique mesh, ignoring campfire replacement")
+                        return false
+                    end
+
+                    if ref.object.script then
+                        common.log:debug("Found a scripted mesh, ignoring campfire replacement")
                         return false
                     end
 
@@ -359,8 +367,10 @@ local function replaceCampfire(e)
 end
 
 local function replaceCampfires(e)
-    for ref in e.cell:iterateReferences() do
-        replaceCampfire{reference = ref}
+    for _, cell in pairs(tes3.getActiveCells()) do
+        for ref in cell:iterateReferences() do
+            replaceCampfire{reference = ref}
+        end
     end
 end
 event.register("cellChanged", replaceCampfires)

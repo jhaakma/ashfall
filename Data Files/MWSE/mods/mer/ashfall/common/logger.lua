@@ -93,7 +93,7 @@ function Logger:setOutputFile(outputFile)
         local errMsg = "[%s ERROR] Logger:setLogLevel() - Not a valid outputFile (must be a string)"
         assert( type(outputFile) == "string", string.format(errMsg, self.name) )
 
-        self.outputFile = io.open(self.outputFile, "w")
+        self.outputFile = io.open(outputFile, "w")
     end
 end
 

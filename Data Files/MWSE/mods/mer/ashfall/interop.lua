@@ -184,12 +184,12 @@ local function registerClimates(e)
             assert(data.min, "Missing min climate value.")
             assert(data.max, "Missing max climate value.")
             climateConfig.regions[id] = data
-            common.log:debug("    %s: { min: %d, max: %d", id, data.min, data.max)
+            common.log:debug("    %s: { min: %d, max: %d }", id, data.min, data.max)
         elseif type(data) == 'string' then
             local climateData = climateConfig.CLIMATE[data]
             assert(climateData, string.format("Invalid Climate type. Must be ones of the following: %s", listValidClimateTypes()))
             climateConfig.regions[id] = climateData
-            common.log:debug("    %s: { min: %d, max: %d", id, climateData.min, climateData.max)
+            common.log:debug("    %s: { min: %d, max: %d }", id, climateData.min, climateData.max)
         else
             mwse.error("Invalid climate data. Must be a table with min/max values, a string matching the following: " .. listValidClimateTypes())
         end
