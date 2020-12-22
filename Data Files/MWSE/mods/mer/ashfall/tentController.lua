@@ -17,8 +17,8 @@ event.register("calcRestInterrupt", calcRestInterrupt)
 
 local function canUnpack()
     return not (
-        tes3.player.cell.restingIsIllegal or
-        common.helper.getInside(tes3.player)
+        tes3.player.cell.restingIsIllegal 
+        --or common.helper.getInside(tes3.player)
     )
 end
 
