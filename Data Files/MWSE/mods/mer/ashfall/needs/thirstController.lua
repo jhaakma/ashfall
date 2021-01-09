@@ -63,6 +63,45 @@ function this.getBottleData(id)
     return common.staticConfigs.bottleList[string.lower(id)]
 end
 
+
+function this.playerHasEmpties()
+    for stack in tes3.iterate(tes3.player.object.inventory.iterator) do
+        local bottleData = this.getBottleData(stack.object.id)
+        if bottleData then
+            common.log:debug("Found a bottle")
+            if stack.variables then
+                common.log:debug("Has data")
+                if #stack.variables < stack.count then 
+                    common.log:debug("Some bottles have no data")
+                    return true
+                end
+
+                for _, itemData in pairs(stack.variables) do
+                    common.log:debug("itemData: %s", itemData)
+                    common.log:debug("waterAmount: %s", itemData and itemData.data.waterAmount )
+                    if itemData.data.waterAmount then
+                        if itemData.data.waterAmount < bottleData.capacity then
+                            --at least one bottle can be filled
+                            common.log:debug("below capacity")
+                            return true
+                        end
+                    else
+                        --no itemdata means empty bottle
+                        common.log:debug("no waterAmount")
+                        return true
+                    end
+                end
+            else
+                --no itemdata means empty bottle
+                common.log:debug("no variables")          
+                return true
+            end
+        end
+    end
+    return false
+end
+
+
 local function addDysentry(amountDrank)
     local survival = common.skills.survival.value
     local survivalRoll = math.random(100)

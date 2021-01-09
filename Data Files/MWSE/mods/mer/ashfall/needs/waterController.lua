@@ -15,30 +15,7 @@ local activatorConfig = common.staticConfigs.activatorConfig
 local thirst = common.staticConfigs.conditionConfig.thirst
 local hunger = common.staticConfigs.conditionConfig.hunger
 
-local buttons = {}
-local bDrink = "Drink"
-local bFillBottle = "Fill bottle"
-local bNothing = "Nothing"
 
-local function menuButtonPressed(e)
-    local buttonIndex = e.button + 1
-    --Drink
-    if buttons[buttonIndex] == bDrink then
-        if thirst:getValue() <= 0.1 then
-            tes3.messageBox("You are fully hydrated.")
-        else
-            thirstController.callWaterMenuAction(function()
-                local waterType = common.data.drinkingWaterType
-                thirstController.drinkAmount{amount = 100, waterType = waterType }
-            end)
-        end
-        common.data.drinkingRain = nil
-        common.data.drinkingWaterType = nil
-    --refill
-    elseif buttons[buttonIndex] == bFillBottle then
-        thirstController.fillContainer()
-    end
-end
 
 
 --Create messageBox for water menu
@@ -47,11 +24,37 @@ local function callWaterMenu(e)
     common.log:debug("callWaterMenu: Water Type: %s", e.waterType)
     common.data.drinkingWaterType = e.waterType
     common.data.drinkingRain = e.rain
-    buttons = { bDrink, bFillBottle, bNothing }
-    tes3.messageBox{
+    common.helper.messageBox{
         message = "What would you like to do?",
-        buttons = buttons,
-        callback = menuButtonPressed
+        buttons = {
+            {
+                text = "Drink",
+                requirements = function()
+                    return thirst:getValue() > 0.1
+                end,
+                tooltipDisabled = {
+                    text = "You are fully hydrated."
+                },
+                callback = function()
+                    thirstController.callWaterMenuAction(function()
+                        local waterType = common.data.drinkingWaterType
+                        thirstController.drinkAmount{amount = 100, waterType = waterType }
+                    end)
+                end
+            },
+            {
+                text = "Fill Container",
+                requirements = thirstController.playerHasEmpties,
+                tooltipDisabled = {
+                    text = "You have no containers to fill."
+                },
+                callback = thirstController.fillContainer
+            },
+            {
+                text = "Cancel",
+                doesCancel = true
+            }
+        }
     }
 end
 event.register("Ashfall:WaterMenu", callWaterMenu)
@@ -195,7 +198,7 @@ local function drinkFromContainer(e)
                             tes3.playSound({reference = tes3.player, sound = "Swim Left"})
                         end
                     },
-                    { text = tes3.findGMST(tes3.gmst.sCancel).value }
+                    { text = tes3.findGMST(tes3.gmst.sCancel).value, doesCancel = true }
                 }
             }
         --If water is dirty, give option to drink or empty
@@ -215,7 +218,7 @@ local function drinkFromContainer(e)
                             tes3.playSound({reference = tes3.player, sound = "Swim Left"})
                         end
                     },
-                    { text = tes3.findGMST(tes3.gmst.sCancel).value }
+                    { text = tes3.findGMST(tes3.gmst.sCancel).value, doesCancel = true }
                 }
             }
         --Otherwise drink straight away
@@ -273,7 +276,7 @@ local function onShiftActivateWater(e)
                         end)
                     end
                 },
-                { text = tes3.findGMST(tes3.gmst.sCancel).value }
+                { text = tes3.findGMST(tes3.gmst.sCancel).value, doesCancel = true }
             }
             common.helper.messageBox{ message = message, buttons = buttons }
             return true

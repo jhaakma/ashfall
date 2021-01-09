@@ -36,45 +36,7 @@ local function onWaterServiceClick()
 end
 
 local function getDisabled(cost)
-    --first check player can afford
-    if tes3.getPlayerGold() < cost then return true end
-
-    --then check bottles are available
-    for stack in tes3.iterate(tes3.player.object.inventory.iterator) do
-        local bottleData = thirstController.getBottleData(stack.object.id)
-        if bottleData then
-            common.log:debug("Found a bottle")
-            if stack.variables then
-                common.log:debug("Has data")
-                if #stack.variables < stack.count then 
-                    common.log:debug("Some bottles have no data")
-                    return false
-                end
-
-                for _, itemData in pairs(stack.variables) do
-                    common.log:debug("itemData: %s", itemData)
-                    common.log:debug("waterAmount: %s", itemData and itemData.data.waterAmount )
-                    if itemData.data.waterAmount then
-                        if itemData.data.waterAmount < bottleData.capacity then
-                            --at least one bottle can be filled
-                            common.log:debug("below capacity")
-                            return false
-                        end
-                    else
-                        --no itemdata means empty bottle
-                        common.log:debug("no waterAmount")
-                        return false
-                    end
-                end
-            else
-                --no itemdata means empty bottle
-                common.log:debug("no variables")          
-                return false
-            end
-        end
-    end
-    common.log:debug("No bottles found")
-    return true
+    return tes3.getPlayerGold() < cost or not thirstController.playerHasEmpties()
 end
 
 local function makeTooltip()

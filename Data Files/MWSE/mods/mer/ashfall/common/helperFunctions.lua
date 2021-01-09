@@ -490,7 +490,7 @@ function this.iterateRefItems(ref)
             end
             -- then yield all the remaining copies
             if count > 0 then
-                coroutine.yield(item, count)
+                coroutine.yield(item, count, stack.variables)
             end
         end
     end
@@ -676,6 +676,7 @@ function this.orientRefToGround(params)
     ref.orientation = newOrientation
     return true
 end
+
 
 
 --Cooking functions

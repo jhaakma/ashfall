@@ -1,5 +1,5 @@
 local function triggerActivateKey(e)
-    if (e.button == tes3.getInputBinding(tes3.keybind.activate).code) and (tes3.getInputBinding(tes3.keybind.activate).device == 1) then
+    if (e.keyCode == tes3.getInputBinding(tes3.keybind.activate).code) and (tes3.getInputBinding(tes3.keybind.activate).device == 0) then
         event.trigger("Ashfall:ActivateButtonPressed")
     end
 end
