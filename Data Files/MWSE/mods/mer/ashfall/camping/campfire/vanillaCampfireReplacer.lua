@@ -88,6 +88,10 @@ local lightPatterns = {
     "a_hearth_smoke",
 }
 
+local ignorePatterns = {
+    'ao_'
+}
+
 
 local function attachRandomStuff(campfire)
     if string.find(campfire.cell.id:lower(), "tomb") then return end
@@ -219,59 +223,71 @@ local function checkKitBashObjects(vanillaRef)
                 
                 if ref ~= vanillaRef then
                     common.log:debug("Nearby ref: %s", ref.object.id)
-                    --don't mess with campfires that have unique things nearby
-                    if string.find(id, "_unique") then
-                        common.log:debug("Found a unique mesh, ignoring campfire replacement")
-                        return false
+
+                    local skipRef
+                    for _, pattern in ipairs(ignorePatterns) do
+                        if string.find(id, pattern) then
+                            common.log:debug("Skipping ref %s", id)
+                            skipRef = true
+                        end
                     end
 
-                    if ref.object.script then
-                        common.log:debug("Found a scripted mesh, ignoring campfire replacement")
-                        return false
-                    end
+                    if not skipRef then
+                        --don't mess with campfires that have unique things nearby
+                        if string.find(id, "_unique") then
+                            common.log:debug("Found a unique mesh, ignoring campfire replacement")
+                            return false
+                        end
 
-                    if platforms[id] then
-                        common.log:debug("Has platform")
-                        hasPlatform = true
-                    end
-                    
-                    --if you find an existing campfire, get rid of it
-                    if campfireConfig.getConfig(id) then
-                        common.log:debug("removing existing replaced campfire %s", ref.object.id)
-                        table.insert(ignoreList, ref)
-                        common.helper.yeet(ref)
-                    end
+                        
+                        if ref.object.script then
+                            common.log:debug("Found a scripted mesh, ignoring campfire replacement")
+                            return false
+                        end
 
-                    if vanillaCampfires[id] then
-                        common.log:debug("Found another campfire that wants to be replaced, yeeting now: %s", ref.object.id)
-                        table.insert(ignoreList, ref)
-                        common.helper.yeet(ref)
-                    end
-                    
-                    if cauldrons[id] then
-                        common.log:debug("Found existing cooking pot")
-                        table.insert(ignoreList, ref)
-                        hasCookingPot = true
-                        common.helper.yeet(ref)
-                    end
-                    if grills[id] then
-                        common.log:debug("Found existing grill")
-                        table.insert(ignoreList, ref)
-                        hasGrill = true
-                        common.helper.yeet(ref)
-                    end
-                    if kitBashObjects[id] then      
-                        common.log:debug("Found existing kitbash %s", id)
-                        common.helper.yeet(ref)
-                        table.insert(ignoreList, ref)
-                    end
-
-                    for _, pattern in ipairs(lightPatterns) do
-                        if string.startswith(id, pattern)then
-                            common.log:debug("Found a fire")
-                            isLit = true
+                        if platforms[id] then
+                            common.log:debug("Has platform")
+                            hasPlatform = true
+                        end
+                        
+                        --if you find an existing campfire, get rid of it
+                        if campfireConfig.getConfig(id) then
+                            common.log:debug("removing existing replaced campfire %s", ref.object.id)
                             table.insert(ignoreList, ref)
                             common.helper.yeet(ref)
+                        end
+
+                        if vanillaCampfires[id] then
+                            common.log:debug("Found another campfire that wants to be replaced, yeeting now: %s", ref.object.id)
+                            table.insert(ignoreList, ref)
+                            common.helper.yeet(ref)
+                        end
+                        
+                        if cauldrons[id] then
+                            common.log:debug("Found existing cooking pot")
+                            table.insert(ignoreList, ref)
+                            hasCookingPot = true
+                            common.helper.yeet(ref)
+                        end
+                        if grills[id] then
+                            common.log:debug("Found existing grill")
+                            table.insert(ignoreList, ref)
+                            hasGrill = true
+                            common.helper.yeet(ref)
+                        end
+                        if kitBashObjects[id] then      
+                            common.log:debug("Found existing kitbash %s", id)
+                            common.helper.yeet(ref)
+                            table.insert(ignoreList, ref)
+                        end
+
+                        for _, pattern in ipairs(lightPatterns) do
+                            if string.startswith(id, pattern)then
+                                common.log:debug("Found a fire")
+                                isLit = true
+                                table.insert(ignoreList, ref)
+                                common.helper.yeet(ref)
+                            end
                         end
                     end
                 end

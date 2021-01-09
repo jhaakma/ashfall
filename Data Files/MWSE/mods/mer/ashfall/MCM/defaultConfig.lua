@@ -66,12 +66,11 @@ return {
     showSickness = true,
 
     startingEquipment = false,
+
+    --Misc
     modifierHotKey = {
         keyCode = tes3.scanCode.lShift
     },
-
-    --Misc
-
     needsCanKill = false,
     showFrostBreath = true,
     illegalHarvest = true,

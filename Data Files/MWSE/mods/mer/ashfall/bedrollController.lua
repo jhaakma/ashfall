@@ -105,7 +105,7 @@ local function bedrollMenu(ref)
     }
     common.helper.messageBox{
         message = message, 
-        buttons = buttons
+        buttons = buttons,
     }
 end
 

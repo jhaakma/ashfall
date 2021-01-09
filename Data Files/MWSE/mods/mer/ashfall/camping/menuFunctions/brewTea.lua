@@ -41,6 +41,9 @@ return {
                     end
                 end
             }
+            timer.delayOneFrame(function()
+                common.data.inventorySelectTeaBrew = nil
+            end)
         end)
     end
 }

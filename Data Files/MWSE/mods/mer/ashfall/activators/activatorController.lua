@@ -171,7 +171,7 @@ function this.callRayTest()
     end
     createActivatorIndicator()
 end
-
+ 
 local isBlocked
 local function blockScriptedActivate(e)
     isBlocked = e.doBlock
@@ -184,21 +184,17 @@ event.register("loaded", function() isBlocked = false end)
     When player presses the activate key, if they are looking
     at an activator static then fire an event
 ]]--
-local function triggerActivate()
-    local inputController = tes3.worldController.inputController
-    local keyTest = inputController:keybindTest(tes3.keybind.activate)
-    if (keyTest and doActivate() ) then
-        if not isBlocked then
-            local eventData = {
-                activator = this.list[this.current],
-                ref = this.currentRef,
-                node = this.parentNode
-            }
-            event.trigger("Ashfall:ActivatorActivated", eventData, { filter = eventData.activator.type }) 
-        end
+local function doTriggerActivate()
+    if doActivate() and not isBlocked then
+        local eventData = {
+            activator = this.list[this.current],
+            ref = this.currentRef,
+            node = this.parentNode
+        }
+        event.trigger("Ashfall:ActivatorActivated", eventData, { filter = eventData.activator.type }) 
     end
 end
-event.register("keyDown", triggerActivate )
 
+event.register("Ashfall:ActivateButtonPressed", doTriggerActivate)
 
 return this

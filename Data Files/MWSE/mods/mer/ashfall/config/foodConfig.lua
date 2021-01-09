@@ -761,6 +761,24 @@ this.ingredTypes = {
     ["ab_ingfood_saltriceporridge"] = this.type.food,
     ["ab_ingfood_scuttlepie"] = this.type.food,
     ["ab_ingfood_sweetroll"] = this.type.food,
+
+    --Food of Tamriel
+    ['1foodbreadslice'] = this.type.food,
+    ['1foodcliffracerwing'] = this.type.food,
+    ['1foodguarjerky'] = this.type.food,
+    ['1foodomlet'] = this.type.food,
+    ['1foodscrib'] = this.type.food,
+    ['1foodscribleg'] = this.type.food,
+    ['1mushroomfood'] = this.type.food,
+    ['1pumkinfood'] = this.type.food,
+    ['2foodpeach'] = this.type.food,
+    ['Cakefood1'] = this.type.food,
+    ['cakefood2'] = this.type.food,
+    ['cheese3'] = this.type.food,
+    ['Cherry1'] = this.type.food,
+    ['chickenbreastfood1'] = this.type.food,
+    ['cornfood1'] = this.type.food,
+    ['lemon1'] = this.type.food,
 }
 
 return this

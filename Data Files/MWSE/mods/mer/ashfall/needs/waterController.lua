@@ -78,9 +78,7 @@ event.register(
 local function checkDrinkRain()
     --thirst active
     local thirstActive = common.data and common.config.getConfig().enableThirst
-    --activate button
-    local inputController = tes3.worldController.inputController
-    local pressedActivate = inputController:keybindTest(tes3.keybind.activate)
+
     --raining
     local weather = tes3.getCurrentWeather()
     local raining = (
@@ -98,7 +96,6 @@ local function checkDrinkRain()
 
     local doDrink = (
         thirstActive and
-        pressedActivate and 
         raining and 
         lookingUp and 
         uncovered
@@ -107,7 +104,7 @@ local function checkDrinkRain()
         callWaterMenu({ rain = true })
     end
 end
-event.register("keyDown", checkDrinkRain )
+event.register("Ashfall:ActivateButtonPressed", checkDrinkRain )
 
 
 local function handleEmpties(data)

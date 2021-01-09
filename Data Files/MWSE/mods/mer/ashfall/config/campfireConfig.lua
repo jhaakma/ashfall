@@ -39,6 +39,13 @@ local config =  {
         kettle = attachType.dynamic,
         grill = attachType.static,
     },
+    ["ss20_campfire_01"] = {
+        campfire = attachType.static,
+        supports = attachType.dynamic,
+        cookingPot = attachType.dynamic,
+        kettle = attachType.dynamic,
+        grill = attachType.dynamic,
+    },
 }
 
 local this = {}

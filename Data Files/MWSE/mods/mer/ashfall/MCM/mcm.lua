@@ -637,11 +637,11 @@ local function registerModConfig()
             end
         }
 
-        pageDevOptions:createOnOffButton{
-            label = "Enable Development Features",
-            description = "Enable unfinished features currently in development. Not recommended unless you know what you're doing.",
-            variable = createTableVar("devFeatures")
-        }
+        -- pageDevOptions:createOnOffButton{
+        --     label = "Enable Development Features",
+        --     description = "Enable unfinished features currently in development. Not recommended unless you know what you're doing.",
+        --     variable = createTableVar("devFeatures")
+        -- }
 
         pageDevOptions:createButton{
             buttonText = "Print data to log",

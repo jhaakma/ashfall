@@ -184,12 +184,13 @@ end
                     header: string, 
                     text: string
                 },
-                requirements?: function
+                requirements?: function,
+                doesCancel = boolean --for cancel button compatibility with Right Click Menu Exit
             }
         ]
     }
 ]]
-local messageBoxId = tes3ui.registerID("CustomMessageBox_")
+local messageBoxId = tes3ui.registerID("CustomMessageBox")
 function this.messageBox(params)
     --[[
         button = 
