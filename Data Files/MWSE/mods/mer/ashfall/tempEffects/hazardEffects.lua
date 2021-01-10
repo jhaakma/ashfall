@@ -22,9 +22,9 @@ end
 
 function this.calculateHazards()
     local totalHeat = 0
-    for ref in common.helper.iterateRefType("hazard") do
+    common.helper.iterateRefType("hazard", function(ref)
         totalHeat = totalHeat + getHeat(ref)
-    end
+    end)
     --tes3.messageBox("%s", totalHeat)
     totalHeat = math.min( 100, totalHeat)
     common.data.hazardTemp = totalHeat
