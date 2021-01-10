@@ -1,4 +1,7 @@
 local activatorConfig = require("mer.ashfall.config.staticConfigs").activatorConfig
+local common = require("mer.ashfall.common.common")
+local staticConfigs = common.staticConfigs
+
 local this = {}
 
 local ReferenceController = {
@@ -24,7 +27,7 @@ local ReferenceController = {
 
 this.controllers = {
     campfire = ReferenceController:new{
-        requirements = function(self, ref)
+        requirements = function(_, ref)
             return (
                 ref.object and
                 ref.object.id and
@@ -34,19 +37,19 @@ this.controllers = {
     },
 
     fuelConsumer = ReferenceController:new{
-        requirements = function(self, ref)
+        requirements = function(_, ref)
             return ref.data and ref.data.fuelLevel
         end
     },
 
     griller = ReferenceController:new{
-        requirements = function(self, ref)
+        requirements = function(_, ref)
             return  ref.data and ref.data.hasGrill
         end
     },
 
     boiler = ReferenceController:new{
-        requirements = function(self, ref)
+        requirements = function(_, ref)
             return (
                 ref.data and
                 ref.data.utensil
@@ -55,32 +58,38 @@ this.controllers = {
     },
 
     stewer = ReferenceController:new{
-        requirements = function(self, ref)
+        requirements = function(_, ref)
             return ref.data and ref.data.utensil == "cookingPot"
         end
     },
 
     brewer = ReferenceController:new{
-        requirements = function(self, ref)
+        requirements = function(_, ref)
            return ref.data and ref.data.utensil == "kettle"
         end
     },
 
     stewBuffedActor = ReferenceController:new{
-        requirements = function(self, ref)
+        requirements = function(_, ref)
             return ref.data and ref.data.stewBuffTimeLeft
         end
     },
 
     teaBuffedActor = ReferenceController:new{
-        requirements = function(self, ref)
+        requirements = function(_, ref)
             return ref.data and ref.data.teaBuffTimeLeft
         end
     },
+
+    hazard = ReferenceController:new{
+        requirements = function(_, ref)
+            return staticConfigs.heatSourceValues[ref.object.id:lower()]
+        end
+    }
 }
 
 local function onRefPlaced(e)
-    for controllerName, controller in pairs(this.controllers) do
+    for _, controller in pairs(this.controllers) do
         if controller:requirements(e.reference) then
             controller:addReference(e.reference)
         end

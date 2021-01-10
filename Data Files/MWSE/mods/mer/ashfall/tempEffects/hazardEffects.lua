@@ -6,7 +6,8 @@ local temperatureController = require("mer.ashfall.temperatureController")
 temperatureController.registerExternalHeatSource("hazardTemp")
 
 local maxDistance = 1000
-local function getHeat(ref, hazardTemp)
+local function getHeat(ref)
+    local hazardTemp = staticConfigs.heatSourceValues[ref.object.id:lower()] or 0
     local heat = 0
     local distance = mwscript.getDistance({reference = "player", target = ref})
 
@@ -19,21 +20,10 @@ local function getHeat(ref, hazardTemp)
 end
 
 
-local function doCalculateHazard(ref)
-    local maxHeat = staticConfigs.heatSourceValues[ref.object.id:lower()]
-    if maxHeat then
-        return getHeat(ref, maxHeat)
-    else
-        return 0
-    end
-end
-
 function this.calculateHazards()
     local totalHeat = 0
-    for _, cell in pairs( tes3.getActiveCells() ) do
-        for ref in cell:iterateReferences() do
-            totalHeat = totalHeat + doCalculateHazard(ref)
-        end
+    for ref in common.helper.iterateRefType("hazard") do
+        totalHeat = totalHeat + getHeat(ref)
     end
     --tes3.messageBox("%s", totalHeat)
     totalHeat = math.min( 100, totalHeat)

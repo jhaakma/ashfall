@@ -49,16 +49,16 @@ local function callUpdates()
     end
     statsEffect.calculate()
 
-    --Heavy scripts
+    -- --Heavy scripts
     activators.callRayTest()
-    --temp effects
+    -- --temp effects
     raceEffects.calculateRaceEffects()
     torch.calculateTorchTemp()
     fireEffect.calculateFireEffect()
     magicEffects.calculateMagicEffects()
     hazardEffects.calculateHazards()
     survivalEffect.calculate()
-    conditions.updateConditions()
+    conditions.updateConditions() --1fps
     
     --visuals
 
