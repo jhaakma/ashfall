@@ -37,27 +37,9 @@ function this.updateConditions()
     end
 end
 
-local function refreshConditions()
-    for _, condition in pairs(conditionConfig) do
-        condition:updateConditionEffects()
-    end
-end
 
---Update all conditions on load
-
-local function updateConditionsOnLoad()
-    refreshConditions()
-    timer.start{
-        type = timer.real,
-        duration = 1,
-        iterations = -1, 
-        callback = refreshConditions
-    } 
-end
-event.register("loaded", updateConditionsOnLoad)
-
---Remove and re-add the condition spell if the player healed their stats with a potion or spell. 
-local function refreshAfterRestore(e)
+--Re-add the condition spell if the player healed their stats with a potion or spell. 
+local function refreshConditions(e)
     if e.target ~= tes3.player then return end
     local doRefresh = (
         e.effectInstance.state == tes3.spellState.ending and
@@ -76,7 +58,57 @@ local function refreshAfterRestore(e)
         end
     end
 end
+event.register("spellTick", refreshConditions)
 
-event.register("spellTick", refreshAfterRestore)
+
+local function restoreConditionEffects()
+    for _, condition in pairs(conditionConfig) do
+        condition:updateConditionEffects()
+    end
+end
+event.register("Ashfall:restoreConditionEffects", restoreConditionEffects)
+--Update all conditions on load
+
+local function startRefreshConditionTimer()
+    restoreConditionEffects()
+    timer.start{
+        type = timer.real,
+        duration = 1,
+        iterations = -1, 
+        callback = restoreConditionEffects
+    } 
+end
+event.register("loaded", startRefreshConditionTimer)
+
+
+local function removeConditionEffects()
+    for id, condition in pairs(conditionConfig) do
+        local states = conditionConfig[id].states
+        if states then
+            local spell = condition:getCurrentSpellObj()
+            if spell and tes3.player.object.spells:contains(spell) then
+                mwscript.removeSpell({ reference = tes3.player, spell = spell })
+            end
+        end
+    end
+end
+
+--[[
+    Prevent attribute capping caused by condition effects by 
+    temporarily removing them when entering the level up screen.
+]]
+
+local function clearConditionsEffectsOnLvlUp(e)
+    local isLevelingUp = tes3.mobilePlayer.levelUpProgress >= 10
+    if isLevelingUp then
+        common.log:debug("Removing condition effects before level up")
+        removeConditionEffects()
+        timer.delayOneFrame(function()
+            common.log:debug("Restoring condition effects after level up")
+            restoreConditionEffects()
+        end)
+    end
+end
+event.register("uiActivated", clearConditionsEffectsOnLvlUp, {filter = "MenuRestWait"})
 
 return this
