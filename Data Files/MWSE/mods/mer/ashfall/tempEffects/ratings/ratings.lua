@@ -42,6 +42,7 @@ end
 
 --Gets the raw warmth rating of a piece of armor or clothing.
 local function getRawItemWarmth(object)
+    local id = object.id:lower()
     --get item type
     local type
     if object.objectType == tes3.objectType.armor then
@@ -56,8 +57,8 @@ local function getRawItemWarmth(object)
     local cache = getCache()
 
     --Find in cache
-    if cache[type][object.id] then
-        return cache[type][object.id]
+    if cache[type][id] then
+        return cache[type][id]
 
     --Not in cache, generate from name and save to cache
     else
@@ -65,7 +66,7 @@ local function getRawItemWarmth(object)
         --String search item names
         for pattern, value in pairs(ratingsConfig.warmth[type].values) do
             if string.find(itemName, string.lower(pattern)) then
-                cache[type][object.id] = value
+                cache[type][id] = value
                 saveCache(cache)
                 return value
             end

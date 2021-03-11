@@ -154,7 +154,7 @@ event.register("Ashfall:RegisterHeatSources", registerHeatSources)
 -- event.register("Ashfall:RegisterTeas", registerTeas)
 
 local function registerClothingOrArmor(id, warmth, objectType)
-    ratingsConfig.warmth[objectType].values[id] = warmth
+    ratingsConfig.warmth[objectType].values[id:lower()] = warmth
     return true
 end
 
@@ -180,6 +180,7 @@ end
 local function registerClimates(e)
     common.log:debug("Registering climate data for the following regions: ")
     for id, data in pairs(e.data) do
+        id = id:lower()
         if type(data) == 'table' then
             assert(data.min, "Missing min climate value.")
             assert(data.max, "Missing max climate value.")

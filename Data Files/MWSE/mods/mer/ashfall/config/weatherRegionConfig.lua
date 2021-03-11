@@ -1,6 +1,6 @@
 local this = {}
 
-local CLIMATE = {
+local climate = {
     polar     = { min = -80, max = -50 },
     cold      = { min = -65, max = -40 },
     mild      = { min = -40, max = -20 },
@@ -9,7 +9,7 @@ local CLIMATE = {
     dry       = { min = -35, max =  10 },
     volcanic  = { min =   0, max =  15 },
 }
-local defaultClimate = CLIMATE.temperate
+local defaultClimate = climate.temperate
 
 this.weathers = {
     [tes3.weather.blight] = 40, 
@@ -30,69 +30,69 @@ function this.getWeatherTemperature(weatherId)
 end
 
 function this.getRegionData(regionId)
-    return this.regions[regionId] or defaultClimate
+    return this.regions[regionId:lower()] or defaultClimate
 end
 --Alter min/max weather values
 this.regions = {
     --Solstheim
-    ['Moesring Mountains Region'] = CLIMATE.polar,
-    ['Felsaad Coast Region'] = CLIMATE.polar,
-    ['Isinfier Plains Region'] = CLIMATE.polar,
-    ['Brodir Grove Region'] = CLIMATE.cold,
-    ['Thirsk Region'] = CLIMATE.cold,
-    ['Hirstaang Forest Region'] = CLIMATE.cold,
-    --Vvardenfell
-    ['Sheogorad'] = CLIMATE.cold,
-    ['Ashlands Region'] = CLIMATE.cold,
-    ["Azura's Coast Region"] = CLIMATE.mild,
-    ['Ascadian Isles Region'] = CLIMATE.temperate, --Perfectly normal weather here
-    ['Grazelands Region'] = CLIMATE.temperate,
-    ['Bitter Coast Region'] = CLIMATE.tropical,
-    ['West Gash Region'] = CLIMATE.dry,
-    ['Molag Mar Region'] = CLIMATE.volcanic,
-    ['Red Mountain Region'] = CLIMATE.volcanic,
-    --Tamriel Rebuilt
-    ["Aranyon Pass"] = CLIMATE.cold,
-    ["Boethiah's Spire"] = CLIMATE.cold,
-    ["Telvanni Isles"] = CLIMATE.cold,
-    ["Molagreahd"] = CLIMATE.mild,
-    ["Aanthirin"] = CLIMATE.temperate,
-    ["Alt Orethan"] = CLIMATE.mild,
-    ["Helnim Fields"] = CLIMATE.mild,
-    ["Lan Orethan"] = CLIMATE.temperate,
-    ["Mephalan Vales"] = CLIMATE.mild,
-    ["Nedothril"] = CLIMATE.mild,
-    ["Sacred Lands"] = CLIMATE.mild,
-    ["Sundered Scar"] = CLIMATE.temperate,
-    ["Othreleth Woods"] = CLIMATE.tropical,
-    ["Shipal Shin"] = CLIMATE.dry,
-    ["Thirr Valley"] = CLIMATE.temperate,
-    ["Armun Ashlands"] = CLIMATE.volcanic,
-    ["Ascadian Bluffs"] = CLIMATE.temperate,
-    ["Calmbering Moor"] = CLIMATE.mild,
-    ["Grey Meadows"] = CLIMATE.mild,
-    ["Julan-Shar"] = CLIMATE.cold,
-    ["Roth Roryn"] = CLIMATE.mild,
-    ["Uld Vraech"] = CLIMATE.polar,
-    ["Velothi Mountains"] = CLIMATE.cold,
-    ["Arnesian Jungle"] = CLIMATE.tropical,
-    ["Deshaan Plains"] = CLIMATE.dry,
-    ["Mudflats"] = CLIMATE.temperate,
-    ["Salt Marsh"] = CLIMATE.temperate,
-    ["Padomaic Ocean"] = CLIMATE.mild,
-    ["Sea of Ghosts"] = CLIMATE.cold,
+    ['moesring mountains region'] = climate.polar,
+    ['felsaad coast region'] = climate.polar,
+    ['isinfier plains region'] = climate.polar,
+    ['brodir grove region'] = climate.cold,
+    ['thirsk region'] = climate.cold,
+    ['hirstaang forest region'] = climate.cold,
+    --vvardenfell
+    ['sheogorad'] = climate.cold,
+    ['ashlands region'] = climate.cold,
+    ["azura's coast region"] = climate.mild,
+    ['ascadian isles region'] = climate.temperate, --perfectly normal weather here
+    ['grazelands region'] = climate.temperate,
+    ['bitter coast region'] = climate.tropical,
+    ['west gash region'] = climate.dry,
+    ['molag mar region'] = climate.volcanic,
+    ['red mountain region'] = climate.volcanic,
+    --tamriel rebuilt
+    ["aranyon pass"] = climate.cold,
+    ["boethiah's spire"] = climate.cold,
+    ["telvanni isles"] = climate.cold,
+    ["molagreahd"] = climate.mild,
+    ["aanthirin"] = climate.temperate,
+    ["alt orethan"] = climate.mild,
+    ["helnim fields"] = climate.mild,
+    ["lan orethan"] = climate.temperate,
+    ["mephalan vales"] = climate.mild,
+    ["nedothril"] = climate.mild,
+    ["sacred lands"] = climate.mild,
+    ["sundered scar"] = climate.temperate,
+    ["othreleth woods"] = climate.tropical,
+    ["shipal shin"] = climate.dry,
+    ["thirr valley"] = climate.temperate,
+    ["armun ashlands"] = climate.volcanic,
+    ["ascadian bluffs"] = climate.temperate,
+    ["calmbering moor"] = climate.mild,
+    ["grey meadows"] = climate.mild,
+    ["julan-shar"] = climate.cold,
+    ["roth roryn"] = climate.mild,
+    ["uld vraech"] = climate.polar,
+    ["velothi mountains"] = climate.cold,
+    ["arnesian jungle"] = climate.tropical,
+    ["deshaan plains"] = climate.dry,
+    ["mudflats"] = climate.temperate,
+    ["salt marsh"] = climate.temperate,
+    ["padomaic ocean"] = climate.mild,
+    ["sea of ghosts"] = climate.cold,
 
-    --Tamriel Rebuilt unimplemented:
-    ["Boethiah's Spine"] = CLIMATE.temperate,
-    ["Balachen Corridor"] = CLIMATE.temperate,
-    ["Dolmolag Peninsula"] = CLIMATE.temperate,
-    ["Molkadh Mountains"] = CLIMATE.temperate,
-    ["Nebet Peninsula"] = CLIMATE.temperate,
-    ["Amurbal Peninsula"] = CLIMATE.temperate,
-    ["Neidweisra Peninsula"] = CLIMATE.temperate,
-    ["Ouadavohr"] = CLIMATE.temperate,
-    ["Shipal-Shin"] = CLIMATE.temperate,
-    ["Clambering Moor"] = CLIMATE.temperate,
+    --tamriel rebuilt unimplemented:
+    ["boethiah's spine"] = climate.temperate,
+    ["balachen corridor"] = climate.temperate,
+    ["dolmolag peninsula"] = climate.temperate,
+    ["molkadh mountains"] = climate.temperate,
+    ["nebet peninsula"] = climate.temperate,
+    ["amurbal peninsula"] = climate.temperate,
+    ["neidweisra peninsula"] = climate.temperate,
+    ["ouadavohr"] = climate.temperate,
+    ["shipal-shin"] = climate.temperate,
+    ["clambering moor"] = climate.temperate,
 }
 
 return this
