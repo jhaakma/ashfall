@@ -46,6 +46,7 @@ end
 function this.updateHUD()
     if not common.data then return end
     local mainHUDBlock = findHUDElement(IDs.mainHUDBlock)
+    if not mainHUDBlock then return end
 
     --Hide HUD if Ashfall is disabled
     if common.config.getConfig().enableTemperatureEffects then
@@ -78,42 +79,45 @@ function this.updateHUD()
             local tempPlayer = common.staticConfigs.conditionConfig.temp:getValue()
             local leftTempPlayerBar = findHUDElement(IDs.leftTempPlayerBar)
             local rightTempPlayerBar = findHUDElement(IDs.rightTempPlayerBar)
-            --Cold
-            if tempPlayer < 0 then
+            if leftTempPlayerBar and rightTempPlayerBar then
+                --Cold
+                if tempPlayer < 0 then
 
-                leftTempPlayerBar.widget.fillColor = {0.3, 0.5, (0.75 + tempPlayer/400)} --Bluish
-                leftTempPlayerBar.widget.current = tempPlayer
-                --hack
-                local bar = leftTempPlayerBar:findChild(tes3ui.registerID("PartFillbar_colorbar_ptr"))
-                bar.width = (tempPlayer / 100) * leftTempPlayerBar.width        
-                rightTempPlayerBar.widget.current = 0
-            --Hot:
-            else
-                rightTempPlayerBar.widget.fillColor = {(0.75 + tempPlayer/400), 0.3, 0.2}
-                rightTempPlayerBar.widget.current = tempPlayer
-                local bar = leftTempPlayerBar:findChild(tes3ui.registerID("PartFillbar_colorbar_ptr"))
-                bar.width = 0
+                    leftTempPlayerBar.widget.fillColor = {0.3, 0.5, (0.75 + tempPlayer/400)} --Bluish
+                    leftTempPlayerBar.widget.current = tempPlayer
+                    --hack
+                    local bar = leftTempPlayerBar:findChild(tes3ui.registerID("PartFillbar_colorbar_ptr"))
+                    bar.width = (tempPlayer / 100) * leftTempPlayerBar.width        
+                    rightTempPlayerBar.widget.current = 0
+                --Hot:
+                else
+                    rightTempPlayerBar.widget.fillColor = {(0.75 + tempPlayer/400), 0.3, 0.2}
+                    rightTempPlayerBar.widget.current = tempPlayer
+                    local bar = leftTempPlayerBar:findChild(tes3ui.registerID("PartFillbar_colorbar_ptr"))
+                    bar.width = 0
+                end
+
+                --Update Temp Limit bars
+                local tempLimit = math.clamp((common.data.tempLimit), -100, 100) or 0
+                local leftTempLimitBar = findHUDElement(IDs.leftTempLimitBar)
+                local rightTempLimitBar = findHUDElement(IDs.rightTempLimitBar)
+                if leftTempLimitBar and rightTempLimitBar then
+                    if tempLimit < 0 then
+                        leftTempLimitBar.widget.fillColor = {0.3, 0.5, (0.75 + tempLimit/400)} --Bluish
+                        leftTempLimitBar.widget.current = tempLimit
+                        --hack
+                        local bar = leftTempLimitBar:findChild(tes3ui.registerID("PartFillbar_colorbar_ptr"))
+                        bar.width = (tempLimit / 100) * leftTempLimitBar.width        
+                        rightTempLimitBar.widget.current = 0
+                    --Hot:
+                    else
+                        rightTempLimitBar.widget.fillColor = {(0.75 + tempLimit/400), 0.3, 0.2}
+                        rightTempLimitBar.widget.current = tempLimit
+                        local bar = leftTempLimitBar:findChild(tes3ui.registerID("PartFillbar_colorbar_ptr"))
+                        bar.width = 0
+                    end
+                end
             end
-
-            --Update Temp Limit bars
-            local tempLimit = math.clamp((common.data.tempLimit), -100, 100) or 0
-            local leftTempLimitBar = findHUDElement(IDs.leftTempLimitBar)
-            local rightTempLimitBar = findHUDElement(IDs.rightTempLimitBar)
-            if tempLimit < 0 then
-                leftTempLimitBar.widget.fillColor = {0.3, 0.5, (0.75 + tempLimit/400)} --Bluish
-                leftTempLimitBar.widget.current = tempLimit
-                --hack
-                local bar = leftTempLimitBar:findChild(tes3ui.registerID("PartFillbar_colorbar_ptr"))
-                bar.width = (tempLimit / 100) * leftTempLimitBar.width        
-                rightTempLimitBar.widget.current = 0
-            --Hot:
-            else
-                rightTempLimitBar.widget.fillColor = {(0.75 + tempLimit/400), 0.3, 0.2}
-                rightTempLimitBar.widget.current = tempLimit
-                local bar = leftTempLimitBar:findChild(tes3ui.registerID("PartFillbar_colorbar_ptr"))
-                bar.width = 0
-            end
-
 
 
             bottomBlock:updateLayout()

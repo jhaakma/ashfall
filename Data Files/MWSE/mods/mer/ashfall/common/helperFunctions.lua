@@ -213,7 +213,7 @@ function this.messageBox(params)
     else
         buttonsBlock.flowDirection = "top_to_bottom"
         buttonsBlock.childAlignX = 0.5
-    end
+    end 
     for i, data in ipairs(buttons) do
         local doAddButton = true
         if data.showRequirements then
@@ -415,6 +415,11 @@ function this.disableControls()
     setControlsDisabled(true)
 end
 
+function this.enableControls()
+    setControlsDisabled(false)
+    tes3.runLegacyScript{command = "EnableInventoryMenu"}
+end
+
 function this.getUniqueCellId(cell)
     if cell.isInterior then
         return cell.id:lower()
@@ -427,10 +432,7 @@ function this.getUniqueCellId(cell)
 end
 
 
-function this.enableControls()
-    setControlsDisabled(false)
-    tes3.runLegacyScript{command = "EnableInventoryMenu"}
-end
+
 --[[
     Fades out, passes time then runs callback when finished
 ]]--

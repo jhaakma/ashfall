@@ -38,14 +38,14 @@ this.list.water = this.list.waterDirty
 this.list.waterClean = Activator:new{ 
     name = "Water", 
     type = this.types.waterSource,
-    mcmSetting = "enableThirst",
+    mcmSetting = nil,
     ids = {
     }
 }
 this.list.basin = Activator:new{
     name = "Basin",
     type = this.types.waterSource,
-    mcmSetting = "enableThirst",
+    mcmSetting = nil,
     ids = {
         ["act_basin_telv_wood"] = true --UL
     }
@@ -53,7 +53,7 @@ this.list.basin = Activator:new{
 this.list.waterJug = Activator:new{
     name = "Water Jug",
     type = this.types.waterSource,
-    mcmSetting = "enableThirst",
+    mcmSetting = nil,
     ids = {
         ["a_water_jug"] = true --Yurts
     }
@@ -61,7 +61,7 @@ this.list.waterJug = Activator:new{
 this.list.well = Activator:new{ 
     name = "Well", 
     type = this.types.waterSource,
-    mcmSetting = "enableThirst",
+    mcmSetting = nil,
     ids = {
         ["mr_hlaalu_well_01"] = true,
         ["ex_nord_well_01"] = true,
@@ -171,7 +171,7 @@ this.list.well = Activator:new{
 this.list.keg = Activator:new{ 
     name = "Keg", 
     type = this.types.waterSource,
-    mcmSetting = "enableThirst",
+    mcmSetting = nil,
     ids = {
         "ashfall_kegstand_00"
         --"kegstand",
@@ -182,7 +182,7 @@ this.list.keg = Activator:new{
 this.list.tree = Activator:new{ 
     name = "Tree",
     type = this.types.woodSource,
-    mcmSetting = "enableTemperatureEffects",
+    mcmSetting = nil,
     patterns = {
         ["flora_ash_log"] = true,
         ["flora_ashtree"] = true,
@@ -269,7 +269,7 @@ this.list.campfire = Activator:new{
 this.list.cauldron = Activator:new{
     name = "Cauldron",
     type = this.types.cauldron,
-    mcmSetting = "enableThirst",
+    mcmSetting = nil,
     ids = {
         ["furn_com_cauldron_02"] = true
     },

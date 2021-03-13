@@ -1,5 +1,7 @@
 --[[
-    Plugin: ashfall.esp
+    Plugin: Ashfall.esp
+
+    
 --]]
 
 if not mwse.loadConfig("ashfall") then
