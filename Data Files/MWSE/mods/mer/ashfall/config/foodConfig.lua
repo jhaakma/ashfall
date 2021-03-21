@@ -779,6 +779,9 @@ this.ingredTypes = {
     ['chickenbreastfood1'] = this.type.food,
     ['cornfood1'] = this.type.food,
     ['lemon1'] = this.type.food,
+
+    --other
+    ["ingred_kollop_meat_01"] = this.type.meat,
 }
 
 return this

@@ -245,6 +245,10 @@ function this.calculate(scriptInterval, forceUpdate)
     else
         currentTiredness = currentTiredness + ( scriptInterval * loseSleepRate * hackloEffect * werewolfSleepMulti )
     end
+    --werewolf
+    if tes3.mobilePlayer.werewolf then
+        currentTiredness = currentTiredness * werewolfSleepMulti
+    end
     currentTiredness = math.clamp(currentTiredness, 0, 100)
     tiredness:setValue(currentTiredness)
 end

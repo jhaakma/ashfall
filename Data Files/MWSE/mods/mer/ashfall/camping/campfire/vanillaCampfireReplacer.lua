@@ -89,7 +89,8 @@ local lightPatterns = {
 }
 
 local ignorePatterns = {
-    'ao_'
+    'ao_',
+    'sound_'
 }
 
 
@@ -191,6 +192,10 @@ local function setInitialState(campfire, vanillaRef, data, hasSupports)
     else
         campfire:deleteDynamicLightAttachment()
     end
+    timer.delayOneFrame(function()
+        event.trigger("Ashfall:registerReference", { reference = campfire} )
+    end)
+    
 end
 
 
@@ -207,6 +212,7 @@ local function checkKitBashObjects(vanillaRef)
     local hasPlatform = false
     local isLit = false
     local ignoreList = {}
+    local foodList = {}
     for ref in vanillaRef.cell:iterateReferences() do
         if ref.disabled then 
             common.log:debug("%s is disabled, adding to ignore list", ref.object.id)
@@ -289,30 +295,52 @@ local function checkKitBashObjects(vanillaRef)
                                 common.helper.yeet(ref)
                             end
                         end
+
+                        if ref.object.objectType == tes3.objectType.ingredient then
+                            if common.helper.getCloseEnough({ref1 = ref, ref2 = vanillaRef, distHorizontal = 50, distVertical = 100}) then
+                                table.insert(foodList, ref)
+                            end
+                        end
+
                     end
                 end
             end
         end
     end
-    return {ignoreList = ignoreList, hasGrill = hasGrill, hasCookingPot = hasCookingPot, hasPlatform = hasPlatform, isLit = isLit}
+    return { foodList = foodList, ignoreList = ignoreList, hasGrill = hasGrill, hasCookingPot = hasCookingPot, hasPlatform = hasPlatform, isLit = isLit}
 end
 
+local function moveFood(campfire, foodList) 
+    for _, ingred in ipairs(foodList) do
+        local ingredBottomDiff = ingred.sceneNode:createBoundingBox().min.z
+        common.log:debug("ingredBottomDiff: %s", ingredBottomDiff)
+        local grillTop = campfire.sceneNode:getObjectByName("GRILL_TOP")
+        local grillHeight = grillTop.worldTransform.translation.z
 
+        grillHeight = 24 * campfire.scale
+        common.log:debug("Grill height: %s", grillHeight)
+        local newHeight = campfire.position.z + grillHeight - ingredBottomDiff
+        common.log:debug("moving %s to top of grill at z: %s", ingred.object.name, newHeight)
+        ingred.position = {
+            ingred.position.x,
+            ingred.position.y,
+            newHeight
+        }
+    end
+end
 
 local function replaceCampfire(e)
-    -- local safeRef = tes3.makeSafeObjectHandle(e.reference)
-    -- event.register("simulate", function()
-        
-    --     if not safeRef:valid() then return end
 
         local vanillaConfig = vanillaCampfires[e.reference.object.id:lower()]
         local campfireReplaced = e.reference.data and e.reference.data.campfireReplaced
         if vanillaConfig and not campfireReplaced then
             common.log:debug("replaceCampfire() %s", e.reference.object.id)
+            
             if e.reference.disabled or e.reference.deleted then
                 common.log:debug("%s is disabled, not replacing", e.reference.object.id)
                 return 
             end
+            e.reference:disable()
             e.reference.data.campfireReplaced = true
             --decide which campfire to replace with
             local data = checkKitBashObjects(e.reference)
@@ -350,6 +378,7 @@ local function replaceCampfire(e)
             setInitialState(campfire, e.reference, data, vanillaConfig.supports)
             attachRandomStuff(campfire)
 
+
             campfire.scale = e.reference.scale
             if vanillaConfig.scale then
                 campfire.scale = campfire.scale * vanillaConfig.scale
@@ -360,8 +389,7 @@ local function replaceCampfire(e)
             common.log:debug("setting scale to %s", campfire.scale)
 
             table.insert(data.ignoreList, campfire)
-            e.reference:disable()
-            common.helper.yeet(e.reference)
+
 
             local orientedCorrectly = common.helper.orientRefToGround{ 
                 ref = campfire, 
@@ -370,16 +398,28 @@ local function replaceCampfire(e)
                 rootHeight = vanillaConfig.rootHeight
             }
             if not orientedCorrectly then
-                common.log:debug("Wasn't able to find the ground, setting z height to match original")
+                common.helper.removeCollision(e.reference.sceneNode)
+                common.helper.removeLight(e.reference.sceneNode)
+                local vanillaBB = e.reference.sceneNode:createBoundingBox(e.reference.scale)
+                local vanillaHeight = vanillaBB.min.z
+                local campfireHeight = campfire.position.z -  vanillaConfig.rootHeight
+                local heightDiff = campfireHeight - vanillaHeight
+                common.log:debug("Failed to orient, setting height based on bounding box")
                 campfire.position = {
                     campfire.position.x,
                     campfire.position.y,
-                    campfire.position.z - vanillaConfig.rootHeight,
+                    campfire.position.z - heightDiff
                 }
+            end
+
+            
+            common.helper.yeet(e.reference)
+
+            if data.hasGrill then
+                moveFood(campfire, data.foodList)
             end
             common.log:debug("Campfire final supports: %s\n\n", campfire.data.dynamicConfig.supports)
         end
-    -- end,{ doOnce = true })
 end
 
 local function replaceCampfires(e)

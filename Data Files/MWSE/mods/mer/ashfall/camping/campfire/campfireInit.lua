@@ -35,12 +35,9 @@ local function registerCampfire(e)
         if dynamicConfig and isActivator and not initialised then  
             local campfire = e.reference
             common.log:debug("registerCampfire %s", campfire.object.id)
-
             campfire.data.campfireInitialised = true
             campfire.data.dynamicConfig = dynamicConfig
 
-
-            
             registerDataValues(campfire)
             event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})
             event.trigger("Ashfall:registerReference", { reference = campfire})

@@ -16,7 +16,7 @@ end
 
 --How much ingredient weight affects grill cook speed
 local function calculateCookWeightModifier(ingredObject)
-    return math.remap(ingredObject.weight, 1, 2, 1, 0.5)
+    return math.clamp(math.remap(ingredObject.weight, 1, 2, 1, 0.5), 0.25, 4.0)
 end
 
 --Checks if the ingredient has been placed on a campfire

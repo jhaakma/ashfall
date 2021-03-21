@@ -4,7 +4,7 @@ this.config = require("mer.ashfall.config.config")
 this.staticConfigs = require("mer.ashfall.config.staticConfigs")
 this.helper = require("mer.ashfall.common.helperFunctions")
 this.defaultValues = require ("mer.ashfall.MCM.defaultConfig")
-
+this.messages = require("mer.ashfall.messages.messages")
 --set up logger
 local logLevel = this.config.getConfig().logLevel
 

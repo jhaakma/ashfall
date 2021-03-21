@@ -630,7 +630,7 @@ function this.getGroundBelowRef(e)
         direction = {0, 0, -1},
         ignore = ignoreList or {ref, tes3.player},
         returnNormal = true,
-        useBackTriangles = true
+        useBackTriangles = false
     }
     return result
 end
@@ -679,7 +679,64 @@ function this.orientRefToGround(params)
     return true
 end
 
+function this.removeCollision(sceneNode)
+    for node in this.traverseRoots{sceneNode} do
+        if node:isInstanceOfType(tes3.niType.RootCollisionNode) then
+            node.appCulled = true
+        end
+    end
+end
 
+function this.removeLight(lightNode) 
+
+    for node in this.traverseRoots{lightNode} do
+        --Kill particles
+        if node.RTTI.name == "NiBSParticleNode" then
+            --node.appCulled = true
+            node.parent:detachChild(node)
+        end
+        --Kill Melchior's Lantern glow effect
+        if node.name == "Glow" then
+            --node.appCulled = true
+            node.parent:detachChild(node)
+        end
+        if node.name == "AttachLight" then
+            --node.appCulled = true
+            node.parent:detachChild(node)
+        end
+        
+        -- Kill materialProperty 
+        local materialProperty = node:getProperty(0x2)
+        if materialProperty then
+            if (materialProperty.emissive.r > 1e-5 or materialProperty.emissive.g > 1e-5 or materialProperty.emissive.b > 1e-5 or materialProperty.controller) then
+                materialProperty = node:detachProperty(0x2):clone()
+                node:attachProperty(materialProperty)
+        
+                -- Kill controllers
+                materialProperty:removeAllControllers()
+                
+                -- Kill emissives
+                local emissive = materialProperty.emissive
+                emissive.r, emissive.g, emissive.b = 0,0,0
+                materialProperty.emissive = emissive
+        
+                node:updateProperties()
+            end
+        end
+     -- Kill glowmaps
+        local texturingProperty = node:getProperty(0x4)
+        local newTextureFilepath = "Textures\\tx_black_01.dds"
+        if (texturingProperty and texturingProperty.maps[4]) then
+        texturingProperty.maps[4].texture = niSourceTexture.createFromPath(newTextureFilepath)
+        end
+        if (texturingProperty and texturingProperty.maps[5]) then
+            texturingProperty.maps[5].texture = niSourceTexture.createFromPath(newTextureFilepath)
+        end 
+    end
+    lightNode:update()
+    lightNode:updateNodeEffects()
+
+end
 
 --Cooking functions
 
