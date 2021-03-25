@@ -406,7 +406,7 @@ this.bottleList = {
 
 
 this.interiorTempValues = {
-    default = 0,
+    default = -10,
     sewer = -20,
     eggmine = -30,
     ruin = -35,

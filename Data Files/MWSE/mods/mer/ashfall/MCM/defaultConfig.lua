@@ -32,6 +32,7 @@ return {
         ["sedam omalen"] = true,--ald velothi's only trader
     },
     foodWaterMerchants = {
+        ["arrille"] = true,--seyda neen trader
         ["helviane desele"] = true,--suran madame
         ["ashumanu eraishah"] = true,--suran tradehouse
         ["fryfnhild"] = true,--dagon fel taverness

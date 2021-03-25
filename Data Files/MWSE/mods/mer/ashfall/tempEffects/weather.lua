@@ -65,7 +65,8 @@ end
 local lastCellWasInterior
 function this.calculateWeatherEffect(interval)
     if common.helper.getInside(tes3.player) then
-        common.data.weatherTemp = common.data.intWeatherEffect or 0
+        common.data.weatherTemp = common.data.intWeatherEffect 
+            or common.staticConfigs.interiorTempValues.default
         lastCellWasInterior = true
     else
         local weatherTemp = ( getTimeEffect() + getWeatherEffect() ) * getSeasonEffect()
