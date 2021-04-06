@@ -48,9 +48,9 @@ return {
                             event.trigger("Ashfall:Campfire_clear_utensils", { campfire = campfire})
                             --event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})
                         end
-                    },
-                    { text = tes3.findGMST(tes3.gmst.sCancel).value }
-                }
+                    }
+                },
+                doesCancel = true,
             }
         else
             doDrink()

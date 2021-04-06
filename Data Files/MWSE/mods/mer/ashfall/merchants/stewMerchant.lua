@@ -59,10 +59,8 @@ local function stewSelectMenu()
             }
         })
     end
-    table.insert(buttons, { 
-        text = "Cancel",
-    })
-    common.helper.messageBox{ message = menuMessage, buttons = buttons}
+
+    common.helper.messageBox{ message = menuMessage, buttons = buttons, doesCancel = true}
 end
 
 local function onStewServiceClick()

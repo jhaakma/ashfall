@@ -251,6 +251,14 @@ local function registerModConfig()
             }
 
             categoryMisc:createYesNoButton{
+                label = "Allow Camping in Settlements",
+                description = (
+                    "If this is enabled, you can make campfires and pitch tents within settlement exteriors."   
+                ),
+                variable = createTableVar("canCampInSettlements"),
+            }
+
+            categoryMisc:createYesNoButton{
                 label = "Diseased Meat",
                 description = (
                     "If this is enabled, meat harvested from diseased or blighted animals can make you sick if you eat it."   

@@ -75,6 +75,8 @@ return {
     needsCanKill = false,
     showFrostBreath = true,
     illegalHarvest = true,
+    canCampInSettlements = false,
+    canCampIndoors = false,
     showBackpacks = true,
     atronachRecoverMagickaDrinking = true,
 

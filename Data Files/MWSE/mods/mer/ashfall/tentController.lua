@@ -83,11 +83,11 @@ local function packedTentMenu(miscRef)
                 end)
             end
         },
-        { text = "Cancel", doesCancel = true}
     }
     common.helper.messageBox{
         message = message, 
-        buttons = buttons
+        buttons = buttons,
+        doesCancel = true
     }
 end
 
@@ -98,11 +98,11 @@ local function activeTentMenu(activeRef)
             text = "Pack Up",
             callback = function() packTent(activeRef) end
         },
-        { text = "Cancel", doesCancel = true}
     }
     common.helper.messageBox{
         message = message, 
-        buttons = buttons
+        buttons = buttons,
+        doesCancel = true
     }
 end
 

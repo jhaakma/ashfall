@@ -6,7 +6,6 @@ local common = require ("mer.ashfall.common.common")
 local buttonMapping = {
     ["Grill"] = {
         "removeGrill",
-        "cancel"
     },
     ["Cooking Pot"] = {
         "drink",
@@ -19,7 +18,6 @@ local buttonMapping = {
         "addWater",
         "emptyPot",
         "removePot",
-        "cancel",
     },
     ["Kettle"] = {
         "drink",
@@ -28,7 +26,6 @@ local buttonMapping = {
         "fillContainer",
         "emptyKettle",
         "removeKettle",
-        "cancel",
     },
     ["Supports"] = {
         "addKettle",
@@ -36,7 +33,6 @@ local buttonMapping = {
         "removeKettle",
         "removePot",
         "removeSupports",
-        "cancel",
     },
     ["Campfire"] = {
         "addFirewood",
@@ -52,7 +48,6 @@ local buttonMapping = {
         "wait",
         "extinguish",
         "destroy",
-        "cancel"
     }
 }
 
@@ -81,10 +76,6 @@ local function onActivateCampfire(e)
             else
                 text = buttonData.text
             end
-            local enableButton = (
-                buttonData.enableRequirements == nil or
-                buttonData.enableRequirements(campfire)
-            )
             table.insert(tbl, {
                 text = text, 
                 callback = function()
@@ -96,7 +87,10 @@ local function onActivateCampfire(e)
                 tooltip = buttonData.tooltip,
                 tooltipDisabled = getDisabledText(buttonData.tooltipDisabled, campfire),
                 requirements = function()
-                    return enableButton
+                    return (
+                        buttonData.enableRequirements == nil or
+                        buttonData.enableRequirements(campfire)
+                    )
                 end,
                 doesCancel = buttonData.doesCancel
             })
@@ -119,7 +113,8 @@ local function onActivateCampfire(e)
     end
     common.helper.messageBox({ 
         message = text, 
-        buttons = buttons 
+        buttons = buttons,
+        doesCancel = true
     })
 end
 

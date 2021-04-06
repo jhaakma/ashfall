@@ -3,7 +3,6 @@
 ----------------------
 
 local common = require ("mer.ashfall.common.common")
-local config = common.config:getConfig()
 local skipActivate
 local function pickupFirewood(ref)
     timer.delayOneFrame(function()
@@ -54,9 +53,13 @@ local function onActivateFirewood(e)
     if skipActivate then return end
     if tes3.menuMode() then return end
     if string.lower(e.target.object.id) == common.staticConfigs.objectIds.firewood then
-        local cell = tes3.getPlayerCell()
-        if cell.restingIsIllegal then
-            return
+        if tes3.player.cell.restingIsIllegal then
+            if  tes3.player.cell.isInterior then
+                return
+            end
+            if not common.config:getConfig().canCampInSettlements then
+                return
+            end
         end
 
         common.helper.messageBox({
@@ -64,8 +67,8 @@ local function onActivateFirewood(e)
             buttons = {
                 { text = "Create Campfire", callback = function() placeCampfire(e) end },
                 { text = "Pick Up", callback = function() pickupFirewood(e.target) end },
-                { text = "Cancel", doesCancel = true}
-            }
+            },
+            doesCancel = true
         })
         return true
     end

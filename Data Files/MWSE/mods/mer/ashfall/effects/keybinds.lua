@@ -10,15 +10,15 @@ end
 
 local buttons = {
     { text = "Make Stone Axe", callback = makeAxe },
-    { text = "Craft Tent", callback =  makeTent},
-    { text = "Cancel" }
+    { text = "Craft Tent", callback =  makeTent}
 }
 
 local function craftingMenu()
     if tes3.player and not tes3.menuMode() then
         common.helper.messageBox({
             message = "Ashfall Crafting Menu",
-            buttons = buttons
+            buttons = buttons,
+            doesCancel = true
         })
     end
 end

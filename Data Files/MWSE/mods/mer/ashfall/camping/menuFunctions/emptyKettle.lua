@@ -19,11 +19,9 @@ return {
                         tes3.playSound{ reference = tes3.player, pitch = 0.8, sound = "Swim Left" }
                         --event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})
                     end
-                },
-                {
-                    text = "Cancel"
                 }
-            }
+            },
+            doesCancel = true,
         }
     end
 }

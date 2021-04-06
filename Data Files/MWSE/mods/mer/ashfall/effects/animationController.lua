@@ -329,14 +329,11 @@ function this.showFastTimeMenu(e)
             end
         })
     end
-    table.insert(buttons, {
-        text = "Cancel"
-    })
     local message = e.message or (e.sleeping and "Resting" or "Waiting" )
     common.helper.messageBox{
         message = message,
         buttons = buttons,
-        --sideBySide = true
+        doesCancel = true,
     }
 end
 

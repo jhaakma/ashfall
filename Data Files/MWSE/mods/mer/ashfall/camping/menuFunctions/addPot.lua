@@ -20,6 +20,10 @@ return  {
         mwscript.removeItem{ reference = tes3.player, item = "Misc_Com_Bucket_Metal" }
         campfire.data.utensil = "cookingPot"
         tes3.playSound{ reference = tes3.player, sound = "Item Misc Down"  }
+        if mwscript.getItemCount{ reference = tes3.player, item = "misc_com_iron_ladle"} > 0 then
+            mwscript.removeItem{ reference = tes3.player, item = "misc_com_iron_ladle" }
+            campfire.data.ladle = true
+        end
         --event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})
     end
 }

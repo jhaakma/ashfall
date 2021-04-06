@@ -33,7 +33,7 @@ this.crateIds = {
 this.hotWaterHeatValue = 80
 this.stewWaterCooldownAmount = 50
 this.stewIngredientCooldownAmount = 20
-this.stewMealCapacity = 4
+this.stewIngredAddAmount = 25 -- out of pot capacity, not 100
 this.firewoodFuelMulti = 2
 this.maxWoodInFire = 15
 
@@ -163,7 +163,10 @@ this.placementConfig = {
 
     a_bed_roll = { maxSteepness = 0.1 },
 
-    ashfall_firewood = { maxSteepness = 0.5, hasVertAlign  = true }
+    ashfall_firewood = { maxSteepness = 0.5, hasVertAlign  = true },
+
+    mer_lute = { maxSteepness = 0.2},
+    mer_lute_fat = { maxSteepness = 0.2},
 }
 
 this.capacities = {

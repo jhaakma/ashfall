@@ -49,12 +49,9 @@ local function callWaterMenu(e)
                     text = "You have no containers to fill."
                 },
                 callback = thirstController.fillContainer
-            },
-            {
-                text = "Cancel",
-                doesCancel = true
             }
-        }
+        },
+        doesCancel = true,
     }
 end
 event.register("Ashfall:WaterMenu", callWaterMenu)
@@ -197,9 +194,9 @@ local function drinkFromContainer(e)
                             handleEmpties(e.itemData.data)
                             tes3.playSound({reference = tes3.player, sound = "Swim Left"})
                         end
-                    },
-                    { text = tes3.findGMST(tes3.gmst.sCancel).value, doesCancel = true }
-                }
+                    }
+                },
+                doesCancel = true,
             }
         --If water is dirty, give option to drink or empty
         elseif e.itemData.data.waterType == "dirty" then
@@ -217,9 +214,9 @@ local function drinkFromContainer(e)
                             handleEmpties(e.itemData.data)
                             tes3.playSound({reference = tes3.player, sound = "Swim Left"})
                         end
-                    },
-                    { text = tes3.findGMST(tes3.gmst.sCancel).value, doesCancel = true }
-                }
+                    }
+                },
+                doesCancel = true
             }
         --Otherwise drink straight away
         else
@@ -275,10 +272,9 @@ local function onShiftActivateWater(e)
                             tes3.player:activate(e.target)
                         end)
                     end
-                },
-                { text = tes3.findGMST(tes3.gmst.sCancel).value, doesCancel = true }
+                }
             }
-            common.helper.messageBox{ message = message, buttons = buttons }
+            common.helper.messageBox{ message = message, buttons = buttons, doesCancel = true }
             return true
         end
     end
