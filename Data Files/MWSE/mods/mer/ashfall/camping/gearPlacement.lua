@@ -5,14 +5,24 @@ local common = require("mer.ashfall.common.common")
 ]]
  
 
-
+local function canDropGear()
+    if tes3.player.cell.isInterior then
+        return false
+    end
+    if tes3.player.cell.restingIsIllegal then
+        if not common.config:getConfig().canCampInSettlements then
+            return false
+        end
+    end 
+    return true
+end
 
 
 local function onDropGear(e)
     local gearValues = common.staticConfigs.placementConfig[string.lower(e.reference.object.id)]
     if gearValues then
-        if gearValues.blockIllegal then
-            if tes3.player.cell.restingIsIllegal then
+        if gearValues.blockIllegal then --not currently used?
+            if not canDropGear() then
                 tes3.addItem{
                     reference = tes3.player,
                     item = e.reference.object,

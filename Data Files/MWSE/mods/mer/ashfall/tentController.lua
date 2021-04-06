@@ -16,10 +16,15 @@ event.register("calcRestInterrupt", calcRestInterrupt)
 
 
 local function canUnpack()
-    return not (
-        tes3.player.cell.restingIsIllegal 
-        --or common.helper.getInside(tes3.player)
-    )
+    if  tes3.player.cell.isInterior then
+        return false
+    end
+    if tes3.player.cell.restingIsIllegal then
+        if not common.config:getConfig().canCampInSettlements then
+            return false
+        end
+    end 
+    return true
 end
 
 local function unpackTent(miscRef)

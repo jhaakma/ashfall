@@ -4,10 +4,11 @@ local skipActivate
 
 
 local function canRest()
-    return (
-        tes3.canRest() and
-        not tes3.player.cell.restingIsIllegal
-    )
+    if not tes3.canRest() then return false end
+    if tes3.player.cell.restingIsIllegal then
+        return common.config:getConfig().canCampInSettlements 
+    end
+    return true
 end
 
 local function doRestMenu(isCoveredBedroll)
