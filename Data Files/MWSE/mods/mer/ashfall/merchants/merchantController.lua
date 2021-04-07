@@ -20,11 +20,7 @@ local function onMobileActivated(e)
     local obj = e.reference.baseObject or e.reference.object
 
     --Publicans get food
-    local isPublican = ( 
-        obj.class and obj.class.id == "Publican" or
-        config.foodWaterMerchants[obj.id:lower()]
-    )
-    if isPublican then
+    if common.isInnkeeper(e.reference) then
         local hasFoodAlready = e.reference.data.ashfallFoodAdded == true
         if not hasFoodAlready then
             e.reference.data.ashfallFoodAdded = true

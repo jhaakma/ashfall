@@ -12,7 +12,6 @@ function Interface:new(data)
     return t
 end
 
-Campfire.
 
 
 return Interface

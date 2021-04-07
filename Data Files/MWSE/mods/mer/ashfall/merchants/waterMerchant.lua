@@ -108,15 +108,12 @@ local function onMenuDialogActivated()
     local menuDialog = tes3ui.findMenu(GUID_MenuDialog)
     -- Get the actor that we're talking with.
 	local mobileActor = menuDialog:getPropertyObject("PartHyperText_actor")
-    local actor = mobileActor.reference.object.baseObject
+    local ref = mobileActor.reference
     
-    common.log:debug("Actor: %s", actor.name)
-    local isPublican = ( 
-        actor.class and actor.class.id == "Publican" or
-        config.foodWaterMerchants[actor.id:lower()]
-    )
-    if isPublican then
-        common.log:debug("Actor is a publican, adding Fill Water Service")
+    common.log:debug("Actor: %s", ref.object.name)
+
+    if common.isInnkeeper(ref) then
+        common.log:debug("Actor is an innkeeper, adding Fill Water Service")
         -- Create our new button.
         local topicsScrollPane = menuDialog:findChild(GUID_MenuDialog_TopicList)
         local divider = topicsScrollPane:findChild(GUID_MenuDialog_Divider)
