@@ -19,9 +19,6 @@ local function onAttack(e)
     - Number of swings is based on the size of your swing
     - Number of wood collected is based on the size of swing and axe attack power
 ]]--
-    if not common.config.getConfig().enableTemperatureEffects then
-        return
-    end
     local lookingAtWood = activatorController.getCurrentType() == activatorConfig.types.woodSource
     local isPlayer = e.mobile.reference == tes3.player
     --attacker is player and looking at wood
