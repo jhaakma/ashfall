@@ -40,11 +40,11 @@ this.controllers = {
         end
     },
 
-    griller = ReferenceController:new{
-        requirements = function(_, ref)
-            return  ref.data and ref.data.hasGrill
-        end
-    },
+    -- griller = ReferenceController:new{
+    --     requirements = function(_, ref)
+    --         return  ref.data and ref.data.fuelLevel
+    --     end
+    -- },
 
     boiler = ReferenceController:new{
         requirements = function(_, ref)

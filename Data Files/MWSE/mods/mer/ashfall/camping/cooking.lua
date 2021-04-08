@@ -35,7 +35,7 @@ local function findGriller(ingredient)
                 campfire = ref
             end
     end
-    common.helper.iterateRefType("griller", checkDistance)
+    common.helper.iterateRefType("campfire", checkDistance)
     return campfire
 end
 
@@ -49,11 +49,13 @@ end
 
 local function startCookingIngredient(ingredient, timestamp)
     
+    --If you placed a stack, return all but one to the player
     if common.helper.isStack(ingredient) then
         local count = ingredient.attachments.variables.count
         mwscript.addItem{ reference = tes3.player, item = ingredient.object, count = (count - 1) }
         ingredient.attachments.variables.count = 1
     else
+        --only check data for non-stack I guess?
         if ingredient.data.grillState == "burnt" then
             common.log:trace("Already burnt")
             return
@@ -76,8 +78,7 @@ local function grillFoodItem(ingredient, timestamp)
     if foodConfig.getGrillValues(ingredient.object) then
         local campfire = findGriller(ingredient)
         if campfire then
-            if campfire.data.hasGrill and campfire.data.isLit then
-                
+            if campfire.data.isLit then
                 if common.helper.isStack(ingredient) or ingredient.data.lastCookUpdated == nil then 
                     startCookingIngredient(ingredient, timestamp) 
                     return
@@ -97,23 +98,28 @@ local function grillFoodItem(ingredient, timestamp)
 
                     local burnLimit = hungerController.getBurnLimit()
                     --Cooked your food
-                    local justCooked = (
-                        cookedAmount > 100 and 
-                        cookedAmount < burnLimit and
-                        ingredient.data.grillState ~= "cooked"
-                    )
-                    if justCooked then
-                        ingredient.data.grillState = "cooked"
-                        tes3.playSound{ sound = "potion fail", pitch = 0.7, reference = ingredient }
-                        common.skills.survival:progressSkill(skillSurvivalGrillingIncrement)
-                    
-                        event.trigger("Ashfall:ingredCooked", { reference = ingredient})
-                    end
+                    local justCooked = cookedAmount > 100
+                        and cookedAmount < burnLimit
+                        and ingredient.data.grillState ~= "cooked"
+                        and ingredient.data.grillState ~= "burnt"
+
                     --burned your food
-                    local justBurnt = (
-                        cookedAmount > burnLimit and 
-                        ingredient.data.grillState ~= "burnt"
-                    )
+                    local justBurnt = cookedAmount > burnLimit
+                        and ingredient.data.grillState ~= "burnt"
+
+                    if justCooked then
+                        --You need a grill to properly cook food
+                        if campfire.data.hasGrill then
+                            ingredient.data.grillState = "cooked"
+                            tes3.playSound{ sound = "potion fail", pitch = 0.7, reference = ingredient }
+                            common.skills.survival:progressSkill(skillSurvivalGrillingIncrement)
+                            event.trigger("Ashfall:ingredCooked", { reference = ingredient})
+                        else
+                            --if no grill attached, then the food always burns
+                            justBurnt = true
+                        end
+                    end
+
                     if justBurnt then
                         ingredient.data.grillState = "burnt"
                         tes3.playSound{ sound = "potion fail", pitch = 0.9, reference = ingredient }
@@ -122,7 +128,8 @@ local function grillFoodItem(ingredient, timestamp)
 
                     --Only play sounds/messages if not transitioning from cell
                     --Check how long has passed as a bit of a hack
-                    if difference < 0.01 then
+                    local justChangedCell = difference > 0.01
+                    if not justChangedCell then
                         if justCooked then
                             tes3.messageBox("%s is fully cooked.", ingredient.object.name)
                         elseif justBurnt then
