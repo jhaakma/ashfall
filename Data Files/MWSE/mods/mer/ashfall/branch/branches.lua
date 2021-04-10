@@ -3,7 +3,7 @@ local branchConfig = require("mer.ashfall.branch.branchConfig")
 --Branch placement configs
 local hoursToRefresh = 2
 local MIN_BRANCHES_PER_TREE = 0
-local MAX_BRANCHES_PER_TREE = 4
+local MAX_BRANCHES_PER_TREE = 3
 local MIN_DISTANCE_FROM_TREE = 100
 local MAX_DISTANCE_FROM_TREE = 350
 local maxSteepness = 0.7
@@ -82,6 +82,7 @@ local cell_list
 --local ignore_list
 local function addBranchesToTree(tree)
     local numBranchesToPlace = math.random(MIN_BRANCHES_PER_TREE, MAX_BRANCHES_PER_TREE)
+    if numBranchesToPlace == 0 then return end
     for _ = 1, numBranchesToPlace do
 
         --initial position is randomly near the tree, 500 units higher than the tree's origin
@@ -173,22 +174,9 @@ local function addBranchesToCell(cell)
 end
 
 local function updateCells()
-    common.log:debug("Updating Cells for branch placement")
     if common.data and common.config.getConfig().enableBranchPlacement then
         common.log:debug("Branch placement enabled")
-        --Get ignore List
-        --ignore_list = {}
-        for _, cell in ipairs(tes3.getActiveCells()) do
-            for reference in cell:iterateReferences() do
-                if isTree(reference) then
-                    common.log:trace("Adding %s to ignore list", reference.object.id)
-                    --table.insert(ignore_list, reference)
-                end
-            end
-        end
 
-        --Start adding branches
-        delay = 1
         for _, cell in ipairs(tes3.getActiveCells()) do
             if not cell.isInterior then
                 addBranchesToCell(cell)
