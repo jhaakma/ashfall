@@ -204,8 +204,17 @@ this.list.tree = Activator:new{
         ["floraat_tree_"] = true,
         ["pine_tree"] = true,--vsw
         ["mr_flora_graze_tree "] = true, --Rebirth
-        ["t_mw_floraat_tree"] = true, --TR
-
+        ["floraat_tree"] = true, --TR
+        ['florabw_tree'] = true, --TR
+        ['florach_tree'] = true, --TR
+        ['floragc_tree'] = true, --TR    
+        ['floragh_tree'] = true, --TR
+        ['florahl_tree'] = true, --TR
+        ['florajm_tree'] = true, --TR
+        ['florakp_tree'] = true, --TR
+        ['florakstr_tree'] = true, --TR
+        ['floravm_tree'] = true, --TR
+        ['floraww_tree'] = true, --TR
     },
 }
 this.list.wood = Activator:new{ 

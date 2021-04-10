@@ -222,6 +222,12 @@ local function registerModConfig()
             }
 
             categoryMisc:createYesNoButton{
+                label = "Enable Dynamic Branch Placement",
+                description = "Loose branches will spawn near trees, which can be picked up for firewood. May cause a slight delay on cell change on lower end systemss. Disable this if you experience performance issues.",
+                variable = createTableVar("enableBranchPlacement")
+            }
+
+            categoryMisc:createYesNoButton{
                 label = "Enable Frost Breath",
                 description = (
                     "Adds a frost breath effect to NPCs and the player in cold temperatures. \n\n" ..

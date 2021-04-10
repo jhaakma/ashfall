@@ -14,16 +14,17 @@ return {
     callback = function(campfire)
         local function doDrink()
             --tes3.playSound{ reference = tes3.player, sound = "Swallow" }
+
             local amountToDrink = math.min(common.staticConfigs.capacities[campfire.data.utensil], campfire.data.waterAmount)
             local amountDrank = thirstController.drinkAmount{ amount = amountToDrink, waterType = campfire.data.waterType,}
             campfire.data.waterAmount = campfire.data.waterAmount - amountDrank
-            if campfire.data.waterAmount == 0 then
-                event.trigger("Ashfall:Campfire_clear_utensils", { campfire = campfire})
-            end
             if campfire.data.teaProgress and campfire.data.teaProgress >= 100 then
                 if amountDrank > 0 then
                     event.trigger("Ashfall:DrinkTea", { teaType = campfire.data.waterType, amountDrank = amountDrank})
                 end
+            end
+            if campfire.data.waterAmount == 0 then
+                event.trigger("Ashfall:Campfire_clear_utensils", { campfire = campfire})
             end
             --event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})
         end

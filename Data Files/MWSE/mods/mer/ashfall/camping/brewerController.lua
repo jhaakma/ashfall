@@ -46,12 +46,14 @@ event.register("simulate", updateBuffs)
 
 
 local function onDrinkTea(e)
+    common.log:debug("onDrinkTea")
     local teaType = e.teaType
     local teaData = teaConfig.teaTypes[teaType]
     local amount = e.amountDrank
     tes3.messageBox("Drank %s.", teaData.teaName)
     --remove previous tea
     if common.data.teaDrank then
+        common.log:debug("onDrinkTea: removing previous effect")
         local previousTeaData = teaConfig.teaTypes[common.data.teaDrank]
         removeTeaEffect(previousTeaData)
     end
@@ -59,11 +61,14 @@ local function onDrinkTea(e)
     if teaData.duration then
         common.data.teaBuffTimeLeft = common.helper.calculateTeaBuffDuration(amount,teaData.duration)
         common.data.teaDrank = teaType
+        common.log:debug("onDrinkTea: setting duration")
     end
 
     if teaData.spell then
+        
         local teaSpell = tes3.getObject(teaData.spell.id)
         if not teaSpell then 
+            common.log:debug("onDrinkTea: Creating new spell")
             teaSpell = tes3spell.create(teaData.spell.id, teaData.teaName)
             teaSpell.castType = tes3.spellType.ability
             for i=1, #teaData.spell.effects do
@@ -79,8 +84,10 @@ local function onDrinkTea(e)
                 effect.radius = newEffect.radius
             end
         end
+        common.log:debug("onDrinkTea: has spell: adding %s", teaData.spell.id)
         mwscript.addSpell{ reference = tes3.player, spell = teaSpell }
     elseif teaData.onCallback then
+        common.log:debug("onDrinkTea: callback")
         teaData.onCallback()
     end
 

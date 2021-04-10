@@ -130,10 +130,10 @@ local function grillFoodItem(ingredient, timestamp)
                     --Check how long has passed as a bit of a hack
                     local justChangedCell = difference > 0.01
                     if not justChangedCell then
-                        if justCooked then
-                            tes3.messageBox("%s is fully cooked.", ingredient.object.name)
-                        elseif justBurnt then
+                        if justBurnt then
                             tes3.messageBox("%s has become burnt.", ingredient.object.name)
+                        elseif justCooked then
+                            tes3.messageBox("%s is fully cooked.", ingredient.object.name)
                         end
                     end
                     

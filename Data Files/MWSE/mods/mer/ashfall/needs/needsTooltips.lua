@@ -42,7 +42,6 @@ end
 --Height of fillbar border based on capacity of bottle.
 local function updateFoodAndWaterTile(e)
     if not common.data then return end
-    if not common.config.getConfig().enableThirst then return end
 
     --bottles show water amount
     local bottleData = thirstController.getBottleData(e.item.id) 

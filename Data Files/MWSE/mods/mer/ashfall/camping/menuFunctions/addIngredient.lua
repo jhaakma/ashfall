@@ -45,7 +45,7 @@ local function addIngredient(e)
     e.campfire.data.stewLevels[e.foodType] = math.min(e.campfire.data.stewLevels[e.foodType] + ingredAmountToAdd, 100)
     common.log:trace("new stewLevel: %s", e.campfire.data.stewLevels[e.foodType])
 
-    common.skills.survival:progressSkill(skillSurvivalStewIngredIncrement)
+    common.skills.survival:progressSkill(skillSurvivalStewIngredIncrement*e.amount)
     tes3.player.object.inventory:removeItem{
         mobile = tes3.mobilePlayer,
         item = e.item,

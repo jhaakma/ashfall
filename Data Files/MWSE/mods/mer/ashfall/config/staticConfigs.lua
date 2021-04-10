@@ -28,6 +28,11 @@ this.crateIds = {
     food = "ashfall_crate_food",
 }
 
+this.innkeeperClasses = {
+    publican = true,
+    t_sky_publican = true,
+    t_cyr_publican = true
+}
 
 --Campfire values
 this.hotWaterHeatValue = 80
@@ -60,90 +65,7 @@ this.coveredBedrolls = {
     ashfall_cbroll_misc = true,
 }
 
---Ids for various fallen branches
-this.branchIds = {
-    ashfall_branch_ac_01 = "ashfall_branch_ac_01",
-    ashfall_branch_ac_02 = "ashfall_branch_ac_02",
-    ashfall_branch_ac_03 = "ashfall_branch_ac_03",
 
-
-    ashfall_branch_ai_01 = "ashfall_branch_ai_01",
-    ashfall_branch_ai_02 = "ashfall_branch_ai_02",
-    ashfall_branch_ai_03 = "ashfall_branch_ai_03",
-
-    ashfall_branch_ash_01 = "ashfall_branch_ash_01",
-    ashfall_branch_ash_02 = "ashfall_branch_ash_02",
-    ashfall_branch_ash_03 = "ashfall_branch_ash_03",
-
-    ashfall_branch_bc_01 = "ashfall_branch_bc_01",
-    ashfall_branch_bc_02 = "ashfall_branch_bc_02",
-    ashfall_branch_bc_03 = "ashfall_branch_bc_03",
-
-    ashfall_branch_gl_01 = "ashfall_branch_gl_01",
-    ashfall_branch_gl_02 = "ashfall_branch_gl_02",
-    ashfall_branch_gl_03 = "ashfall_branch_gl_03",
-
-    ashfall_branch_wg_01 = "ashfall_branch_wg_01",
-    ashfall_branch_wg_02 = "ashfall_branch_wg_02",
-    ashfall_branch_wg_03 = "ashfall_branch_wg_03",
-}
-
---sort branches into general groups
-local branchGroups = {
-    azurasCoast = {
-        this.branchIds.ashfall_branch_ac_01,
-        this.branchIds.ashfall_branch_ac_02,
-        this.branchIds.ashfall_branch_ac_03,
-    },
-    ascadianIsles = {
-        this.branchIds.ashfall_branch_ai_01,
-        this.branchIds.ashfall_branch_ai_02,
-        this.branchIds.ashfall_branch_ai_03,
-    },
-    ashlands = {
-        this.branchIds.ashfall_branch_ash_01,
-        this.branchIds.ashfall_branch_ash_02,
-        this.branchIds.ashfall_branch_ash_03,
-    },
-    bitterCoast = {
-        this.branchIds.ashfall_branch_bc_01,
-        this.branchIds.ashfall_branch_bc_02,
-        this.branchIds.ashfall_branch_bc_03,
-    },
-    grazelands = {
-        this.branchIds.ashfall_branch_gl_01,
-        this.branchIds.ashfall_branch_gl_02,
-        this.branchIds.ashfall_branch_gl_03,
-    },
-    westGash = {
-        this.branchIds.ashfall_branch_wg_01,
-        this.branchIds.ashfall_branch_wg_02,
-        this.branchIds.ashfall_branch_wg_03,
-    },
-
-}
-this.defaultBranchGroup = branchGroups.ascadianIsles
---assign regions to branch groups
-this.branchRegions = {
-    --solsthiem
-    ['Moesring Mountains Region'] = branchGroups.solstheim,
-    ['Felsaad Coast Region'] = branchGroups.solstheim,
-    ['Isinfier Plains Region'] = branchGroups.solstheim,
-    ['Brodir Grove Region'] = branchGroups.solstheim,
-    ['Thirsk Region'] = branchGroups.solstheim,
-    ['Hirstaang Forest Region'] = branchGroups.solstheim,
-    --Vvardenfell
-    ['Sheogorad'] = branchGroups.azurasCoast,
-
-    ["Azura's Coast Region"] = branchGroups.azurasCoast,
-    ['Ascadian Isles Region'] = branchGroups.ascadianIsles,
-    ['Grazelands Region'] = branchGroups.grazelands,
-    ['Bitter Coast Region'] = branchGroups.bitterCoast,
-    ['West Gash Region'] = branchGroups.westGash,
-    ['Ashlands Region'] = branchGroups.ashlands,
-    ['Molag Mar Region'] = branchGroups.ashlands,
-    ['Red Mountain Region'] = branchGroups.ashlands,
-}
 
 --For placement magic
 this.placementConfig = {
@@ -215,7 +137,11 @@ this.bottleConfig = {
         value = 7,
         weight = 5
     },--waterPerDollar = 17, waterPerWeight = 24
-
+    noValPot = {
+        holdsStew = true,
+        capacity = 100,
+        weight = 6
+    },
     --cheap, very large, low weight efficiency
     jug = { 
         capacity = 200, 
@@ -365,45 +291,95 @@ this.bottleList = {
 
     --seydaneen gateway
     misc_com_bottle_water = this.bottleConfig.bottle,
-    --OAAB
-        -- ab_misc_6thmug = "mug",
-        -- ab_misc_combottle_01 = "bottle",
-        -- ab_misc_combottle_02 = "bottle",
-        -- ab_misc_combottle_03 = "bottle",
-        -- ab_misc_compewtercup_01 = "cup",
-        -- ab_misc_compewterpot_01 = "pot",
-        -- ab_misc_comsilverpot_01 = "pot",
-        -- ab_misc_comsilvertank_01 = "tankard",
-        -- ab_misc_comwoodtankard = "tankard",
-        -- ab_misc_debluecup_01 = "cup",
-        -- ab_misc_deblueflask_01 = "flask",
-        -- ab_misc_deblueflask_02 = "flask",
-        -- ab_misc_deblueglass_01 = "glass",
-        -- ab_misc_deblueglasscup_01 = "cup",
-        -- ab_misc_debluetankard_01 = "tankard",
-        -- ab_misc_deceramiccup_01 = "cup",
-        -- ab_misc_deceramiccup_02 = "cup",
-        -- ab_misc_deceramicflask_01 = "flask",
-        -- ab_misc_deceramicpot_01 = "pot",
-        -- ab_misc_declaycup_01 = "cup",
-        -- ab_misc_declayflask_01 = "flask",
-        -- ab_misc_declayflask_02 = "flask",
-        -- ab_misc_deebonycup_01 = "cup",
-        -- ab_misc_deebonyflask_01 = "flask",
-        -- ab_misc_deebonyglass_01 = "glass",
-        -- ab_misc_degreenglasscup_01 = "cup",
-        -- ab_misc_degreenpitcher = "pitcher",
-        -- ab_misc_degreenpot = "pot",
-        -- ab_misc_depeachglascup_01 = "cup",
-        -- ab_misc_deyelglasscup_01 = "cup",
-        -- ab_misc_deyelglassflask_01 = "flask",
-        -- ab_misc_deyelglasspot_01 = "pot",
-        -- ab_misc_drinkcyrobrandy = "cup",
-        -- ab_misc_drinkflin = "bottle",
-        -- ab_misc_drinkgreef = "bottle",
-        -- ab_misc_drinkmazte = "bottle",
-        -- ab_misc_drinkshein = "bottle",
-        -- ab_misc_drinksujamma = "bottle",
+
+    --Tamriel Data
+    t_ayl_claycup_01 = this.bottleConfig.cup,
+    t_ayl_claypot_01 = this.bottleConfig.pot,
+    t_ayl_claypot_02 = this.bottleConfig.pot,
+    t_ayl_claypot_03 = this.bottleConfig.pot,
+ 
+    t_nor_claypot_01 = this.bottleConfig.pot,
+    t_nor_claypot_02 = this.bottleConfig.pot,
+
+    t_rga_blackwarecup_01 = this.bottleConfig.cup,
+    t_rga_redwarecup_01 = this.bottleConfig.cup,
+    t_rga_redwarecup_02 = this.bottleConfig.cup,
+    t_rga_redwarecup_03 = this.bottleConfig.cup,
+
+    t_he_dirennicup_01 = this.bottleConfig.cup,
+    t_he_dirennicup_02 = this.bottleConfig.cup,
+
+    t_he_direnniflask_01a = this.bottleConfig.limewareFlask,
+    t_he_direnniflask_02a = this.bottleConfig.limewareFlask,
+    t_he_direnniflask_03a = this.bottleConfig.limewareFlask,
+    t_he_direnniflask_04a = this.bottleConfig.limewareFlask,
+    t_he_direnniflask_05a = this.bottleConfig.limewareFlask,
+    t_he_direnniflask_06a = this.bottleConfig.limewareFlask,
+    t_he_direnniflask_07a = this.bottleConfig.limewareFlask,
+    t_he_direnniflask_07b = this.bottleConfig.limewareFlask,
+
+    t_he_dirennipot_01 = this.bottleConfig.noValPot,
+    t_he_dirennipot_02 = this.bottleConfig.noValPot,
+    t_he_dirennipot_03 = this.bottleConfig.noValPot,
+    t_he_dirennipot_04 = this.bottleConfig.noValPot,
+
+    t_nor_drinkinghorn_01 = { capacity = this.bottleConfig.tankard.capacity },
+    t_nor_drinkinghorn_02 = { capacity = this.bottleConfig.tankard.capacity },
+    t_nor_drinkinghorn_03 = { capacity = this.bottleConfig.tankard.capacity },
+
+    t_nor_flaskblue_01 = this.bottleConfig.flask,
+    t_nor_flaskblue_02 = this.bottleConfig.flask,
+    t_nor_flaskblue_03 = this.bottleConfig.flask,
+    t_nor_flaskblue_04 = this.bottleConfig.flask,
+
+    t_nor_flaskgreen_01 = this.bottleConfig.flask,
+    t_nor_flaskgreen_02 = this.bottleConfig.flask,
+    t_nor_flaskgreen_03 = this.bottleConfig.flask,
+    t_nor_flaskgreen_04 = this.bottleConfig.flask,
+
+    t_nor_flaskred_01 = this.bottleConfig.flask,
+    t_nor_flaskred_02 = this.bottleConfig.flask,
+    t_nor_flaskred_03 = this.bottleConfig.flask,
+    t_nor_flaskred_04 = this.bottleConfig.flask,
+
+    t_rga_flask_01 = this.bottleConfig.limewareFlask,
+
+    t_com_potionbottle_01 = { capacity = this.bottleConfig.bottle.capacity, weight = this.bottleConfig.bottle.weight },
+    t_com_potionbottle_03 = { capacity = this.bottleConfig.bottle.capacity, weight = this.bottleConfig.bottle.weight },
+    t_com_potionbottle_04 = { capacity = this.bottleConfig.bottle.capacity, weight = this.bottleConfig.bottle.weight },
+
+    t_imp_silverwarecup_01 = { capacity = this.bottleConfig.cup.capacity },
+    t_imp_silverwarecup_02 = { capacity = this.bottleConfig.cup.capacity },
+    t_imp_silverwarecup_03 = { capacity = this.bottleConfig.cup.capacity },
+    t_imp_silverwarepot_01 = this.bottleConfig.noValPot,
+
+    t_de_stonewarecup_01 = { capacity = this.bottleConfig.cup.capacity },
+    t_de_stonewarecup_02 = { capacity = this.bottleConfig.cup.capacity },
+
+    t_de_stonewarepot_01 = this.bottleConfig.noValPot,
+    t_de_stonewarepot_02 = this.bottleConfig.noValPot,
+    t_de_stonewarepot_03 = this.bottleConfig.noValPot,
+
+    t_com_woodencup_01 = this.bottleConfig.cup,
+    t_nor_woodengoblet_01a = this.bottleConfig.goblet,
+    t_nor_woodengoblet_01b = this.bottleConfig.goblet,
+    t_nor_woodengoblet_01c = this.bottleConfig.goblet,
+    t_nor_woodengoblet_02a = this.bottleConfig.goblet,
+    t_nor_woodengoblet_02b = this.bottleConfig.goblet,
+    t_nor_woodengoblet_03a = this.bottleConfig.goblet,
+    t_nor_woodengoblet_03b = this.bottleConfig.goblet,
+    t_nor_woodengoblet_04a = this.bottleConfig.goblet,
+    t_nor_woodengoblet_04b = this.bottleConfig.goblet,
+    t_nor_woodentankard_01a = this.bottleConfig.mug,
+    t_nor_woodentankard_01b = this.bottleConfig.mug,
+    t_nor_woodenpot_01a = this.bottleConfig.noValPot,
+    t_nor_woodenpot_01b = this.bottleConfig.noValPot,
+    t_nor_woodenpot_02a = this.bottleConfig.noValPot,
+    t_nor_woodenpot_02b = this.bottleConfig.noValPot,
+    t_nor_woodenpot_03a = this.bottleConfig.noValPot,
+    t_nor_woodenpot_03b = this.bottleConfig.noValPot,
+
+    t_de_telvannitankard_01 = this.bottleConfig.tankard
 }
 
 

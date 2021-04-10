@@ -1,5 +1,8 @@
 local this = {}
 
+this.cookedMulti = 2.0
+this.burntMulti = 0.8
+
 function this.getFoodType(obj)
     local foodType =  this.ingredTypes[obj.id:lower()]
     -- if not foodType and obj.objectType == tes3.objectType.ingredient then
@@ -128,10 +131,10 @@ this.stewBuffs = {
 --min: fully cooked multi at lowest cooking skill
 --max fully cooked multi at highest cooking skill
 this.grillValues = {
-    [this.type.meat] = { min = 2.5, max = 3.0 },
-    [this.type.egg] = { min = 2.5, max = 3.0 },
-    [this.type.vegetable] = { min = 2.2, max = 2.7 },
-    [this.type.mushroom] = { min = 2.0, max = 2.5 },
+    [this.type.meat] = { min = 1.5, max = 1.7 },
+    [this.type.egg] = { min = 1.5, max = 1.7 },
+    [this.type.vegetable] = { min = 1.3, max = 1.5 },
+    [this.type.mushroom] = { min = 1.2, max = 1.4 },
 }
 
 --Nutrition at weight==1.0
@@ -543,7 +546,6 @@ this.ingredTypes = {
     ["ab01ingred_alga02"] = this.type.herb,
     ["ab01ingred_alga01"] = this.type.herb,
 
-
     
     --danae's cliff racers
     ["mc_racer_raw"] = this.type.meat,
@@ -578,7 +580,7 @@ this.ingredTypes = {
 	["t_ingflor_cabbage_01"] = this.type.vegetable,
     ["t_ingflor_aspyrtea_01"] = this.type.herb,
     ["t_ingflor_templedome_01"] = this.type.mushroom,
-    
+    ["t_ingflor_bluefoot_01"] = this.type.mushroom,
 
     --nom (ul)
     ["nom_food_a_apple"] = this.type.food,

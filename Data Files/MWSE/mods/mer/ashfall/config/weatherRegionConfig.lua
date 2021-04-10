@@ -134,6 +134,15 @@ this.regions = {
     ["ouadavohr region"] = climate.temperate,
     ["shipal-shin region"] = climate.temperate,
     ["clambering moor region"] = climate.temperate,
+
+
+    --Shotn
+    ["lorchwuir hearth region"] = climate.cold,
+    ["Vorndgad Forest Region"] = climate.cold,
+    ["Druadach Highlands Region"] = climate.polar,
+    ["Sundered Hills Region"] = climate.cold,
+    ["Midkarth Region"] = climate.cold,
+    ["Falkheim Region"] = climate.polar,
 }
 
 return this

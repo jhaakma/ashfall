@@ -712,7 +712,8 @@ function this.getGroundBelowRef(e)
         direction = {0, 0, -1},
         ignore = ignoreList or {ref, tes3.player},
         returnNormal = true,
-        useBackTriangles = false
+        useBackTriangles = false,
+        root = e.terrainOnly and tes3.game.worldLandscapeRoot or nil
     }
     return result
 end
@@ -731,15 +732,18 @@ function this.orientRefToGround(params)
     local maxSteepness = params.maxSteepness
     local ignoreList = params.ignoreList or {}
     local rootHeight = params.rootHeight or 0
+    local terrainOnly = params.terrainOnly or false
 
-    table.insert(ignoreList, tes3.player)
-    for thisRef in ref.cell:iterateReferences() do
-        if doIgnoreMesh(thisRef) then
-            table.insert(ignoreList, thisRef)
+    if not terrainOnly then
+        table.insert(ignoreList, tes3.player)
+        for thisRef in ref.cell:iterateReferences() do
+            if doIgnoreMesh(thisRef) then
+                table.insert(ignoreList, thisRef)
+            end
         end
     end
 
-    local result = this.getGroundBelowRef({ref = ref, ignoreList = ignoreList, rootHeight = rootHeight})
+    local result = this.getGroundBelowRef({ref = ref, ignoreList = ignoreList, rootHeight = rootHeight, terrainOnly = terrainOnly})
     if not result then 
         --This only happens when the ref is 
         --beyond the edge of the active cells

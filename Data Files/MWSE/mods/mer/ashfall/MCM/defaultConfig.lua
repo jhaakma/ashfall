@@ -56,7 +56,7 @@ return {
     enableBlightness = true,
     enableDiseasedMeat = true,
     enableEnvironmentSickness = true,
-
+    enableBranchPlacement = true,
     enableCooking = false,--depreciated
 
     showTemp = true,

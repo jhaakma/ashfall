@@ -12,7 +12,7 @@ this.teaTypes = {}
 this.teaTypes["ingred_bittergreen_petals_01"] = {
     teaName = "Bittergreen Tea",
     teaDescription = "The overbearing aroma of Bittergreen tea helps cleanse the mind of distracting thoughts.",
-    effectDescription = "Fortify Magicka 15 Points",
+    effectDescription = "Fortify Magicka 20 Points",
     priceMultiplier = 5.0,
     duration = 3,
     spell = {
@@ -183,7 +183,7 @@ this.teaTypes["ingred_kresh_fiber_01"] = {
     teaName = "Kreshweed Tea",
     teaDescription = "Kreshweed tea is a powerful laxative, making it an effective cure for food poisoning.",
     effectDescription = "Cures Food Poisoning",
-    priceMultiplier = 5.0,
+    priceMultiplier = 5.0, 
     onCallback = function()
         conditions.foodPoison:setValue(conditions.foodPoison:getValue() - 50)
     end

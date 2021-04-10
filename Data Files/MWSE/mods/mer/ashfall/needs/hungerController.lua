@@ -52,14 +52,19 @@ function this.getNutrition(object, itemData)
         local min = foodValue
         local max = math.ceil(foodValue * survivalEffect)
 
-        if cookedAmount < this.getBurnLimit() then
-            --value based on how cooked it is
-            cookedAmount = math.min(cookedAmount, 100)
-            foodValue = math.remap(cookedAmount, 0, 100, min, max)
-        else
-            --half foodValue when burned
-            foodValue = ( ( max - min ) / 2 ) + min
+        
+        --value based on how cooked it is
+        cookedAmount = math.min(cookedAmount, 100)
+        foodValue = math.remap(cookedAmount, 0, 100, min, max)
+        common.log:trace("foodValue %s", foodValue)
+        if itemData.data.grillState == "cooked" then
+            foodValue = foodValue * foodConfig.cookedMulti
+            common.log:trace("Food is cooked, new foodValue %s", foodValue)
+        elseif itemData.data.grillState == "burnt" then
+            foodValue = foodValue * foodConfig.burntMulti
+            common.log:trace("Food is burnt, new foodValue %s", foodValue)
         end
+
     end
     return foodValue
 end

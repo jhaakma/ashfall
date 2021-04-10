@@ -30,7 +30,7 @@ function this.isInnkeeper(reference)
     local objId = obj.id:lower()
     local classId = obj.class and reference.object.class.id:lower()
     return ( classId and this.staticConfigs.innkeeperClasses[classId])
-        or this.config.foodWaterMerchants[objId]
+        or this.config:getConfig().foodWaterMerchants[objId]
 end
 
 --[[
