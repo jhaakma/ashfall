@@ -301,6 +301,17 @@ local function onShiftActivateWater(e)
                     end
                 },
                 {
+                    text = "Douse",
+                    showRequirements = function()
+                        return common.data.wetness <= 99
+                            and (e.target.data.waterType == "dirty" or not e.target.data.waterType)
+                            and (not e.target.data.stewLevels)
+                    end,
+                    callback = function()
+                        douse(e.target.data)
+                    end
+                },
+                {
                     text = "Empty",
                     callback = function()
                         e.target.data.waterAmount = 0
