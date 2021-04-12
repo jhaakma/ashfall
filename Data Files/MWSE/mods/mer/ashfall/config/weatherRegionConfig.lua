@@ -138,11 +138,11 @@ this.regions = {
 
     --Shotn
     ["lorchwuir hearth region"] = climate.cold,
-    ["Vorndgad Forest Region"] = climate.cold,
-    ["Druadach Highlands Region"] = climate.polar,
-    ["Sundered Hills Region"] = climate.cold,
-    ["Midkarth Region"] = climate.cold,
-    ["Falkheim Region"] = climate.polar,
+    ["vorndgad forest region"] = climate.cold,
+    ["druadach highlands region"] = climate.polar,
+    ["sundered hills region"] = climate.cold,
+    ["midkarth region"] = climate.cold,
+    ["falkheim region"] = climate.polar,
 }
 
 return this
