@@ -28,6 +28,9 @@ function this.updateCondition(id)
     end
 
 end
+event.register("Ashfall:updateCondition", function(e)
+    this.updateCondition(e.id)
+end)
 
 --Update all conditions - called by the script timer
 function this.updateConditions()

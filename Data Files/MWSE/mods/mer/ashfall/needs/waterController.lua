@@ -16,6 +16,39 @@ local thirst = common.staticConfigs.conditionConfig.thirst
 local hunger = common.staticConfigs.conditionConfig.hunger
 
 
+local function handleEmpties(data)
+    if data.waterAmount and data.waterAmount <= 0 then
+        data.waterType = nil
+        data.waterAmount = nil
+        data.stewLevels = nil
+        --restack
+        tes3ui.updateInventoryTiles()
+    end
+end
+
+
+local function douse(bottleData)
+    local amount =  bottleData and bottleData.waterAmount or 1000
+
+    local currentDryness = 100 - common.data.wetness
+    local waterUsed = math.min(currentDryness, amount)
+
+    common.data.wetness = common.data.wetness + waterUsed
+    event.trigger("Ashfall:updateCondition", { id = "wetness" })
+
+
+    --handle bottleData if provided
+    if bottleData then
+        --Reduce liquid in bottleData
+        bottleData.waterAmount = bottleData.waterAmount - waterUsed
+        handleEmpties(bottleData)
+    end
+
+    tes3.playSound{ reference = tes3.player, pitch = 0.8, sound = "Swim Right" }
+    tes3.messageBox("You douse yourself with water.")
+
+    return waterUsed
+end
 
 
 --Create messageBox for water menu
@@ -49,6 +82,16 @@ local function callWaterMenu(e)
                     text = "You have no containers to fill."
                 },
                 callback = thirstController.fillContainer
+            },
+            {
+                text = "Douse",
+                showRequirements = function()
+                    return common.data.wetness <= 99
+                        and (e.waterType == "dirty" or not e.waterType)
+                        and (not e.stewLevels)
+                        and (not e.rain)
+                end,
+                callback = douse
             }
         },
         doesCancel = true,
@@ -107,38 +150,28 @@ end
 event.register("Ashfall:ActivateButtonPressed", checkDrinkRain )
 
 
-local function handleEmpties(data)
-    if data.waterAmount and data.waterAmount <= 0 then
-        data.waterType = nil
-        data.waterAmount = nil
-        data.stewLevels = nil
-        --restack
-        tes3ui.updateInventoryTiles()
-    end
-end
-
 
 --Player activates a bottle with water in it
-local function doDrinkWater(data)
-    --Only drink as much in bottle
-    local thisSipSize = math.min( 100, data.waterAmount )
+local function doDrinkWater(bottleData)
+    --Only drink as much in bottleData
+    local thisSipSize = math.min( 100, bottleData.waterAmount )
 
     --Only drink as much as player needs
     local hydrationNeeded = thirst:getValue()
     thisSipSize = math.min( hydrationNeeded, thisSipSize)
 
-    local amountDrank = thirstController.drinkAmount{amount = thisSipSize, waterType = data.waterType}
+    local amountDrank = thirstController.drinkAmount{amount = thisSipSize, waterType = bottleData.waterType}
     --Tea and stew effects if you drank enough
     if hydrationNeeded > 0.1 then
-        if teaConfig.teaTypes[data.waterType] then
-            event.trigger("Ashfall:DrinkTea", { teaType = data.waterType, amountDrank = amountDrank})
-        elseif data.stewLevels then
-            event.trigger("Ashfall:eatStew",{data = data})
+        if teaConfig.teaTypes[bottleData.waterType] then
+            event.trigger("Ashfall:DrinkTea", { teaType = bottleData.waterType, amountDrank = amountDrank})
+        elseif bottleData.stewLevels then
+            event.trigger("Ashfall:eatStew",{data = bottleData})
         end
     end
-    --Reduce liquid in bottle
-    data.waterAmount = data.waterAmount - thisSipSize
-    handleEmpties(data)
+    --Reduce liquid in bottleData
+    bottleData.waterAmount = bottleData.waterAmount - thisSipSize
+    handleEmpties(bottleData)
 end
 
 local function getIsPotion(e)
@@ -203,11 +236,22 @@ local function drinkFromContainer(e)
             common.helper.messageBox{
                 message = "Dirty Water",
                 buttons = {
-                    { 
-                        text = "Drink", 
-                        callback = function() doDrinkWater(e.itemData.data) end 
+                    {
+                        text = "Drink",
+                        callback = function() doDrinkWater(e.itemData.data) end
                     },
-                    { 
+                    {
+                        text = "Douse",
+                        showRequirements = function()
+                            return common.data.wetness <= 99
+                                and (e.itemData.waterType == "dirty" or not e.itemData.waterType)
+                                and (not e.itemData.stewLevels)
+                        end,
+                        callback = function()
+                            douse(e.itemData.data)
+                        end
+                    },
+                    {
                         text = "Empty", 
                         callback = function()
                             e.itemData.data.waterAmount = 0
