@@ -74,10 +74,10 @@ this.placementConfig = {
     ashfall_bedroll = { maxSteepness = 0.05, drop = 15 },
     ashfall_cbroll_misc = { maxSteepness = 0.05, drop = 15 },
     
-    ashfall_tent_misc = { maxSteepness = 0.4, drop = -8},
-    ashfall_tent_ashl_misc = { maxSteepness = 0.4, drop = -8},
-    ashfall_tent_canv_b_misc = { maxSteepness = 0.4, drop = -8},
-    ashfall_tent_test_misc = { maxSteepness = 0.4, drop = -8},
+    ashfall_tent_misc = { maxSteepness = 0.4},
+    ashfall_tent_ashl_misc = { maxSteepness = 0.4},
+    ashfall_tent_canv_b_misc = { maxSteepness = 0.4},
+    ashfall_tent_test_misc = { maxSteepness = 0.4},
 
     ashfall_tent_active = { maxSteepness = 0.4, drop = 50},
     ashfall_tent_ashl_active = { maxSteepness = 0.4, drop = 50},
@@ -92,7 +92,8 @@ this.placementConfig = {
     mer_lute_fat = { maxSteepness = math.rad(50) },
 
     ashfall_woodaxe = { maxSteepness = math.rad(50) },
-    ashfall_sack_01 = { maxSteepness = math.rad(5) }
+    ashfall_sack_01 = { maxSteepness = math.rad(5) },
+    ashfall_strawbed = { maxSteepness = 0.05 }
 }
 
 this.capacities = {

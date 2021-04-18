@@ -119,6 +119,10 @@ function this.getInside(reference)
     )
 end
 
+function this.getRefUnderwater(reference)
+    local waterLevel = reference.cell.waterLevel or 0
+    return reference.position.z < waterLevel
+end
 
 --TODO: Null needs to fix collision crashes on Disable/Delete
 function this.yeet(reference)

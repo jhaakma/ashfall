@@ -121,13 +121,17 @@ local function activateTent(e)
             skipActivate = false
             return
         end
+        --Pick up if underwater
+        if common.helper.getRefUnderwater(e.target) then
+            return
+        end
         --Pick up if activating while in inventory
         if tes3ui.menuMode() then
             return
-        else
-            packedTentMenu(e.target)
-            return false
         end
+        --checks cleared activate packed tent
+        packedTentMenu(e.target)
+        return false
     --Check if it's an activator tent ref
     elseif common.helper.getMiscFromActive(e.target) then
         activeTentMenu(e.target)

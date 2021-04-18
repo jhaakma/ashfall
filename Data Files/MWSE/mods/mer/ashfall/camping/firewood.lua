@@ -30,7 +30,7 @@ local function placeCampfire(e)
         tes3.messageBox{ message = "The ground is too steep here.", buttons = {tes3.findGMST(tes3.gmst.sOK).value}}
         return
     end
-    
+
     mwscript.disable({ reference = e.target })
 
     local campfire = tes3.createReference{
@@ -61,6 +61,9 @@ local function onActivateFirewood(e)
             if not config.canCampInSettlements then
                 return
             end
+        end
+        if common.helper.getRefUnderwater(e.target) then
+            return
         end
 
         common.helper.messageBox({

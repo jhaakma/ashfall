@@ -122,10 +122,15 @@ local function activateBedroll(e)
         --Pick up if activating while in inventory
         if tes3ui.menuMode() then
             return
-        else
-            bedrollMenu(e.target)
-            return false
         end
+        --Pick up if underwater
+        if common.helper.getRefUnderwater(e.target) then
+            return
+        end
+        
+        
+        bedrollMenu(e.target)
+        return false
     end
 end
 event.register("activate", activateBedroll)
