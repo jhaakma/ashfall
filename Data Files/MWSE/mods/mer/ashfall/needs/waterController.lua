@@ -8,13 +8,14 @@
 
 local thirstController = require("mer.ashfall.needs.thirstController")
 local common = require("mer.ashfall.common.common")
+local config = require("mer.ashfall.config.config").config
 local foodConfig = common.staticConfigs.foodConfig
 local teaConfig = common.staticConfigs.teaConfig
 local activatorConfig = common.staticConfigs.activatorConfig
 
 local thirst = common.staticConfigs.conditionConfig.thirst
 local hunger = common.staticConfigs.conditionConfig.hunger
-
+local wetness = common.staticConfigs.conditionConfig.wetness
 
 local function handleEmpties(data)
     if data.waterAmount and data.waterAmount <= 0 then
@@ -26,21 +27,23 @@ local function handleEmpties(data)
     end
 end
 
-
+local wetnessPerWater = 10
 local function douse(bottleData)
     local amount =  bottleData and bottleData.waterAmount or 1000
-
+    common.log:debug("Douse: amount = %s", amount)
     local currentDryness = 100 - common.data.wetness
-    local waterUsed = math.min(currentDryness, amount)
-
-    common.data.wetness = common.data.wetness + waterUsed
+    common.log:debug("Douse: currentDryness = %s", currentDryness)
+    local waterUsed = math.min(currentDryness/wetnessPerWater, amount)
+    common.log:debug("Douse: waterUsed = %s", waterUsed)
+    common.data.wetness = common.data.wetness + waterUsed*wetnessPerWater
     event.trigger("Ashfall:updateCondition", { id = "wetness" })
 
 
     --handle bottleData if provided
     if bottleData then
+        common.log:debug("Douse: Reducing amount in bottle by %s", math.ceil(waterUsed))
         --Reduce liquid in bottleData
-        bottleData.waterAmount = bottleData.waterAmount - waterUsed
+        bottleData.waterAmount = bottleData.waterAmount - math.ceil(waterUsed)
         handleEmpties(bottleData)
     end
 
@@ -86,7 +89,7 @@ local function callWaterMenu(e)
             {
                 text = "Douse",
                 showRequirements = function()
-                    return common.data.wetness <= 99
+                    return common.data.wetness <= wetness.states.soaked.min
                         and (e.waterType == "dirty" or not e.waterType)
                         and (not e.stewLevels)
                         and (not e.rain)
@@ -120,7 +123,7 @@ event.register(
 --Look straight up at the rain and activate to bring up water menu
 local function checkDrinkRain()
     --thirst active
-    local thirstActive = common.data and common.config.getConfig().enableThirst
+    local thirstActive = common.data and config.enableThirst
 
     --raining
     local weather = tes3.getCurrentWeather()
@@ -183,7 +186,7 @@ end
 local function drinkFromContainer(e)
     
     if common.getIsBlocked(e.item) then return end
-    if not common.config.getConfig().enableThirst then return end
+    if not config.enableThirst then return end
     --First check potions, gives a little hydration
     if getIsPotion(e) then
         local thisSipSize = common.staticConfigs.capacities.potion
@@ -227,7 +230,18 @@ local function drinkFromContainer(e)
                             handleEmpties(e.itemData.data)
                             tes3.playSound({reference = tes3.player, sound = "Swim Left"})
                         end
-                    }
+                    },
+                    {
+                        text = "Douse",
+                        showRequirements = function()
+                            return common.data.wetness <= wetness.states.soaked.min
+                                and (e.itemData.waterType == "dirty" or not e.itemData.waterType)
+                                and (not e.itemData.stewLevels)
+                        end,
+                        callback = function()
+                            douse(e.itemData.data)
+                        end
+                    },
                 },
                 doesCancel = true,
             }
@@ -243,7 +257,7 @@ local function drinkFromContainer(e)
                     {
                         text = "Douse",
                         showRequirements = function()
-                            return common.data.wetness <= 99
+                            return common.data.wetness <= wetness.states.soaked.min
                                 and (e.itemData.waterType == "dirty" or not e.itemData.waterType)
                                 and (not e.itemData.stewLevels)
                         end,
@@ -281,7 +295,7 @@ local function onShiftActivateWater(e)
     if e.target.data and e.target.data.waterAmount and e.target.data.waterAmount > 0 then
         local inputController = tes3.worldController.inputController
         local isModifierKeyPressed = (
-            inputController:isKeyDown(common.config.getConfig().modifierHotKey.keyCode)
+            inputController:isKeyDown(config.modifierHotKey.keyCode)
         )
         local hasAccess = tes3.hasOwnershipAccess{ target = e.target }
         if hasAccess and isModifierKeyPressed then
@@ -303,7 +317,7 @@ local function onShiftActivateWater(e)
                 {
                     text = "Douse",
                     showRequirements = function()
-                        return common.data.wetness <= 99
+                        return common.data.wetness <= wetness.states.soaked.min
                             and (e.target.data.waterType == "dirty" or not e.target.data.waterType)
                             and (not e.target.data.stewLevels)
                     end,

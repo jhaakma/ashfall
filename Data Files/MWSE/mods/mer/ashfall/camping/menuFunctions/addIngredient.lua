@@ -144,6 +144,9 @@ return {
                 tooltipDisabled = {
                     text = hasFood and string.format("You cannot add any more %s.", foodType)
                         or string.format("You do not have any %s.", foodType)
+                },
+                tooltip = {
+                    text = foodConfig.getStewBuffForFoodType(foodType).ingredTooltip or foodType
                 }
             })
 

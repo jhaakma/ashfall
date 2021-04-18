@@ -8,7 +8,7 @@ local this = {}
 ]]-- 
 
 local activatorConfig = require("mer.ashfall.config.staticConfigs").activatorConfig
-local config = require("mer.ashfall.config.config")
+local config = require("mer.ashfall.config.config").config
 this.list = activatorConfig.list
 this.current = nil
 this.currentRef = nil
@@ -57,7 +57,7 @@ local function doActivate()
     return (
         this.current and 
         not tes3.menuMode() and 
-        config.getConfig()[this.getCurrentActivator().mcmSetting] ~= false
+        config[this.getCurrentActivator().mcmSetting] ~= false
     )
 end
 
@@ -138,7 +138,7 @@ function this.callRayTest()
             local distance = eyePos:distance(result.intersection)
 
             --Look for activators from list
-            if distance < 200 then
+            if distance < tes3.findGMST(tes3.gmst.iMaxActivateDist).value then
                 local targetRef = result.reference
                 for activatorId, activator in pairs(this.list) do
                     if activator:isActivator(targetRef.object.id) then

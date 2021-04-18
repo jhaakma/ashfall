@@ -31,11 +31,19 @@ return {
                 end,
                 callback = function(e)
                     if e.item then
-                        local maxAmount = math.min(
-                            ( e.itemData.data.waterAmount or 0 ),
-                            ( common.staticConfigs.capacities[campfire.data.utensil] - ( campfire.data.waterAmount or 0 ))
-                        )
-                        local t = { amount = math.min(maxAmount, 50)}
+                        local waterInbottle = e.itemData.data.waterAmount or 0
+                        local potCapacity = common.staticConfigs.capacities[campfire.data.utensil]
+                        local waterInPot = campfire.data.waterAmount or 0
+                        local capacityRemainingInPot = potCapacity - waterInPot
+                        local maxAmount = math.min(waterInbottle,capacityRemainingInPot)
+                        --Default to 50 for clean water, a nice amount for a stew or tea
+                        local amount = math.min(maxAmount, 50)
+                        --Default to fill completely for dirty water, because we want to clean it all
+                        if e.itemData.data.waterType == "dirty" then
+                            amount = maxAmount
+                        end
+
+                        local t = { amount = amount }
                         local function transferWater()
                             --transfer water
                             campfire.data.waterAmount = campfire.data.waterAmount or 0

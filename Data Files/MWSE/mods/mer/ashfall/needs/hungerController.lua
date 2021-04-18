@@ -1,5 +1,6 @@
 local this = {}
 local common = require("mer.ashfall.common.common")
+local config = require("mer.ashfall.config.config").config
 local conditionsCommon = require("mer.ashfall.conditionController")
 
 local meals = require("mer.ashfall.cooking.meals")
@@ -71,7 +72,7 @@ end
 
 
 function this.eatAmount( amount ) 
-    if not common.config.getConfig().enableHunger then
+    if not config.enableHunger then
         return 0
     end
 
@@ -133,7 +134,7 @@ function this.calculate(scriptInterval, forceUpdate)
         return
     end
 
-    local hungerRate = common.config.getConfig().hungerRate / 10
+    local hungerRate = config.hungerRate / 10
 
     local newHunger = hunger:getValue()
     
@@ -207,7 +208,7 @@ local function addFoodPoisoning(e)
 end 
 
 local function addDisease(e)
-    if common.config.getConfig().enableDiseasedMeat then
+    if config.enableDiseasedMeat then
         common.log:debug("addDisease()")
         if e.itemData then
             common.log:debug("has data")

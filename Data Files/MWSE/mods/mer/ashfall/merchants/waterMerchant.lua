@@ -1,4 +1,5 @@
 local common = require("mer.ashfall.common.common")
+local config = require("mer.ashfall.config.config").config
 local thirstController = require("mer.ashfall.needs.thirstController")
 local GUID_MenuDialog = tes3ui.registerID("MenuDialog")
 local GUID_MenuDialog_TopicList = tes3ui.registerID("MenuDialog_topics_pane")
@@ -13,7 +14,7 @@ local function getWaterCost(merchantObj)
     local personality = math.min(tes3.mobilePlayer.personality.current, 100)
     local dispEffect = math.remap(disposition, 0, 100, dispMulti, 1.0)
     local personalityEffect = math.remap(personality, 0, 100, personalityMulti, 1.0)
-    return math.floor(common.config.getConfig().waterBaseCost * dispEffect * personalityEffect)
+    return math.floor(config.waterBaseCost * dispEffect * personalityEffect)
 end
 
 local function getWaterText(merchantObj)
@@ -101,7 +102,6 @@ end
 
 
 local function onMenuDialogActivated()
-    local config = common.config.getConfig()
     if config.enableThirst ~= true then return end
     
     common.log:debug("Dialog menu entered")

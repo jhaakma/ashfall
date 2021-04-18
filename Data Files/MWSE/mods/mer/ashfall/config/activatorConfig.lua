@@ -8,6 +8,7 @@ this.types = {
     fire = "fire",
     campfire = "campfire",
     woodSource = "woodSource",
+    vegetation = "vegetation",
     branch = "branch",
     cauldron = "cauldron"
 }
@@ -177,6 +178,16 @@ this.list.keg = Activator:new{
         --"nom_kegstand_emp",
     }
 }
+this.list.vegetation = Activator:new{
+    name = "Vegetation",
+    type = this.types.vegetation,
+    mcmSetting = "enableBushcrafting",
+    patterns = {
+        ["_grass_"] = true,
+        ["_bush_"] = true,
+        ["_kelp_"] = true,
+    }
+}
 this.list.tree = Activator:new{ 
     name = "Tree",
     type = this.types.woodSource,
@@ -202,6 +213,7 @@ this.list.tree = Activator:new{
         ["vurt_palm"] = true,
         ["vurt_unicy"] = true,
         ["floraat_tree_"] = true,
+        ['flora_t_mushroom'] = true,
         ["pine_tree"] = true,--vsw
         ["mr_flora_graze_tree "] = true, --Rebirth
         ["floraat_tree"] = true, --TR
@@ -215,6 +227,7 @@ this.list.tree = Activator:new{
         ['florakstr_tree'] = true, --TR
         ['floravm_tree'] = true, --TR
         ['floraww_tree'] = true, --TR
+        
     },
 }
 this.list.wood = Activator:new{ 

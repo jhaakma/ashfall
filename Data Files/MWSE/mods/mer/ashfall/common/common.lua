@@ -1,12 +1,12 @@
 --Common
 local this = {}
-this.config = require("mer.ashfall.config.config")
 this.staticConfigs = require("mer.ashfall.config.staticConfigs")
 this.helper = require("mer.ashfall.common.helperFunctions")
 this.defaultValues = require ("mer.ashfall.MCM.defaultConfig")
 this.messages = require("mer.ashfall.messages.messages")
+local config = require("mer.ashfall.config.config").config
 --set up logger
-local logLevel = this.config.getConfig().logLevel
+local logLevel = config.logLevel
 
 this.log = require("mer.ashfall.common.logger").new{
     name = "Ashfall",
@@ -17,11 +17,10 @@ this.log = require("mer.ashfall.common.logger").new{
 
 --Returns if an object is blocked by the MCM
 function this.getIsBlocked(obj)
-    local cfg = this.config.getConfig()
     local mod = obj.sourceMod and obj.sourceMod:lower()
     return (
-        cfg.blocked[obj.id] or
-        cfg.blocked[mod]
+        config.blocked[obj.id] or
+        config.blocked[mod]
     )
 end
 
@@ -30,7 +29,7 @@ function this.isInnkeeper(reference)
     local objId = obj.id:lower()
     local classId = obj.class and reference.object.class.id:lower()
     return ( classId and this.staticConfigs.innkeeperClasses[classId])
-        or this.config:getConfig().foodWaterMerchants[objId]
+        or config.foodWaterMerchants[objId]
 end
 
 --[[
@@ -136,13 +135,12 @@ end
 local function initialiseLocalSettings()
     --this.log:info("initialising category %s", category.id)
     for setting, value in pairs(this.defaultValues) do
-        if this.config.getConfig()[setting] == nil then
-            this.config.getConfig()[setting] = value
+        if config[setting] == nil then
+            config[setting] = value
             this.log:info( "Initialising local data %s to %s", setting, value )
         end
     end
 end
-
 
 local function initData()
         --Persistent data stored on player reference 

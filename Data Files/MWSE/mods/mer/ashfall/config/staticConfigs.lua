@@ -43,16 +43,16 @@ this.firewoodFuelMulti = 2
 this.maxWoodInFire = 15
 
 --Tent mappings for activating a misc item into activator
-this.tentMiscToActiveMap = {
+this.miscToActiveMap = {
     ashfall_tent_test_misc = "ashfall_tent_test_active",
     ashfall_tent_misc = "ashfall_tent_active",
     ashfall_tent_ashl_misc = "ashfall_tent_ashl_active",
     ashfall_tent_canv_b_misc = "ashfall_tent_canv_b_active",
     
 }
-this.tentActiveToMiscMap = {}
-for miscId, activeId in pairs(this.tentMiscToActiveMap) do
-    this.tentActiveToMiscMap[activeId] = miscId
+this.activetoMiscMap = {}
+for miscId, activeId in pairs(this.miscToActiveMap) do
+    this.activetoMiscMap[activeId] = miscId
 end
 
 
@@ -60,6 +60,7 @@ this.bedrolls = {
     ashfall_bedroll_ashl = true,
     ashfall_bedroll = true,
     ashfall_cbroll_misc = true,
+    ashfall_strawbed = true
 }
 this.coveredBedrolls = {
     ashfall_cbroll_misc = true,
@@ -69,9 +70,9 @@ this.coveredBedrolls = {
 
 --For placement magic
 this.placementConfig = {
-    ashfall_bedroll_ashl = { maxSteepness = 01 },
-    ashfall_bedroll = { maxSteepness = 0.1 },
-    ashfall_cbroll_misc = { maxSteepness = 0.1, drop = -15 },
+    ashfall_bedroll_ashl = { maxSteepness = 0.05 },
+    ashfall_bedroll = { maxSteepness = 0.05, drop = 15 },
+    ashfall_cbroll_misc = { maxSteepness = 0.05, drop = 15 },
     
     ashfall_tent_misc = { maxSteepness = 0.4, drop = -8},
     ashfall_tent_ashl_misc = { maxSteepness = 0.4, drop = -8},
@@ -85,10 +86,13 @@ this.placementConfig = {
 
     a_bed_roll = { maxSteepness = 0.1 },
 
-    ashfall_firewood = { maxSteepness = 0.5, hasVertAlign  = true },
+    ashfall_firewood = { maxSteepness = 0.5 },
+    ashfall_grill = { maxSteepness = 0.5 },
+    mer_lute = { maxSteepness = math.rad(50) },
+    mer_lute_fat = { maxSteepness = math.rad(50) },
 
-    mer_lute = { maxSteepness = 0.2},
-    mer_lute_fat = { maxSteepness = 0.2},
+    ashfall_woodaxe = { maxSteepness = math.rad(50) },
+    ashfall_sack_01 = { maxSteepness = math.rad(5) }
 }
 
 this.capacities = {
@@ -190,6 +194,12 @@ this.bottleConfig = {
 
 
 this.bottleList = {
+    --ashfall stuff
+    ashfall_waterskin = {
+        capacity = 80
+    },
+
+
     --vial
     misc_skooma_vial = this.bottleConfig.glass,
 

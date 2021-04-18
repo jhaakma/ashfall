@@ -1,6 +1,6 @@
 local Parent = require("mer.ashfall.objects.Object")
 local Condition = Parent:new()
-local config = require("mer.ashfall.config.config")
+local config = require("mer.ashfall.config.config").config
 local log = require("mer.ashfall.common.logger")
 Condition.type = "Condition"
 Condition.fields = {
@@ -54,7 +54,7 @@ end
 
 function Condition:isActive()
     return ( 
-        config.getConfig()[self.enableOption] == true 
+        config[self.enableOption] == true 
     )
 end
 
@@ -68,7 +68,7 @@ function Condition:showUpdateMessages()
     if (
         self:isActive() and
         ( tes3.player.data.Ashfall.fadeBlock ~= true ) and
-        ( config.getConfig()[self.showMessageOption] == true ) 
+        ( config[self.showMessageOption] == true ) 
     ) then
         local message = self:getCurrentStateMessage()
         if message then

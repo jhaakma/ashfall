@@ -1,24 +1,24 @@
-local this = {}
-local configPath = "ashfall"
 local inMemConfig
-this.defaultValues = require ("mer.ashfall.MCM.defaultConfig")
-function this.getConfig()
-    inMemConfig = inMemConfig or mwse.loadConfig(configPath, this.defaultValues)
-    return inMemConfig
-end
-function this.saveConfig(newConfig)
+
+local this = {}
+this.configPath = "ashfall"
+this.defaultConfig = require ("mer.ashfall.MCM.defaultConfig")
+this.save = function(newConfig)
     inMemConfig = newConfig
-    mwse.saveConfig(configPath, newConfig)
+    mwse.saveConfig(this.configPath, inMemConfig)
 end
 
-function this.saveConfigValue(key, val)
-    local config = this.getConfig()
-    if config then
-        config[key] = val
-        mwse.saveConfig(configPath, config)
+this.config = setmetatable({}, {
+    __index = function(_, key)
+            inMemConfig = inMemConfig or mwse.loadConfig(this.configPath, this.defaultConfig)
+        return inMemConfig[key]
+    end,
+    __newindex = function(_, key, value)
+        inMemConfig = inMemConfig or mwse.loadConfig(this.configPath, this.defaultConfig)
+        inMemConfig[key] = value
+        mwse.saveConfig(this.configPath, inMemConfig)
     end
-end
-
+})
 
 --Returns if an object is blocked by the MCM
 function this.getIsBlocked(obj)

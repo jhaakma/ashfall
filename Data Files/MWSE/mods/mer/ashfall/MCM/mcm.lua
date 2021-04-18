@@ -1,11 +1,12 @@
 local common = require("mer.ashfall.common.common")
- 
-local configPath = "ashfall"
 
-local config = common.config.getConfig()
+local config = require("mer.ashfall.config.config")
+
+--get local cache of config, then save on close
+local mcmConfig = mwse.loadConfig(config.configPath, config.defaultConfig)
 
 local function createTableVar(id)
-    return mwse.mcm.createTableVariable{ id = id, table = config }
+    return mwse.mcm.createTableVariable{ id = id, table = mcmConfig }
 end
 
 local sideBarDefault =
@@ -26,6 +27,12 @@ local function postFormat(self)
 end
 
 local function registerModConfig()
+    local template = mwse.mcm.createTemplate{ name = "Ashfall", headerImagePath = "textures/ashfall/MCMHeader.tga" }
+    template.onClose = function()
+        config.save(mcmConfig)
+    end
+    template:register()
+
     local function addSideBar(component)
         component.sidebar:createInfo{ text = sideBarDefault}
         component.sidebar:createHyperLink{
@@ -45,12 +52,7 @@ local function registerModConfig()
             exec = "start https://www.nexusmods.com/morrowind/mods/48782",
             postCreate = postFormat,
         }
-
-
     end
-
-    local template = mwse.mcm.createTemplate{ name = "Ashfall", headerImagePath = "textures/ashfall/MCMHeader.tga" }
-    template:saveOnClose(configPath, config)
 
     do --General Settings Page
         local pageGeneral = template:createSideBarPage({
@@ -72,7 +74,7 @@ local function registerModConfig()
                 ),
                 variable = mwse.mcm.createTableVariable{ 
                     id = "overrideFood", 
-                    table = config, 
+                    table = mcmConfig, 
                     restartRequired = true,  
                     --restartRequiredMessage = "Changing this setting requires a game restart to come into effect."
                 }
@@ -88,7 +90,7 @@ local function registerModConfig()
                 callback = function(self)
                     if tes3.player then
                         if self.variable.value == true then
-                            local newTimeScale = common.config.getConfig().manualTimeScale
+                            local newTimeScale = config.manualTimeScale
                             tes3.setGlobal("TimeScale", newTimeScale)
                         end
                     end
@@ -108,7 +110,7 @@ local function registerModConfig()
                 variable = createTableVar("manualTimeScale"),
                 callback = function(self)
                     if tes3.player then
-                        if common.config.getConfig().overrideTimeScale == true then
+                        if config.overrideTimeScale == true then
                             tes3.setGlobal("TimeScale", self.variable.value)
                         end
                     end
@@ -444,7 +446,7 @@ local function registerModConfig()
         template:createExclusionsPage{
             label = "Camping Merchants",
             description = "Move merchants into the left list to allow them to sell camping gear. Changes won't take effect until the next time you enter the cell where the merchant is. Note that removing a merchant from the list won't remove the equipment if you have already visited the cell they are in.",
-            variable = mwse.mcm.createTableVariable{ id = "campingMerchants", table = config },
+            variable = mwse.mcm.createTableVariable{ id = "campingMerchants", table = mcmConfig },
             leftListLabel = "Merchants who sell camping equipment",
             rightListLabel = "Merchants",
             filters = {
@@ -486,7 +488,7 @@ local function registerModConfig()
         template:createExclusionsPage{
             label = "Food/Water Merchants",
             description = "Move merchants into the left list to allow them to sell additional food and offer water refill services. Changes won't take effect until the next time you enter the cell where the merchant is. Note that removing a merchant from the list won't remove the equipment if you have already visited the cell they are in.",
-            variable = mwse.mcm.createTableVariable{ id = "foodWaterMerchants", table = config },
+            variable = mwse.mcm.createTableVariable{ id = "foodWaterMerchants", table = mcmConfig },
             leftListLabel = "Merchants who sell food/refill water",
             rightListLabel = "Merchants",
             filters = {
@@ -629,9 +631,15 @@ local function registerModConfig()
             description = "Tools for debugging etc. Don't touch unless you know what you're doing.",
         }
         
+        pageDevOptions:createOnOffButton{
+            label = "Enable Bushcrafting (in development)",
+            description = "Get a sneak peak at the upcoming bushcrafting mechanics. Equip any item that has 'Crafting Material' in the tooltip to activate the bushcrafting menu.",
+            variable = createTableVar("enableBushcrafting")
+        }
+
         pageDevOptions:createYesNoButton{
             label = "Show Config Menu on Startup",
-            description = "The next time you load a new or existing game, show the startup config menu. This is mostly for testing, use the General Settings MCM page to adjsut startup settings.",
+            description = "The next time you load a new or existing game, show the startup mcmConfig menu. This is mostly for testing, use the General Settings MCM page to adjsut startup settings.",
             variable = createTableVar("doIntro")
         }
 
@@ -685,7 +693,7 @@ local function registerModConfig()
         -- }
     end --\Dev Options
 
-    template:register()
+   
 end
 
 event.register("modConfigReady", registerModConfig)

@@ -1,7 +1,7 @@
 local common = require("mer.ashfall.common.common")
+local config = require("mer.ashfall.config.config").config
 local overrides = require("mer.ashfall.config.overrides")
 local this = {}
-local config = common.config.getConfig()
 local newGame
 local checkingChargen
 local charGen
@@ -11,15 +11,15 @@ local charGenValues = {
 }
 
 function this.doNeeds(needs)
-    for need, value in pairs(needs) do
-        common.log:debug("Setting %s to %s", need, value)
-        common.config.saveConfigValue(need, value)
+    for setting, value in pairs(needs) do
+        common.log:debug("Setting %s to %s", setting, value)
+        config[setting] = value
     end
     event.trigger("Ashfall:UpdateHud")
 end
 
 function this.doTimeScale()
-    local timeScale = common.config.getConfig().manualTimeScale
+    local timeScale = config.manualTimeScale
     tes3.setGlobal("TimeScale", timeScale)
 end
 
@@ -43,9 +43,9 @@ end
 
 function this.doDefaultSettings()
     tes3.messageBox("Ashfall using default settings.")
-    common.config.getConfig().doIntro = false
-    common.config.saveConfigValue("overrideFood", true)
-    common.config.saveConfigValue("manualTimeScale", common.defaultValues.manualTimeScale)
+    config.doIntro = false
+    config.overrideFood = true
+    config.manualTimeScale = common.defaultValues.manualTimeScale
     this.doTimeScale()
     this.doOverrides()
     this.doNeeds({
@@ -76,9 +76,9 @@ end
 
 function this.doVanillaSettings()
     tes3.messageBox("Ashfall using vanilla settings (no changes).")
-    common.config.getConfig().doIntro = false
-    common.config.saveConfigValue("overrideTimeScale", false)
-    common.config.saveConfigValue("overrideFood", false)
+    config.doIntro = false
+    config.overrideTimeScale = false
+    config.overrideFood = false
     this.doNeeds({
         enableTemperatureEffects = true,
         enableHunger = true,
@@ -100,9 +100,9 @@ end
 
 function this.disableAshfall()
     tes3.messageBox("Needs mechanics are disabled.")
-    common.config.getConfig().doIntro = false
-    common.config.saveConfigValue("overrideTimeScale", false)
-    common.config.saveConfigValue("overrideFood", false)
+    config.doIntro = false
+    config.overrideTimeScale = false
+    config.overrideFood = false
     this.doNeeds({
         enableTemperatureEffects = false,
         enableHunger = false,
@@ -144,10 +144,10 @@ function this.startAshfall()
     else
         --initialise defaults
         
-        if common.config.getConfig().overrideTimeScale and newGame then
+        if config.overrideTimeScale and newGame then
             this.doTimeScale()
         end
-        local doOverrideFood = common.config.getConfig().overrideFood
+        local doOverrideFood = config.overrideFood
         if doOverrideFood then
             common.log:debug("Overriding ingredient values")
             this.doOverrides()

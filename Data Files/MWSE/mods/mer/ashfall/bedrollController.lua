@@ -1,12 +1,12 @@
 local common = require("mer.ashfall.common.common")
+local config = require("mer.ashfall.config.config")
 local animCtrl = require("mer.ashfall.effects.animationController")
 local skipActivate
-
 
 local function canRest()
     if not tes3.canRest() then return false end
     if tes3.player.cell.restingIsIllegal then
-        return common.config:getConfig().canCampInSettlements 
+        return config.canCampInSettlements 
     end
     return true
 end

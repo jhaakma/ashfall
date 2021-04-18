@@ -1,6 +1,7 @@
 --move to common---------------------------------
 --Also... refactor all temps to point to this----
 local common = require("mer.ashfall.common.common")
+local config = require("mer.ashfall.config.config").config
 -------------------------------------------------
 --Move to Config file
 local INT_MULTI = 100 --Rate of change for player temp
@@ -258,7 +259,7 @@ function this.calculate(interval, forceUpdate)
     if not forceUpdate and interval == 0 then return end
     
     if not common.data then return end
-    if not common.config.getConfig().enableTemperatureEffects then
+    if not config.enableTemperatureEffects then
         common.data.tempLimit = 0
         common.data.baseTemp = 0
         common.data.temp = 0

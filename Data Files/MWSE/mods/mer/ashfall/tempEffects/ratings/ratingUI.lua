@@ -1,5 +1,6 @@
 local this = {}
 local common = require("mer.ashfall.common.common")
+local config = require("mer.ashfall.config.config").config
 local ratingsCommon = require("mer.ashfall.tempEffects.ratings.ratings")
 
 
@@ -79,7 +80,7 @@ local IDs = {
 ]]
 local function insertRatingsTooltips(e)
 
-    if not common.config.getConfig().enableTemperatureEffects then
+    if not config.enableTemperatureEffects then
         return
     end
 
@@ -162,7 +163,7 @@ local function checkAshfallEnabled()
     local inventoryMenu = tes3ui.findMenu(tes3ui.registerID("MenuInventory"))
     if inventoryMenu then
         local outerBlock = inventoryMenu:findChild(tes3ui.registerID("Ashfall:armorRatings"))
-        outerBlock.visible = common.config.getConfig().enableTemperatureEffects
+        outerBlock.visible = config.enableTemperatureEffects
     end
 end
 

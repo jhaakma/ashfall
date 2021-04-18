@@ -59,12 +59,12 @@ end
 
 
 
-function this.getTentActiveFromMisc(miscRef)
-    return staticConfigs.tentMiscToActiveMap[miscRef.object.id:lower()]
+function this.getActiveFromMisc(miscRef)
+    return staticConfigs.miscToActiveMap[miscRef.object.id:lower()]
 end
 
-function this.getTentMiscFromActive(activeRef)
-    return staticConfigs.tentActiveToMiscMap[activeRef.object.id:lower()]
+function this.getMiscFromActive(activeRef)
+    return staticConfigs.activetoMiscMap[activeRef.object.id:lower()]
 end
 
 function this.checkRefSheltered(reference)
@@ -92,7 +92,7 @@ function this.checkRefSheltered(reference)
                     ( result.reference.object.objectType == tes3.objectType.static or
                     result.reference.object.objectType == tes3.objectType.activator ) == true
 
-                if this.getTentMiscFromActive(result.reference) then
+                if this.getMiscFromActive(result.reference) then
                     --We're covered by a tent, so we are a bit warmer
                     tent = result.reference
                 end
@@ -358,6 +358,39 @@ function this.getCloseEnough(e)
     local distVertical = math.abs(e.ref1.position.z - e.ref2.position.z)
     return (distHorizontal < e.distHorizontal and distVertical < e.distVertical)
 end
+
+
+
+function this.addLabelToTooltip(tooltip, labelText, color)
+    local function setupOuterBlock(e)
+        e.flowDirection = 'left_to_right'
+        e.paddingTop = 0
+        e.paddingBottom = 2
+        e.paddingLeft = 6
+        e.paddingRight = 6
+        e.autoWidth = true
+        e.autoHeight = true
+        e.childAlignX = 0.5
+    end
+    --Get main block inside tooltip
+    local partmenuID = tes3ui.registerID('PartHelpMenu_main')
+    local mainBlock = tooltip:findChild(partmenuID):findChild(partmenuID):findChild(partmenuID)
+
+    local outerBlock = mainBlock:createBlock()
+    setupOuterBlock(outerBlock)
+
+    mainBlock:reorderChildren(1, -1, 1)
+    mainBlock:updateLayout()
+    if labelText then
+        local label = outerBlock:createLabel({text = labelText})
+        label.autoHeight = true
+        label.autoWidth = true
+        if color then label.color = color end
+        return label
+    end
+    return outerBlock
+end
+
 
 --Generic Tooltip with header and description
 function this.createTooltip(e)
@@ -703,10 +736,9 @@ end
 
 function this.getGroundBelowRef(e)
     local ref = e.ref 
-    local rootHeight = e.rootHeight or 50
     local ignoreList = e.ignoreList
     if not ref then return end
-    local height = rootHeight + 10
+    local height = -ref.object.boundingBox.min.z + 5
     local result = tes3.rayTest{
         position = {ref.position.x, ref.position.y, ref.position.z + height}, 
         direction = {0, 0, -1},
@@ -727,15 +759,32 @@ local function doIgnoreMesh(ref)
     return true
 end
 
+
+
 function this.orientRefToGround(params)
+    local function orientRef(ref, rayResult, maxSteepness)
+        local UP = tes3vector3.new(0, 0, 1)
+        local newOrientation = this.rotationDifference(UP, rayResult.normal)
+        newOrientation.x = math.clamp(newOrientation.x, (0 - maxSteepness), maxSteepness)
+        newOrientation.y = math.clamp(newOrientation.y, (0 - maxSteepness), maxSteepness)
+        newOrientation.z = ref.orientation.z
+        mwse.log(ref.orientation.z)
+        ref.orientation = newOrientation
+    end
+    local function positionRef(ref, result)
+        local bb = ref.object.boundingBox
+        local offset = params.ignoreBB and 0 or bb.min.z
+        ref.position = { ref.position.x, ref.position.y, result.intersection.z - offset }
+    end
+    
     local ref = params.ref
     local maxSteepness = params.maxSteepness
-    local ignoreList = params.ignoreList or {}
+    local ignoreList = params.ignoreList or {ref, tes3.player}
     local rootHeight = params.rootHeight or 0
-    local terrainOnly = params.terrainOnly or false
+    local terrainOnly = params.terrainOnly or false --only look at terrain
+    local ignoreNonStatics = params.ignoreNonStatics or false
 
-    if not terrainOnly then
-        table.insert(ignoreList, tes3.player)
+    if ignoreNonStatics and not terrainOnly then
         for thisRef in ref.cell:iterateReferences() do
             if doIgnoreMesh(thisRef) then
                 table.insert(ignoreList, thisRef)
@@ -743,25 +792,15 @@ function this.orientRefToGround(params)
         end
     end
 
-    local result = this.getGroundBelowRef({ref = ref, ignoreList = ignoreList, rootHeight = rootHeight, terrainOnly = terrainOnly})
-    if not result then 
-        --This only happens when the ref is 
-        --beyond the edge of the active cells
-        return false
-    end
-    ref.position = { ref.position.x, ref.position.y, result.intersection.z }
-    local UP = tes3vector3.new(0,0,1)
-    
-    local newOrientation = this.rotationDifference(UP, result.normal)
-    
-    if maxSteepness then
-        newOrientation.x = math.clamp(newOrientation.x, (0-maxSteepness), maxSteepness)
-        newOrientation.y = math.clamp(newOrientation.y, (0-maxSteepness), maxSteepness)
-        
-    end
-    newOrientation.z = ref.orientation.z
-
-    ref.orientation = newOrientation
+    local result = this.getGroundBelowRef{
+        ref = ref, 
+        ignoreList = ignoreList, 
+        rootHeight = rootHeight, 
+        terrainOnly = terrainOnly
+    }
+    if not result then return false end
+    orientRef(ref, result, maxSteepness)
+    positionRef(ref, result)
     return true
 end
 

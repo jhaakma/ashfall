@@ -1,5 +1,5 @@
-local config = require("mer.ashfall.config.config")
-local log = require("mer.ashfall.common.common").log
+local common = require("mer.ashfall.common.common")
+local config = require("mer.ashfall.config.config").config
 local backpackSlot = 11
 local backpacks = {
     ["ashfall_backpack_b"] = true,
@@ -114,7 +114,7 @@ end
 
 
 local function attachBackpack(parent, fileName)
-    if not config.getConfig().showBackpacks then return end
+    if not config.showBackpacks then return end
     local node = tes3.loadMesh(fileName)
     if node then
         node = node:clone()
@@ -215,7 +215,7 @@ event.register("activate", function(e)
 end)
  
 local function updatePlayer()
-    log:trace("updating player backpack")
+    common.log:trace("updating player backpack")
     if tes3.player and tes3.mobilePlayer then
         --check for existing backpack and equip it
         local equippedBackpack = tes3.getEquippedItem{
@@ -224,7 +224,7 @@ local function updatePlayer()
             slot = backpackSlot
         }
         if equippedBackpack then
-            log:trace("re-equipping %s", equippedBackpack.object.name)
+            common.log:trace("re-equipping %s", equippedBackpack.object.name)
             onEquipped{reference = tes3.player, item = equippedBackpack.object}
         end
     end

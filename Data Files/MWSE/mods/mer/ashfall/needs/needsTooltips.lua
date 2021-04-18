@@ -1,41 +1,11 @@
 local common = require("mer.ashfall.common.common")
+local config = require("mer.ashfall.config.config").config
 local teaConfig = common.staticConfigs.teaConfig
 local hungerController = require('mer.ashfall.needs.hungerController')
 local thirstController = require('mer.ashfall.needs.thirstController')
 local foodConfig = common.staticConfigs.foodConfig
 
-local function setupOuterBlock(e)
-    e.flowDirection = 'left_to_right'
-    e.paddingTop = 0
-    e.paddingBottom = 2
-    e.paddingLeft = 6
-    e.paddingRight = 6
-    e.autoWidth = true
-    e.autoHeight = true
-    e.childAlignX = 0.5
-end
 
-local function createTooltip(tooltip, labelText, color)
-    --Get main block inside tooltip
-    local partmenuID = tes3ui.registerID('PartHelpMenu_main')
-    local mainBlock = tooltip:findChild(partmenuID):findChild(partmenuID):findChild(partmenuID)
-
-    local outerBlock = mainBlock:createBlock()
-    setupOuterBlock(outerBlock)
-
-    mainBlock:reorderChildren(1, -1, 1)
-    mainBlock:updateLayout()
-    if labelText then
-        local label = outerBlock:createLabel({text = labelText})
-        label.autoHeight = true
-        label.autoWidth = true
-        if color then label.color = color end
-        return label
-    end
-
-    return outerBlock
-
-end
 
 
 --Adds fillbar showing how much water is left in a bottle. 
@@ -168,12 +138,12 @@ local function createNeedsTooltip(e)
     local labelText
     local thisFoodType = foodConfig.getFoodType(e.object)
     if thisFoodType then
-        if common.config.getConfig().enableHunger  then
+        if config.enableHunger  then
             --hunger value
             local nutrition = hungerController.getNutrition(e.object, e.itemData)
             if nutrition and nutrition ~= 0 then
                 labelText = string.format("Nutrition: %d", nutrition)
-                createTooltip(tooltip, labelText)
+                common.helper.addLabelToTooltip(tooltip, labelText)
             end
 
             local cookedLabel = ""
@@ -207,12 +177,12 @@ local function createNeedsTooltip(e)
             end
 
             local foodTypeLabel = string.format("%s%s", thisFoodType, cookedLabel)
-            createTooltip(tooltip, foodTypeLabel)
+            common.helper.addLabelToTooltip(tooltip, foodTypeLabel)
 
         end
 
         --Meat disease/blight
-        if common.config.getConfig().enableDiseasedMeat then
+        if config.enableDiseasedMeat then
             if e.itemData and e.itemData.data.mer_disease then
                 local diseaseLabel
                 local diseaseType = e.itemData.data.mer_disease.spellType
@@ -222,14 +192,14 @@ local function createNeedsTooltip(e)
                     diseaseLabel = "Blighted"
                 end
                 if diseaseLabel then
-                    createTooltip(tooltip, diseaseLabel, tes3ui.getPalette("negative_color"))
+                    common.helper.addLabelToTooltip(tooltip, diseaseLabel, tes3ui.getPalette("negative_color"))
                 end
             end
         end
     end
 
     --Water tooltips
-    if common.config.getConfig().enableThirst then
+    if config.enableThirst then
         local bottleData = thirstController.getBottleData(e.object.id)
         if bottleData then
             local liquidLevel = e.itemData and e.itemData.data.waterAmount or 0
@@ -244,7 +214,7 @@ local function createNeedsTooltip(e)
                 labelText = string.format('%s: %d/%d', teaName, math.ceil(liquidLevel), bottleData.capacity)
 
                 --Tea description
-                local effectBlock = createTooltip(tooltip)
+                local effectBlock = common.helper.addLabelToTooltip(tooltip)
                 effectBlock.borderAllSides = 6
                 effectBlock.childAlignX = 0.5
                 effectBlock.autoHeight = true
@@ -272,7 +242,7 @@ local function createNeedsTooltip(e)
 
                     
 
-                    local outerBlock = createTooltip(tooltip)
+                    local outerBlock = common.helper.addLabelToTooltip(tooltip)
                     local block = outerBlock:createBlock{}
                     block.autoHeight = true
                     block.autoWidth = true
@@ -315,7 +285,7 @@ local function createNeedsTooltip(e)
                 labelText = string.format('Water: %d/%d', math.ceil(liquidLevel), bottleData.capacity)
             end
 
-            createTooltip(tooltip, labelText)
+            common.helper.addLabelToTooltip(tooltip, labelText)
 
 
             local icon = e.tooltip:findChild(tes3ui.registerID("HelpMenu_icon"))

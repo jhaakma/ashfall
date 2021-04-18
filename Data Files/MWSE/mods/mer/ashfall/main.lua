@@ -38,6 +38,7 @@ local function initialized()
         require("mer.ashfall.branch.branches")
 
         require("mer.ashfall.referenceController")
+        require("mer.ashfall.crafting.controllers")
 
         local Interop = require ("mer.ashfall.interop")
         event.trigger("Ashfall:Interop", Interop)

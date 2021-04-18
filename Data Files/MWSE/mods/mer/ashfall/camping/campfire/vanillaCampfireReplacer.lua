@@ -395,7 +395,9 @@ local function replaceCampfire(e)
                 ref = campfire, 
                 maxSteepness = (data.hasPlatform and 0.0 or 0.2),
                 ignoreList = data.ignoreList,
-                rootHeight = vanillaConfig.rootHeight
+                rootHeight = vanillaConfig.rootHeight,
+                ignoreNonStatics = true,
+                ignoreBB = true
             }
             if not orientedCorrectly then
                 common.helper.removeCollision(e.reference.sceneNode)

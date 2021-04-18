@@ -1,4 +1,5 @@
 local common = require ("mer.ashfall.common.common")
+local config = require("mer.ashfall.config.config").config
 local temperatureController = require("mer.ashfall.temperatureController")
 temperatureController.registerBaseTempMultiplier({ id ="survivalEffect"})
 local this = {}
@@ -16,7 +17,7 @@ end
 
 local function checkConditions()
     if not common.data then return end
-    if not common.config.getConfig().enableTemperatureEffects then return end
+    if not config.enableTemperatureEffects then return end
 
     local totalIncrease = 0
     --Increase when out in bad weather

@@ -11,6 +11,8 @@ function this.getFoodType(obj)
     return foodType
 end
 
+
+
 --Handles special case for pre-cooked meat
 function this.getFoodTypeResolveMeat(obj)
 
@@ -20,7 +22,6 @@ function this.getFoodTypeResolveMeat(obj)
     end
     return foodType
 end
-
 
 function this.getNutrition(obj)
     return this.nutrition[this.getFoodType(obj)]
@@ -97,6 +98,7 @@ this.stewBuffs = {
         min = 10, max = 30, 
         id = "ashfall_stew_hearty",
         tooltip = "A hearty meat stew that fortifies your health.",
+        ingredTooltip = "Adds Fortify Health buff."
     }, -- fortify health
     [this.type.vegetable] = { 
         notSoup = true,
@@ -104,6 +106,7 @@ this.stewBuffs = {
         min = 10, max = 30, 
         id = "ashfall_stew_nutritious",
         tooltip = "A nutritious vegetable stew that fortifies your fatigue.",
+        ingredTooltip = "Adds Fortify Fatigue buff"
     }, --fortify fatigue
     [this.type.mushroom] = { 
         notSoup = true,
@@ -111,6 +114,7 @@ this.stewBuffs = {
         min = 10, max = 25, 
         id = "ashfall_stew_chunky",
         tooltip = "A chunky mushroom stew that fortifies your magicka.",
+        ingredTooltip = "Adds Fortify Magicka buff."
     }, --fortify magicka
     [this.type.seasoning] = { 
         notSoup = false,
@@ -118,6 +122,7 @@ this.stewBuffs = {
         min = 5, max = 20, 
         id = "ashfall_stew_tasty",
         tooltip = "A tasty seasoned soup that fortifies your agility.",
+        ingredTooltip = "Adds Fortify Agility buff."
     }, --fortify agility
     [this.type.herb] = { 
         notSoup = false,
@@ -125,6 +130,7 @@ this.stewBuffs = {
         min = 5, max = 20, 
         id = "ashfall_stew_aromatic",
         tooltip = "An aromatic soup, rich in herbs,that fortifies your personality.",
+        ingredTooltip = "Adds Fortify Personality buff."
         } -- fortify personality
 }
 

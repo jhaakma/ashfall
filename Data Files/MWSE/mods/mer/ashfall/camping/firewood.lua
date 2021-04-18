@@ -3,6 +3,7 @@
 ----------------------
 
 local common = require ("mer.ashfall.common.common")
+local config = require("mer.ashfall.config.config").config
 local skipActivate
 local function pickupFirewood(ref)
     timer.delayOneFrame(function()
@@ -57,7 +58,7 @@ local function onActivateFirewood(e)
             if  tes3.player.cell.isInterior then
                 return
             end
-            if not common.config:getConfig().canCampInSettlements then
+            if not config.canCampInSettlements then
                 return
             end
         end

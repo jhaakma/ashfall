@@ -1,4 +1,5 @@
 local common = require("mer.ashfall.common.common")
+local config = require("mer.ashfall.config.config").config
 local foodConfig = common.staticConfigs.foodConfig
 --check that the creature is diseased
 local function getDiseaseFromCreature(creatureRef)
@@ -39,7 +40,7 @@ local function addDiseaseToMeat(reference, disease)
 end
 
 local function addDiseaseOnDeath(e)
-    if common.config.getConfig().enableDiseasedMeat then
+    if config.enableDiseasedMeat then
         local baseObj = e.reference.baseObject or e.reference.object
         if baseObj.objectType == tes3.objectType.creature then
             

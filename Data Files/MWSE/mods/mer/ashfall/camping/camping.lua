@@ -13,5 +13,5 @@ require("mer.ashfall.camping.firewood")
 require("mer.ashfall.camping.fuelConsumerController")
 require("mer.ashfall.camping.gearPlacement")
 require("mer.ashfall.camping.grillDecals")
-require("mer.ashfall.camping.harvestWood")
+require("mer.ashfall.camping.harvest")
 

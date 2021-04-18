@@ -1,5 +1,5 @@
 local common = require("mer.ashfall.common.common")
-
+local config = require("mer.ashfall.config.config").config
 local temperatureController = require("mer.ashfall.temperatureController")
 --temperatureController.registerExternalHeatSource{ id = "tentTemp" }
 temperatureController.registerBaseTempMultiplier{ id = "tentTempMulti"}
@@ -20,7 +20,7 @@ local function canUnpack()
         return false
     end
     if tes3.player.cell.restingIsIllegal then
-        if not common.config:getConfig().canCampInSettlements then
+        if not config.canCampInSettlements then
             return false
         end
     end 
@@ -30,7 +30,7 @@ end
 local function unpackTent(miscRef)
     timer.delayOneFrame(function()
         tes3.createReference {
-            object = common.helper.getTentActiveFromMisc(miscRef),
+            object = common.helper.getActiveFromMisc(miscRef),
             position = {
                 miscRef.position.x,
                 miscRef.position.y,
@@ -49,7 +49,7 @@ end
 local function packTent(activeRef)
     timer.delayOneFrame(function()
         -- tes3.createReference {
-        --     object = common.helper.getTentMiscFromActive(activeRef),
+        --     object = common.helper.getMiscFromActive(activeRef),
         --     position = activeRef.position:copy(),
         --     orientation = activeRef.orientation:copy(),
         --     cell = activeRef.cell
@@ -57,7 +57,7 @@ local function packTent(activeRef)
         -- tes3.runLegacyScript{ command = 'Player->Drop "ashfall_resetlight" 1'}
         mwscript.addItem{
             reference = tes3.player,
-            item = common.helper.getTentMiscFromActive(activeRef),
+            item = common.helper.getMiscFromActive(activeRef),
             count =  1
         }
         tes3.playSound{ reference = tes3.player, sound = "Item Misc Up"  }
@@ -115,7 +115,7 @@ end
 
 local function activateTent(e)
     --Check if it's a misc tent ref
-    if common.helper.getTentActiveFromMisc(e.target) then
+    if common.helper.getActiveFromMisc(e.target) then
         --Skip if picking up
         if skipActivate then
             skipActivate = false
@@ -129,7 +129,7 @@ local function activateTent(e)
             return false
         end
     --Check if it's an activator tent ref
-    elseif common.helper.getTentMiscFromActive(e.target) then
+    elseif common.helper.getMiscFromActive(e.target) then
         activeTentMenu(e.target)
         return false
     end

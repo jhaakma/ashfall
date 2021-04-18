@@ -1,6 +1,6 @@
-
 local this = {}
 local common = require("mer.ashfall.common.common")
+local config = require("mer.ashfall.config.config").config
 local foodConfig = common.staticConfigs.foodConfig
 local teaConfig = common.staticConfigs.teaConfig
 local conditionsCommon = require("mer.ashfall.conditionController")
@@ -33,7 +33,7 @@ function this.calculate(scriptInterval, forceUpdate)
         return
     end
 
-    local thirstRate = common.config.getConfig().thirstRate / 10
+    local thirstRate = config.thirstRate / 10
     local currentThirst = thirst:getValue()
     local temp = conditionConfig.temp
     --Hotter it gets the faster you become thirsty
@@ -124,7 +124,7 @@ local function blockMagickaAtronach()
     common.log:debug("Checking atronach settings")
     if tes3.isAffectedBy{ reference = tes3.player, effect = tes3.effect.stuntedMagicka} then
         common.log:debug("Is an atronach")
-        if common.config.getConfig().atronachRecoverMagickaDrinking ~= true then
+        if config.atronachRecoverMagickaDrinking ~= true then
             common.log:debug("Atronachs not allowed to recover magicka from drinking")
             return true
         end

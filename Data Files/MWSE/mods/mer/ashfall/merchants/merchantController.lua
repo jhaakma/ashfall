@@ -1,6 +1,6 @@
 
 local common = require("mer.ashfall.common.common")
-
+local config = require("mer.ashfall.config.config").config
 --Place an invisible, appCulled container at the feet of a merchant and assign ownership
 --This is how we add stock to merchants without editing the cell in the CS
 local function placeContainer(merchant, containerId)
@@ -16,7 +16,7 @@ end
 
 
 local function onMobileActivated(e)
-    local config = common.config.getConfig()
+    local config = config
     local obj = e.reference.baseObject or e.reference.object
 
     --Publicans get food

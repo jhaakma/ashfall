@@ -1,4 +1,5 @@
 local common = require("mer.ashfall.common.common")
+local config = require("mer.ashfall.config.config").config
 local branchConfig = require("mer.ashfall.branch.branchConfig")
 --Branch placement configs
 local hoursToRefresh = 2
@@ -174,7 +175,7 @@ local function addBranchesToCell(cell)
 end
 
 local function updateCells()
-    if common.data and common.config.getConfig().enableBranchPlacement then
+    if common.data and config.enableBranchPlacement then
         common.log:debug("Branch placement enabled")
 
         for _, cell in ipairs(tes3.getActiveCells()) do

@@ -1,4 +1,5 @@
 local common = require ("mer.ashfall.common.common")
+local config = require("mer.ashfall.config.config").config
 local activators = require("mer.ashfall.activators.activatorController")
 local activatorConfig = common.staticConfigs.activatorConfig
 
@@ -10,8 +11,8 @@ local function onActivate()
     if pressedActivateKey then
         local cookingActive = (
             common.data and
-            common.config.getConfig().enableHunger and
-            common.config.getConfig().enableCooking
+            config.enableHunger and
+            config.enableCooking
         )
         if cookingActive then
             local currentActivator = activators.getCurrentActivator()

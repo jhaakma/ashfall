@@ -3,6 +3,7 @@
 ]]--
 local this = {}
 local common = require("mer.ashfall.common.common")
+local config = require("mer.ashfall.config.config").config
 local wetness = common.staticConfigs.conditionConfig.wetness
 
 --register temp effects
@@ -54,7 +55,7 @@ function this.calculateWetTemp(interval)
     end
     this.checkForShelter()
     --Check if Ashfall is disabled
-    if not common.config.getConfig().enableTemperatureEffects then
+    if not config.enableTemperatureEffects then
         common.data.wetness = 0
         common.data.wetTemp = 0
         common.data.wetCoolingRate = 1

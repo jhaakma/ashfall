@@ -1,6 +1,7 @@
 local this = {}
 
 local common = require("mer.ashfall.common.common")
+local config = require("mer.ashfall.config.config").config
 local needsUI = require("mer.ashfall.needs.needsUI")
 
 local IDs = {
@@ -49,7 +50,7 @@ function this.updateHUD()
     if not mainHUDBlock then return end
 
     --Hide HUD if Ashfall is disabled
-    if common.config.getConfig().enableTemperatureEffects then
+    if config.enableTemperatureEffects then
         mainHUDBlock.visible = true
 
         local bottomBlock = findHUDElement(IDs.bottomBlock)
@@ -131,9 +132,9 @@ function this.updateHUD()
         
         --Hide or show based on mcmSettings
         local hasNeeds = (
-            common.config.getConfig().enableHunger or
-            common.config.getConfig().enableThirst or
-            common.config.getConfig().enableTiredness
+            config.enableHunger or
+            config.enableThirst or
+            config.enableTiredness
         )
         if hasNeeds then
             needsBlock.visible = true

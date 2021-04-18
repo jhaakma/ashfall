@@ -1,6 +1,7 @@
 local this = {}
 
 local common = require("mer.ashfall.common.common")
+local config = require("mer.ashfall.config.config").config
 local ratingsConfig = common.staticConfigs.ratingsConfig
 
 local cache = {
@@ -9,14 +10,14 @@ local cache = {
 }
 local function getCache()
     return cache
-    -- common.config.getConfig().warmthCache or {
+    -- config.warmthCache or {
     --     armor = {},
     --     clothing = {}
     -- }
 end 
 
 local function saveCache(newCache) 
-    common.config.saveConfigValue("warmthCache", newCache)
+    config.warmthCache = newCache
 end 
 
 

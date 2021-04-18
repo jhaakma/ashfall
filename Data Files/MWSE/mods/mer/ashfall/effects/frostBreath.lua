@@ -4,12 +4,13 @@
 --]]
 
 local common = require("mer.ashfall.common.common")
+local config = require("mer.ashfall.config.config").config
 local this = {}
 
 local coldLevelNeeded = common.staticConfigs.conditionConfig.temp.states.veryCold.max
 
 local function checkEnabled()
-    return common.config.getConfig().showFrostBreath
+    return config.showFrostBreath
 end
 
 local function addBreath(node, x, y, z, scale)

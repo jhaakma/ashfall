@@ -1,5 +1,5 @@
 local this = {}
-local config = require("mer.ashfall.config.config")
+local config = require("mer.ashfall.config.config").config
 local conditions = require("mer.ashfall.config.conditionConfig")
 
 this.tooltipColor = { 
@@ -306,22 +306,13 @@ this.teaTypes["ingred_moon_sugar_01"] = {
     offCallback = function()
         local previousTiredness = tes3.player.data.Ashfall.coffeePrevTiredness
         if previousTiredness then
-            local sleepLossRate = config.getConfig().loseSleepRate
+            local sleepLossRate = config.loseSleepRate
             local penalty = sleepLossRate * tes3.player.data.Ashfall.teaBuffTimeLeft * 0.8
             conditions.tiredness:setValue( previousTiredness + penalty)
             tes3.player.data.Ashfall.coffeePrevTiredness = nil
         end
     end
 }
-
-
-
-
-
-
-
-
-
 
 
 --Mournhold teas----------------

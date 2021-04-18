@@ -1,6 +1,6 @@
 local this = {}
 local common = require("mer.ashfall.common.common")
-local config = common.config.getConfig()
+local config = require("mer.ashfall.config.config").config
 local conditionConfig = common.staticConfigs.conditionConfig
 
 

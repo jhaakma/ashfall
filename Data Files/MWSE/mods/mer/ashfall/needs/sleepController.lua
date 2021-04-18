@@ -1,4 +1,5 @@
 local common = require("mer.ashfall.common.common")
+local config = require("mer.ashfall.config.config").config
 local needsUI = require("mer.ashfall.needs.needsUI")
 local this = {}
 local statsEffect = require("mer.ashfall.needs.statsEffect")
@@ -211,10 +212,10 @@ function this.calculate(scriptInterval, forceUpdate)
     end
 
     local currentTiredness = tiredness:getValue()
-    local loseSleepRate = common.config.getConfig().loseSleepRate / 10
-    local loseSleepWaiting = common.config.getConfig().loseSleepWaiting / 10
-    local gainSleepRate = common.config.getConfig().gainSleepRate / 10  
-    local gainSleepBed = common.config.getConfig().gainSleepBed / 10
+    local loseSleepRate = config.loseSleepRate / 10
+    local loseSleepWaiting = config.loseSleepWaiting / 10
+    local gainSleepRate = config.gainSleepRate / 10  
+    local gainSleepBed = config.gainSleepBed / 10
     
     --slows tiredness drain
     local hackloEffect = common.data.hackloTeaEffect or 1
