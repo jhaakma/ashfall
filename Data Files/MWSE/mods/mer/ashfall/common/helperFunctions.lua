@@ -768,7 +768,6 @@ function this.orientRefToGround(params)
         newOrientation.x = math.clamp(newOrientation.x, (0 - maxSteepness), maxSteepness)
         newOrientation.y = math.clamp(newOrientation.y, (0 - maxSteepness), maxSteepness)
         newOrientation.z = ref.orientation.z
-        mwse.log(ref.orientation.z)
         ref.orientation = newOrientation
     end
     local function positionRef(ref, result)
