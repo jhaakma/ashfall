@@ -781,7 +781,7 @@ function this.orientRefToGround(params)
     end
     
     local ref = params.ref
-    local maxSteepness = params.maxSteepness
+    local maxSteepness = params.maxSteepness or 0.4
     local ignoreList = params.ignoreList or {ref, tes3.player}
     local rootHeight = params.rootHeight or 0
     local terrainOnly = params.terrainOnly or false --only look at terrain
