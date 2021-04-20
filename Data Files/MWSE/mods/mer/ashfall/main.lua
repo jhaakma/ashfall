@@ -28,7 +28,7 @@ local function initialized()
         require("mer.ashfall.tempEffects.ratings.ratingEffects")
 
         require("mer.ashfall.activators.activationEvent")
-        require("mer.ashfall.tentController")
+        
         require("mer.ashfall.bedrollController")        
         require("mer.ashfall.backpackController")
         require("mer.ashfall.merchants.merchantController")

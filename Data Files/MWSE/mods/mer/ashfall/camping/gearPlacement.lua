@@ -33,32 +33,38 @@ event.register("itemDropped", onDropGear)
 --[[
     For any mesh with the "verticalise" flag, find nodes to set to vertical
 ]]
-local function verticalise(node)
-    local z = node.worldTransform.rotation:copy()
+local function verticalise(e)
+    local z = e.node.worldTransform.rotation:copy()
     z:toRotationZ(z:toEulerXYZ().z)
-    node.rotation = node.worldTransform.rotation:invert() * z
-    node:update()
+    e.node.rotation = e.node.worldTransform.rotation:invert() * z
+    e.node:update()
 end
 
-local function verticaliseNodes(e)
+local function verticaliseNode(e)
+    local vertNode = e.node:getObjectByName("ALIGN_VERTICAL")
+    if vertNode then
+        common.log:debug("Verticalising node")
+        verticalise{ node = vertNode }
+    else
+        common.log:debug("no ALIGN_VERTICAL node found")
+    end
+    local collisionNode = e.node:getObjectByName("COLLISION_VERTICAL")
+    if collisionNode then
+        common.log:debug("Verticalising collision node")
+        verticalise{ node = collisionNode }
+    end
+end
+event.register("Ashfall:VerticaliseNode", verticaliseNode)
 
+
+local function verticaliseNodes(e)
     if e.reference.disabled then return end
-    if e.reference.sceneNode and e.reference.sceneNode:hasStringDataWith("verticalise") then
+    if e.reference.sceneNode and e.reference.sceneNode:getObjectByName("ALIGN_VERTICAL") then
         local safeRef = tes3.makeSafeObjectHandle(e.reference)
         local function f() 
             if not safeRef:valid() then return end
             common.log:debug("Verticalising %s", e.reference.object.id)
-            local vertNode = e.reference.sceneNode:getObjectByName("ALIGN_VERTICAL")
-
-            if vertNode then
-                verticalise(vertNode)
-            else
-                common.log:debug("no ALIGN_VERTICAL node found")
-            end
-            local collisionNode = e.reference.sceneNode:getObjectByName("COLLISION_VERTICAL")
-            if collisionNode then
-                verticalise(collisionNode)
-            end
+            verticaliseNode{ node = e.reference.sceneNode }
         end
         event.register("enterFrame", f, {doOnce=true})
     end

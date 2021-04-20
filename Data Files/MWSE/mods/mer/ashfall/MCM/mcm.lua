@@ -48,6 +48,12 @@ local function registerModConfig()
         }
 
         component.sidebar:createHyperLink{
+            text = "Tent Covers by Draconik",
+            exec = "start https://www.nexusmods.com/morrowind/users/86600168",
+            postCreate = postFormat
+        }
+
+        component.sidebar:createHyperLink{
             text = "Animations by Vidi Aquam",
             exec = "start https://www.nexusmods.com/morrowind/mods/48782",
             postCreate = postFormat,

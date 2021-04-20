@@ -2,6 +2,7 @@ local this = {}
 local staticConfigs = require("mer.ashfall.config.staticConfigs")
 local skillModule = include("OtherSkills.skillModule")
 local refController = require("mer.ashfall.referenceController")
+local tentConfig = require("mer.ashfall.camping.tents.tentConfig")
 --[[
     Returns a human readable timestamp of the given time (or else the current time)
 ]]
@@ -47,25 +48,11 @@ function this.transferQuantity(source, target, sourceField, targetField, amount)
     target[targetField] = target[targetField] + amount
 end
 
---[[
-    Checks if there is any static object directly above the given reference.
-
-    This is an expensive function! To see if the player is sheltered, use common.data.isSheltered instead.
-]]
 
 function this.getInTent()
     return (tes3.player.data.Ashfall.insideTent or tes3.player.data.Ashfall.insideCoveredBedroll)
 end
 
-
-
-function this.getActiveFromMisc(miscRef)
-    return staticConfigs.miscToActiveMap[miscRef.object.id:lower()]
-end
-
-function this.getMiscFromActive(activeRef)
-    return staticConfigs.activetoMiscMap[activeRef.object.id:lower()]
-end
 
 function this.checkRefSheltered(reference)
 
@@ -91,8 +78,7 @@ function this.checkRefSheltered(reference)
                 sheltered = 
                     ( result.reference.object.objectType == tes3.objectType.static or
                     result.reference.object.objectType == tes3.objectType.activator ) == true
-
-                if this.getMiscFromActive(result.reference) then
+                if tentConfig.tentActivetoMiscMap[result.reference.object.id:lower()] then
                     --We're covered by a tent, so we are a bit warmer
                     tent = result.reference
                 end
@@ -104,7 +90,7 @@ function this.checkRefSheltered(reference)
     end
     if reference == tes3.player then
         event.trigger("Ashfall:SetTent", {
-            insideTent = (tent ~= nil) and true or false,
+            insideTent = tent ~= nil,
             tent = tent
         })
     end
@@ -112,6 +98,7 @@ function this.checkRefSheltered(reference)
 end
 
 function this.getInside(reference)
+    reference = reference or tes3.player
     return (
         reference.cell and
         reference.cell.isInterior and 

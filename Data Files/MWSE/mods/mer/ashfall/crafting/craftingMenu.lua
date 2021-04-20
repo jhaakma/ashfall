@@ -217,11 +217,14 @@ local function updatePreviewPane(recipe)
         local nifPreviewBlock = craftingMenu:findChild(uiids.nifPreviewBlock)
         if nifPreviewBlock then 
             nifPreviewBlock:destroyChildren()
-            local nif = nifPreviewBlock:createNif{ id = uiids.nif, path = item.mesh}
+            local mesh = recipe.mesh or item.mesh
+            local nif = nifPreviewBlock:createNif{ id = uiids.nif, path = mesh}
             if not nif then return end 
             --nif.scaleMode = true
             craftingMenu:updateLayout()
-            common.log:debug("mesh: %s", item.mesh)
+            
+
+            common.log:debug("mesh: %s", mesh)
             common.log:debug(nif.sceneNode.name)
 
             local node = nif.sceneNode

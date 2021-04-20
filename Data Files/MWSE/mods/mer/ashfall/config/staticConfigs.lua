@@ -42,18 +42,6 @@ this.stewIngredAddAmount = 25 -- out of pot capacity, not 100
 this.firewoodFuelMulti = 2
 this.maxWoodInFire = 15
 
---Tent mappings for activating a misc item into activator
-this.miscToActiveMap = {
-    ashfall_tent_test_misc = "ashfall_tent_test_active",
-    ashfall_tent_misc = "ashfall_tent_active",
-    ashfall_tent_ashl_misc = "ashfall_tent_ashl_active",
-    ashfall_tent_canv_b_misc = "ashfall_tent_canv_b_active",
-    
-}
-this.activetoMiscMap = {}
-for miscId, activeId in pairs(this.miscToActiveMap) do
-    this.activetoMiscMap[activeId] = miscId
-end
 
 
 this.bedrolls = {
@@ -73,6 +61,7 @@ this.placementConfig = {
     ashfall_bedroll_ashl = { maxSteepness = 0.05 },
     ashfall_bedroll = { maxSteepness = 0.05, drop = 15 },
     ashfall_cbroll_misc = { maxSteepness = 0.05, drop = 15 },
+    ashfall_strawbed = { maxSteepness = 0.05, drop = 15  },
     
     ashfall_tent_misc = { maxSteepness = 0.4},
     ashfall_tent_ashl_misc = { maxSteepness = 0.4},
@@ -93,7 +82,6 @@ this.placementConfig = {
 
     ashfall_woodaxe = { maxSteepness = math.rad(50) },
     ashfall_sack_01 = { maxSteepness = math.rad(5) },
-    ashfall_strawbed = { maxSteepness = 0.05 }
 }
 
 this.capacities = {

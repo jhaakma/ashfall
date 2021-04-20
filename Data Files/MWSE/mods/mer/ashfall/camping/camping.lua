@@ -15,3 +15,5 @@ require("mer.ashfall.camping.gearPlacement")
 require("mer.ashfall.camping.grillDecals")
 require("mer.ashfall.camping.harvest")
 
+
+require("mer.ashfall.camping.tents.tentController")

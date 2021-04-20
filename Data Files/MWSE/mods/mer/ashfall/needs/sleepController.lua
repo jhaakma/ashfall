@@ -254,17 +254,4 @@ function this.calculate(scriptInterval, forceUpdate)
     tiredness:setValue(currentTiredness)
 end
 
-local function checkTentEnemyPreventRest(e)
-    if common.data.insideTent then
-        local doAllowRest = (
-            e.mobile.inCombat ~= true and
-            e.reference.position:distance(tes3.player.position) > 1000
-        )
-        if doAllowRest then
-            return false
-        end
-    end
-end
-event.register("preventRest", checkTentEnemyPreventRest)
-
 return this

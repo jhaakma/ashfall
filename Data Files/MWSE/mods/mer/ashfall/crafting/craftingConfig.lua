@@ -1,12 +1,12 @@
 local this = {}
-
+local tentConfig = require("mer.ashfall.camping.tents.tentConfig")
 --Do common ingred ids first so they have priority
 this.materials = {
     resin = {
         name = "Resin",
         ids = {"ingred_resin_01", "ingred_shalk_resin_01" } 
     },
-    firewood = { 
+    wood = { 
         name = "Wood",
         ids = {"ashfall_firewood"} 
     },
@@ -23,6 +23,10 @@ this.materials = {
     fibre = {
         name = "Fibre",
         ids = { "ashfall_plant_fibre" }
+    },
+    rope = {
+        name = "Rope",
+        ids = { "ashfall_rope" }
     }
 }
 this.ingredMaterials = {}
@@ -35,11 +39,18 @@ end
 
 this.recipes = {
     {
+        id  = "ashfall_rope",
+        description = "A rope spun from plant fibres that can be used in more advanced crafting recipes.",
+        materials = {
+            { material = this.materials.fibre, count = 2 }
+        }
+    },
+    {
         id  = "ashfall_torch",
         description = "A rudimentary torch made by applying resin to a piece of wood.",
         materials = {
             { material = this.materials.resin, count = 1 },
-            { material = this.materials.firewood, count = 1 }
+            { material = this.materials.wood, count = 1 }
         }
     },
     {
@@ -69,7 +80,37 @@ this.recipes = {
         materials = {
             { material = this.materials.leather, count = 2 },
             { material = this.materials.resin, count = 1 }
-
+        }
+    },
+    {
+        id = "ashfall_cov_straw",
+        mesh = tentConfig.coverToMeshMap["ashfall_cov_straw"],
+        description = "A tent cover made of straw that provides added protection from the rain.",
+        materials = {
+            { material = this.materials.wood, count = 4 },
+            { material = this.materials.rope, count = 1 },
+            { material = this.materials.fibre, count = 20 }
+        }
+    },
+    {
+        id = "ashfall_cov_thatch",
+        mesh = tentConfig.coverToMeshMap["ashfall_cov_thatch"],
+        description = "A tent cover made of leather and thatch that provides added protection from the rain.",
+        materials = {
+            { material = this.materials.wood, count = 4 },
+            { material = this.materials.rope, count = 1 },
+            { material = this.materials.fibre, count = 10 },
+            { material = this.materials.leather, count = 2 },
+        }
+    },
+    {
+        id = "ashfall_cov_ashl",
+        mesh = tentConfig.coverToMeshMap["ashfall_cov_ashl"],
+        description = "A tent cover made of leather that provides added protection from the rain.",
+        materials = {
+            { material = this.materials.wood, count = 4 },
+            { material = this.materials.rope, count = 1 },
+            { material = this.materials.leather, count = 4 },
         }
     }
 }

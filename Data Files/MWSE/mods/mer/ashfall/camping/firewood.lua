@@ -55,7 +55,7 @@ local function onActivateFirewood(e)
     if tes3.menuMode() then return end
     if string.lower(e.target.object.id) == common.staticConfigs.objectIds.firewood then
         if tes3.player.cell.restingIsIllegal then
-            if  tes3.player.cell.isInterior then
+            if common.helper.getInside() then
                 return
             end
             if not config.canCampInSettlements then
