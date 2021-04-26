@@ -85,7 +85,7 @@ this.trinkets = {
     --DreamCatcher: Magicka Regen
     ashfall_trinket_dream = {
         id = "ashfall_trinket_dream",
-        description = "The Dreamcatcher collects ambient magic from the air and provides a mild magicka regeneration effect.",
+        description = "The Dream Catcher collects ambient magic from the air and provides a mild magicka regeneration effect.",
         mesh = "ashfall\\tent\\trink_dream_a.nif",
         soundPath = nil,
         effects = nil,
