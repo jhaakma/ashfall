@@ -151,6 +151,7 @@ local function initData()
     this.data = data.Ashfall
     this.data.currentStates = this.data.currentStates or {}
     this.data.wateredCells = this.data.wateredCells or {}
+    this.data.trinketEffects = this.data.trinketEffects or {}
 end
 
 local function doUpgrades()

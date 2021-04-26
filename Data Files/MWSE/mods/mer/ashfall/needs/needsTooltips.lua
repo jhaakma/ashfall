@@ -93,7 +93,7 @@ local function onMenuInventorySelectMenu(e)
     local itemList = e.menu:findChild(tes3ui.registerID("PartScrollPane_pane"))
     
     --Disable UI EXP filtering for tea brewing and grilling
-    if common.data.inventorySelectTeaBrew or common.data.inventorySelectStew then
+    if common.data.inventorySelectTeaBrew or common.data.inventorySelectStew or common.data.inventorySelectTrinket then
         local uiEXPFilterID = tes3ui.registerID("UIEXP:FiltersearchBlock")
         local filterBlock = e.menu:findChild(uiEXPFilterID)
         if filterBlock then filterBlock.parent.parent.visible = false end

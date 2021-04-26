@@ -2,7 +2,7 @@ local common = require("mer.ashfall.common.common")
 local config = require("mer.ashfall.config.config").config
 local branchConfig = require("mer.ashfall.branch.branchConfig")
 --Branch placement configs
-local hoursToRefresh = 2
+local hoursToRefresh = 24 * 3--3 days
 local MIN_BRANCHES_PER_TREE = 0
 local MAX_BRANCHES_PER_TREE = 3
 local MIN_DISTANCE_FROM_TREE = 100

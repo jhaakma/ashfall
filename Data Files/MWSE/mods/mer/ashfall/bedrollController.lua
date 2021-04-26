@@ -68,7 +68,7 @@ local function bedrollMenu(ref)
                         position = tes3vector3.new(
                             ref.position.x, 
                             ref.position.y,
-                            ref.position.z + 12
+                            ref.position.z -- + 12
                         ),
                         orientation = {
                             0,--ref.orientation.x,

@@ -83,16 +83,6 @@ this.recipes = {
         }
     },
     {
-        id = "ashfall_cov_straw",
-        mesh = tentConfig.coverToMeshMap["ashfall_cov_straw"],
-        description = "A tent cover made of straw that provides added protection from the rain.",
-        materials = {
-            { material = this.materials.wood, count = 4 },
-            { material = this.materials.rope, count = 1 },
-            { material = this.materials.fibre, count = 20 }
-        }
-    },
-    {
         id = "ashfall_cov_thatch",
         mesh = tentConfig.coverToMeshMap["ashfall_cov_thatch"],
         description = "A tent cover made of leather and thatch that provides added protection from the rain.",

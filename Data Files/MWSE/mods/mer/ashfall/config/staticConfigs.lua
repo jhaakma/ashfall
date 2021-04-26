@@ -55,23 +55,22 @@ this.coveredBedrolls = {
 }
 
 
-
 --For placement magic
 this.placementConfig = {
-    ashfall_bedroll_ashl = { maxSteepness = 0.05 },
-    ashfall_bedroll = { maxSteepness = 0.05, drop = 15 },
-    ashfall_cbroll_misc = { maxSteepness = 0.05, drop = 15 },
-    ashfall_strawbed = { maxSteepness = 0.05, drop = 15  },
+    ashfall_bedroll_ashl = { maxSteepness = 0, drop = 10 },
+    ashfall_bedroll = { maxSteepness = 0, drop = 25 },
+    ashfall_cbroll_misc = { maxSteepness = 0, drop = 10 },
+    ashfall_strawbed = { maxSteepness = 0, drop = 5  },
     
     ashfall_tent_misc = { maxSteepness = 0.4},
     ashfall_tent_ashl_misc = { maxSteepness = 0.4},
     ashfall_tent_canv_b_misc = { maxSteepness = 0.4},
     ashfall_tent_test_misc = { maxSteepness = 0.4},
 
-    ashfall_tent_active = { maxSteepness = 0.4, drop = 50},
-    ashfall_tent_ashl_active = { maxSteepness = 0.4, drop = 50},
-    ashfall_tent_canv_b_active = { maxSteepness = 0.4, drop = 50},
-    ashfall_tent_test_active = { maxSteepness = 0.4, drop = 50},
+    ashfall_tent_active = { maxSteepness = 0.4, drop = 70},
+    ashfall_tent_ashl_active = { maxSteepness = 0.4, drop = 70},
+    ashfall_tent_canv_b_active = { maxSteepness = 0.4, drop = 70},
+    ashfall_tent_test_active = { maxSteepness = 0.4, drop = 70},
 
     a_bed_roll = { maxSteepness = 0.1 },
 

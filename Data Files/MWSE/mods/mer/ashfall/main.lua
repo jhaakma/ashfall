@@ -11,6 +11,7 @@ local function initialized()
     if tes3.isModActive("Ashfall.esp") then
         require("mer.ashfall.survival")
         -- load modules
+        require("mer.ashfall.referenceController")
         require ("mer.ashfall.common.common")
         require("mer.ashfall.intro")
         require ("mer.ashfall.scriptTimer")
@@ -37,7 +38,8 @@ local function initialized()
         require("mer.ashfall.merchants.stewMerchant")
         require("mer.ashfall.branch.branches")
 
-        require("mer.ashfall.referenceController")
+        
+
         require("mer.ashfall.crafting.controllers")
 
         local Interop = require ("mer.ashfall.interop")

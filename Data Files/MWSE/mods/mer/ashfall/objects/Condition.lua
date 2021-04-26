@@ -54,7 +54,7 @@ end
 
 function Condition:isActive()
     return ( 
-        config[self.enableOption] == true 
+        self.enableOption == nil or config[self.enableOption] == true 
     )
 end
 
@@ -68,7 +68,7 @@ function Condition:showUpdateMessages()
     if (
         self:isActive() and
         ( tes3.player.data.Ashfall.fadeBlock ~= true ) and
-        ( config[self.showMessageOption] == true ) 
+        ( self.showMessageOption == nil or config[self.showMessageOption] == true ) 
     ) then
         local message = self:getCurrentStateMessage()
         if message then

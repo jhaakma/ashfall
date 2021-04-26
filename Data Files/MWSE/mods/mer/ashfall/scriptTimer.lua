@@ -36,7 +36,6 @@ local function callUpdates()
     --limit to 8 hours in case some crazy time leap
     interval = math.min(interval, 8.0)
     lastTime = hoursPassed
-   
     
     weather.calculateWeatherEffect(interval)
     sunEffect.calculate(interval)

@@ -87,7 +87,7 @@ this.controllers = {
 }
 
 local function onRefPlaced(e)
-    for _, controller in pairs(this.controllers) do
+    for id, controller in pairs(this.controllers) do
         if controller:requirements(e.reference) then
             controller:addReference(e.reference)
         end
@@ -106,7 +106,13 @@ local function onObjectInvalidated(e)
         end
     end
 end
-
 event.register("objectInvalidated", onObjectInvalidated)
+
+local function registerReferenceController(e)
+    assert(e.id, "No id provided")
+    assert(e.requirements, "No reference requirements provieded")
+    this.controllers[e.id] =  ReferenceController:new{ requirements = e.requirements }
+end
+event.register("Ashfall:RegisterReferenceController", registerReferenceController)
 
 return this

@@ -17,6 +17,8 @@ local tooltipData = {
     { id = objectIds.pack_b, description = "A brown fur backpack of Nordic design." },
     { id = objectIds.pack_w, description = "A white fur backpack of Nordic design." },
     { id = objectIds.pack_n, description = "A backpack made of netch leather." }
+
+    
 }
 
 for _, data in ipairs(tooltipData) do

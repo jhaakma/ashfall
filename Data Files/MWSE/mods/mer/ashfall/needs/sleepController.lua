@@ -49,6 +49,16 @@ local function forceWait(restMenu)
     restMenu:findChild( tes3ui.registerID("MenuRestWait_untilhealed_button") ).visible = false
     restMenu:findChild( tes3ui.registerID("MenuRestWait_rest_button") ).visible = false
 end
+local function checkStatsMax()
+    local maxHealth = statsEffect.getMaxStat("health")
+    local maxMagicka = statsEffect.getMaxStat("magicka")
+    local maxFatigue = statsEffect.getMaxStat("fatigue")
+    local statsMaxed = tes3.mobilePlayer.health.current >= maxHealth
+                   and tes3.mobilePlayer.magicka.current >= maxMagicka
+                   and tes3.mobilePlayer.fatigue.current >= maxFatigue
+
+    return statsMaxed
+end
 
 
 local function setRestValues(e)
@@ -114,11 +124,17 @@ local function activateRestMenu (e)
         hideSleepItems(restMenu)
     end
 
+    local restUntilHealedButton = e.element:findChild( tes3ui.registerID("MenuRestWait_untilhealed_button") )
     --Hide "Rest until healed" button if health is not lower than max
-    local maxHealth = statsEffect.getMaxStat("health")
-    if tes3.mobilePlayer.health.current >= maxHealth then
-        e.element:findChild( tes3ui.registerID("MenuRestWait_untilhealed_button") ).visible = false
+    if checkStatsMax() then
+        restUntilHealedButton.visible = false
     end
+
+    restUntilHealedButton:registerBefore("mouseClick", function()
+        common.log:debug("Resting until healed = true")
+        common.data.restingUntilHealed = true
+    end)
+
 
     needsUI.addNeedsBlockToMenu(e, "tiredness")
     restMenu:updateLayout()
@@ -139,15 +155,11 @@ local function wakeUp()
     event.trigger("Ashfall:WakeUp")
 end
 
-local function getIsSleeping()
-    return tes3.mobilePlayer.sleeping or common.data.isSleeping
-end
-local function getIsWaiting()
-    return tes3.mobilePlayer.waiting or common.data.isWaiting
-end
+
+
 
 local function checkInterruptSleep()
-    if getIsSleeping() or getIsWaiting() then
+    if common.helper.getIsSleeping() or common.helper.getIsWaiting() then
         --wait(interval * 0.10)
 
         local tempLimit = common.data.tempLimit
@@ -171,7 +183,7 @@ local function checkInterruptSleep()
             thirst:setValue(thirst.states.dehydrated.min)
             --Message PC
             tes3.messageBox({ message = "You are dehydrated.", buttons = { "Okay" } }) 
-        elseif (tiredness:getValue() > tiredness.states.exhausted.min - 1) and getIsWaiting() then
+        elseif (tiredness:getValue() > tiredness.states.exhausted.min - 1) and common.helper.getIsWaiting() then
             --Cap the tiredness loss
             tiredness:setValue(tiredness.states.exhausted.min)
             --Rouse PC
@@ -186,7 +198,16 @@ local function checkInterruptSleep()
                 event.trigger("Ashfall:SetBedTemp", { isUsingBed = true})
             end
         end 
+
+        --resting until healed, wake up if health/magicka/fatigue are at their needs max
+        if common.data.restingUntilHealed then
+            if checkStatsMax() then
+                wakeUp()
+            end
+        end
+
     else
+        common.data.restingUntilHealed = nil
         --Reset the bedTemp when player wakes up
         if common.data.usingBed then
             common.log:debug("setting inBed to false")
@@ -222,7 +243,7 @@ function this.calculate(scriptInterval, forceUpdate)
     --speeds up tiredness recovery while sleeping
     local tramaRootTeaEffect = common.data.tramaRootTeaEffect or 1
 
-    if getIsSleeping() then
+    if common.helper.getIsSleeping() then
         local usingBed = common.data.usingBed or common.data.isSleeping or false
         if usingBed then
             currentTiredness = currentTiredness - ( scriptInterval * gainSleepBed * tramaRootTeaEffect )

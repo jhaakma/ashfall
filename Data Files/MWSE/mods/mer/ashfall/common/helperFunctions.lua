@@ -37,7 +37,9 @@ function this.hourToClockTime ( time )
     return ( formattedTime )
 end
 
-
+function this.getHoursPassed()
+    return ( tes3.worldController.daysPassed.value * 24 ) + tes3.worldController.hour.value
+end
 
 
 --[[
@@ -88,13 +90,8 @@ function this.checkRefSheltered(reference)
             end
         end
     end
-    if reference == tes3.player then
-        event.trigger("Ashfall:SetTent", {
-            insideTent = tent ~= nil,
-            tent = tent
-        })
-    end
-    return sheltered
+    local safeTent = tes3.makeSafeObjectHandle(tent)
+    return sheltered, safeTent
 end
 
 function this.getInside(reference)
@@ -422,28 +419,54 @@ function this.recoverStats(e)
     local interval = e.interval
     local isResting = e.resting
     local endurance = tes3.mobilePlayer.endurance.base
+
     local isStunted = tes3.isAffectedBy{ reference = tes3.player, effect = tes3.effect.stuntedMagicka}
-    local fFatigueReturnBase = tes3.findGMST(tes3.gmst.fFatigueReturnBase).value
-    local fFatigueReturnMult = tes3.findGMST(tes3.gmst.fFatigueReturnMult).value
-    local fEndFatigueMult = tes3.findGMST(tes3.gmst.fEndFatigueMult).value
     if isResting then
-        local healthRecovery = interval * 0.1 * endurance
-        tes3.modStatistic{ reference = tes3.player, name = "health", current = healthRecovery }
+        --health
+        do
+            local healthRecovery = interval * 0.1 * endurance
+            local remaining = math.max(tes3.mobilePlayer.health.base - tes3.mobilePlayer.health.current, 0)
+            healthRecovery = math.min(healthRecovery, remaining)
+            tes3.modStatistic{ reference = tes3.player, name = "health", current = healthRecovery }
+        end
+        
+        --magicka
         if not isStunted then
             local intelligence = tes3.mobilePlayer.intelligence.base
             local fRestMagicMult = tes3.findGMST(tes3.gmst.fRestMagicMult).value
             local magickaRecovery = fRestMagicMult * intelligence * interval
-        
+            local remaining = math.max(tes3.mobilePlayer.magicka.base - tes3.mobilePlayer.magicka.current, 0)
+            magickaRecovery = math.min(magickaRecovery, remaining)
             tes3.modStatistic{ reference = tes3.player, name = "magicka", current = magickaRecovery }
         end
     end
+
+    --fatigue
+    local fFatigueReturnBase = tes3.findGMST(tes3.gmst.fFatigueReturnBase).value
+    local fFatigueReturnMult = tes3.findGMST(tes3.gmst.fFatigueReturnMult).value
+    local fEndFatigueMult = tes3.findGMST(tes3.gmst.fEndFatigueMult).value
     local normalisedEndurance = math.clamp(endurance/100, 0.0, 1.0)
     local fatigueRecoveryBase = fFatigueReturnBase + fFatigueReturnMult * ( 1 - normalisedEndurance)
     local fatigueRecovery = fatigueRecoveryBase * fEndFatigueMult * endurance * interval
-
+    local remaining = math.max(tes3.mobilePlayer.fatigue.base - tes3.mobilePlayer.fatigue.current, 0)
+    fatigueRecovery = math.min(fatigueRecovery, remaining)
     tes3.modStatistic{ reference = tes3.player, name = "fatigue", current = fatigueRecovery }
 end
 
+function this.getIsSleeping()
+    return tes3.mobilePlayer.sleeping or tes3.player.data.Ashfall.isSleeping
+end
+function this.getIsWaiting()
+    return tes3.mobilePlayer.waiting or tes3.player.data.Ashfall.isWaiting
+end
+
+function this.getCollisionNode(rootNode)
+    for node in table.traverse{rootNode} do
+        if node:isInstanceOfType(tes3.niType.RootCollisionNode) then
+            return node
+        end
+    end
+end
 
 --[[
     Create a popup with a slider that sets a table value
@@ -811,7 +834,7 @@ function this.removeLight(lightNode)
             node.parent:detachChild(node)
         end
         --Kill Melchior's Lantern glow effect
-        if node.name == "Glow" then
+        if  node.name == "LightEffectSwitch" or node.name == "Glow" then
             --node.appCulled = true
             node.parent:detachChild(node)
         end
@@ -852,6 +875,7 @@ function this.removeLight(lightNode)
     lightNode:updateNodeEffects()
 
 end
+
 
 --Cooking functions
 

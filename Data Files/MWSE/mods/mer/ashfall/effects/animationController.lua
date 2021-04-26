@@ -188,8 +188,7 @@ function this.doAnimation(e)
             end
             common.log:debug("found location, moving to %s", data.location.position)
             common.helper.movePlayer(data.location)
-        end)
-        
+        end) 
     end
     if data.recovering then
         common.log:debug("recovering: true")
