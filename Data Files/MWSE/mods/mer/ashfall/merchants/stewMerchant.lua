@@ -107,43 +107,35 @@ local function makeTooltip()
     tooltipText.wrapText = true
 end
 
-local skipUpdateStewServiceButtonCallback = false
 local function updateStewServiceButton(e)
-    if (skipUpdateStewServiceButtonCallback) then
-        skipUpdateStewServiceButtonCallback = false
-        return
-    end
+    timer.frame.delayOneFrame(function()
 
-    local menuDialog = e.source
-    if not menuDialog then return end
+        local menuDialog = e.source
+        if not menuDialog then return end
 
-    local topicsScrollPane = menuDialog:findChild(GUID_MenuDialog_TopicList)
-    local stewServiceButton = topicsScrollPane:findChild(GUID_MenuDialog_StewService)
-    if not ( topicsScrollPane and stewServiceButton ) then
-        return
-    end
+        local topicsScrollPane = menuDialog:findChild(GUID_MenuDialog_TopicList)
+        local stewServiceButton = topicsScrollPane:findChild(GUID_MenuDialog_StewService)
+        if not ( topicsScrollPane and stewServiceButton ) then
+            return
+        end
 
-    local merchant = menuDialog:getPropertyObject("PartHyperText_actor")
-    local cost = getStewCost(merchant.object)
-    if getDisabled(cost) then
-        stewServiceButton.disabled = true
-        stewServiceButton.color = tes3ui.getPalette("disabled_color")
-    else
-        stewServiceButton.disabled = false
-        stewServiceButton.color = tes3ui.getPalette("normal_color")
-    end
+        local merchant = menuDialog:getPropertyObject("PartHyperText_actor")
+        local cost = getStewCost(merchant.object)
+        if getDisabled(cost) then
+            stewServiceButton.disabled = true
+            stewServiceButton.color = tes3ui.getPalette("disabled_color")
+        else
+            stewServiceButton.disabled = false
+            stewServiceButton.color = tes3ui.getPalette("normal_color")
+        end
 
-    common.log:debug("Updating Stew Service Button")
-    stewServiceButton.text = getStewMenuText(merchant.object)
+        common.log:debug("Updating Stew Service Button")
+        stewServiceButton.text = getStewMenuText(merchant.object)
 
-    -- Reshow the button.
-    stewServiceButton.visible = true
-    topicsScrollPane.widget:contentsChanged()
-
-    -- The UI here is really borked. The only fix found is to update the top-level element.
-    -- We want to block this from causing an infinite loop though, so we block the next call to this callback.
-    skipUpdateStewServiceButtonCallback = true
-    --menuDialog:updateLayout()
+        -- Reshow the button.
+        stewServiceButton.visible = true
+        topicsScrollPane.widget:contentsChanged()
+    end)
 end
 
 

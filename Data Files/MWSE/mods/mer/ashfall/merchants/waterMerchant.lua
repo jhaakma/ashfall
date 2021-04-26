@@ -60,43 +60,34 @@ local function makeTooltip()
     tooltipText.wrapText = true
 end
 
-local skipUpdateWaterServiceButtonCallback = false
 local function updateWaterServiceButton(e)
-    if (skipUpdateWaterServiceButtonCallback) then
-        skipUpdateWaterServiceButtonCallback = false
-        return
-    end
-
-    local menuDialog = e.source
-    if not menuDialog then return end
-
-    local topicsScrollPane = menuDialog:findChild(GUID_MenuDialog_TopicList)
-    local waterServiceButton = topicsScrollPane:findChild(GUID_MenuDialog_WaterService)
-    if not ( topicsScrollPane and waterServiceButton ) then
-        return
-    end
-
-    local merchant = menuDialog:getPropertyObject("PartHyperText_actor")
-    local cost = getWaterCost(merchant.object)
-    if getDisabled(cost) then
-        waterServiceButton.disabled = true
-        waterServiceButton.color = tes3ui.getPalette("disabled_color")
-    else
-        waterServiceButton.disabled = false
-        waterServiceButton.color = tes3ui.getPalette("normal_color")
-    end
-
-    common.log:debug("Updating Water Service Button")
-    waterServiceButton.text = getWaterText(merchant.object)
-
-    -- Reshow the button.
-    waterServiceButton.visible = true
-    topicsScrollPane.widget:contentsChanged()
-
-    -- The UI here is really borked. The only fix found is to update the top-level element.
-    -- We want to block this from causing an infinite loop though, so we block the next call to this callback.
-    skipUpdateWaterServiceButtonCallback = true
-    menuDialog:updateLayout()
+    timer.frame.delayOneFrame(function()   
+        local menuDialog = e.source
+        if not menuDialog then return end
+    
+        local topicsScrollPane = menuDialog:findChild(GUID_MenuDialog_TopicList)
+        local waterServiceButton = topicsScrollPane:findChild(GUID_MenuDialog_WaterService)
+        if not ( topicsScrollPane and waterServiceButton ) then
+            return
+        end
+    
+        local merchant = menuDialog:getPropertyObject("PartHyperText_actor")
+        local cost = getWaterCost(merchant.object)
+        if getDisabled(cost) then
+            waterServiceButton.disabled = true
+            waterServiceButton.color = tes3ui.getPalette("disabled_color")
+        else
+            waterServiceButton.disabled = false
+            waterServiceButton.color = tes3ui.getPalette("normal_color")
+        end
+    
+        common.log:debug("Updating Water Service Button")
+        waterServiceButton.text = getWaterText(merchant.object)
+    
+        -- Reshow the button.
+        waterServiceButton.visible = true
+        topicsScrollPane.widget:contentsChanged()
+    end)
 end
 
 
