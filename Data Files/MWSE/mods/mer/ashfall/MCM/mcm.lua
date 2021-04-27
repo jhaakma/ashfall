@@ -54,7 +54,13 @@ local function registerModConfig()
         }
 
         component.sidebar:createHyperLink{
-            text = "Animations by Vidi Aquam",
+            text = "Dream Catcher mesh by Remiros",
+            exec = "start https://www.nexusmods.com/morrowind/users/899234",
+            postCreate = postFormat
+        }
+
+        component.sidebar:createHyperLink{
+            text = "Sitting/sleeping animations by Vidi Aquam",
             exec = "start https://www.nexusmods.com/morrowind/mods/48782",
             postCreate = postFormat,
         }
@@ -165,6 +171,11 @@ local function registerModConfig()
                 ),
                 variable = createTableVar("enableTiredness"),
             }
+            categorySurvival:createYesNoButton{
+                label = "Enable Blight",
+                description = "When enabled, you can catch the blight from blight storms. Disable this for compatibility with other blight mods.",
+                variable = createTableVar("enableBlight"),
+            }
 
         end --\Survival Mechanics Category
 
@@ -254,6 +265,12 @@ local function registerModConfig()
                 label = "Atronachs Regain Magicka from Drinking",
                 description = "When you get thirsty, your maximum magicka (and, therefore, your current magicka) decreases. By default, recovering from thirst recovers the same amount of current magicka as what was lost from being thirsty, even if you have the Atronach sign. Disable this setting to prevent this magicka gain. Be warned, this means as an Atronach you will need to find ways to recover your magicka after drinking.",
                 variable = createTableVar("atronachRecoverMagickaDrinking")
+            }
+
+            categoryMisc:createYesNoButton{
+                label = "Potions Hydrate",
+                description = "When enabled, drinking a potion will provide a small amount of hydration.",
+                variable = createTableVar("potionsHydrate")
             }
 
             categoryMisc:createYesNoButton{

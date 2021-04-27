@@ -15,8 +15,8 @@ temperatureController.registerRateMultiplier{ id = "wetWarmingRate", warmingOnly
 
 
 --How much rain and thunder increase wetness per game hour (without armor
-local rainEffect = 175
-local thunderEffect = 400
+local rainEffect = 250
+local thunderEffect = 600
 local DRYING_MULTI = 150 --dry per hour at max heat
 
 --Boundaries for wetEffects
@@ -25,12 +25,10 @@ this.wetLevel = common.staticConfigs.conditionConfig.wetness.states.wet.min
 this.soakedLevel = common.staticConfigs.conditionConfig.wetness.states.soaked.min
 
 --Height at which Player gets wetEfects
-local dampHeight = 50
-local wetHeight = 80
 local soakedHeight = 110
 
 --How Cold 100% wetness is
-local wetTempMax = -25
+local wetTempMax = -35
 
 
 function this.checkForShelter()

@@ -188,7 +188,7 @@ local function drinkFromContainer(e)
     if common.getIsBlocked(e.item) then return end
     if not config.enableThirst then return end
     --First check potions, gives a little hydration
-    if getIsPotion(e) then
+    if getIsPotion(e) and config.potionsHydrate then
         local thisSipSize = common.staticConfigs.capacities.potion
         thisSipSize = math.min( thirst:getValue(), thisSipSize)
         thirstController.drinkAmount{amount = thisSipSize}

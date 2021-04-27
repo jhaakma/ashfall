@@ -1,5 +1,6 @@
 local common = require("mer.ashfall.common.common")
 local config = require("mer.ashfall.config.config").config
+local tentConfig = require("mer.ashfall.camping.tents.tentConfig")
 local backpackSlot = 11
 local backpacks = {
     ["ashfall_backpack_b"] = true,
@@ -15,10 +16,7 @@ local switchNodes = {
         items = {ashfall_firewood = true }
     },
     SWITCH_TENT = {
-        items = { 
-            ashfall_tent_ashl_misc = true,
-            ashfall_tent_misc = true
-        },
+        items = tentConfig.tentMiscToActiveMap,
         attachMesh = true
     }
 }

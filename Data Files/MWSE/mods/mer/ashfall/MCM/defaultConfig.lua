@@ -53,12 +53,13 @@ return {
     enableThirst = true,
     enableTiredness = true,
     enableSickness = true,
-    enableBlightness = true,
+    enableBlight = true,
     enableDiseasedMeat = true,
     enableEnvironmentSickness = true,
     enableBranchPlacement = true,
     enableCooking = false,--depreciated
-
+    enableBushcrafting = false,
+    
     showTemp = true,
     showHunger = true,
     showThirst = true,
@@ -79,6 +80,7 @@ return {
     canCampIndoors = false,
     showBackpacks = true,
     atronachRecoverMagickaDrinking = true,
+    potionsHydrate = true,
 
     hungerRate = 20,
     thirstRate = 30,
