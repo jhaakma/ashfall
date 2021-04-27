@@ -62,7 +62,7 @@ end
 
 local function updateWaterServiceButton(e)
     timer.frame.delayOneFrame(function()   
-        local menuDialog = e.source
+        local menuDialog = tes3ui.findMenu(GUID_MenuDialog)
         if not menuDialog then return end
     
         local topicsScrollPane = menuDialog:findChild(GUID_MenuDialog_TopicList)
