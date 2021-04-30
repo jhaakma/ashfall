@@ -3,7 +3,7 @@ local common = require("mer.ashfall.common.common")
 local staticConfigs = common.staticConfigs
 local activatorConfig = staticConfigs.activatorConfig
 local foodConfig = staticConfigs.foodConfig
-local ratingsConfig = common.staticConfigs.ratingsConfig
+local ratingsConfig = require('mer.ashfall.tempEffects.ratings.ratingsConfig')
 local climateConfig = require('mer.ashfall.config.weatherRegionConfig')
 
 local function listValidActivatorTypes()

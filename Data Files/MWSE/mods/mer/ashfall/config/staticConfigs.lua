@@ -4,7 +4,6 @@ this.activatorConfig = require("mer.Ashfall.config.activatorConfig")
 this.conditionConfig = require("mer.Ashfall.config.conditionConfig")
 this.foodConfig = require("mer.Ashfall.config.foodConfig")
 this.teaConfig = require("mer.Ashfall.config.teaConfig")
-this.ratingsConfig = require("mer.Ashfall.config.ratingsConfig")
 this.campfireConfig = require("mer.Ashfall.config.campfireConfig")
 
 this.objectIds = {
@@ -67,6 +66,12 @@ this.placementConfig = {
     ashfall_tent_canv_b_misc = { maxSteepness = 0.4},
     ashfall_tent_test_misc = { maxSteepness = 0.4},
 
+    ashfall_tent_base_a = { maxSteepness = 0.4, drop = 170},
+    ashfall_tent_imp_a = { maxSteepness = 0.4, drop = 170},
+    ashfall_tent_qual_a = { maxSteepness = 0.4, drop = 170},
+    ashfall_tent_ashl_a = { maxSteepness = 0.4, drop = 170},
+    
+
     ashfall_tent_active = { maxSteepness = 0.4, drop = 70},
     ashfall_tent_ashl_active = { maxSteepness = 0.4, drop = 70},
     ashfall_tent_canv_b_active = { maxSteepness = 0.4, drop = 70},
@@ -81,6 +86,26 @@ this.placementConfig = {
 
     ashfall_woodaxe = { maxSteepness = math.rad(50) },
     ashfall_sack_01 = { maxSteepness = math.rad(5) },
+
+    ashfall_cushion_01 = { maxSteepness = 0.2, drop = 5 },
+    ashfall_cushion_02 = { maxSteepness = 0.2, drop = 5 },
+    ashfall_cushion_03 = { maxSteepness = 0.2, drop = 5 },
+    ashfall_cushion_04 = { maxSteepness = 0.2, drop = 5 },
+    ashfall_cushion_05 = { maxSteepness = 0.2, drop = 5 },
+    ashfall_cushion_06 = { maxSteepness = 0.2, drop = 5 },
+    ashfall_cushion_07 = { maxSteepness = 0.2, drop = 5 },
+    ashfall_cushion_sq_01 = { maxSteepness = 0.2, drop = 5 },
+    ashfall_cushion_sq_02 = { maxSteepness = 0.2, drop = 5 },
+    ashfall_cushion_sq_03 = { maxSteepness = 0.2, drop = 5 },
+    ashfall_cushion_sq_04 = { maxSteepness = 0.2, drop = 5 },
+    ashfall_cushion_sq_05 = { maxSteepness = 0.2, drop = 5 },
+    ashfall_cushion_sq_06 = { maxSteepness = 0.2, drop = 5 },
+    ashfall_cushion_sq_07 = { maxSteepness = 0.2, drop = 5 },    
+
+    ashfall_rug_01 = { maxSteepness = 1, drop = -2 },
+    ashfall_rug_02 = { maxSteepness = 1, drop = -2 },
+    ashfall_rug_03 = { maxSteepness = 1, drop = -2 },
+    ashfall_rug_04 = { maxSteepness = 1, drop = -2 },
 }
 
 this.capacities = {

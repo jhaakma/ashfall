@@ -2,23 +2,7 @@ local this = {}
 
 local common = require("mer.ashfall.common.common")
 local config = require("mer.ashfall.config.config").config
-local ratingsConfig = common.staticConfigs.ratingsConfig
-
-local cache = {
-    armor = {},
-    clothing = {}
-}
-local function getCache()
-    return cache
-    -- config.warmthCache or {
-    --     armor = {},
-    --     clothing = {}
-    -- }
-end 
-
-local function saveCache(newCache) 
-    config.warmthCache = newCache
-end 
+local ratingsConfig = require("mer.ashfall.tempEffects.ratings.ratingsConfig")
 
 
 function this.isValidArmorSlot( armorSlot )
@@ -55,11 +39,10 @@ local function getRawItemWarmth(object)
         return
     end
 
-    local cache = getCache()
 
     --Find in cache
-    if cache[type][id] then
-        return cache[type][id]
+    if config.warmthValues[type][id] then
+        return config.warmthValues[type][id]
 
     --Not in cache, generate from name and save to cache
     else
@@ -67,8 +50,7 @@ local function getRawItemWarmth(object)
         --String search item names
         for pattern, value in pairs(ratingsConfig.warmth[type].values) do
             if string.find(itemName, string.lower(pattern)) then
-                cache[type][id] = value
-                saveCache(cache)
+                config.warmthValues[type][id] = value
                 return value
             end
         end

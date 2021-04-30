@@ -1,3 +1,11 @@
+local hasGearId = "ashfallGearAdded_v"
+local gearVersion = 1
+local function hasGearAdded(reference)
+    return reference.data[hasGearId .. gearVersion] == true
+end
+local function setGearAdedd(reference)
+    reference.data[hasGearId .. gearVersion] = true
+end
 
 local common = require("mer.ashfall.common.common")
 local config = require("mer.ashfall.config.config").config
@@ -31,10 +39,9 @@ local function onMobileActivated(e)
     --Selected outfitters and traders get camping gear
     local isMerchant = config.campingMerchants[ obj.id:lower() ] == true
     if isMerchant then
-        local hasGearAlready = e.reference.data.ashfallGearAdded == true
-        if not hasGearAlready then
-            e.reference.data.ashfallGearAdded = true
-            placeContainer(e.reference, common.staticConfigs.crateIds.camping)
+        if not hasGearAdded(e.reference) then
+            setGearAdedd(e.reference)
+            placeContainer(e.reference, 'ashfall_crate_rnd')
         end
     end
 end
