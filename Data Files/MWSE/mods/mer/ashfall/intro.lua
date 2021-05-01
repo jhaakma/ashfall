@@ -21,6 +21,7 @@ end
 function this.doTimeScale()
     local timeScale = config.manualTimeScale
     tes3.setGlobal("TimeScale", timeScale)
+
 end
 
 function this.doOverrides()
@@ -143,7 +144,6 @@ function this.startAshfall()
         common.helper.messageBox{ message = introMessage, buttons = buttons}
     else
         --initialise defaults
-        
         if config.overrideTimeScale and newGame then
             this.doTimeScale()
         end
@@ -177,6 +177,27 @@ local function checkCharGen()
     end
 end
 
+local legacyItemMapping = {
+    ashfall_backpack_b = "ashfall_pack_01",
+    ashfall_backpack_w = "ashfall_pack_02",
+    ashfall_backpack_n = "ashfall_pack_01",
+
+    ashfall_tent_ashl_misc = "ashfall_tent_ashl_m",
+    ashfall_tent_misc = "ashfall_tent_base_m",
+}
+
+
+local function replaceLegacyItems()
+    for stack in tes3.iterate(tes3.player.object.inventory.iterator) do
+        local newItem = legacyItemMapping[stack.object.id:lower()]
+        if newItem then
+            common.log:debug("Found %s, replacing with a shiny new one: %s", stack.object.id, newItem)
+            tes3.removeItem{ reference = tes3.player, item = stack.object, count = stack.count }
+            tes3.addItem{ reference = tes3.player, item = newItem, count = stack.count, updateGUI = true }
+        end
+    end
+end
+
 
 local function onDataLoaded(e)
 
@@ -192,6 +213,7 @@ local function onDataLoaded(e)
             checkingChargen = true
         end
     end
+    replaceLegacyItems()
 end
 
 event.register("Ashfall:dataLoaded", onDataLoaded )

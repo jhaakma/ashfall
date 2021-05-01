@@ -1,5 +1,6 @@
+local gearId = 'ashfall_crate_rnd'
 local hasGearId = "ashfallGearAdded_v"
-local gearVersion = 1
+local gearVersion = 20210502 --set to the date you added new gear
 local function hasGearAdded(reference)
     return reference.data[hasGearId .. gearVersion] == true
 end
@@ -22,11 +23,30 @@ local function placeContainer(merchant, containerId)
     tes3.setOwner{ reference = container, owner = merchant}
 end
 
+local function removeOldContainers(ref)
+    for ref in ref.cell:iterateReferences(tes3.objectType.container) do
+        if ref.baseObject.id:lower() == gearId
+        or ref.baseObject.id:lower() == 'ashfall_crate_camping' 
+        then
+            common.log:debug("Found old container %s, removing", ref.object.id)
+            common.helper.yeet(ref)
+        end
+    end
+end
 
 local function onMobileActivated(e)
     local config = config
     local obj = e.reference.baseObject or e.reference.object
 
+    --Selected outfitters and traders get camping gear
+    local isMerchant = config.campingMerchants[ obj.id:lower() ] == true
+    if isMerchant then
+        if not hasGearAdded(e.reference) then
+            setGearAdedd(e.reference)
+            removeOldContainers(e.reference, gearId)
+            placeContainer(e.reference, gearId)
+        end
+    end
     --Publicans get food
     if common.isInnkeeper(e.reference) then
         local hasFoodAlready = e.reference.data.ashfallFoodAdded == true
@@ -36,14 +56,6 @@ local function onMobileActivated(e)
         end
     end
 
-    --Selected outfitters and traders get camping gear
-    local isMerchant = config.campingMerchants[ obj.id:lower() ] == true
-    if isMerchant then
-        if not hasGearAdded(e.reference) then
-            setGearAdedd(e.reference)
-            placeContainer(e.reference, 'ashfall_crate_rnd')
-        end
-    end
 end
 event.register("mobileActivated", onMobileActivated )
 

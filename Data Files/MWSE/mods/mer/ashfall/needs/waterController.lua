@@ -18,7 +18,7 @@ local hunger = common.staticConfigs.conditionConfig.hunger
 local wetness = common.staticConfigs.conditionConfig.wetness
 
 local function handleEmpties(data)
-    if data.waterAmount and data.waterAmount <= 0 then
+    if data.waterAmount and data.waterAmount < 1 then
         data.waterType = nil
         data.waterAmount = nil
         data.stewLevels = nil

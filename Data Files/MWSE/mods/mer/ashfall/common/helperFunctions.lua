@@ -109,11 +109,12 @@ function this.getRefUnderwater(reference)
 end
 
 --TODO: Null needs to fix collision crashes on Disable/Delete
-function this.yeet(reference)
-    --timer.delayOneFrame(function()
-        reference:disable()
-        mwscript.setDelete{ reference = reference}
-    --end)}
+function this.yeet(ref, no)
+    if no then
+        mwse.error("You called yeet() with a colon, didn't you?")
+    end
+    ref:disable()
+    mwscript.setDelete{ reference = ref}
 end
 
 --[[
@@ -447,7 +448,7 @@ function this.recoverStats(e)
     local fEndFatigueMult = tes3.findGMST(tes3.gmst.fEndFatigueMult).value
     local normalisedEndurance = math.clamp(endurance/100, 0.0, 1.0)
     local fatigueRecoveryBase = fFatigueReturnBase + fFatigueReturnMult * ( 1 - normalisedEndurance)
-    local fatigueRecovery = fatigueRecoveryBase * fEndFatigueMult * endurance * interval
+    local fatigueRecovery = fatigueRecoveryBase * fEndFatigueMult * endurance * interval * 60
     local remaining = math.max(tes3.mobilePlayer.fatigue.base - tes3.mobilePlayer.fatigue.current, 0)
     fatigueRecovery = math.min(fatigueRecovery, remaining)
     tes3.modStatistic{ reference = tes3.player, name = "fatigue", current = fatigueRecovery }

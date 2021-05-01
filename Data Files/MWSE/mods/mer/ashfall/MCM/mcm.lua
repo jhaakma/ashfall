@@ -102,7 +102,8 @@ local function registerModConfig()
                 callback = function(self)
                     if tes3.player then
                         if self.variable.value == true then
-                            local newTimeScale = config.manualTimeScale
+                            
+                            local newTimeScale = mcmConfig.manualTimeScale
                             tes3.setGlobal("TimeScale", newTimeScale)
                         end
                     end
@@ -122,7 +123,7 @@ local function registerModConfig()
                 variable = createTableVar("manualTimeScale"),
                 callback = function(self)
                     if tes3.player then
-                        if config.overrideTimeScale == true then
+                        if mcmConfig.overrideTimeScale == true then
                             tes3.setGlobal("TimeScale", self.variable.value)
                         end
                     end
@@ -259,6 +260,12 @@ local function registerModConfig()
                 label = "Display Backpacks",
                 description = "Disable this to prevent backpacks from being displayed on your back.",
                 variable = createTableVar("showBackpacks"),
+            }
+
+            categoryMisc:createYesNoButton{
+                label = "See-Through Tents",
+                description = "When enabled, the outside of your tent will become transparent when you enter it.",
+                variable = createTableVar("seeThroughTents")
             }
 
             categoryMisc:createYesNoButton{

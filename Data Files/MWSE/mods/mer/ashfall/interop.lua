@@ -198,6 +198,17 @@ local function registerClimates(e)
     return true
 end
 
+local function registerWoodAxes(data)
+    assert(type(data) == 'table', "registerWoodAxes: data must be a table of axe ids")
+    common.log:debug("Registering wood axes: ")
+    for _, id in ipairs(data) do
+        assert(type(id) == 'string', "registerWoodAxes: id must be a string")
+        common.log:debug(id)
+        staticConfigs.woodAxes[id:lower()] = true
+    end
+    return true
+end
+
 local Interop = {
     --Block or unblock hunger, thirst and sleep
     blockNeeds = function()
@@ -286,6 +297,9 @@ local Interop = {
         return registerClimates({ data = data })
     end,
 
+    registerWoodAxes = function(data)
+        return registerWoodAxes(data)
+    end,
 
     --ratings, WIP, need to add support for ids
 

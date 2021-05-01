@@ -53,6 +53,9 @@ this.coveredBedrolls = {
     ashfall_cbroll_misc = true,
 }
 
+this.woodAxes = {
+    ashfall_woodaxe = true
+}
 
 --For placement magic
 this.placementConfig = {

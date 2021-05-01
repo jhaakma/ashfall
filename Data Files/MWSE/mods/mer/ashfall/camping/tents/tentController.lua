@@ -267,12 +267,14 @@ end
 local function setTentSwitchNodes()
     checkTentRef()
     if currentTent then
+        local onIndex = config.seeThroughTents and 1 or 0
         --switch base tent
         local tentNode = currentTent.sceneNode:getObjectByName("TENT")
         if tentNode then
             local canvasNode = tentNode:getObjectByName("SWITCH_CANVAS")
             if canvasNode then
-                canvasNode.switchIndex = common.data.insideTent and 1 or 0
+                
+                canvasNode.switchIndex = common.data.insideTent and onIndex or 0
             end
         end
         --switch cover
@@ -280,7 +282,7 @@ local function setTentSwitchNodes()
         if tentCover then
             local canvasNode = tentCover:getObjectByName("SWITCH_CANVAS")
             if canvasNode then
-                canvasNode.switchIndex = common.data.insideTent and 1 or 0
+                canvasNode.switchIndex = common.data.insideTent and onIndex or 0
             end
         end
     end

@@ -81,6 +81,7 @@ return {
     showBackpacks = true,
     atronachRecoverMagickaDrinking = true,
     potionsHydrate = true,
+    seeThroughTents = true,
 
     hungerRate = 20,
     thirstRate = 30,

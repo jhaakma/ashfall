@@ -42,7 +42,7 @@ local function cushionMenu(ref)
             requirements = canRest,
             callback = function()
                 if not cushions[ref.object.id:lower()] then 
-                    mwse.log:error("Cushion menu called on cushion that isn't in config somehow.")
+                    common.log:error("Cushion menu called on cushion that isn't in config somehow.")
                     return 
                 end
                 local location = {

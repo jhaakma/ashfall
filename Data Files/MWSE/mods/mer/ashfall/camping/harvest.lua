@@ -5,6 +5,7 @@ local config = require("mer.ashfall.config.config").config
 local activatorConfig = common.staticConfigs.activatorConfig
 local lastRef
 
+
 --How many swings required to collect wood. Randomised again after each harvest
 local swingsNeeded
 local swings = 0
@@ -33,7 +34,8 @@ local function harvest(activator, weapon)
 
     local woodAxeMulti = 0.0
     local woodAxeConditionMulti = 1.0
-    if weapon.object.id == common.staticConfigs.objectIds.woodaxe then
+    if common.staticConfigs.woodAxes[weapon.object.id:lower()] then
+        common.log:debug("Using a woodaxe, reducing condition damage and swings needed")
         woodAxeMulti = 0.5
         woodAxeConditionMulti = 0.1
     end

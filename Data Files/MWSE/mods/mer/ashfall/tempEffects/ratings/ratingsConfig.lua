@@ -97,6 +97,7 @@ this.clothingPartMapping = {
     [tes3.clothingSlot.rightGlove] = { "leftHand", "leftWrist" },
     [tes3.clothingSlot.leftGlove] = { "rightHand", "rightWrist" },
     [tes3.clothingSlot.skirt] = { "legs" },
+    [11] = { "back" }--backpack
 }
 
 return this

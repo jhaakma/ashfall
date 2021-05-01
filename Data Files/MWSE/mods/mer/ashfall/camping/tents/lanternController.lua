@@ -11,7 +11,7 @@ end
 
 local function turnLanternOn(tentRef)
     local lanternNode = getAttachLanternNode(tentRef.sceneNode)
-    local lanternId = tentRef.data.lantern
+    local lanternId = tentRef.data.lantern.id
     local lanternItem = tes3.getObject(lanternId)
 
     local lightNode = lanternNode:getObjectByName("LanternLight") or niPointLight.new()
@@ -66,12 +66,17 @@ end
 
 --Lantern stuff
 function this.isLantern(obj)
-    local isLantern = obj.objectType == tes3.objectType.light
-        and obj.canCarry == true
-        and ( string.find(obj.id:lower(), "lantern")
-            or string.find(obj.name:lower(), "lantern") )
-    return isLantern
-    --return tentConfig.lanternIds[obj.id:lower()]
+    
+    local isLight = obj.objectType == tes3.objectType.light
+    local canCarry = obj.canCarry == true
+    local idIsLantern = string.find(obj.id:lower(), "lantern")
+    local nameIsLantern = string.find(obj.name:lower(), "lantern") 
+
+    if not isLight then return false end
+    if not canCarry then return false end
+    if idIsLantern then return true end
+    if nameIsLantern then return true end
+    return false
 end
 
 function this.playerHasLantern()
@@ -94,7 +99,7 @@ function this.selectLantern(tentRef)
             callback = function(e)
                 if e.item then
                     common.log:debug("attaching lantern")
-                    this.attachLantern(tentRef, e.item)
+                    this.attachLantern(tentRef, e.item, e.itemData)
                 end
             end
         }
@@ -121,7 +126,7 @@ local function attachLightToRef(tentRef, lanternItem)
     common.log:debug("lantern attached to %s", tentRef.object.id)
 end
 
-function this.attachLantern(tentRef, lanternItem)
+function this.attachLantern(tentRef, lanternItem, lanternData)
     common.log:debug("attachLantern: %s", lanternItem)
     local attachLanternNode = getAttachLanternNode(tentRef.sceneNode)
     if attachLanternNode then
@@ -132,7 +137,13 @@ function this.attachLantern(tentRef, lanternItem)
             attachLanternNode:detachChildAt(1)
         end
         --attach mesh to tent
-        tentRef.data.lantern = lanternItem.id:lower()
+        tentRef.data.lantern = {
+            id = lanternItem.id:lower(),
+            data = lanternData
+        }
+        if lanternData then
+            tentRef.data.lantern.data = lanternData
+        end
         attachLightToRef(tentRef, lanternItem)
         tes3.removeItem{ reference = tes3.player, item = lanternItem, playSound = false}
         common.log:debug("Registering tent with %s as a reference", lanternItem)
@@ -151,7 +162,16 @@ function this.removeLantern(tentRef)
             attachLanternNode:update()
             attachLanternNode:updateNodeEffects()
             local lantern = tentRef.data.lantern
-            tes3.addItem{ reference = tes3.player, item =lantern, playSound = false }
+            tes3.addItem{ reference = tes3.player, item =lantern.id, playSound = false }
+            if tentRef.data.lantern.data then
+                local itemData = tes3.addItemData{
+                    to = tes3.player,
+                    item = lantern.id,
+                    updateGUI = true
+                }
+                itemData.data = tentRef.data.lantern.data.data
+                itemData.timeLeft = tentRef.data.lantern.data.timeLeft
+            end
             tentRef.data.lantern = nil
         else
             common.log:error("%s has no lantern to remove.", tentRef.object.id)
@@ -164,6 +184,7 @@ local function onRefSceneNodeCreatedAddTrinkets(e)
     local lanternId = e.reference
                 and e.reference.data 
                 and e.reference.data.lantern
+                and e.reference.data.lantern.id
     if lanternId and this.canHaveLantern(e.reference) then
         local lantern = tes3.getObject(lanternId)
         if lantern then
