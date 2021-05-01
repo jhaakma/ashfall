@@ -21,7 +21,6 @@ end
 function this.doTimeScale()
     local timeScale = config.manualTimeScale
     tes3.setGlobal("TimeScale", timeScale)
-
 end
 
 function this.doOverrides()
@@ -178,10 +177,6 @@ local function checkCharGen()
 end
 
 local legacyItemMapping = {
-    ashfall_backpack_b = "ashfall_pack_01",
-    ashfall_backpack_w = "ashfall_pack_02",
-    ashfall_backpack_n = "ashfall_pack_01",
-
     ashfall_tent_ashl_misc = "ashfall_tent_ashl_m",
     ashfall_tent_misc = "ashfall_tent_base_m",
 }
@@ -192,15 +187,15 @@ local function replaceLegacyItems()
         local newItem = legacyItemMapping[stack.object.id:lower()]
         if newItem then
             common.log:debug("Found %s, replacing with a shiny new one: %s", stack.object.id, newItem)
-            tes3.removeItem{ reference = tes3.player, item = stack.object, count = stack.count }
-            tes3.addItem{ reference = tes3.player, item = newItem, count = stack.count, updateGUI = true }
+            tes3.player.mobile:unequip{ item = stack.object }
+            tes3.removeItem{ reference = tes3.player, item = stack.object, count = stack.count, playSound = false }
+            tes3.addItem{ reference = tes3.player, item = newItem, count = stack.count, updateGUI = true, playSound = false }
         end
     end
 end
 
 
 local function onDataLoaded(e)
-
     newGame = nil --reset so we can check chargen state again
     charGen = tes3.findGlobal("CharGenState")
     if charGen.value == charGenValues.charGenFinished then

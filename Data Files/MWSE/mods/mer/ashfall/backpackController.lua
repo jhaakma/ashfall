@@ -4,9 +4,9 @@ local tentConfig = require("mer.ashfall.camping.tents.tentConfig")
 local backpackSlot = 11
 local backpacks = {
     --legacy armor packs
-    -- ashfall_backpack_b = true,
-    -- ashfall_backpack_w = true,
-    -- ashfall_backpack_n = true,
+    ashfall_backpack_b = true,
+    ashfall_backpack_w = true,
+    ashfall_backpack_n = true,
 
     ashfall_pack_01 = true,
     ashfall_pack_02 = true,
@@ -32,7 +32,7 @@ local switchNodes = {
 local function registerBackpacks()
     pcall(function()
         tes3.addClothingSlot{slot=backpackSlot, name="Backpack"}
-        --tes3.addArmorSlot{slot=backpackSlot, name="Backpack"}
+        tes3.addArmorSlot{slot=backpackSlot, name="Backpack"}
     end)
     for id in pairs(backpacks) do
         local obj = tes3.getObject(id)
@@ -212,7 +212,6 @@ local function onMobileActivated(e)
     end
 end
 
-
 local function onLoaded(e)
     onMobileActivated{reference=tes3.player}
     for i, cell in ipairs(tes3.getActiveCells()) do
@@ -240,23 +239,23 @@ local function updatePlayer()
         --check for existing backpack and equip it
         local equippedBackpack = tes3.getEquippedItem{
             actor = tes3.player, 
+            objectType = tes3.objectType.armor,
+            slot = backpackSlot
+        }
+        if equippedBackpack then
+            common.log:debug("re-equipping %s", equippedBackpack.object.name)
+            onEquipped{reference = tes3.player, item = equippedBackpack.object}
+        end
+
+        tes3.getEquippedItem{
+            actor = tes3.player, 
             objectType = tes3.objectType.clothing,
             slot = backpackSlot
         }
         if equippedBackpack then
-            common.log:trace("re-equipping %s", equippedBackpack.object.name)
+            common.log:debug("re-equipping %s", equippedBackpack.object.name)
             onEquipped{reference = tes3.player, item = equippedBackpack.object}
         end
-
-        -- equippedBackpack = tes3.getEquippedItem{
-        --     actor = tes3.player, 
-        --     objectType = tes3.objectType.armor,
-        --     slot = backpackSlot
-        -- }
-        -- if equippedBackpack then
-        --     common.log:trace("re-equipping %s", equippedBackpack.object.name)
-        --     onEquipped{reference = tes3.player, item = equippedBackpack.object}
-        -- end
     end
 end
 
