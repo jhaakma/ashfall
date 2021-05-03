@@ -78,6 +78,7 @@ local function attachItem(item, parent)
 end
 
 local function setSwitchNodes(e)
+    common.log:trace("backpack setting switch nodes")
     local ref = e.reference
     for switch, data in pairs(switchNodes) do
         local switchNode = ref.sceneNode:getObjectByName(switch)
@@ -105,6 +106,7 @@ local function setSwitchNodes(e)
             --Attach item meshes if necessary, or remove if none equipped
             if data.attachMesh then
                 if itemToAttach then
+                    common.log:trace("attaching item")
                     attachItem(itemToAttach, switchNode.children[1])
                 else
                     detachMesh(switchNode.children[1])
@@ -228,6 +230,7 @@ event.register("mobileActivated", onMobileActivated)
 event.register("activate", function(e)
     if e.activator then
         timer.delayOneFrame(function()
+            common.log:trace("activate")
             setSwitchNodes{ reference = e.activator } 
         end)
     end
@@ -235,7 +238,7 @@ end)
  
 local function updatePlayer()
     common.log:trace("updating player backpack")
-    if tes3.player and tes3.mobilePlayer then
+    if tes3.player and tes3.player.mobile then
         --check for existing backpack and equip it
         local equippedBackpack = tes3.getEquippedItem{
             actor = tes3.player, 
@@ -243,19 +246,21 @@ local function updatePlayer()
             slot = backpackSlot
         }
         if equippedBackpack then
-            common.log:debug("re-equipping %s", equippedBackpack.object.name)
+            common.log:trace("re-equipping %s", equippedBackpack.object.name)
             onEquipped{reference = tes3.player, item = equippedBackpack.object}
         end
 
-        tes3.getEquippedItem{
+        equippedBackpack = tes3.getEquippedItem{
             actor = tes3.player, 
             objectType = tes3.objectType.clothing,
             slot = backpackSlot
         }
         if equippedBackpack then
-            common.log:debug("re-equipping %s", equippedBackpack.object.name)
+            common.log:trace("re-equipping %s", equippedBackpack.object.name)
             onEquipped{reference = tes3.player, item = equippedBackpack.object}
         end
+    else
+        common.log:trace("player doesn't exist")
     end
 end
 

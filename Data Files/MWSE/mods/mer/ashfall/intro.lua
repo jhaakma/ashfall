@@ -187,7 +187,6 @@ local function replaceLegacyItems()
         local newItem = legacyItemMapping[stack.object.id:lower()]
         if newItem then
             common.log:debug("Found %s, replacing with a shiny new one: %s", stack.object.id, newItem)
-            tes3.player.mobile:unequip{ item = stack.object }
             tes3.removeItem{ reference = tes3.player, item = stack.object, count = stack.count, playSound = false }
             tes3.addItem{ reference = tes3.player, item = newItem, count = stack.count, updateGUI = true, playSound = false }
         end

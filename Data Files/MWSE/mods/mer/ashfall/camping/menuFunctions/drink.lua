@@ -2,15 +2,45 @@ local common = require ("mer.ashfall.common.common")
 local thirstController = require("mer.ashfall.needs.thirstController")
 local teaConfig = common.staticConfigs.teaConfig
 
+local function hasWaterAmount(campfire)
+    return campfire.data.waterAmount and campfire.data.waterAmount > 0
+end
+
+local function hasJustWater(campfire)
+    return (not teaConfig.teaTypes[campfire.data.waterType]) and ( not campfire.data.stewLevels )
+end
+
+local function hasBrewedTea(campfire)
+    return campfire.data.teaProgress and campfire.data.teaProgress >= 100
+end
+
+local function hasStew(campfire)
+    return not not campfire.data.stewProgress
+end
+
+local function isBoiling(campfire)
+    return campfire.data.waterHeat >= 80
+end
+
 return {
     text = "Drink",
     showRequirements = function(campfire)
-        local hasWaterAmount = campfire.data.waterAmount and campfire.data.waterAmount > 0
-        local hasJustWater = (not teaConfig.teaTypes[campfire.data.waterType]) and ( not campfire.data.stewLevels )
-        local hasBrewedTea = campfire.data.teaProgress and campfire.data.teaProgress >= 100
-        local hasStew = campfire.data.stewProgress
-        return hasWaterAmount and not hasStew and (hasJustWater or hasBrewedTea)
+        return hasWaterAmount(campfire) 
+        and (not hasStew(campfire))
+        and (hasJustWater(campfire) or hasBrewedTea(campfire))
     end,
+    enableRequirements = function(campfire)
+        local tooHotToDrink =  hasWaterAmount(campfire) 
+            and (not hasStew(campfire))
+            and isBoiling(campfire) 
+        if tooHotToDrink then 
+            return false 
+        end
+        return true
+    end,
+    tooltipDisabled = {
+        text = "It is too hot to drink. Wait for it to cool down or transfer to a container first."
+    },
     callback = function(campfire)
         local function doDrink()
             --tes3.playSound{ reference = tes3.player, sound = "Swallow" }

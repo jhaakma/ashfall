@@ -5,6 +5,7 @@ local activatorConfig = staticConfigs.activatorConfig
 local foodConfig = staticConfigs.foodConfig
 local ratingsConfig = require('mer.ashfall.tempEffects.ratings.ratingsConfig')
 local climateConfig = require('mer.ashfall.config.weatherRegionConfig')
+local teaConfig = require('mer.ashfall.config.teaConfig')
 
 local function listValidActivatorTypes()
     local message = '\n'
@@ -145,13 +146,30 @@ end
 event.register("Ashfall:RegisterHeatSources", registerHeatSources)
 
 
--- local function registerTeas(e)
---     for _, teaData in ipairs(e) do
---         assert()
 
---     end
--- end
--- event.register("Ashfall:RegisterTeas", registerTeas)
+local function registerTeas(e)
+    for id, teaData in pairs(e.data) do
+        assert(type(id) == 'string', "id must be a valid string")
+        assert(type(teaData.teaName) == 'string', "teaData.teaName must be a string")
+        assert(type(teaData.teaDescription) == 'string', "teaData.teaDescription must be a string")
+        assert(type(teaData.effectDescription) == 'string', "teaData.effectDescription must be a string")
+        local spell = teaData.spell
+        if spell then
+            assert(type(spell.id) == 'string', "spell id must be string")
+            assert(type(spell.effects) == 'table', "Spell effects must be table")
+        end
+        teaConfig.teaTypes[id] = {
+            teaName = teaData.teaName,
+            teaDescription = teaData.teaDescription,
+            effectDescription = teaData.effectDescription,
+            priceMultiplier = teaData.priceMultiplier or 5.0,
+            onCallBack = teaData.onCallBack,
+            spell = teaData.spell,
+        }
+    end
+    return true
+end
+event.register("Ashfall:RegisterTeas", registerTeas)
 
 local function registerClothingOrArmor(id, warmth, objectType)
     ratingsConfig.warmth[objectType].values[id:lower()] = warmth
@@ -274,6 +292,9 @@ local Interop = {
     end,
     registerHeatSources = function(data)
         return registerHeatSources({data = data})
+    end,
+    registerTeas = function(data)
+        registerTeas({ data = data })
     end,
 
     --Survival skill
