@@ -51,6 +51,7 @@ end
 
 
 local function onActivateFirewood(e)
+    if not (e.activator == tes3.player) then return end
     if skipActivate then return end
     if tes3.menuMode() then return end
     if string.lower(e.target.object.id) == common.staticConfigs.objectIds.firewood then

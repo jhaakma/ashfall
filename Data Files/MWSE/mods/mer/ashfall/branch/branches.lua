@@ -207,6 +207,7 @@ event.register("Ashfall:dataLoaded", onLoad)
     Disable the branch but don't delete it: we will enable it again when enough time has passed
 ]]
 local function onActivate(e)
+    if not (e.activator == tes3.player) then return end
     if isBranch(e.target) then
         e.target.data.lastPickedUp = getNow()
         e.target:disable()

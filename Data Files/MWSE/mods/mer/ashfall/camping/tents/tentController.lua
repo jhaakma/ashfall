@@ -198,6 +198,7 @@ end
 
 
 local function activateTent(e)
+    if not (e.activator == tes3.player) then return end
     --Check if it's a misc tent ref
     if getActiveFromMisc(e.target) then
         --Skip if picking up

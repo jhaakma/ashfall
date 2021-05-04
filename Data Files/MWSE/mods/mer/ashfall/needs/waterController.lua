@@ -288,6 +288,7 @@ event.register("equip", drinkFromContainer, { filter = tes3.player, priority = -
 
 local skipActivate
 local function onShiftActivateWater(e)
+    if not (e.activator == tes3.player) then return end
     if skipActivate then
         skipActivate = false
         return

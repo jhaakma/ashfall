@@ -228,7 +228,7 @@ event.register("equipped", onEquipped)
 event.register("unequipped", onUnequipped)
 event.register("mobileActivated", onMobileActivated)
 event.register("activate", function(e)
-    if e.activator then
+    if e.activator == tes3.player then
         timer.delayOneFrame(function()
             common.log:trace("activate")
             setSwitchNodes{ reference = e.activator } 
