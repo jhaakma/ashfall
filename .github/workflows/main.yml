@@ -1,8 +1,8 @@
 name: Package Ashfall
 on:
   push:
-    branches:
-      - master
+    tags:
+      - 'v*'
 jobs:
   build:
     runs-on: ubuntu-latest
