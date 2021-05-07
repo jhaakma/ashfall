@@ -1,0 +1,23 @@
+name: Package Ashfall
+on:
+  push:
+    branches:
+      - master
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    
+      - name: Step 1 - Create release folder
+        run: mkdir release
+      - name: Step 2 - Copy Data Files over to release folder
+        run: |
+          cd release
+          echo 'Data Files' > "Data Files"
+          cd ..
+          
+      - name: Step 3 - Push to Github
+        uses: actions/upload-artifact@v2
+        with:
+          name: Ashfall
+          path: release
