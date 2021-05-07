@@ -8,14 +8,30 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     
-      - name: Step 1 - Create release folder
-        run: mkdir release
-      - name: Step 2 - Copy Data Files over to release folder
+      - name: Checkout Code
+        uses: actions/checkout@v2
+        
+      - name: Build Project
         run: |
-          cp "Data Files" "release/Data Files"
-          
-      - name: Step 3 - Push to Github
-        uses: actions/upload-artifact@v2
+          zip -r Ashfall.zip "Data Files"
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          name: Ashfall
-          path: release
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+      - name: Upload to Github
+        id: upload-release-asset
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }} # This pulls from the CREATE RELEASE step above, referencing it's ID to get its outputs object, which include a `upload_url`. See this blog post for more info: https://jasonet.co/posts/new-features-of-github-actions/#passing-data-to-future-steps 
+          asset_path: ./Ashfall.zip
+          asset_name: Ashfall.zip
+          asset_content_type: application/zip
+          
