@@ -559,29 +559,39 @@ local function registerModConfig()
 
     do --Dev Options
         --get a formatted string of all Ashfall data
+
+        local function addLine(text, line, indent)
+            for i = 0, indent, 1 do
+                text = text .. " "   
+            end
+            text = string.format("%s%s", text, line)
+            return text
+        end
+
         local function recursivePrint()
             if not tes3.player then return "" end
             local data = common.data
-
             local text = ""
             local indent = 0
-            local function recurse()
-                for key, val in pairs(data) do
+            local function recurse(thisData)
+                for key, val in pairs(thisData) do
+
                     if type(val) == "table" then
+                        local line = string.format("%s: {\n", key)
+                        text = addLine(text, line, indent)
                         indent = indent + 1
-                        text = string.format("%s%s:\n", text, key)
                         recurse(val)
                         indent = indent - 1
+                        line = "},\n"
+                        text = addLine(text, line, indent)
+                        
                     else
-                        for i = 0, indent, 1 do
-                            text = text .. " "   
-                        end
-                        text = string.format("%s%s: %s\n", text, key, val)
+                        local line = string.format("%s: %s,\n", key, val)
+                        text = addLine(text, line, indent)
                     end
                 end
-
             end
-            recurse()
+            recurse(data)
             return text
         end
 
@@ -698,7 +708,10 @@ local function registerModConfig()
         pageDevOptions:createButton{
             buttonText = "Print data to log",
             description = "Print all Ashfall data to Morrowind/MWSE.log. If you are having issues with Ashfall, recreate the issue in-game, press this button, then send the MWSE.log file to Merlord at the Morrowind Modding Discord channel.",
-            callback = function() mwse.log("Ashfall Data: \n" .. recursivePrint()) end,
+            callback = function() 
+                mwse.log("Ashfall Data:")
+                mwse.log(json.encode(common.data, { indent = true }))
+            end,
             inGameOnly = true
         }
 
