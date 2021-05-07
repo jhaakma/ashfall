@@ -12,9 +12,7 @@ jobs:
         run: mkdir release
       - name: Step 2 - Copy Data Files over to release folder
         run: |
-          cd release
-          echo 'Data Files' > "Data Files"
-          cd ..
+          cp "Data Files" "release/Data Files"
           
       - name: Step 3 - Push to Github
         uses: actions/upload-artifact@v2
