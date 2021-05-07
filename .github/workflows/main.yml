@@ -1,0 +1,17 @@
+name: Package mod
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+      with:
+        path: "mod"
+    - name: Publish mod
+      uses: actions/upload-artifact@v2
+      with:
+        name: Ashfall
+        path: "Data Files"
