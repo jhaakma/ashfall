@@ -8,6 +8,7 @@ local config = require("mer.ashfall.config.config").config
 --set up logger
 local logLevel = config.logLevel
 
+
 this.log = require("mer.ashfall.common.logger").new{
     name = "Ashfall",
     --outputFile = "Ashfall.log",

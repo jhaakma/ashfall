@@ -6,13 +6,23 @@ if not mwse.loadConfig("ashfall") then
     mwse.saveConfig("ashfall", {})
 end
 
+local function getVersion()
+    local versionFile = io.open("Data Files/MWSE/mods/mer/ashfall/version.txt", "r")
+    local version = ""
+    for line in versionFile:lines() do -- Loops over all the lines in an open text file
+        version = line
+    end
+    return version
+end
+
 local function initialized()
 
     if tes3.isModActive("Ashfall.esp") then
+        local common = require ("mer.ashfall.common.common")
         require("mer.ashfall.survival")
         -- load modules
         require("mer.ashfall.referenceController")
-        require ("mer.ashfall.common.common")
+        
         require("mer.ashfall.intro")
         require ("mer.ashfall.scriptTimer")
         --needs
@@ -38,15 +48,11 @@ local function initialized()
         require("mer.ashfall.merchants.stewMerchant")
         require("mer.ashfall.branch.branches")
 
-        
-
         require("mer.ashfall.crafting.controllers")
 
         local Interop = require ("mer.ashfall.interop")
         event.trigger("Ashfall:Interop", Interop)
-
-        local version = require("mer.ashfall.version")
-        mwse.log("[Ashfall %s] Initialized", version)
+        common.log:info("%s Initialised", getVersion())
     end
 end
 
