@@ -207,7 +207,10 @@ local function drinkFromContainer(e)
         else
             doPrompt = thirstFull
         end
-
+        if tes3.worldController.inputController:isKeyDown(config.modifierHotKey.keyCode) then
+            doPrompt = true
+        end
+        
         if doPrompt then
             local waterName = ""
             if e.itemData.data.waterType == "dirty" then
@@ -220,17 +223,14 @@ local function drinkFromContainer(e)
                 waterName = "Water"
             end
 
+            local currentAmount = e.itemData.data.waterAmount
+            local maxAmount = thirstController.getBottleData(e.item.id).capacity
+            local message = string.format("%s (%d/%d)", waterName, currentAmount, maxAmount)
+    
+
             common.helper.messageBox{
-                message = "You are fully hydrated.",
+                message = message,
                 buttons = {
-                    { 
-                        text = string.format("Empty %s", waterName), 
-                        callback = function()
-                            e.itemData.data.waterAmount = 0
-                            handleEmpties(e.itemData.data)
-                            tes3.playSound({reference = tes3.player, sound = "Swim Left"})
-                        end
-                    },
                     {
                         text = "Douse",
                         showRequirements = function()
@@ -242,13 +242,25 @@ local function drinkFromContainer(e)
                             douse(e.itemData.data)
                         end
                     },
+                    { 
+                        text = "Empty", 
+                        callback = function()
+                            e.itemData.data.waterAmount = 0
+                            handleEmpties(e.itemData.data)
+                            tes3.playSound({reference = tes3.player, sound = "Swim Left"})
+                        end
+                    },
                 },
                 doesCancel = true,
             }
         --If water is dirty, give option to drink or empty
         elseif e.itemData.data.waterType == "dirty" then
+            local currentAmount = e.itemData.data.waterAmount
+            local maxAmount = thirstController.getBottleData(e.item.id).capacity
+            local message = string.format("Dirty Water (%d/%d)", currentAmount, maxAmount)
+
             common.helper.messageBox{
-                message = "Dirty Water",
+                message = message,
                 buttons = {
                     {
                         text = "Drink",
