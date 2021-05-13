@@ -38,6 +38,7 @@ local function initialized()
         require("mer.ashfall.ui.itemTooltips")
         require("mer.ashfall.tempEffects.ratings.ratingEffects")
 
+        require("mer.ashfall.quickKeys")
         require("mer.ashfall.activators.activationEvent")
         
         require("mer.ashfall.bedrollController")        
