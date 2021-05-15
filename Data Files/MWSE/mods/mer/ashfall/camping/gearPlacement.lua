@@ -6,23 +6,21 @@ local common = require("mer.ashfall.common.common")
  
 local function onDropGear(e)
     local gearValues = common.staticConfigs.placementConfig[string.lower(e.reference.object.id)]
-    common.log:debug("ref: %s, source mod: %s", e.reference.object.id, e.reference.object.sourceMod:lower() )
-    if gearValues or e.reference.object.sourceMod:lower() == "ashfall.esp" then
+    if gearValues or (e.reference.object.sourceMod and e.reference.object.sourceMod:lower() == "ashfall.esp") then
         gearValues = gearValues or { maxSteepness = 0.5 }
-        --timer.frame.delayOneFrame(function()
-            if gearValues.maxSteepness then
-                common.helper.orientRefToGround{ ref = e.reference, maxSteepness = gearValues.maxSteepness }
-            end
-            if gearValues.drop then
-                common.log:debug("Dropping %s by %s", e.reference.object.name, gearValues.drop)
-                e.reference.position = {
-                    e.reference.position.x, 
-                    e.reference.position.y, 
-                    e.reference.position.z - gearValues.drop, 
-                }
-            end
-            event.trigger("Ashfall:GearDropped", e)
-       -- end)
+        if gearValues.maxSteepness then
+            common.helper.orientRefToGround{ ref = e.reference, maxSteepness = gearValues.maxSteepness }
+        end
+        if gearValues.drop then
+            common.log:debug("Dropping %s by %s", e.reference.object.name, gearValues.drop)
+            e.reference.position = {
+                e.reference.position.x, 
+                e.reference.position.y, 
+                e.reference.position.z - gearValues.drop, 
+            }
+        end
+        event.trigger("Ashfall:GearDropped", e)
+
     end
 end
 

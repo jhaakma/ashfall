@@ -9,4 +9,4 @@ end
 
 event.register("filterInventorySelect", function(e)
     if isBottle(e) then e.filter = true end
-end)
+end, { filter = "quick" })
