@@ -13,15 +13,15 @@ local SEASON_MAX = 1.5
 
 local sunWeatherMapping = {
 	[tes3.weather.clear] = 1.0,
-	[tes3.weather.cloudy] = 0.7,
-	[tes3.weather.foggy] = 0.1,
-	[tes3.weather.overcast] = 0.4,
+	[tes3.weather.cloudy] = 0.8,
+	[tes3.weather.foggy] = 0.3,
+	[tes3.weather.overcast] = 0.2,
 	[tes3.weather.rain] = 0.1,
 	[tes3.weather.thunder] = 0.0,
 	[tes3.weather.ash] = 0.5,
 	[tes3.weather.blight] = 0.5,
-	[tes3.weather.snow] = 0.6,
-	[tes3.weather.blizzard] = 0.2,
+	[tes3.weather.snow] = 0.5,
+	[tes3.weather.blizzard] = 0.1,
 }
 
 function this.calculate(interval)
@@ -30,21 +30,22 @@ function this.calculate(interval)
     if common.helper.getInside(tes3.player) then
         shadeMultiplier = 0.0
     else
-        if hour < 4 or hour > 20 then
-            shadeMultiplier = 1.0
+        local wc = tes3.worldController.weatherController
+        if hour < (wc.sunriseHour - 1.5) or hour > (wc.sunsetHour + 1.5) then
+            --definitely night time
+            shadeMultiplier = 0.0
         else
             local sunPos = tes3.worldController.weatherController.sceneSunBase.worldTransform.translation
-            local playerPos = tes3.player.position
+            local playerPos = tes3.getPlayerEyePosition()
             local sunLightDirection = (sunPos - tes3.getCameraPosition() ):normalized()
             local result = tes3.rayTest{
                 position = playerPos,
                 direction = sunLightDirection,
                 ignore = { tes3.player }
             }
+            shadeMultiplier = sunWeatherMapping[tes3.getCurrentWeather().index]
             if result then
-                shadeMultiplier = 0.0
-            else
-                shadeMultiplier = sunWeatherMapping[tes3.getCurrentWeather().index]
+                shadeMultiplier = math.max(0, shadeMultiplier * 0.2 - 0.1)
             end
         end
     end
@@ -68,5 +69,11 @@ function this.calculate(interval)
         ((sunHeat - common.data.sunTemp) * math.min(1, interval * 500))
     )
 end
+
+local function blockSunDamage(e)
+    local sunDamage = math.clamp(common.data.sunTemp / HEAT_DEFAULT / 2, 0, 1)
+    e.damage = sunDamage
+end
+event.register("calcSunDamageScalar", blockSunDamage, { priority = -100 })
 
 return this
