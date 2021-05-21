@@ -54,7 +54,7 @@ local function callUpdates()
     raceEffects.calculateRaceEffects()
     torch.calculateTorchTemp()
     fireEffect.calculateFireEffect()
-    magicEffects.calculateMagicEffects()
+    magicEffects.calculateMagicEffects(interval)
     hazardEffects.calculateHazards()
     survivalEffect.calculate()
     conditions.updateConditions() --1fps

@@ -71,6 +71,7 @@ function this.calculate(interval)
 end
 
 local function blockSunDamage(e)
+    if not(common.data and common.data.sunTemp) then return end
     local sunDamage = math.clamp(common.data.sunTemp / HEAT_DEFAULT / 2, 0, 1)
     e.damage = sunDamage
 end
