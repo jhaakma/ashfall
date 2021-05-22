@@ -59,7 +59,6 @@ local function calculateDamageTemp(e)
 
             common.log:trace("damageTemp: %s", damageTemp)    
             
-
             if e.effectId == tes3.effect.fireDamage then
                 common.data.fireDamageEffect = common.data.fireDamageEffect or 0
                 common.data.fireDamageEffect = common.data.fireDamageEffect + 

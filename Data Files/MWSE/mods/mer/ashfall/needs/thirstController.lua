@@ -77,18 +77,20 @@ function this.playerHasEmpties()
                 end
 
                 for _, itemData in pairs(stack.variables) do
-                    common.log:debug("itemData: %s", itemData)
-                    common.log:debug("waterAmount: %s", itemData and itemData.data.waterAmount )
-                    if itemData.data.waterAmount then
-                        if itemData.data.waterAmount < bottleData.capacity then
-                            --at least one bottle can be filled
-                            common.log:debug("below capacity")
+                    if itemData then
+                        common.log:debug("itemData: %s", itemData)
+                        common.log:debug("waterAmount: %s", itemData and itemData.data.waterAmount )
+                        if itemData.data.waterAmount then
+                            if itemData.data.waterAmount < bottleData.capacity then
+                                --at least one bottle can be filled
+                                common.log:debug("below capacity")
+                                return true
+                            end
+                        else
+                            --no itemdata means empty bottle
+                            common.log:debug("no waterAmount")
                             return true
                         end
-                    else
-                        --no itemdata means empty bottle
-                        common.log:debug("no waterAmount")
-                        return true
                     end
                 end
             else
