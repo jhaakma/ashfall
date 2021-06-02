@@ -186,6 +186,7 @@ this.list.vegetation = Activator:new{
         ["_grass_"] = true,
         ["_bush_"] = true,
         ["_kelp_"] = true,
+        ["_fern_"] = true
     }
 }
 this.list.tree = Activator:new{ 

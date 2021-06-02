@@ -161,7 +161,7 @@ function this.callRayTest()
         if adjustedDistance < 300 and cell.hasWater then
             local blockedBySomething =
                 result.reference and
-                result.reference.object.objectType ~= tes3.objectType.static
+                result.reference.baseObject.objectType ~= tes3.objectType.static
             local cameraIsAboveWater = tes3.getCameraPosition().z > waterLevel
             local isLookingAtWater = intersection.z < waterLevel
             if cameraIsAboveWater and isLookingAtWater and not blockedBySomething then

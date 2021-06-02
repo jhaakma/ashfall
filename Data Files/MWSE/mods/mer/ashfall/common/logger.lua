@@ -17,14 +17,14 @@ local logLevels = {
     ERROR = 5,
     NONE = 6
 }
-Logger.logLevel = {
-    TRACE = "TRACE",
-    DEBUG = "DEBUG",
-    INFO = "INFO",
-    WARN = "WARN",
-    ERROR = "ERROR",
-    NONE ="NONE",
-}
+-- Logger.logLevel = {
+--     TRACE = "TRACE",
+--     DEBUG = "DEBUG",
+--     INFO = "INFO",
+--     WARN = "WARN",
+--     ERROR = "ERROR",
+--     NONE ="NONE",
+-- }
 --Check log level to determine if log should be written out
 function Logger:doLog(logLevel)
     local currentLogLevel = self.logLevel or defaultLogLevel
