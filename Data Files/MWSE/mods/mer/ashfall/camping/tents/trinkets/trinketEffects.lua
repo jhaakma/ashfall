@@ -71,6 +71,11 @@ local function updateTrinketEffects(e)
 end
 event.register("simulate", updateTrinketEffects)
 
+event.register("cellChanged", function()
+    for _, trinket in pairs(tentConfig.trinkets) do
+        disableTrinketEffect(trinket)
+    end
+end)
 
 local function trinketTooltip(e)
     local trinket =  tentConfig.getTrinketData(e.object.id)
