@@ -99,6 +99,15 @@ local function updateBrewers(e)
     local function doUpdate(brewerRef)
         brewerRef.data.lastBrewUpdated = brewerRef.data.lastBrewUpdated or e.timestamp
         local difference = e.timestamp - brewerRef.data.lastBrewUpdated
+
+
+        if difference < 0 then
+            common.log:error("BREWER brewerRef.data.lastBrewUpdated(%.4f) is ahead of e.timestamp(%.4f).", 
+                brewerRef.data.lastBrewUpdated, e.timestamp)
+            --something fucky happened
+            brewerRef.data.lastBrewUpdated = e.timestamp
+        end
+
         if difference > updateInterval then
             brewerRef.data.waterHeat =  brewerRef.data.waterHeat  or 0
             local hasWater = brewerRef.data.waterAmount and brewerRef.data.waterAmount > 0

@@ -891,7 +891,7 @@ end
 
 --Use survival skill to determine how long a buff should last
 function this.calculateStewBuffDuration()
-    return math.remap(skillModule.getSkill("Ashfall:Survival").value, 0, 100, 4, 16)
+    return math.remap(skillModule.getSkill("Ashfall:Survival").value, 0, 100, 12, 20)
 end
 
 --Use survival skill to determine how strong a buff should be

@@ -14,6 +14,14 @@ local function updateFuelConsumers(e)
         fuelConsumer.data.lastFuelUpdated = fuelConsumer.data.lastFuelUpdated or e.timestamp
         local difference = e.timestamp - fuelConsumer.data.lastFuelUpdated
 
+        if difference < 0 then
+            common.log:error("FUELCONSUMER fuelConsumer.data.lastFuelUpdated(%.4f) is ahead of e.timestamp(%.4f).", 
+                fuelConsumer.data.lastFuelUpdated, e.timestamp)
+            --something fucky happened
+            fuelConsumer.data.lastFuelUpdated = e.timestamp
+        end
+
+        
         if difference > updateInterval then
             if fuelConsumer.data.isLit then
                 fuelConsumer.data.lastFuelUpdated = e.timestamp

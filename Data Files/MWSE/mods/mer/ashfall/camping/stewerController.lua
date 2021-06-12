@@ -55,6 +55,13 @@ local function updateStewers(e)
         stewerRef.data.lastStewUpdated = stewerRef.data.lastStewUpdated or e.timestamp
         local difference = e.timestamp - stewerRef.data.lastStewUpdated
         
+        if difference < 0 then
+            common.log:error("STEWER stewerRef.data.lastStewUpdated(%.4f) is ahead of e.timestamp(%.4f).", 
+                stewerRef.data.lastStewUpdated, e.timestamp)
+            --something fucky happened
+            stewerRef.data.lastStewUpdated = e.timestamp
+        end
+
         if difference > updateInterval then
             stewerRef.data.waterHeat = stewerRef.data.waterHeat or 0
             local hasWater = stewerRef.data.waterAmount and stewerRef.data.waterAmount > 0
@@ -124,7 +131,7 @@ local function eatStew(e)
                 effect.min = effectStrength
                 effect.max = effectStrength
                 mwscript.addSpell{ reference = tes3.player, spell = spell }
-                local ateAmountMulti = amountAte / 100
+                local ateAmountMulti = math.min(amountAte, 10) / 100
                 tes3.player.data.stewBuffTimeLeft = common.helper.calculateStewBuffDuration() * ateAmountMulti
                 common.log:debug("Set stew duration to %s", tes3.player.data.stewBuffTimeLeft)
                 event.trigger("Ashfall:registerReference", { reference = tes3.player})

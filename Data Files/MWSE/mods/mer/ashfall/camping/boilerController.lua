@@ -16,7 +16,16 @@ local function updateBoilers(e)
         common.log:trace("BOILER updating %s", boilerRef.object.id)
         boilerRef.data.lastWaterUpdated = boilerRef.data.lastWaterUpdated or e.timestamp
         local timeSinceLastUpdate = e.timestamp - boilerRef.data.lastWaterUpdated
+
         common.log:trace("BOILER timeSinceLastUpdate %s", timeSinceLastUpdate)
+
+        if timeSinceLastUpdate < 0 then
+            common.log:error("BOILER boilerRef.data.lastWaterUpdated(%.4f) is ahead of e.timestamp(%.4f).", 
+                boilerRef.data.lastWaterUpdated, e.timestamp)
+            --something fucky happened
+            boilerRef.data.lastWaterUpdated = e.timestamp
+        end
+
         if timeSinceLastUpdate > updateInterval then
             common.log:trace("BOILER interval passed, updating heat")
             local hasFilledPot = (
