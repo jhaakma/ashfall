@@ -102,10 +102,26 @@ local function callWaterMenu(e)
 end
 event.register("Ashfall:WaterMenu", callWaterMenu)
 
+local function findInnkeeperInCell(cell)
+    for ref in cell:iterateReferences(tes3.objectType.npc) do
+        if common.isInnkeeper(ref) and ref.mobile and not ref.mobile.isDead then
+            return ref
+        end
+    end
+    return false
+end
+
 --Register events
 event.register(
     "Ashfall:ActivatorActivated", 
-    function()
+    function(e)
+        if e.activator.owned then
+            local innkeeper = findInnkeeperInCell(e.ref.cell)
+            if innkeeper then
+                tes3.messageBox("Speak to %s to purchase water.", innkeeper.object.name)
+                return
+            end
+        end
         callWaterMenu()
     end,
     { filter = activatorConfig.types.waterSource } 

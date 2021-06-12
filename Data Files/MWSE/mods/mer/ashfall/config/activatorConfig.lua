@@ -172,11 +172,14 @@ this.list.keg = Activator:new{
     type = this.types.waterSource,
     mcmSetting = nil,
     ids = {
-        "ashfall_kegstand_00"
-        --"kegstand",
-        --"nom_kegstand_emp_de", 
-        --"nom_kegstand_emp",
-    }
+        ["ashfall_kegstand_00"] = true,
+        ["kegstand"] = true,
+        ["furn_com_kegstand"] = true,
+        ["furn_de_kegstand"] = true,
+        ["nom_kegstand_emp_de"] = true,
+        ["nom_kegstand_emp"] = true,
+    },
+    owned = true,
 }
 this.list.vegetation = Activator:new{
     name = "Vegetation",
