@@ -10,7 +10,8 @@ this.types = {
     woodSource = "woodSource",
     vegetation = "vegetation",
     branch = "branch",
-    cauldron = "cauldron"
+    cauldron = "cauldron",
+    cushion = "cushion",
 }
 
 this.list = {}
@@ -288,6 +289,30 @@ this.list.campfire = Activator:new{
     grillMinHeight = 21,
     grillMaxHeight = 50,
     grillDistance = 40
+}
+
+this.list.cushion = Activator:new{
+    name = "Cushion",
+    type = this.types.cushion,
+    mcmSetting = nil,
+    ids = {
+        furn_de_cushion_round_01 = { height = 20 },
+        furn_de_cushion_round_02 = { height = 20 },
+        furn_de_cushion_round_03 = { height = 20 },
+        furn_de_cushion_round_04 = { height = 20 },
+        furn_de_cushion_round_05 = { height = 20 },
+        furn_de_cushion_round_06 = { height = 20 },
+        furn_de_cushion_round_07 = { height = 20 },
+        furn_de_cushion_square_01 = { height = 10 },
+        furn_de_cushion_square_02 = { height = 10 },
+        furn_de_cushion_square_03 = { height = 10 },
+        furn_de_cushion_square_04 = { height = 10 },
+        furn_de_cushion_square_05 = { height = 10 },
+        furn_de_cushion_square_06 = { height = 10 },
+        furn_de_cushion_square_07 = { height = 10 },
+        furn_de_cushion_square_08 = { height = 10 },
+        furn_de_cushion_square_09 = { height = 10 },
+    },
 }
 
 this.list.cauldron = Activator:new{

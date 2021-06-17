@@ -765,6 +765,9 @@ function this.getGroundBelowRef(e)
     return result
 end
 
+function this.getObjectHeight(obj)
+    return obj.boundingBox.max.z - obj.boundingBox.min.z
+end
 
 local function doIgnoreMesh(ref)
     local objType = ref.object.objectType

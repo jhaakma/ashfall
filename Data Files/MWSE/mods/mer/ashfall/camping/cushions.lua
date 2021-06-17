@@ -34,22 +34,25 @@ local function canRest()
     return tes3.canRest() 
 end
 
-local function cushionMenu(ref)
-    local message = ref.object.name
+local function cushionMenu(e)
+    local ref = e.ref
+    local activator = e.activator
+    local message = ref.object.name or activator.name
     local buttons = {
         {
             text = "Sit Down",
             requirements = canRest,
             callback = function()
-                if not cushions[ref.object.id:lower()] then 
-                    common.log:error("Cushion menu called on cushion that isn't in config somehow.")
-                    return 
-                end
+                -- if (not cushions[ref.object.id:lower()]) and (activator and not activator.ids[ref.object.id:lower()]) then 
+                --     common.log:error("Cushion menu called on cushion that isn't in config somehow.")
+                --     return 
+                -- end
+
                 local location = {
                     position = tes3vector3.new(
                         ref.position.x, 
                         ref.position.y,
-                        ref.position.z + cushions[ref.object.id:lower()].height
+                        ref.position.z + common.helper.getObjectHeight(ref.object) - 7
                     ),
                     orientation = {
                         0,--ref.orientation.x,
@@ -58,12 +61,15 @@ local function cushionMenu(ref)
                     },
                     cell = ref.cell
                 }
+                local collisionRef
+                if activator then collisionRef = ref end
                 animCtrl.showFastTimeMenu{ 
                     message = "Sit Down", 
                     anim = "sitting",
                     location = location,
                     recovering = true, 
-                    speeds = { 2, 5, 10 } 
+                    speeds = { 2, 5, 10 },
+                    collisionRef = collisionRef
                 }
             end,
             tooltipDisabled = { 
@@ -72,6 +78,9 @@ local function cushionMenu(ref)
         },
         {
             text = "Pick up",
+            showRequirements = function()
+                return not activator
+            end,
             callback = function() 
                 timer.delayOneFrame(function()
                     skipActivate = true
@@ -111,3 +120,10 @@ local function activateCushion(e)
     end
 end
 event.register("activate", activateCushion)
+
+
+event.register(
+    "Ashfall:ActivatorActivated", 
+    cushionMenu, 
+    { filter = common.staticConfigs.activatorConfig.types.cushion } 
+)

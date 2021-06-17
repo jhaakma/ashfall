@@ -20,7 +20,7 @@ end
 
 function Activator:isActivator(id)
     if self.ids then
-        if self.ids[string.lower(id)] == true then
+        if self.ids[string.lower(id)] then
             return true
         end
     end

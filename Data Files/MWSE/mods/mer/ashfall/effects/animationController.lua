@@ -10,7 +10,8 @@ local data = {
     fastTimer = nil,
     originalTimeScale = nil,
     speed = nil,
-    sleeping = nil
+    sleeping = nil,
+    collisionRef = nil
 }
 local animConfig = {
     sitSlave = {
@@ -159,6 +160,13 @@ end
 function this.doAnimation(e)
     common.log:debug("do animation")
     data = e
+    if data.collisionRef then
+        common.log:debug("Has Collision REF %s, setting NO Collision to TRUE", data.collisionRef )
+        data.collisionRef = tes3.makeSafeObjectHandle(data.collisionRef)
+        common.log:debug("hasNoCollision before: %s", data.collisionRef:getObject().hasNoCollision)
+        data.collisionRef:getObject().hasNoCollision = true
+        common.log:debug("hasNoCollision after: %s", data.collisionRef:getObject().hasNoCollision)
+    end
     if data.usingBed then
         event.trigger("Ashfall:SetBedTemp", { isUsingBed = true})
     end
@@ -206,7 +214,7 @@ function this.doAnimation(e)
             end
         }
     end
-    
+
     tes3.setVanityMode({ enabled = true })
     helper.disableControls()
     event.register("save", blockSave)
@@ -257,6 +265,12 @@ function this.cancel()
     else
         common.data.isWaiting = false
     end
+    if data.collisionRef then
+        if data.collisionRef and data.collisionRef:valid() then
+            common.log:debug("Has Collision Ref, setting hasNoCollision to false")
+            data.collisionRef:getObject().hasNoCollision = false
+        end
+    end
     common.log:debug("Enabling controls and setting vanity to false, unregistering events")
     helper.enableControls()
     tes3.setVanityMode({ enabled = false })
@@ -299,15 +313,9 @@ function this.showFastTimeMenu(e)
         {
             text = "Real Time",
             callback = function()
-                buttonPressed{
-                    anim = e.anim,
-                    timeScaleMulti = 1,
-                    location = e.location,
-                    recovering = e.recovering,
-                    sleeping = e.sleeping,
-                    covered = e.covered,
-                    usingBed = e.usingBed
-                }
+                local data = table.copy(e)
+                data.timeScaleMulti = 1
+                buttonPressed(data)
             end
         }
     }
@@ -316,15 +324,9 @@ function this.showFastTimeMenu(e)
         table.insert(buttons, {
             text = string.format("%dx Speed", speed),
             callback = function()
-                buttonPressed{
-                    anim = e.anim,
-                    timeScaleMulti = speed,
-                    location = e.location,
-                    recovering = e.recovering,
-                    sleeping = e.sleeping,
-                    covered = e.covered,
-                    usingBed = e.usingBed
-                }
+                local data = table.copy(e)
+                data.timeScaleMulti = speed
+                buttonPressed(data)
             end
         })
     end
