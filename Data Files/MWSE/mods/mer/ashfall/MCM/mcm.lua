@@ -167,7 +167,7 @@ local function registerModConfig()
             categorySurvival:createYesNoButton{
                 label = "Enable Sleep",
                 description = (
-                    "When enabled, you must tiredness regularly or face debuffs from tiredness deprivation. " .. 
+                    "When enabled, you must sleep regularly or face debuffs from tiredness deprivation. " .. 
                     "Sleeping in a bed or bedroll will allow you to become \"Well Rested\", while sleeping out in the open will not fully recover your tiredness."
                 ),
                 variable = createTableVar("enableTiredness"),
