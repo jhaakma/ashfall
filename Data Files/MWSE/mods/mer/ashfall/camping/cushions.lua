@@ -115,7 +115,7 @@ local function activateCushion(e)
             return
         end
         
-        cushionMenu(e.target)
+        cushionMenu({ ref = e.target })
         return false
     end
 end
