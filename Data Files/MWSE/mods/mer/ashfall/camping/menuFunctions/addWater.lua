@@ -79,7 +79,7 @@ return {
                             --Cool down stew
                             campfire.data.waterHeat = campfire.data.waterHeat or 0
                             local before = campfire.data.waterHeat
-                            campfire.data.waterHeat = math.max(( campfire.data.waterHeat - common.staticConfigs.stewWaterCooldownAmount * ratio ), 0)
+                            campfire.data.waterHeat = math.max(( campfire.data.waterHeat * ratio ), 0)
                             local after = campfire.data.waterHeat
                             if before > common.staticConfigs.hotWaterHeatValue and after < common.staticConfigs.hotWaterHeatValue then
                                 tes3.removeSound{

@@ -35,7 +35,7 @@ this.innkeeperClasses = {
 
 --Campfire values
 this.hotWaterHeatValue = 80
-this.stewWaterCooldownAmount = 50
+this.stewWaterCooldownAmount = 100
 this.stewIngredientCooldownAmount = 20
 this.stewIngredAddAmount = 25 -- out of pot capacity, not 100
 this.firewoodFuelMulti = 2
