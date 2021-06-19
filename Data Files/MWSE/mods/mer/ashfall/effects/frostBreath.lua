@@ -47,6 +47,9 @@ function this.doFrostBreath()
             else
                 node = ref.sceneNode:getObjectByName("Bip01 Head")
             end
+            if not node then
+                return
+            end
             local isAlive = ( ref.mobile.health.current > 0 )
             local isAboveWater = ( ref.mobile.underwater == false )
             if isCold and isAboveWater and isAlive and checkEnabled() then

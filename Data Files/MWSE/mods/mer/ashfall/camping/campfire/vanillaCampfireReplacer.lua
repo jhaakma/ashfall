@@ -13,6 +13,7 @@ local vanillaCampfires = {
     light_pitfire00 =  { supports = false, scale = 0.9, rootHeight = 5 },  
     light_pitfire01 =  { supports = false, scale = 0.9, rootHeight = 5 },
     _ser_pitfire =  { supports = false, scale = 0.9, rootHeight = 5 },
+    abtv_light_suryanfirepit = { supports = false, scale = 0.9, rootHeight = 5 },
 
     --unlit supports
     furn_de_firepit =  { supports = true, rootHeight = 85 },
