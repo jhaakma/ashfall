@@ -1,7 +1,8 @@
 local common = require("mer.ashfall.common.common")
-
+local config = require("mer.ashfall.config.config").config
 local miscToContainerMapping = {
-    ashfall_sack_01 = "ashfall_sack_c"
+    ashfall_sack_01 = "ashfall_sack_c",
+    ashfall_chest_01_m = "ashfall_chest_01_c"
 }
 local containerToMiscMapping = {}
 for misc, container in pairs(miscToContainerMapping) do 
@@ -31,7 +32,6 @@ local function onGearDropped(e)
             position = position,
             orientation = orientation,
             cell = e.reference.cell,
-            scale = math.random(90, 100) * 0.01
         }
         if common.helper.isStack(e.reference) then
             tes3.addItem{
@@ -111,6 +111,12 @@ local function onActivate(e)
     if tes3ui.menuMode() then
         pickup()
         return false
+    end
+
+    if tes3.worldController.inputController:isKeyDown(config.modifierHotKey.keyCode) then
+        skipActivate = true
+        tes3.player:activate(e.target)
+        return
     end
     common.helper.messageBox{
         message = getName(e.target),

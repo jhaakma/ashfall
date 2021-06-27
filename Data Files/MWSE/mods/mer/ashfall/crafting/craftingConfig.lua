@@ -61,6 +61,13 @@ this.recipes = {
         }
     },
     {
+        id = "ashfall_chest_01_m",
+        description = "A large wooden chest that can be placed on the ground and used as storage.",
+        materials = {
+            { material = this.materials.wood, count = 10 }
+        }
+    },
+    {
         id = "ashfall_strawbed",
         description = "Bedding made of dried plant fibres.",
         materials = {
