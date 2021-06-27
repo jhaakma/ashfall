@@ -33,6 +33,8 @@ this.innkeeperClasses = {
     t_cyr_publican = true
 }
 
+this.maxSunTemp = 15
+
 --Campfire values
 this.hotWaterHeatValue = 80
 this.stewWaterCooldownAmount = 100

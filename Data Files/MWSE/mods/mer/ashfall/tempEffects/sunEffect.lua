@@ -5,11 +5,10 @@ local common = require('mer.ashfall.common.common')
 local temperatureController = require("mer.ashfall.temperatureController")
 temperatureController.registerExternalHeatSource("sunTemp")
 
-local HEAT_DEFAULT = 10
 local TIME_MIN = 0.5
-local TIME_MAX = 1.5
+local TIME_MAX = 1
 local SEASON_MIN = 0.5
-local SEASON_MAX = 1.5
+local SEASON_MAX = 1
 
 local sunWeatherMapping = {
 	[tes3.weather.clear] = 1.0,
@@ -57,7 +56,7 @@ function this.calculate(interval)
     local seasonMulti = math.remap( common.helper.getSeasonMultiplier() , 0, 1, SEASON_MIN, SEASON_MAX)
 
     local sunHeat = (
-        HEAT_DEFAULT * 
+        common.staticConfigs.maxSunTemp * 
         timeMulti *
         seasonMulti *
         shadeMultiplier
@@ -72,7 +71,7 @@ end
 
 local function blockSunDamage(e)
     if not(common.data and common.data.sunTemp) then return end
-    local sunDamage = math.clamp(common.data.sunTemp / HEAT_DEFAULT / 2, 0, 1)
+    local sunDamage = math.clamp(common.data.sunTemp / common.staticConfigs.maxSunTemp / 2, 0, 1)
     e.damage = sunDamage
 end
 event.register("calcSunDamageScalar", blockSunDamage, { priority = -100 })

@@ -15,10 +15,12 @@ local function getVersion()
     return version
 end
 
-local function initialized()
+local common = require ("mer.ashfall.common.common")
+local Interop = require ("mer.ashfall.interop")
 
+local function initialized()
     if tes3.isModActive("Ashfall.esp") then
-        local common = require ("mer.ashfall.common.common")
+        
         require("mer.ashfall.survival")
         -- load modules
         require("mer.ashfall.referenceController")
@@ -50,13 +52,18 @@ local function initialized()
         require("mer.ashfall.branch.branches")
 
         require("mer.ashfall.crafting.controllers")
-
-        local Interop = require ("mer.ashfall.interop")
+        
         event.trigger("Ashfall:Interop", Interop)
         common.log:info("%s Initialised", getVersion())
+
+        
     end
 end
 
+event.register("UIEXP:sandboxConsole", function(e)
+    e.sandbox.ashfall = table.copy(Interop)
+    e.sandbox.ashfall.data = common.data
+end)
 
 --Need to initialise immediately
 require ("mer.ashfall.effects.faderController")

@@ -318,6 +318,19 @@ local Interop = {
         return registerClimates({ data = data })
     end,
 
+    getSunlight = function()
+        return common.data and common.data.sunTemp or 0
+    end,
+
+    getSunlightNormalized = function()
+        local normalisedSunlight = 0
+        if common.data then
+            normalisedSunlight = math.clamp( (common.data.sunTemp / common.staticConfigs.maxSunTemp), 0, 1)
+        end
+        return normalisedSunlight
+    end,
+
+    --Misc
     registerWoodAxes = function(data)
         return registerWoodAxes(data)
     end,
@@ -331,5 +344,6 @@ local Interop = {
     --     return registerArmors({ data = data })
     -- end,
 }
+
 
 return Interop
