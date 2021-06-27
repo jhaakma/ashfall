@@ -312,6 +312,16 @@ this.list.cushion = Activator:new{
         furn_de_cushion_square_07 = { height = 10 },
         furn_de_cushion_square_08 = { height = 10 },
         furn_de_cushion_square_09 = { height = 10 },
+        ss20_dae_cushion_round_01 = { height = 20 },
+        ss20_dae_cushion_round_02 = { height = 20 },
+        ss20_dae_cushion_round_03 = { height = 20 },
+        ss20_dae_cushion_round_04 = { height = 20 },
+        ss20_dae_cushion_round_05 = { height = 20 },
+        ss20_dae_cushion_square_01 = { height = 10 },
+        ss20_dae_cushion_square_02 = { height = 10 },
+        ss20_dae_cushion_square_03 = { height = 10 },
+        ss20_dae_cushion_square_04 = { height = 10 },
+        ss20_dae_cushion_square_05 = { height = 10 },
     },
 }
 

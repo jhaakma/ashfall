@@ -18,16 +18,7 @@ local cushions = {
     ashfall_cushion_sq_05 = { height = 10 },
     ashfall_cushion_sq_06 = { height = 10 },
     ashfall_cushion_sq_07 = { height = 10 },
-    ss20_dae_cushion_round_01 = { height = 20 },
-    ss20_dae_cushion_round_02 = { height = 20 },
-    ss20_dae_cushion_round_03 = { height = 20 },
-    ss20_dae_cushion_round_04 = { height = 20 },
-    ss20_dae_cushion_round_05 = { height = 20 },
-    ss20_dae_cushion_square_01 = { height = 10 },
-    ss20_dae_cushion_square_02 = { height = 10 },
-    ss20_dae_cushion_square_03 = { height = 10 },
-    ss20_dae_cushion_square_04 = { height = 10 },
-    ss20_dae_cushion_square_05 = { height = 10 },
+
 }
 
 local function canRest()
