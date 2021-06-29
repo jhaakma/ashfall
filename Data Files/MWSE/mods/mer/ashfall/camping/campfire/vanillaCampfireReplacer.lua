@@ -110,6 +110,7 @@ local function attachRandomStuff(campfire)
     end
     if campfire.data.dynamicConfig.kettle == "static" then
         campfire.data.utensil = "kettle"
+        campfire.data.kettleId = "ashfall_kettle"
     end
     if campfire.data.dynamicConfig.cookingPot == "static" then
         campfire.data.utensil = "cookingPot"
@@ -137,6 +138,7 @@ local function attachRandomStuff(campfire)
                 end
                 --add tea to kettleswaterHeat
                 if campfire.data.utensil == "kettle" then
+                    campfire.data.kettleId = "ashfall_kettle"
                     if math.random() < randomStuffChances.tea then
                         local teaType = table.choice(common.staticConfigs.teaConfig.validTeas)
                         campfire.data.waterType = teaType
@@ -193,6 +195,7 @@ local function setInitialState(campfire, vanillaRef, data, hasSupports)
     else
         campfire:deleteDynamicLightAttachment()
     end
+    event.trigger("Ashfall:UpdateAttachNodes", { campfire = campfire })
     timer.delayOneFrame(function()
         event.trigger("Ashfall:registerReference", { reference = campfire} )
     end)

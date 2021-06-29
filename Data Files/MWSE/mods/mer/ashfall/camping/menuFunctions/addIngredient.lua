@@ -59,6 +59,60 @@ end
 
 
 
+local function ingredientSelect(campfire, foodType)
+    common.data.inventorySelectStew = true
+    timer.delayOneFrame(function()
+        common.log:debug("ingedient select menu for stew")
+        tes3ui.showInventorySelectMenu{
+            title = "Select Ingredient:",
+            noResultsText = string.format("You do not have any %ss.", string.lower(foodType)),
+            filter = function(e)
+                return (
+                    foodConfig.getFoodTypeResolveMeat(e.item) == foodType
+                    --Can only grill meat and veges
+                )
+            end,
+            callback = function(e) --select how many
+                common.data.inventorySelectStew = nil
+                if e.item then
+                    common.log:debug("Selecting ingredient amount for stew")
+                    local waterRatio = campfire.data.waterAmount / common.staticConfigs.capacities.cookingPot
+                    local stewLevel = (campfire.data.stewLevels and campfire.data.stewLevels[foodType] or 0)
+                    local adjustedIngredAmount = common.staticConfigs.stewIngredAddAmount / waterRatio
+                    common.log:debug("adjustedIngredAmount: %s", adjustedIngredAmount)
+                    local rawCapacity = 100 - stewLevel
+                    common.log:debug("rawCapacity: %s", rawCapacity)
+                    local capacity = math.ceil(rawCapacity / adjustedIngredAmount)
+                    common.log:debug("capacity: %s", capacity)
+                    local max = math.min(
+                        mwscript.getItemCount{ reference = tes3.player, item = e.item },
+                        capacity
+                    )
+                    common.log:debug("max: %s", max)
+                    e.amount = 1
+                    e.campfire = campfire
+                    e.foodType = foodType
+                    if max > 1 then
+                        common.helper.createSliderPopup{
+                            label = "How many?",
+                            min = 0,
+                            max = max,
+                            jump = 1,
+                            table = e,
+                            varId = "amount",
+                            okayCallback = function()
+                                addIngredient(e)
+                            end
+                        }
+                    else
+                        addIngredient(e)
+                    end
+                end
+            end
+        }
+    end)
+end
+
 
 return {
     text = "Add Ingredient",
@@ -75,60 +129,6 @@ return {
     },
     callback = function(campfire)
 
-        local function ingredientSelect(foodType)
-            common.data.inventorySelectStew = true
-            timer.delayOneFrame(function()
-                common.log:debug("ingedient select menu for stew")
-                tes3ui.showInventorySelectMenu{
-                    title = "Select Ingredient:",
-                    noResultsText = string.format("You do not have any %ss.", string.lower(foodType)),
-                    filter = function(e)
-                        return (
-                            foodConfig.getFoodTypeResolveMeat(e.item) == foodType
-                            --Can only grill meat and veges
-                        )
-                    end,
-                    callback = function(e) --select how many
-                        common.data.inventorySelectStew = nil
-                        if e.item then
-                            common.log:debug("Selecting ingredient amount for stew")
-                            local waterRatio = campfire.data.waterAmount / common.staticConfigs.capacities.cookingPot
-                            local stewLevel = (campfire.data.stewLevels and campfire.data.stewLevels[foodType] or 0)
-                            local adjustedIngredAmount = common.staticConfigs.stewIngredAddAmount / waterRatio
-                            common.log:debug("adjustedIngredAmount: %s", adjustedIngredAmount)
-                            local rawCapacity = 100 - stewLevel
-                            common.log:debug("rawCapacity: %s", rawCapacity)
-                            local capacity = math.ceil(rawCapacity / adjustedIngredAmount)
-                            common.log:debug("capacity: %s", capacity)
-                            local max = math.min(
-                                mwscript.getItemCount{ reference = tes3.player, item = e.item },
-                                capacity
-                            )
-                            common.log:debug("max: %s", max)
-                            e.amount = 1
-                            e.campfire = campfire
-                            e.foodType = foodType
-                            if max > 1 then
-                                common.helper.createSliderPopup{
-                                    label = "How many?",
-                                    min = 0,
-                                    max = max,
-                                    jump = 1,
-                                    table = e,
-                                    varId = "amount",
-                                    okayCallback = function()
-                                        addIngredient(e)
-                                    end
-                                }
-                            else
-                                addIngredient(e)
-                            end
-                        end
-                    end
-                }
-            end)
-        end
-
         --add buttons for ingredients that can be added
         local buttons = {}
         for _, foodType in ipairs(foodTypes) do
@@ -137,7 +137,7 @@ return {
 
             table.insert(buttons, { 
                 text = foodType, 
-                callback = function() ingredientSelect(foodType) end,
+                callback = function() ingredientSelect(campfire, foodType) end,
                 requirements = function()
                     return hasFood and hasCapacity
                 end,

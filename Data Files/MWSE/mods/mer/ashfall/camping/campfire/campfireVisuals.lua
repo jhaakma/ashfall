@@ -98,7 +98,6 @@ local function updateLightingRadius(campfire)
     end
 end
 
-
 --As fuel levels change, update the size of the flame
 local function updateFireScale(campfire)
     local fireNode = campfire.sceneNode:getObjectByName("FIRE_PARTICLE_NODE")
@@ -194,3 +193,70 @@ local function updateVisuals(e)
 end
 
 event.register("simulate", updateVisuals)
+
+
+local idToNameMappings = {
+    kettle = "Kettle",
+    cookingPot = "Cooking Pot"
+}
+
+
+local function moveOriginToAttachPoint(node)
+    local attachPoint = node:getObjectByName("ATTACH_POINT")
+    if attachPoint then
+        common.log:trace("Found attach point located at %s", attachPoint.translation)
+        node.translation.x = node.translation.x - attachPoint.translation.x
+        node.translation.y = node.translation.y - attachPoint.translation.y
+        node.translation.z = node.translation.z - attachPoint.translation.z
+    end
+end
+
+local function updateAttachNodes(e)
+    common.log:debug("Ashfall:UpdateAttachNodes")
+    local campfire = e.campfire
+    local sceneNode = campfire.sceneNode
+    local hangNode = sceneNode:getObjectByName("HANG_UTENSIL")
+    local utensil = campfire.data.kettleId or "ashfall_kettle"
+    if hangNode then
+        common.log:trace("has hangNode")
+        common.log:trace("children: %s", #hangNode.children)
+        if campfire.data.utensil == "kettle" then
+            if not idToNameMappings[campfire.data.utensil] then 
+                common.log:trace("No valid utensil type set on data.utensil")
+                return 
+            end
+            common.log:trace("Has utensil")
+            local utensilObj = tes3.getObject(utensil)
+            if utensilObj then
+                if #hangNode.children > 0 then
+                    hangNode:detachChildAt(1)
+                end
+                
+                common.log:trace("utensil is a valid object")
+                local mesh = tes3.loadMesh(utensilObj.mesh):clone()
+                mesh.name = idToNameMappings[campfire.data.utensil]
+                moveOriginToAttachPoint(mesh)
+                hangNode:attachChild(mesh)
+                common.log:trace("Attached %s to campfire", utensil)
+            end
+        else
+            for i, childNode in ipairs(hangNode.children) do
+                if childNode then
+                    common.log:trace("removed utensil node")
+                    hangNode:detachChildAt(i)
+                end
+            end
+        end
+        campfire.sceneNode:update()
+        campfire.sceneNode:updateNodeEffects()
+    end
+end
+event.register("Ashfall:UpdateAttachNodes", updateAttachNodes)
+
+local function initialiseAttachNodes()
+    common.helper.iterateRefType("campfire", function(campfire)
+        updateAttachNodes{ campfire = campfire }
+    end)
+end
+event.register("cellChanged", initialiseAttachNodes)
+event.register("loaded", initialiseAttachNodes)

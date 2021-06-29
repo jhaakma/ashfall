@@ -15,9 +15,13 @@ return {
         text = "Kettle must be emptied before it can be removed."
     },
     callback = function(campfire)
-        mwscript.addItem{ reference = tes3.player, item = "ashfall_kettle" }
+        local kettleId = campfire.data.kettleId or "ashfall_kettle"
+        mwscript.addItem{ reference = tes3.player, item = kettleId }
         event.trigger("Ashfall:Campfire_clear_utensils", { campfire = campfire, removeUtensil = true})
         tes3.playSound{ reference = tes3.player, sound = "Item Misc Up"  }
         --event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})
+
+        campfire.data.kettleId = nil
+        event.trigger("Ashfall:UpdateAttachNodes", {campfire = campfire,})
     end
 }

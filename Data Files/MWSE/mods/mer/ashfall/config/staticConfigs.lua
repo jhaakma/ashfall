@@ -565,4 +565,10 @@ this.heatSourceValues = {
     volcano_steam = 80,
 }
 
+this.kettles = {
+    ashfall_kettle = true,
+    ashfall_kettle_01 = true,
+    ashfall_kettle_02 = true,
+}
+
 return this

@@ -5,7 +5,8 @@ local tooltipsComplete = include("Tooltips Complete.interop")
 local objectIds = common.staticConfigs.objectIds
 local tooltipData = {
     { id = objectIds.firewood, description = "Fuel used at a campfire." },
-    { id = objectIds.kettle, description = "Use at a campfire to brew tea." },
+    { id = "ashfall_kettle", description = "A cheap but heavy iron kettle. Use at a campfire to brew tea." },
+    { id = "ashfall_kettle_02", description = "A light steel kettle. Use at a campfire to brew tea." },
     { id = objectIds.grill, description = "Use at a campfire to cook meat and vegetables." },
     { id = objectIds.cookingPot, description = "Use at a campfire to boil water and cook stews." },
     { id = objectIds.bedroll, description = "A portable bedroll for sleeping out in the wilderness. Provides decent warmth but it won't shelter you from the rain."},

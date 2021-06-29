@@ -25,23 +25,19 @@ local function registerDataValues(campfire)
 end
 
 local function registerCampfire(e)
-    -- local safeRef = tes3.makeSafeObjectHandle(e.reference)
-    -- event.register("enterFrame", function()
-    --     if not safeRef:valid() then return end
-        if e.reference.disabled then return end
-        local dynamicConfig = campfireConfig.getConfig(e.reference.object.id)
-        local isActivator = activatorConfig.list.campfire:isActivator(e.reference.object.id)
-        local initialised = e.reference.data and e.reference.data.campfireInitialised
-        if dynamicConfig and isActivator and not initialised then  
-            local campfire = e.reference
-            common.log:debug("registerCampfire %s", campfire.object.id)
-            campfire.data.campfireInitialised = true
-            campfire.data.dynamicConfig = dynamicConfig
+    if e.reference.disabled then return end
+    local dynamicConfig = campfireConfig.getConfig(e.reference.object.id)
+    local isActivator = activatorConfig.list.campfire:isActivator(e.reference.object.id)
+    local initialised = e.reference.data and e.reference.data.campfireInitialised
+    if dynamicConfig and isActivator and not initialised then  
+        local campfire = e.reference
+        common.log:debug("registerCampfire %s", campfire.object.id)
+        campfire.data.campfireInitialised = true
+        campfire.data.dynamicConfig = dynamicConfig
 
-            registerDataValues(campfire)
-            event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})
-            event.trigger("Ashfall:registerReference", { reference = campfire})
-        end
-    -- end,{ doOnce = true })
+        registerDataValues(campfire)
+        event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})
+        event.trigger("Ashfall:registerReference", { reference = campfire})
+    end
 end
 event.register("referenceSceneNodeCreated", registerCampfire)
