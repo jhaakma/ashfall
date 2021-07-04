@@ -111,6 +111,8 @@ this.placementConfig = {
     ashfall_rug_02 = { maxSteepness = 1, drop = -2 },
     ashfall_rug_03 = { maxSteepness = 1, drop = -2 },
     ashfall_rug_04 = { maxSteepness = 1, drop = -2 },
+
+    ashfall_crabpot_01_m = { maxSteepness = 1, drop = 25 }
 }
 
 this.capacities = {

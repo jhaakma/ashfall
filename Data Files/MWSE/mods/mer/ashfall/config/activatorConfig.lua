@@ -173,7 +173,6 @@ this.list.keg = Activator:new{
     type = this.types.waterSource,
     mcmSetting = nil,
     ids = {
-        ["ashfall_kegstand_00"] = true,
         ["kegstand"] = true,
         ["furn_com_kegstand"] = true,
         ["furn_de_kegstand"] = true,

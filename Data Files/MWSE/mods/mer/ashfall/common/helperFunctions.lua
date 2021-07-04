@@ -72,7 +72,8 @@ function this.checkRefSheltered(reference)
         direction = {0, 0, 1},
         findAll = true,
         maxDistance = 5000,
-        ignore = {reference}
+        ignore = {reference},
+        useBackTriangles = true,
     }
     if results then
         for _, result in ipairs(results) do
@@ -108,6 +109,11 @@ function this.getRefUnderwater(reference)
     return reference.position.z < waterLevel
 end
 
+function this.getDepthUnderwater(reference)
+    local waterLevel = reference.cell.waterLevel or 0
+    return waterLevel - reference.position.z
+end
+
 --TODO: Null needs to fix collision crashes on Disable/Delete
 function this.yeet(ref, no)
     if no then
@@ -116,6 +122,8 @@ function this.yeet(ref, no)
     ref:disable()
     mwscript.setDelete{ reference = ref}
 end
+
+
 
 --[[
     Moves the player, designed for short movements 

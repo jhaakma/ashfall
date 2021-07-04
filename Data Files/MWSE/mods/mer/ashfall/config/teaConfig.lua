@@ -318,7 +318,7 @@ this.teaTypes["ingred_moon_sugar_01"] = {
 --Mournhold teas----------------
 
 --Mournhold
-this.teaTypes["Ingred_golden_sedge_01"] = {
+this.teaTypes["ingred_golden_sedge_01"] = {
     teaName = "Golden Sedge Tea",
     teaDescription = "A favourite among fighters, Golden Sedge tea increases attack power.",
     effectDescription = "Fortify Attack Power 10 Points",
@@ -336,7 +336,7 @@ this.teaTypes["Ingred_golden_sedge_01"] = {
 }
 
 --Mournhold
-this.teaTypes["Ingred_meadow_rye_01"] = { 
+this.teaTypes["ingred_meadow_rye_01"] = { 
     teaName = "Meadow Rye Tea",
     teaDescription = "Tea brewed from Meadow Rye acts as a powerful stimulant, increasing one's speed.",
     effectDescription = "Fortify Speed 5 Points",
@@ -355,7 +355,7 @@ this.teaTypes["Ingred_meadow_rye_01"] = {
 }
 
 --Mournhold
-this.teaTypes["Ingred_noble_sedge_01"] = {
+this.teaTypes["ingred_noble_sedge_01"] = {
     teaName = "Noble Sedge Tea",
     teaDescription = "A rare beverage, prized among Acrobats, the Noble Sedge tea improves one's Agility.",
     effectDescription = "Fortify Agility 10 Points",
@@ -374,7 +374,7 @@ this.teaTypes["Ingred_noble_sedge_01"] = {
 }
 
 --Mournhold
-this.teaTypes["Ingred_timsa-come-by_01"] = {
+this.teaTypes["ingred_timsa-come-by_01"] = {
     teaName = "Timsa-come-by Tea",
     teaDescription = "Tea brewed from this rare plant makes one highly resistant to paralysis.",
     effectDescription = "Resist Paralysis 40 Points",

@@ -74,18 +74,6 @@ local function onSkillsReady()
         }
     )
 
-    -- skillModule.registerSkill(
-    --     "Ashfall:Cooking", 
-    --     {    
-    --         name = "Cooking", 
-    --         icon = "Icons/ashfall/cooking.dds",
-    --         value = this.skillStartValue,
-    --         attribute = tes3.attribute.intelligence,
-    --         description = "The cooking skill determines your effectiveness at cooking meals. The higher your cooking skill, the higher the nutritional value of cooked meats and vegetables, and the stronger the buffs given by stews. A higher cooking skill also increases the time before food will burn on a grill.",
-    --         specialization = tes3.specialization.magic
-    --     }
-    -- )
-
     this.skills.survival = skillModule.getSkill("Ashfall:Survival")
     --this.skills.cooking = skillModule.getSkill("Ashfall:Cooking")
 

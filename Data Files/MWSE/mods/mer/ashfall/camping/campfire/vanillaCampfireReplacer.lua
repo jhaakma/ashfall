@@ -394,12 +394,13 @@ local function replaceCampfire(e)
 
             table.insert(data.ignoreList, campfire)
 
+            local rootHeight = vanillaConfig.rootHeight * campfire.scale
 
             local orientedCorrectly = common.helper.orientRefToGround{ 
                 ref = campfire, 
                 maxSteepness = (data.hasPlatform and 0.0 or 0.2),
                 ignoreList = data.ignoreList,
-                rootHeight = vanillaConfig.rootHeight,
+                rootHeight = rootHeight,
                 ignoreNonStatics = true,
                 ignoreBB = true
             }
@@ -408,7 +409,7 @@ local function replaceCampfire(e)
                 common.helper.removeLight(e.reference.sceneNode)
                 local vanillaBB = e.reference.sceneNode:createBoundingBox(e.reference.scale)
                 local vanillaHeight = vanillaBB.min.z
-                local campfireHeight = campfire.position.z -  vanillaConfig.rootHeight
+                local campfireHeight = campfire.position.z - rootHeight
                 local heightDiff = campfireHeight - vanillaHeight
                 common.log:debug("Failed to orient, setting height based on bounding box")
                 campfire.position = {
