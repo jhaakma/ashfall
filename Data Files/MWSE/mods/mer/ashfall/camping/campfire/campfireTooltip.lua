@@ -39,7 +39,7 @@ local function updateTooltip(e)
             centerText(fuelLabel)
         end
     elseif label.text == "Kettle" or label.text == "Cooking Pot" then
-        local waterAmount = campfire.data.waterAmount
+        local waterAmount = campfire.data.waterAmount or 0
         if waterAmount then
             --WATER
             local waterHeat = campfire.data.waterHeat or 0
@@ -47,7 +47,7 @@ local function updateTooltip(e)
                 text = string.format(
                     "Water: %d/%d %s| Heat: %d/100", 
                     math.ceil(waterAmount), 
-                    common.staticConfigs.capacities[campfire.data.utensil], 
+                    campfire.data.waterCapacity, 
                     ( campfire.data.waterType == "dirty" and "(Dirty) " or ""),
                     waterHeat)
             }

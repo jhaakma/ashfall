@@ -46,7 +46,11 @@ local overrides = {
 
     --cooking equipment
     ["misc_com_bucket_metal"] = {
-        weight = 7,
+        name = "Bucket: Metal",
+        value = 15
+    },
+    ["misc_com_bucket_01"] = {
+        name = "Bucket: Wood",
         value = 15
     },
     ["misc_com_iron_ladle"] = {

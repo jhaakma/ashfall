@@ -116,7 +116,7 @@ this.placementConfig = {
 }
 
 this.capacities = {
-    cookingPot = 120,
+    --cookingPot = 120,
     kettle = 100,
     potion = 15,
     MAX = 240
@@ -567,10 +567,36 @@ this.heatSourceValues = {
     volcano_steam = 80,
 }
 
-this.kettles = {
-    ashfall_kettle = true,
-    ashfall_kettle_01 = true,
-    ashfall_kettle_02 = true,
+
+
+this.utensils = {
+    ashfall_kettle = { 
+        type = "kettle", 
+        capacity = 120
+    },
+    ashfall_kettle_01 = { 
+        type = "kettle", 
+        capacity = 120 
+    },
+    ashfall_kettle_02 = { 
+        type = "kettle", 
+        capacity = 120 
+    },
+    misc_com_bucket_metal = {
+        type = "cookingPot",
+        meshOverride = "ashfall\\bucket_metal.nif",
+        capacity = 150
+    },
+    misc_com_bucket_01 = {
+        type = "cookingPot",
+        meshOverride = "ashfall\\bucket_wooden.nif",
+        capacity = 140
+    },
+    ashfall_cooking_pot = {
+        type = "cookingPot",
+        capacity = 200
+    },
 }
+
 
 return this

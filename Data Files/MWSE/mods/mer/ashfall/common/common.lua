@@ -144,15 +144,7 @@ local function initData()
 end
 
 local function doUpgrades()
-    this.log:debug("Doing upgrades from previous version")
-    local cookingPotCount = mwscript.getItemCount{ reference = tes3.player, item = "ashfall_cooking_pot"}
-    if cookingPotCount and cookingPotCount >= 1 then
-        this.log:debug("Found cooking pots in inventory")
-        mwscript.removeItem{ reference = tes3.player, item = "ashfall_cooking_pot", count = cookingPotCount }
-        mwscript.addItem{ reference = tes3.player, item = "Misc_Com_Bucket_Metal", count = cookingPotCount }
-        mwscript.addItem{ reference = tes3.player, item = "misc_com_iron_ladle", count = cookingPotCount }
-        tes3.messageBox("[Ashfall] Your cooking pots have been replaced with a metal bucket and ladle.")
-    end
+    --this.log:debug("Doing upgrades from previous version")
 end
 
 --INITIALISE COMMON--

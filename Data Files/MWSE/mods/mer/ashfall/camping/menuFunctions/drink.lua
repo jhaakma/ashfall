@@ -33,7 +33,7 @@ return {
         local tooHotToDrink =  hasWaterAmount(campfire) 
             and (not hasStew(campfire))
             and isBoiling(campfire) 
-        if tooHotToDrink then 
+        if tooHotToDrink and not campfire.data.ladle then 
             return false 
         end
         return true
@@ -45,7 +45,7 @@ return {
         local function doDrink()
             --tes3.playSound{ reference = tes3.player, sound = "Swallow" }
 
-            local amountToDrink = math.min(common.staticConfigs.capacities[campfire.data.utensil], campfire.data.waterAmount)
+            local amountToDrink = math.min(campfire.data.waterCapacity, campfire.data.waterAmount)
             local amountDrank = thirstController.drinkAmount{ amount = amountToDrink, waterType = campfire.data.waterType,}
             campfire.data.waterAmount = campfire.data.waterAmount - amountDrank
             if campfire.data.teaProgress and campfire.data.teaProgress >= 100 then

@@ -111,11 +111,12 @@ end
 
 --Update the water level of the cooking pot
 local function updateWaterHeight(campfire)
+    if not campfire.data.waterCapacity then return end
     local scaleMax = 1.3
     local heightMax = 28
     local waterLevel = campfire.data.waterAmount or 0
-    local scale = math.min(math.remap(waterLevel, 0, common.staticConfigs.capacities.cookingPot, 1, scaleMax), scaleMax )
-    local height = math.min(math.remap(waterLevel, 0, common.staticConfigs.capacities.cookingPot, 0, heightMax), heightMax)
+    local scale = math.min(math.remap(waterLevel, 0, campfire.data.waterCapacity, 1, scaleMax), scaleMax )
+    local height = math.min(math.remap(waterLevel, 0, campfire.data.waterCapacity, 0, heightMax), heightMax)
 
     local waterNode = campfire.sceneNode:getObjectByName("POT_WATER")
     if waterNode then
@@ -127,22 +128,33 @@ local function updateWaterHeight(campfire)
         stewNode.translation.z = height
         stewNode.scale = scale
     end
+    local steamNode = campfire.sceneNode:getObjectByName("POT_STEAM") 
+    if steamNode then
+        steamNode.translation.z = height
+    end
 end
 
 --Update the size of the steam coming off a cooking pot
 local function updateSteamScale(campfire)
-    local hasSteam = ( 
-        campfire.data.utensil == "cookingPot" and 
-        campfire.data.waterHeat and
-        campfire.data.waterHeat >= common.staticConfigs.hotWaterHeatValue
-    )
-    if hasSteam then
-        local steamScale = math.min(math.remap(campfire.data.waterHeat, common.staticConfigs.hotWaterHeatValue
-    , 100, 0.5, 1.0), 1.0)
-        local steamNode = campfire.sceneNode:getObjectByName("POT_STEAM")
-        if steamNode then steamNode = steamNode.children[1] end
-        steamNode.scale = steamScale
-    end
+    -- local hasSteam = ( 
+    --     campfire.data.utensil == "cookingPot" and 
+    --     campfire.data.waterHeat and
+    --     campfire.data.waterHeat >= common.staticConfigs.hotWaterHeatValue
+    -- )
+    -- if hasSteam then
+    --     local steamScale = math.min(math.remap(campfire.data.waterHeat, common.staticConfigs.hotWaterHeatValue
+    -- , 100, 0.5, 1.0), 1.0)
+    --     local steamNode = campfire.sceneNode:getObjectByName("POT_STEAM")
+    --     if steamNode then steamNode = steamNode.children[1] end
+    --     steamNode.scale = steamScale
+
+        -- local potSteam = campfire.sceneNode:getObjectByName("POT_STEAM") 
+        -- if potSteam then
+        --     local steamScale = math.min(math.remap(campfire.data.waterHeat, common.staticConfigs.hotWaterHeatValue, 100, 0.1, 1.0), 1.0)
+        --     local materialProperty = potSteam:getObjectByName("SuperSpray"):getProperty(0x2)
+        --     materialProperty.alpha = steamScale
+        -- end
+    -- end
 end
 
 --Update the collision box of the campfire
@@ -212,17 +224,17 @@ local function moveOriginToAttachPoint(node)
 end
 
 local function updateAttachNodes(e)
-    common.log:debug("Ashfall:UpdateAttachNodes")
+    common.log:trace("Ashfall:UpdateAttachNodes")
     local campfire = e.campfire
     local sceneNode = campfire.sceneNode
     local hangNode = sceneNode:getObjectByName("HANG_UTENSIL")
-    local utensil = campfire.data.kettleId or "ashfall_kettle"
+    local utensil = campfire.data.utensilId
     if hangNode then
         common.log:trace("has hangNode")
         common.log:trace("children: %s", #hangNode.children)
-        if campfire.data.utensil == "kettle" then
+        if campfire.data.utensil and utensil then
             if not idToNameMappings[campfire.data.utensil] then 
-                common.log:trace("No valid utensil type set on data.utensil")
+                common.log:error("No valid utensil type set on data.utensil")
                 return 
             end
             common.log:trace("Has utensil")
@@ -233,7 +245,12 @@ local function updateAttachNodes(e)
                 end
                 
                 common.log:trace("utensil is a valid object")
-                local mesh = tes3.loadMesh(utensilObj.mesh):clone()
+                local utensilData = common.staticConfigs.utensils[utensil:lower()]
+                if not utensilData then
+                    common.log:error("%s is not a valid utensil, but was set to campfire.data.utensilId")
+                end
+                local meshId = utensilData and utensilData.meshOverride or utensilObj.mesh
+                local mesh = tes3.loadMesh(meshId):clone()
                 mesh.name = idToNameMappings[campfire.data.utensil]
                 moveOriginToAttachPoint(mesh)
                 hangNode:attachChild(mesh)

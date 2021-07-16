@@ -202,6 +202,7 @@ local function clearUtensilData(e)
     if e.removeUtensil then
         campfire.data.utensil = nil
         campfire.data.ladle = nil
+        campfire.data.utensilId = nil
     end
     if not e.isContainer then
         tes3.removeSound{ 

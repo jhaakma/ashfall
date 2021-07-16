@@ -29,21 +29,22 @@ end
 
 
 local function addIngredient(e)
+    local campfire = e.campfire
     --Cool down stew
-    e.campfire.data.stewProgress = e.campfire.data.stewProgress or 0
-    e.campfire.data.stewProgress = math.max(( e.campfire.data.stewProgress - stewIngredientCooldownAmount ), 0)
+    campfire.data.stewProgress = campfire.data.stewProgress or 0
+    campfire.data.stewProgress = math.max(( campfire.data.stewProgress - stewIngredientCooldownAmount ), 0)
 
     --initialise stew levels
-    e.campfire.data.stewLevels = e.campfire.data.stewLevels or {}
-    e.campfire.data.stewLevels[e.foodType] = e.campfire.data.stewLevels[e.foodType] or 0
+    campfire.data.stewLevels = campfire.data.stewLevels or {}
+    campfire.data.stewLevels[e.foodType] = campfire.data.stewLevels[e.foodType] or 0
     --Add ingredient to stew
-    common.log:trace("old stewLevel: %s", e.campfire.data.stewLevels[e.foodType])
-    local waterRatio = e.campfire.data.waterAmount / common.staticConfigs.capacities.cookingPot
+    common.log:trace("old stewLevel: %s", campfire.data.stewLevels[e.foodType])
+    local waterRatio = campfire.data.waterAmount / campfire.data.waterCapacity
     common.log:trace("waterRatio: %s", waterRatio)
     local ingredAmountToAdd = e.amount * common.staticConfigs.stewIngredAddAmount / waterRatio
     common.log:trace("ingredAmountToAdd: %s", ingredAmountToAdd)
-    e.campfire.data.stewLevels[e.foodType] = math.min(e.campfire.data.stewLevels[e.foodType] + ingredAmountToAdd, 100)
-    common.log:trace("new stewLevel: %s", e.campfire.data.stewLevels[e.foodType])
+    campfire.data.stewLevels[e.foodType] = math.min(campfire.data.stewLevels[e.foodType] + ingredAmountToAdd, 100)
+    common.log:trace("new stewLevel: %s", campfire.data.stewLevels[e.foodType])
 
     common.skills.survival:progressSkill(skillSurvivalStewIngredIncrement*e.amount)
     tes3.player.object.inventory:removeItem{
@@ -76,7 +77,7 @@ local function ingredientSelect(campfire, foodType)
                 common.data.inventorySelectStew = nil
                 if e.item then
                     common.log:debug("Selecting ingredient amount for stew")
-                    local waterRatio = campfire.data.waterAmount / common.staticConfigs.capacities.cookingPot
+                    local waterRatio = campfire.data.waterAmount / campfire.data.waterCapacity
                     local stewLevel = (campfire.data.stewLevels and campfire.data.stewLevels[foodType] or 0)
                     local adjustedIngredAmount = common.staticConfigs.stewIngredAddAmount / waterRatio
                     common.log:debug("adjustedIngredAmount: %s", adjustedIngredAmount)

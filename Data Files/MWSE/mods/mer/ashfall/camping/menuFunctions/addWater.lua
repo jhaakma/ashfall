@@ -5,7 +5,7 @@ return {
     showRequirements = function(campfire)
         local needsWater = (
             not campfire.data.waterAmount or
-            campfire.data.waterAmount < common.staticConfigs.capacities[campfire.data.utensil]
+            campfire.data.waterAmount < campfire.data.waterCapacity
         )
         local hasUtensil = (
             campfire.data.utensil == "kettle" or 
@@ -36,7 +36,7 @@ return {
                 callback = function(e)
                     if e.item then
                         local waterInbottle = e.itemData.data.waterAmount or 0
-                        local potCapacity = common.staticConfigs.capacities[campfire.data.utensil]
+                        local potCapacity = campfire.data.waterCapacity
                         local waterInPot = campfire.data.waterAmount or 0
                         local capacityRemainingInPot = potCapacity - waterInPot
                         local maxAmount = math.min(waterInbottle,capacityRemainingInPot)

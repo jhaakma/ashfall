@@ -298,6 +298,12 @@ local function createNeedsTooltip(e)
             end
         end
     end
+
+    --Utensil tooltips
+    local utensilData = common.staticConfigs.utensils[e.object.id:lower()]
+    if utensilData and utensilData.capacity then
+        common.helper.addLabelToTooltip(tooltip, string.format("Capacity: %d", utensilData.capacity))
+    end
 end
 
 event.register('uiObjectTooltip', createNeedsTooltip)

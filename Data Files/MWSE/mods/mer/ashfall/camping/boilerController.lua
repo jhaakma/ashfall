@@ -45,7 +45,7 @@ local function updateBoilers(e)
                 end
 
                 --Amount of water determines how quickly it boils
-                local filledAmount = boilerRef.data.waterAmount / common.staticConfigs.capacities[boilerRef.data.utensil]
+                local filledAmount = boilerRef.data.waterAmount / boilerRef.data.waterCapacity
                 common.log:trace("BOILER filledAmount: %s", filledAmount)
                 local filledAmountEffect = math.remap(filledAmount, 0.0, 1.0, maxSpeedForCapacity, 1.0)
                 common.log:trace("BOILER filledAmountEffect: %s", filledAmountEffect)

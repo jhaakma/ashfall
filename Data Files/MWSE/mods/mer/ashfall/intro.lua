@@ -28,6 +28,7 @@ function this.doOverrides()
         local item = tes3.getObject(id)
         if item then
             common.log:trace("Overriding values for %s", item.id)
+            item.name = override.name or item.name
             item.value = override.value or item.value
             item.weight = override.weight or item.weight
         else
@@ -168,7 +169,7 @@ local function checkCharGen()
             callback = this.startAshfall
         }
         if config.startingEquipment then
-            mwscript.addItem{reference=tes3.player, item="misc_com_bucket_metal"}
+            mwscript.addItem{reference=tes3.player, item="misc_com_bucket_01"}
             mwscript.addItem{reference=tes3.player, item="misc_com_bottle_10"}
             mwscript.addItem{reference=tes3.player, item="ashfall_bedroll"}
             mwscript.addItem{reference=tes3.player, item="ashfall_woodaxe"}
