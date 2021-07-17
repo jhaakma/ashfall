@@ -69,17 +69,9 @@ return {
                 message = "This water is dirty.",
                 buttons = {
                     { 
-                        text = "Drink", 
+                        text = "Drink Anyway", 
                         callback = function() doDrink() end 
                     },
-                    { 
-                        text = utensilText, 
-                        callback = function()
-                            tes3.playSound{ reference = tes3.player, pitch = 0.8, sound = "Swim Left"} 
-                            event.trigger("Ashfall:Campfire_clear_utensils", { campfire = campfire})
-                            --event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})
-                        end
-                    }
                 },
                 doesCancel = true,
             }

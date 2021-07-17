@@ -2,13 +2,16 @@ local common = require ("mer.ashfall.common.common")
 return {
     text = "Remove Supports",
     showRequirements = function(campfire)
-        return ( 
-            campfire.data.dynamicConfig and
-            campfire.data.dynamicConfig.supports == "dynamic" and
-            campfire.data.hasSupports and 
-            campfire.data.utensil == nil --and
-        )
+        return campfire.data.dynamicConfig
+            and campfire.data.dynamicConfig.supports == "dynamic"
+            and campfire.data.hasSupports
     end,
+    enableRequirements = function(campfire)
+        return campfire.data.utensil == nil
+    end,
+    tooltipDisabled = { 
+        text = "Utensil must be removed first."
+    },
     callback = function(campfire)
         mwscript.addItem{
             reference = tes3.player, 

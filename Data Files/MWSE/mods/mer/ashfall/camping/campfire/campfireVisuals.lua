@@ -113,6 +113,7 @@ end
 local function updateWaterHeight(campfire)
     if not campfire.data.waterCapacity then return end
     local scaleMax = 1.3
+    local minSteamHeight = 18
     local heightMax = 28
     local waterLevel = campfire.data.waterAmount or 0
     local scale = math.min(math.remap(waterLevel, 0, campfire.data.waterCapacity, 1, scaleMax), scaleMax )
@@ -130,7 +131,7 @@ local function updateWaterHeight(campfire)
     end
     local steamNode = campfire.sceneNode:getObjectByName("POT_STEAM") 
     if steamNode then
-        steamNode.translation.z = height
+        steamNode.translation.z = math.max(height, minSteamHeight)
     end
 end
 

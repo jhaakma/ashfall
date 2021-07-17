@@ -41,7 +41,7 @@ return {
                         local capacityRemainingInPot = potCapacity - waterInPot
                         local maxAmount = math.min(waterInbottle,capacityRemainingInPot)
                         --Default to 50 for clean water, a nice amount for a stew or tea
-                        local amount = math.min(maxAmount, 50)
+                        local amount = math.min(maxAmount, 100)
                         --Default to fill completely for dirty water, because we want to clean it all
                         if e.itemData.data.waterType == "dirty" then
                             amount = maxAmount

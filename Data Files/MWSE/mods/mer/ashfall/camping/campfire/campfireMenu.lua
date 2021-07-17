@@ -8,50 +8,51 @@ local buttonMapping = {
         "removeGrill",
     },
     ["Cooking Pot"] = {
+        --actions
         "drink",
-        "fillContainer",
         "eatStew",
         "companionEatStew",
-        "addLadle",
-        "removeLadle",
+        "fillContainer",
         "addIngredient",
         "addWater",
         "emptyPot",
-        -- "removePot",
+        --attach
+        "addLadle",
+        --remove
+        "removeLadle",
         "removeUtensil",
     },
     ["Kettle"] = {
+        --actions
         "drink",
         "brewTea",
-        "addWater",
         "fillContainer",
         "emptyKettle",
-        -- "removeKettle",
+        --attach
+        "addWater",
+        --remove
         "removeUtensil",
     },
     ["Supports"] = {
+        --attach
         "addUtensil",
-        -- "addKettle",
-        -- "addPot",
-        -- "removeKettle",
+        --remove
         "removeUtensil",
-        -- "removePot",
         "removeSupports",
     },
     ["Campfire"] = {
-        "addFirewood",
+        --actions
         "lightFire",
+        --attach
+        "addFirewood",
         "addSupports",
-        "removeSupports",
         "addGrill",
-        "removeGrill",
         "addUtensil",
-        -- "addKettle",
-        -- "addPot",
-        -- "removeKettle",
+        --remove
+        "removeSupports",
+        "removeGrill",
         "removeUtensil",
-        -- "removePot",
-        --"wait", -- replaced by cushions
+        --destroy
         "extinguish",
         "destroy",
     }

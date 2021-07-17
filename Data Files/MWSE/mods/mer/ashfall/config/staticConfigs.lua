@@ -596,6 +596,10 @@ this.utensils = {
         type = "cookingPot",
         capacity = 200
     },
+    ashfall_cooking_pot_steel = {
+        type = "cookingPot",
+        capacity = 200
+    },
 }
 
 
