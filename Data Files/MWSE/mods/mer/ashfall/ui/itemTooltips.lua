@@ -18,8 +18,8 @@ local tooltipData = {
     { id = objectIds.woodaxe, description = "An axe made for chopping wood. The hefty axehead is highly durable and can harvest firewood much faster than an axe made for combat." },
     { id = objectIds.pack_b, description = "A brown fur backpack of Nordic design." },
     { id = objectIds.pack_w, description = "A white fur backpack of Nordic design." },
-    { id = objectIds.pack_n, description = "A backpack made of netch leather." }
-
+    { id = objectIds.pack_n, description = "A backpack made of netch leather." },
+    { id = "ashfall_crabpot_01_m", description = "Place underwater and wait to catch crabs and harvest their meat. Catch crabs faster by placing it deep underwater, in an area populated by mudcrabs."}
     
 }
 
