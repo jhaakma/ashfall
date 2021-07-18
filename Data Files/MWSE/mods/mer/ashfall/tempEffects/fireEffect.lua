@@ -20,6 +20,8 @@ local fireValues = {
     torch = 12,
     fire = 18,
     flame = 20,
+    mc_campfire = 18,
+    mc_logfire = 18,
 }
 
 local heatDefault = 5
