@@ -210,7 +210,8 @@ event.register("simulate", updateVisuals)
 
 local idToNameMappings = {
     kettle = "Kettle",
-    cookingPot = "Cooking Pot"
+    cookingPot = "Cooking Pot",
+    grill = "Grill"
 }
 
 
@@ -229,33 +230,36 @@ local function updateAttachNodes(e)
     local campfire = e.campfire
     local sceneNode = campfire.sceneNode
     local hangNode = sceneNode:getObjectByName("HANG_UTENSIL")
-    local utensil = campfire.data.utensilId
+
+    --Hanging utensils
     if hangNode then
+        local utensilID = campfire.data.utensilId
         common.log:trace("has hangNode")
         common.log:trace("children: %s", #hangNode.children)
-        if campfire.data.utensil and utensil then
-            if not idToNameMappings[campfire.data.utensil] then 
+        if campfire.data.utensil and utensilID then
+            local name = idToNameMappings[campfire.data.utensil]
+            if not name then 
                 common.log:error("No valid utensil type set on data.utensil")
                 return 
             end
             common.log:trace("Has utensil")
-            local utensilObj = tes3.getObject(utensil)
+            local utensilObj = tes3.getObject(utensilID)
             if utensilObj then
                 if #hangNode.children > 0 then
                     hangNode:detachChildAt(1)
                 end
                 
                 common.log:trace("utensil is a valid object")
-                local utensilData = common.staticConfigs.utensils[utensil:lower()]
+                local utensilData = common.staticConfigs.utensils[utensilID:lower()]
                 if not utensilData then
                     common.log:error("%s is not a valid utensil, but was set to campfire.data.utensilId")
                 end
                 local meshId = utensilData and utensilData.meshOverride or utensilObj.mesh
                 local mesh = tes3.loadMesh(meshId):clone()
-                mesh.name = idToNameMappings[campfire.data.utensil]
+                mesh.name = name
                 moveOriginToAttachPoint(mesh)
                 hangNode:attachChild(mesh)
-                common.log:trace("Attached %s to campfire", utensil)
+                common.log:trace("Attached %s to campfire", utensilID)
             end
         else
             for i, childNode in ipairs(hangNode.children) do
@@ -265,9 +269,40 @@ local function updateAttachNodes(e)
                 end
             end
         end
-        campfire.sceneNode:update()
-        campfire.sceneNode:updateNodeEffects()
     end
+    local grillNode = sceneNode:getObjectByName("ATTACH_GRILL")
+    if grillNode then
+        local grillId = campfire.data.grillId
+        if grillId then
+            local name = idToNameMappings["grill"]
+            local grillObj = tes3.getObject(grillId)
+            if grillObj then
+                if #grillNode.children > 0 then
+                    grillNode:detachChildAt(1)
+                end
+                
+                local data = common.staticConfigs.grills[grillId:lower()]
+                if not data then
+                    common.log:error("%s is not a valid grill, but was set to campfire.data.grillId")
+                end
+                local meshId = data and data.meshOverride or grillObj.mesh
+                local mesh = tes3.loadMesh(meshId):clone()
+                mesh.name = name
+                grillNode:attachChild(mesh)
+                common.log:trace("Attached %s to campfire", grillId)
+            end
+        else
+            for i, childNode in ipairs(grillNode.children) do
+                if childNode then
+                    common.log:trace("removed utensil node")
+                    grillNode:detachChildAt(i)
+                end
+            end
+        end
+    end
+
+    campfire.sceneNode:update()
+    campfire.sceneNode:updateNodeEffects()
 end
 event.register("Ashfall:UpdateAttachNodes", updateAttachNodes)
 

@@ -45,6 +45,14 @@ local function registerCampfire(e)
                 e.reference.data.utensilId)
         end
 
+        local missingGrillId = e.reference.data.hasGrill
+            and e.reference.data.dynamicConfig  
+            and e.reference.data.dynamicConfig.grill == "dynamic"
+            and e.reference.data.grillId == nil
+        if missingGrillId then
+            e.reference.data.grillId = "ashfall_grill"
+        end
+
         if e.reference.data.utensilId ~= nil and e.reference.data.waterCapacity == nil then
             local data = common.staticConfigs.utensils[e.reference.data.utensilId]
             local capacity = data and data.capacity or 100

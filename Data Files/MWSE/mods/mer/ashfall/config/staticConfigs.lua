@@ -568,7 +568,6 @@ this.heatSourceValues = {
 }
 
 
-
 this.utensils = {
     ashfall_kettle = { 
         type = "kettle", 
@@ -600,6 +599,17 @@ this.utensils = {
         type = "cookingPot",
         capacity = 200
     },
+}
+
+this.grills = {
+    ashfall_grill = {
+        type = "grill",
+        meshOverride = "ashfall\\grill_attach.nif"
+    },
+    ashfall_grill_steel = {
+        type = "grill",
+        meshOverride = "ashfall\\grill_steel_attach.nif"
+    }
 }
 
 

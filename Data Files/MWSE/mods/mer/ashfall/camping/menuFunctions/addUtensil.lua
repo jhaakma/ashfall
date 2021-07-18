@@ -57,7 +57,7 @@ return {
         return false
     end,
     tooltipDisabled = { 
-        text = "Requires a kettle or cooking pot."
+        text = "You don't have any utensils."
     },
     callback = utensilSelect
 }
