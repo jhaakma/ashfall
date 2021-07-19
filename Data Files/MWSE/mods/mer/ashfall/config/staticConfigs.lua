@@ -569,15 +569,40 @@ this.heatSourceValues = {
 
 
 this.utensils = {
+    --iron
     ashfall_kettle = { 
+        type = "kettle", 
+        capacity = 150
+    },
+    --steel
+    ashfall_kettle_01 = { 
+        type = "kettle", 
+        capacity = 140
+    },
+    --ceramic
+    ashfall_kettle_02 = { 
         type = "kettle", 
         capacity = 120
     },
-    ashfall_kettle_01 = { 
+    --ashl
+    ashfall_kettle_03 = { 
+        type = "kettle", 
+        capacity = 130
+    },
+    --ashl blue
+    ashfall_kettle_04 = { 
+        type = "kettle", 
+        capacity = 130
+    },
+    ashfall_kettle_05 = { 
         type = "kettle", 
         capacity = 120 
     },
-    ashfall_kettle_02 = { 
+    ashfall_kettle_06 = { 
+        type = "kettle", 
+        capacity = 120 
+    },
+    ashfall_kettle_07 = { 
         type = "kettle", 
         capacity = 120 
     },
