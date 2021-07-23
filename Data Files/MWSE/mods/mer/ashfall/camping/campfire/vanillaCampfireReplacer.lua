@@ -10,30 +10,30 @@ local randomStuffChances = {
 
 local vanillaCampfires = {
     --Ugly ones
-    light_pitfire00 =  { supports = false, scale = 0.9, rootHeight = 5 },  
-    light_pitfire01 =  { supports = false, scale = 0.9, rootHeight = 5 },
-    _ser_pitfire =  { supports = false, scale = 0.9, rootHeight = 5 },
-    abtv_light_suryanfirepit = { supports = false, scale = 0.9, rootHeight = 5 },
+    light_pitfire00 =  { supports = false, scale = 0.9, rootHeight = 0 },  
+    light_pitfire01 =  { supports = false, scale = 0.9, rootHeight = 0 },
+    _ser_pitfire =  { supports = false, scale = 0.9, rootHeight = 0 },
+    abtv_light_suryanfirepit = { supports = false, scale = 0.9, rootHeight = 0 },
 
     --unlit supports
-    furn_de_firepit =  { supports = true, rootHeight = 85 },
+    furn_de_firepit =  { supports = true, rootHeight = 68 },
     --unlit
-    furn_de_firepit_01 =  { supports = false, rootHeight = 15 },
+    furn_de_firepit_01 =  { supports = false, rootHeight = 0 },
 
     --Supports
-    furn_de_firepit_f =  { supports = true, rootHeight = 85 },
-    furn_de_firepit_f_128 = { supports = true, rootHeight = 85 },
-    furn_de_firepit_f_200 = { supports = true, rootHeight = 85 },
-    furn_de_firepit_f_323 = { supports = true, rootHeight = 85 },
-    furn_de_firepit_f_400 = { supports = true, rootHeight = 85 },
+    furn_de_firepit_f =  { supports = true, rootHeight = 68 },
+    furn_de_firepit_f_128 = { supports = true, rootHeight = 68 },
+    furn_de_firepit_f_200 = { supports = true, rootHeight = 68 },
+    furn_de_firepit_f_323 = { supports = true, rootHeight = 68 },
+    furn_de_firepit_f_400 = { supports = true, rootHeight = 68 },
     --yurt
-    a_fire_big  = { supports = true, rootHeight = 85 },
-    a_fire_cooking  = { supports = true, rootHeight = 85 },
-    a_fire_doused  = { supports = true, rootHeight = 85 },
+    a_fire_big  = { supports = true, rootHeight = 68 },
+    a_fire_cooking  = { supports = true, rootHeight = 68 },
+    a_fire_doused  = { supports = true, rootHeight = 68 },
 
     --No Supports
-    furn_de_firepit_f_01 = { supports = false, rootHeight = 85 },
-    furn_de_firepit_f_01_400 = { supports = false, rootHeight = 85 },
+    furn_de_firepit_f_01 = { supports = false, rootHeight = 0 },
+    furn_de_firepit_f_01_400 = { supports = false, rootHeight = 0 },
 }
 
 --A list of shit that campfires can be composed of
@@ -97,7 +97,7 @@ local ignorePatterns = {
 
 local function addCookingPot(campfire)
     campfire.data.utensil = "cookingPot"
-    campfire.data.utensilId = table.choice{"misc_com_bucket_metal", "misc_com_bucket_01", "ashfall_cooking_pot"}
+    campfire.data.utensilId =  table.choice(table.keys(common.staticConfigs.cookingPots))
     campfire.data.waterCapacity = common.staticConfigs.utensils[campfire.data.utensilId].capacity
     campfire.data.dynamicConfig.cookingPot = "static"
 end
@@ -105,7 +105,7 @@ end
 local function addKettle(campfire)
     campfire.data.dynamicConfig.kettle = "static"
     campfire.data.utensil = "kettle"
-    campfire.data.utensilId = table.choice{"ashfall_kettle", "ashfall_kettle_02"}
+    campfire.data.utensilId = table.choice(table.keys(common.staticConfigs.kettles))
     campfire.data.waterCapacity = common.staticConfigs.utensils[campfire.data.utensilId].capacity
 end
 
@@ -138,7 +138,7 @@ local function attachRandomStuff(campfire)
     --If supports, add utensils
     if campfire.data.hasSupports then
         if campfire.data.utensil == nil and math.random() < randomStuffChances.utensil then
-            campfire.data.utensil = table.choice{ "kettle", "cookingPot"}
+            if math.random() < 0.5 then addKettle(campfire) else addCookingPot(campfire) end
             if math.random() < randomStuffChances.water then
                 campfire.data.waterAmount = 10 + math.random(50)
                 if campfire.data.isLit then
@@ -151,7 +151,6 @@ local function attachRandomStuff(campfire)
                 end
                 --add tea to kettleswaterHeat
                 if campfire.data.utensil == "kettle" then
-                    addKettle(campfire)
                     if math.random() < randomStuffChances.tea then
                         local teaType = table.choice(common.staticConfigs.teaConfig.validTeas)
                         campfire.data.waterType = teaType
@@ -159,7 +158,6 @@ local function attachRandomStuff(campfire)
                     end
                 --add random stew to cooking pots
                 elseif campfire.data.utensil == "cookingPot" then
-                    addCookingPot(campfire)
                     if math.random() < randomStuffChances.stew then
                         campfire.data.ladle = true
                         campfire.data.stewLevels = {}
@@ -382,7 +380,11 @@ local function replaceCampfire(e)
 
             local campfire = tes3.createReference{
                 object = replacement,
-                position = e.reference.position:copy(),
+                position = {
+                    e.reference.position.x,
+                    e.reference.position.y,
+                    e.reference.position.z - (vanillaConfig.rootHeight * e.reference.scale)
+                },
                 orientation = {
                     e.reference.orientation.x,
                     e.reference.orientation.y,
@@ -408,15 +410,17 @@ local function replaceCampfire(e)
 
             table.insert(data.ignoreList, campfire)
 
-            local rootHeight = vanillaConfig.rootHeight * campfire.scale
+            local rootHeight = 0 -- vanillaConfig.rootHeight * campfire.scale
 
             local orientedCorrectly = common.helper.orientRefToGround{ 
                 ref = campfire, 
                 maxSteepness = (data.hasPlatform and 0.0 or 0.2),
                 ignoreList = data.ignoreList,
-                rootHeight = rootHeight,
+                rootHeight = rootHeight+5,
                 ignoreNonStatics = true,
-                ignoreBB = true
+                ignoreBB = true,
+                --skipPosition = true
+                maxZ = 10
             }
             if not orientedCorrectly then
                 common.helper.removeCollision(e.reference.sceneNode)

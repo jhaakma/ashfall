@@ -796,9 +796,12 @@ function this.orientRefToGround(params)
         newOrientation.z = ref.orientation.z
         ref.orientation = newOrientation
     end
-    local function positionRef(ref, result)
+    local function positionRef(ref, result, maxZ)
         local bb = ref.object.boundingBox
         local offset = params.ignoreBB and 0 or bb.min.z
+        if maxZ then
+            offset = math.clamp(offset, -maxZ, maxZ)
+        end
         ref.position = { ref.position.x, ref.position.y, result.intersection.z - offset }
     end
     
@@ -824,8 +827,12 @@ function this.orientRefToGround(params)
         terrainOnly = terrainOnly
     }
     if not result then return false end
-    orientRef(ref, result, maxSteepness)
-    positionRef(ref, result)
+    if not params.skipOrient then
+        orientRef(ref, result, maxSteepness)
+    end
+    if not params.skipPosition then
+        positionRef(ref, result, params.maxZ)
+    end
     return true
 end
 
