@@ -591,6 +591,11 @@ this.utensils = {
         type = "kettle", 
         capacity = 130
     },
+    --Ancient 6th house
+    ashfall_kettle_05 = { 
+        type = "kettle", 
+        capacity = 160
+    },
     misc_com_bucket_metal = {
         type = "cookingPot",
         meshOverride = "ashfall\\bucket_metal.nif",
