@@ -16,11 +16,16 @@ local backpacks = {
 
 local switchNodes = {
     SWITCH_AXE = {
-        items = { ashfall_woodaxe = true },
+        items = { 
+            ashfall_woodaxe = true,
+            ashfall_woodaxe_steel = true,
+        },
         blockEquip = true,
+        attachMesh = true
     },
     SWITCH_WOOD = {
-        items = {ashfall_firewood = true }
+        items = {ashfall_firewood = true },
+        attachMesh = true
     },
     SWITCH_TENT = {
         items = tentConfig.tentMiscToActiveMap,
@@ -32,7 +37,7 @@ local switchNodes = {
 local function registerBackpacks()
     pcall(function()
         tes3.addClothingSlot{slot=backpackSlot, name="Backpack"}
-        tes3.addArmorSlot{slot=backpackSlot, name="Backpack"}
+        --tes3.addArmorSlot{slot=backpackSlot, name="Backpack"}
     end)
     for id in pairs(backpacks) do
         local obj = tes3.getObject(id)
@@ -85,21 +90,24 @@ local function setSwitchNodes(e)
         if switchNode then
             local itemToAttach
             local index = 1
-            for item, _ in pairs(data.items) do
-                if ref.object.inventory:contains(item) then
-                    index = 0
-                    
-                    itemToAttach = item
-
-                    if data.blockEquip then
-                        for _, stack in pairs(e.reference.object.equipment) do
-                            if stack.object.id:lower() == item then
-                                index = 1
-                                break
-                            end
+            local isEquipped
+            if data.blockEquip then
+                for item, _ in pairs(data.items) do
+                    for _, stack in pairs(e.reference.object.equipment) do
+                        if stack.object.id:lower() == item then
+                            isEquipped = true
                         end
                     end
-                    break
+                end
+            end
+            if not isEquipped then
+                for item, _ in pairs(data.items) do
+                    if ref.object.inventory:contains(item) then
+                        index = 0
+                        
+                        itemToAttach = item
+                        break
+                    end
                 end
             end
             switchNode.switchIndex = index
@@ -107,7 +115,7 @@ local function setSwitchNodes(e)
             if data.attachMesh then
                 if itemToAttach then
                     common.log:trace("attaching item")
-                    attachItem(itemToAttach, switchNode.children[1])
+                    attachItem(itemToAttach, switchNode.children[1]:getObjectByName("ATTACH_NODE"))
                 else
                     detachMesh(switchNode.children[1])
                 end
