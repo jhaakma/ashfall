@@ -34,6 +34,7 @@ local function initialized()
         require("mer.ashfall.needs.diseasedMeat")
 
         require("mer.ashfall.camping.camping")
+        require("mer.ashfall.items.items")
         require("mer.ashfall.effects.frostbreath")
         require("mer.ashfall.effects.keybinds")
         require("mer.ashfall.ui.hud")

@@ -1,6 +1,7 @@
 
 local activatorController = require("mer.ashfall.activators.activatorController")
 local common = require("mer.ashfall.common.common")
+local woodAxeConfig = require("mer.ashfall.items.axe.config")
 local config = require("mer.ashfall.config.config").config
 local activatorConfig = common.staticConfigs.activatorConfig
 local lastRef
@@ -34,7 +35,7 @@ local function harvest(activator, weapon)
 
     local woodAxeMulti = 0.0
     local woodAxeConditionMulti = 1.0
-    if common.staticConfigs.woodAxes[weapon.object.id:lower()] then
+    if woodAxeConfig.woodAxes[weapon.object.id:lower()] then
         common.log:debug("Using a woodaxe, reducing condition damage and swings needed")
         woodAxeMulti = 0.5
         woodAxeConditionMulti = 0.1

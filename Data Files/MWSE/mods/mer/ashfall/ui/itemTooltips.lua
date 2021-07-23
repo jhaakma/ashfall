@@ -16,8 +16,8 @@ local tooltipData = {
     { id = "ashfall_kettle", description = "A large and heavy iron kettle. Use at a campfire to brew tea." },
     { id = "ashfall_kettle_01", description = "A large steel kettle. Use at a campfire to brew tea." },
     { id = "ashfall_kettle_02", description = "A small, beautiful ceramic kettle. Use at a campfire to brew tea." },
-    { id = "ashfall_kettle_03", description = "A red kettle with Ashlander markings. Use at a campfire to brew tea." },
-    { id = "ashfall_kettle_04", description = "A blue kettle with Ashlander markings. Use at a campfire to brew tea." },
+    { id = "ashfall_kettle_03", description = "A blue kettle with Ashlander markings. Use at a campfire to brew tea." },
+    { id = "ashfall_kettle_04", description = "A red kettle with Ashlander markings. Use at a campfire to brew tea." },
 
     --grills
     { id = "ashfall_grill", description = "A cheap but heavy iron grill. Use at a campfire to cook meat and vegetables." },

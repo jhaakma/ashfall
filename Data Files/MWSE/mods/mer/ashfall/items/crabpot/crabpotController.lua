@@ -69,7 +69,7 @@ end
 local function collectCrabs(ref)
     if ref.data.crabCount and ref.data.crabCount >= 1 then
         local count = math.floor(ref.data.crabCount)
-        local crabmeat = tes3.getObject("ingred_crab_meat_01")
+        local crabmeat = tes3.getObject("ingred_crab_meat_01")---@type tes3ingredient
         tes3.addItem{ reference = tes3.player, item = crabmeat, count = count }
         tes3.messageBox(tes3.findGMST(tes3.gmst.sNotifyMessage61).value, count, crabmeat.name)
         ref.data.crabCount = 0
@@ -138,7 +138,7 @@ local function onActivate(e)
                 callback = function()
                     pickup(ref)
                 end
-            },D
+            },
         },
         doesCancel = true
     }
@@ -162,7 +162,7 @@ local function initPotData(crabpot)
 end
 
 local function onGearDropped(e)
-    activePotId = getActiveFromMisc(e.reference)
+    local activePotId = getActiveFromMisc(e.reference)
     if activePotId and common.helper.getRefUnderwater(e.reference) then
         local position = e.reference.position:copy()
         local orientation = e.reference.orientation:copy()

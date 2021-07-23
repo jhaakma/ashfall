@@ -33,6 +33,7 @@ this.innkeeperClasses = {
     t_cyr_publican = true
 }
 
+
 this.maxSunTemp = 15
 
 --Campfire values
@@ -53,10 +54,6 @@ this.bedrolls = {
 }
 this.coveredBedrolls = {
     ashfall_cbroll_misc = true,
-}
-
-this.woodAxes = {
-    ashfall_woodaxe = true
 }
 
 --For placement magic
@@ -594,18 +591,6 @@ this.utensils = {
         type = "kettle", 
         capacity = 130
     },
-    ashfall_kettle_05 = { 
-        type = "kettle", 
-        capacity = 120 
-    },
-    ashfall_kettle_06 = { 
-        type = "kettle", 
-        capacity = 120 
-    },
-    ashfall_kettle_07 = { 
-        type = "kettle", 
-        capacity = 120 
-    },
     misc_com_bucket_metal = {
         type = "cookingPot",
         meshOverride = "ashfall\\bucket_metal.nif",
@@ -625,6 +610,16 @@ this.utensils = {
         capacity = 200
     },
 }
+
+this.kettles = {}
+this.cookingPots = {}
+for id, data in pairs(this.utensils) do
+    if data.type == "kettle" then
+        this.kettles[id] = data
+    elseif data.type == "cookingPot" then
+        this.cookingPots[id] = data
+    end
+end
 
 this.grills = {
     ashfall_grill = {
