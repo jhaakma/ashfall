@@ -102,7 +102,6 @@ local function callWaterMenu(e)
     timer.delayOneFrame(function()
         common.log:debug("common.data.drinkingRain = false drink")
         common.data.drinkingRain = false
-        common.data.drinkingWaterType = nil
     end)
 end
 event.register("Ashfall:WaterMenu", callWaterMenu)
