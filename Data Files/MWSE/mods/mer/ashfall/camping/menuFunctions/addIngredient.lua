@@ -93,7 +93,7 @@ local function ingredientSelect(campfire, foodType)
                     e.amount = 1
                     e.campfire = campfire
                     e.foodType = foodType
-                    if max > 1 then
+                    if max > 1 and not (e.itemData and e.itemData.data) then
                         common.helper.createSliderPopup{
                             label = "How many?",
                             min = 0,

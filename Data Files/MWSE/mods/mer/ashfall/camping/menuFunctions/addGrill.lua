@@ -14,7 +14,7 @@ end
 local function utensilSelect(campfire)
     timer.delayOneFrame(function()
         tes3ui.showInventorySelectMenu{
-            title = "Select Grill",
+            title = "Select Utensil",
             noResultsText = "You do not have any utensils.",
                 filter = function(e)
                     return common.staticConfigs.grills[e.item.id:lower()] ~= nil
@@ -29,7 +29,7 @@ local function utensilSelect(campfire)
 end
 
 return {
-    text = "Add Grill",
+    text = "Place Utensil",
     showRequirements = function(campfire)
         return (not campfire.data.grillId) 
             and (campfire.data.dynamicConfig 

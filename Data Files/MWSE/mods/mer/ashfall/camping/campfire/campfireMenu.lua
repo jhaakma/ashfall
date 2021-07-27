@@ -4,10 +4,10 @@ local common = require ("mer.ashfall.common.common")
     Mapping of which buttons can appear for each part of the campfire selected
 ]]
 local buttonMapping = {
-    ["Grill"] = {
+    ["grill"] = {
         "removeGrill",
     },
-    ["Cooking Pot"] = {
+    ["cookingPot"] = {
         --actions
         "drink",
         "eatStew",
@@ -22,7 +22,7 @@ local buttonMapping = {
         "removeLadle",
         "removeUtensil",
     },
-    ["Kettle"] = {
+    ["kettle"] = {
         --actions
         "drink",
         "brewTea",
@@ -33,25 +33,23 @@ local buttonMapping = {
         --remove
         "removeUtensil",
     },
-    ["Supports"] = {
+    ["supports"] = {
         --attach
         "addUtensil",
         --remove
         "removeUtensil",
         "removeSupports",
     },
-    ["Campfire"] = {
+    ["campfire"] = {
         --actions
         "lightFire",
         --attach
         "addFirewood",
         "addSupports",
         "addGrill",
-        "addUtensil",
         --remove
         "removeSupports",
         "removeGrill",
-        "removeUtensil",
         --destroy
         "extinguish",
         "destroy",
@@ -70,6 +68,7 @@ local function onActivateCampfire(e)
 
     local campfire = e.ref
     local node = e.node
+    local attachmentData = common.helper.getAttachmentLookingAt(campfire, node)
 
     local addButton = function(tbl, buttonData)
         local showButton = (
@@ -106,12 +105,14 @@ local function onActivateCampfire(e)
 
     local buttons = {}
     --Add contextual buttons
-    local buttonList = buttonMapping.Campfire
-    local text = "Campfire"
+    local buttonList = buttonMapping.campfire
+    
     --If looking at an attachment, show buttons for it instead
-    if buttonMapping[node.name] then
-        buttonList = buttonMapping[node.name]
-        text = node.name
+    local text
+    if buttonMapping[attachmentData.type] then
+        buttonList = buttonMapping[attachmentData.type]
+        text = common.helper.getGenericUtensilName(attachmentData.object) or "Campfire"
+        if attachmentData.type == "supports" then text = "Supports" end
     end
 
     for _, buttonType in ipairs(buttonList) do

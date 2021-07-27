@@ -38,7 +38,7 @@ local function utensilSelect(campfire)
 end
 
 return {
-    text = "Attach Utensil",
+    text = "Hang Utensil",
     showRequirements = function(campfire)
         return (
             campfire.data.hasSupports and

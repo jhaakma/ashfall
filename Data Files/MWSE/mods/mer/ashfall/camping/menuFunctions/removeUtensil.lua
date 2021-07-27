@@ -5,7 +5,11 @@ local function checkDynamicStatus(campfire)
 end
 
 return  {
-    text = "Remove Utensil",
+    text = function(campfire)
+        local utensilId = campfire.data.utensilId
+        local utensil = tes3.getObject(utensilId)
+        return string.format("Remove %s", common.helper.getGenericUtensilName(utensil) or "Utensil")
+    end,
     showRequirements = function(campfire)
         return  campfire.data.utensilId ~= nil
         and campfire.data.dynamicConfig 

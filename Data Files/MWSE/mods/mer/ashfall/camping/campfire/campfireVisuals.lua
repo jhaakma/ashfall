@@ -109,15 +109,23 @@ local function updateFireScale(campfire)
     end
 end
 
+local function getUtensilData(campfire)
+    local utensilId = campfire.data.utensilId
+    local utensilData = common.staticConfigs.utensils[utensilId]
+    return utensilData
+end
+
 --Update the water level of the cooking pot
 local function updateWaterHeight(campfire)
     if not campfire.data.waterCapacity then return end
-    local scaleMax = 1.3
-    local minSteamHeight = 18
-    local heightMax = 28
+    local utensilData = getUtensilData(campfire)
+    if not utensilData then return end
+    local minSteamHeight = utensilData.waterMaxScale or 18
+    local waterMaxScale = utensilData.waterMaxScale or 1.0
+    local waterMaxHeight = utensilData.waterMaxHeight or 20
     local waterLevel = campfire.data.waterAmount or 0
-    local scale = math.min(math.remap(waterLevel, 0, campfire.data.waterCapacity, 1, scaleMax), scaleMax )
-    local height = math.min(math.remap(waterLevel, 0, campfire.data.waterCapacity, 0, heightMax), heightMax)
+    local scale = math.min(math.remap(waterLevel, 0, campfire.data.waterCapacity, 1, waterMaxScale), waterMaxScale )
+    local height = math.min(math.remap(waterLevel, 0, campfire.data.waterCapacity, 0, waterMaxHeight), waterMaxHeight)
 
     local waterNode = campfire.sceneNode:getObjectByName("POT_WATER")
     if waterNode then

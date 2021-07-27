@@ -569,7 +569,7 @@ this.utensils = {
     --iron
     ashfall_kettle = { 
         type = "kettle", 
-        capacity = 150
+        capacity = 140
     },
     --steel
     ashfall_kettle_01 = { 
@@ -581,12 +581,12 @@ this.utensils = {
         type = "kettle", 
         capacity = 120
     },
-    --ashl
+    --ashl blue
     ashfall_kettle_03 = { 
         type = "kettle", 
         capacity = 130
     },
-    --ashl blue
+    --ashl red
     ashfall_kettle_04 = { 
         type = "kettle", 
         capacity = 130
@@ -594,25 +594,53 @@ this.utensils = {
     --Ancient 6th house
     ashfall_kettle_05 = { 
         type = "kettle", 
-        capacity = 160
+        capacity = 150
+    },
+    --Pewter / Small
+    ashfall_kettle_06 = { 
+        type = "kettle", 
+        capacity = 100
     },
     misc_com_bucket_metal = {
         type = "cookingPot",
         meshOverride = "ashfall\\bucket_metal.nif",
-        capacity = 150
+        capacity = 150,
+        waterMaxScale = 1.3,
+        waterMaxHeight = 28
     },
     misc_com_bucket_01 = {
         type = "cookingPot",
         meshOverride = "ashfall\\bucket_wooden.nif",
-        capacity = 140
+        capacity = 140,
+        waterMaxScale = 1.3,
+        waterMaxHeight = 28
     },
     ashfall_cooking_pot = {
         type = "cookingPot",
-        capacity = 200
+        capacity = 200,
+        waterMaxScale = 1.3,
+        waterMaxHeight = 28
+    },
+    ashfall_cooking_pot_iron = {
+        type = "cookingPot",
+        capacity = 230,
+        waterMaxScale = 1.3,
+        waterMaxHeight = 18,
     },
     ashfall_cooking_pot_steel = {
         type = "cookingPot",
-        capacity = 200
+        capacity = 200,
+        waterMaxScale = 1.3,
+        waterMaxHeight = 28
+    },
+
+    --RM's mod
+    dwrv_pan2 = {     
+        type = "cookingPot",
+        capacity = 230,
+        waterMaxScale = 1.3,
+        waterMaxHeight = 18,
+        meshOverride = "ashfall\\cooking_pot_iron.nif"
     },
 }
 
@@ -634,6 +662,21 @@ this.grills = {
     ashfall_grill_steel = {
         type = "grill",
         meshOverride = "ashfall\\grill_steel_attach.nif"
+    },
+    ashfall_fry_pan = {
+        type = "grill",
+        meshOverride = "ashfall\\fry_pan_01_attach.nif"
+    },
+
+    --RM's mod
+    dwrv_fry_pan = {
+        type = "grill",
+        meshOverride = "ashfall\\dwrv_fry_pan_attach.nif"
+    },
+    --Morrowind Crafting
+    mc_skillet = {
+        type = "grill",
+        meshOverride = "ashfall\\mc_skillet_attach.nif"
     }
 }
 

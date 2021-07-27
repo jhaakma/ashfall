@@ -18,14 +18,18 @@ local tooltipData = {
     { id = "ashfall_kettle_02", description = "A small, beautiful ceramic kettle. Use at a campfire to brew tea." },
     { id = "ashfall_kettle_03", description = "A blue kettle with Ashlander markings. Use at a campfire to brew tea." },
     { id = "ashfall_kettle_04", description = "A red kettle with Ashlander markings. Use at a campfire to brew tea." },
+    { id = "ashfall_kettle_05", description = "A rare kettle of unknown make and origin. Use at a campfire to brew tea." },
+    { id = "ashfall_kettle_06", description = "A small kettle of simple construction. Use at a campfire to brew tea." },
 
     --grills
     { id = "ashfall_grill", description = "A cheap but heavy iron grill. Use at a campfire to cook meat and vegetables." },
     { id = "ashfall_grill_steel", description = "A light steel grill. Use at a campfire to cook meat and vegetables." },
+    { id = "ashfall_fry_pan", description = "A small iron frying pan. Use at a campfire to cook meat and vegetables." },
    
     --cooking pots
     { id = "ashfall_cooking_pot", description = "This cooking pot is made of heavy copper. Use at a campfire to boil water and cook stews." },
     { id = "ashfall_cooking_pot_steel", description = "This cooking pot is made of a lightweight steel. Use at a campfire to boil water and cook stews." },
+    { id = "ashfall_cooking_pot_iron", description = "A large iron cooking pot. Use at a campfire to boil water and cook stews." },
     
 
     --backpacks

@@ -16,21 +16,9 @@ local function updateTooltip(e)
     local labelBorder = e.element
     local campfire = e.reference
     local parentNode = e.parentNode
-
-    --Do some fancy campfire stuff
-    local attachments = {
-        "Grill",
-        "Kettle",
-        "Cooking Pot",
-        "Supports",
-    }
-    local attachment = parentNode.name
-    if table.find(attachments, attachment) then
-        label.text = attachment
-    end
-
+    local lookingAt = common.helper.getAttachmentLookingAt(campfire, parentNode)
     --Add special fields
-    if label.text == "Campfire" and campfire.data.dynamicConfig and campfire.data.dynamicConfig.campfire == "dynamic" then
+    if lookingAt.type == "campfire" and campfire.data.dynamicConfig and campfire.data.dynamicConfig.campfire == "dynamic" then
         local fuelLevel = campfire.data.fuelLevel or 0
         if fuelLevel > 0 then
             local fuelLabel = labelBorder:createLabel{
@@ -38,7 +26,9 @@ local function updateTooltip(e)
             }
             centerText(fuelLabel)
         end
-    elseif label.text == "Kettle" or label.text == "Cooking Pot" then
+    elseif lookingAt.type == "cookingPot" or lookingAt.type == "kettle" then
+        label.text = common.helper.getGenericUtensilName(lookingAt.object) or "Campfire"
+
         local waterAmount = campfire.data.waterAmount or 0
         if waterAmount then
             --WATER
@@ -157,6 +147,11 @@ local function updateTooltip(e)
                 end
             end
         end
+    elseif lookingAt.type == "grill" then
+        local attachObj =  lookingAt.object
+        label.text = common.helper.getGenericUtensilName(attachObj) or "Campfire"
+    elseif lookingAt.type == "supports" then
+        label.text = "Supports"
     end
 end
 
