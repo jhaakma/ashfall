@@ -669,7 +669,7 @@ this.grills = {
     },
 
     --RM's mod
-    dwrv_fry_pan = {
+    dwrv_frying_pan = {
         type = "grill",
         meshOverride = "ashfall\\dwrv_fry_pan_attach.nif"
     },
