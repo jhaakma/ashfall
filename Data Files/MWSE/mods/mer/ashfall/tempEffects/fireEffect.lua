@@ -8,6 +8,7 @@ local this = {}
 local common = require("mer.ashfall.common.common")
 local staticConfigs = common.staticConfigs
 local activatorConfig = common.staticConfigs.activatorConfig
+local refController = require("mer.ashfall.referenceController")
 ---CONFIGS----------------------------------------
 --max distance where fire has an effect
 
@@ -24,7 +25,32 @@ local fireValues = {
     mc_logfire = 18,
 }
 
-local heatDefault = 5
+local function getHeatSourceValue(ref)
+    for pattern, value in pairs(fireValues) do
+        if string.find(string.lower(ref.object.id), pattern) then
+            return value
+        end
+    end
+end
+
+refController.registerReferenceController{
+    id = "heatSource",
+    requirements = function(_, ref)
+        local isLight = ref.baseObject.objectType == tes3.objectType.light
+        if isLight then
+            return getHeatSourceValue(ref) ~= nil
+        end
+        return false
+    end
+}
+
+refController.registerReferenceController{
+    id = "flame",
+    requirements = function(_, ref)
+        return activatorConfig.list.fire:isActivator(ref.object.id) == true
+    end
+}
+
 local maxFirepitHeat = 40
 local maxDistance = 340
 --Multiplier when warming hands next to firepit
@@ -49,61 +75,70 @@ local function checkWarmHands()
     end
 end
 
+local function getDistance(ref)
+    return tes3.player.position:distance(ref.position)
+end
+
+local function getHeatAtDistance(maxHeat, distance)
+    return math.remap( distance, maxDistance, 0,  0, maxHeat )
+end
+
 function this.calculateFireEffect()
     if not staticConfigs.conditionConfig.temp:isActive() then return end
     local totalHeat = 0
     local closeEnough
     common.data.nearCampfire = false
-    for _, cell in pairs( tes3.getActiveCells() ) do
-        for ref in cell:iterateReferences(tes3.objectType.light) do
-            if not ref.disabled then
-            --if ref.object.isFire then
-                local distance = mwscript.getDistance({reference = "player", target = ref})
-                if distance < maxDistance then
-                    local maxHeat = heatDefault
-                    --Firepits have special logic for hand warming
-                    
-                    if activatorConfig.list.campfire:isActivator(ref.object.id) then
-                        if ref.data.isLit then
-                            local fuel = ref.data.fuelLevel
-                            if fuel then
-                                common.data.nearCampfire = true
-                                maxHeat = math.clamp(math.remap(fuel, 0, 10, 20, 60), 0, 60)
-                                closeEnough = true
-                        
-                                checkWarmHands()
-                                if warmingHands then
-                                    maxHeat = maxHeat * warmHandsBonus 
-                                end
-                            else 
-                                maxHeat = 0
-                            end
-                        else
-                            maxHeat = 0
-                        end
-                    elseif activatorConfig.list.fire:isActivator(ref.object.id) then
-                        maxHeat = maxFirepitHeat
-                        closeEnough = true
-                        
-                        checkWarmHands()
-                        if warmingHands then
-                            maxHeat = maxHeat * warmHandsBonus
-                        end
-                    --other fires
-                    else
-                        for pattern, heatValue in pairs(fireValues) do
-                            if string.find(string.lower(ref.object.id), pattern) then
-                                maxHeat = heatValue
-                                --common.log:info("Fire source: %s", ref.object.id)
-                            end
-                        end
-                    end
-                    local heat = math.remap( distance, maxDistance, 0,  0, maxHeat )
-                    totalHeat = totalHeat + heat
-                end
+
+    local function doCampfireHeat(ref)
+        local distance = getDistance(ref)
+
+        local isValid = distance < maxDistance
+            and (not ref.disabled)
+            and ref.data.isLit
+        
+        if isValid then
+            --For survival skill
+            common.data.nearCampfire = true
+            local fuel = ref.data.fuelLevel or 0
+            local heatAtMaxDistance = math.clamp(math.remap(fuel, 0, 10, 20, 60), 0, 60)
+            checkWarmHands()
+            if warmingHands then
+                heatAtMaxDistance = heatAtMaxDistance * warmHandsBonus 
             end
+            local heatAtThisDistance = getHeatAtDistance(heatAtMaxDistance, distance)
+            totalHeat = totalHeat + heatAtThisDistance
+
+            closeEnough = true
         end
     end
+    common.helper.iterateRefType("campfire", doCampfireHeat)
+
+    local function doFlameHeat(ref)
+        local distance = getDistance(ref)
+        if (distance < maxDistance) and not ref.disabled then
+            local heatAtMaxDistance = maxFirepitHeat
+            checkWarmHands()
+            if warmingHands then
+                heatAtMaxDistance = heatAtMaxDistance * warmHandsBonus 
+            end
+            local heatAtThisDistance = getHeatAtDistance(heatAtMaxDistance, distance)
+            totalHeat = totalHeat + heatAtThisDistance
+
+            closeEnough = true
+        end
+    end
+    common.helper.iterateRefType("flame", doFlameHeat)
+
+    local function doOtherHeat(ref)
+        local distance = getDistance(ref)
+        if (distance < maxDistance) and not ref.disabled then
+            local heatAtMaxDistance = getHeatSourceValue(ref)
+            local heatAtThisDistance = getHeatAtDistance(heatAtMaxDistance, distance)
+            totalHeat = totalHeat + heatAtThisDistance
+        end
+    end
+    common.helper.iterateRefType("heatSource", doOtherHeat)
+
     if not closeEnough then
         warmingHands = false
     end
