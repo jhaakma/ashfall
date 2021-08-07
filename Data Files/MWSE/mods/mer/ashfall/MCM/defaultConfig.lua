@@ -9,6 +9,7 @@ return {
     --dev stuff
     logLevel = "INFO",
     devFeatures = false,
+    debugMode = false,
     blocked = {},
 
     campingMerchants = {

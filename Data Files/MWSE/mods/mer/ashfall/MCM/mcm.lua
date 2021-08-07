@@ -683,6 +683,12 @@ local function registerModConfig()
             variable = createTableVar("doIntro")
         }
 
+        pageDevOptions:createOnOffButton{
+            label = "Debug Mode",
+            description = "Enable hot-reload of meshes. For debugging only.",
+            variable = createTableVar("debugMode")
+        }
+
         pageDevOptions:createDropdown{
             label = "Log Level",
             description = "Set the logging level for mwse.log. Keep on INFO unless you are debugging.",
