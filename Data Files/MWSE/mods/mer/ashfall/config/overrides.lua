@@ -44,13 +44,19 @@ local overrides = {
         value = 10,
     },
 
+--[[
+    Vanilla bug causes items to be unequipped on first load if inventory item named have changed
+
+    So we aren't renaming things anymore. 
+]]
+
     --cooking equipment
     ["misc_com_bucket_metal"] = {
-        name = "Bucket: Metal",
+        --name = "Bucket: Metal",
         value = 15
     },
     ["misc_com_bucket_01"] = {
-        name = "Bucket: Wood",
+        --name = "Bucket: Wood",
         value = 15
     },
     ["misc_com_iron_ladle"] = {
