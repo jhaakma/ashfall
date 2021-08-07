@@ -15,6 +15,10 @@ this.log = require("mer.ashfall.common.logger").new{
     logLevel = logLevel
 }
 
+function this.loadMesh(mesh)
+    local useCache = not config.debugMode
+    return tes3.loadMesh(mesh, useCache):clone()
+end
 
 --Returns if an object is blocked by the MCM
 function this.getIsBlocked(obj)

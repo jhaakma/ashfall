@@ -2,7 +2,7 @@ local common = require ("mer.ashfall.common.common")
 local foodConfig = common.staticConfigs.foodConfig
 local hungerController = require("mer.ashfall.needs.hungerController")
 local skillSurvivalGrillingIncrement = 5
-
+local patinaController = require("mer.ashfall.camping.patinaController")
 
 ----------------------------
 --Grilling
@@ -73,6 +73,26 @@ local function startCookingIngredient(ingredient, timestamp)
 end
 
 
+local function addGrillPatina(campfire,interval)
+    if campfire.sceneNode and campfire.data.grillId then
+
+        local grillNode = campfire.sceneNode:getObjectByName("ATTACH_STAND")
+            or campfire.sceneNode:getObjectByName("ATTACH_GRILL")
+            or campfire.sceneNode:getObjectByName("SWITCH_GRILL")
+        local patinaAmount = campfire.data.grillPatinaAmount or 0
+        local newAmount = math.clamp(patinaAmount+ interval * 100, 0, 100)
+        local didAddPatina = patinaController.addPatina(grillNode, newAmount)
+        if didAddPatina then
+            campfire.data.grillPatinaAmount = newAmount
+            common.log:debug("Added patina to %s node, new amount: %s",grillNode, campfire.data.grillPatinaAmount)
+        else
+            common.log:debug("Mesh incompatible with patina mechanic, did not apply")
+        end
+    else
+        common.log:debug("Campfire invalid for some reason")
+    end
+end
+
 local function grillFoodItem(ingredient, timestamp)
     --Can only grill certain types of food
     if foodConfig.getGrillValues(ingredient.object) then
@@ -89,6 +109,8 @@ local function grillFoodItem(ingredient, timestamp)
 
                 local difference = timestamp - ingredient.data.lastCookUpdated
                 if difference > 0.008 then
+                    common.log:debug("++++++We're fucking grilling here what's the problem")
+                    addGrillPatina(campfire, difference)
                     ingredient.data.lastCookUpdated = timestamp
 
                     local thisCookMulti = calculateCookMultiplier(campfire.data.fuelLevel)
@@ -203,6 +225,8 @@ local function clearUtensilData(e)
         campfire.data.utensil = nil
         campfire.data.ladle = nil
         campfire.data.utensilId = nil
+        campfire.data.utensilData = nil
+        campfire.data.utensilPatinaAmount = nil
     end
     if not e.isContainer then
         tes3.removeSound{ 

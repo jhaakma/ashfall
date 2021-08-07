@@ -16,7 +16,7 @@ end
 local function addBreath(node, x, y, z, scale)
     scale = scale or 1.0
     if not node:getObjectByName("smokepuffs.nif") then
-        local smokepuffs = tes3.loadMesh("ashfall\\smokepuffs.nif"):clone()
+        local smokepuffs = common.loadMesh("ashfall\\smokepuffs.nif")
         node:attachChild(smokepuffs, true)
         smokepuffs.translation.x = x
         smokepuffs.translation.y = y

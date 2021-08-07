@@ -115,7 +115,7 @@ function this.tentHasLantern(ref)
 end
 
 local function attachLightToRef(tentRef, lanternItem)
-    local lanternMesh = tes3.loadMesh(lanternItem.mesh):clone()
+    local lanternMesh = common.loadMesh(lanternItem.mesh)
     lanternMesh:clearTransforms()
     local attachLanternNode = getAttachLanternNode(tentRef.sceneNode)
     attachLanternNode:attachChild(lanternMesh, true)

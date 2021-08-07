@@ -304,6 +304,9 @@ local function createNeedsTooltip(e)
     if utensilData and utensilData.capacity then
         common.helper.addLabelToTooltip(tooltip, string.format("Capacity: %d", utensilData.capacity))
     end
+    if e.itemData and e.itemData.data and e.itemData.data.patinaAmount then
+        common.helper.addLabelToTooltip(tooltip, string.format("Patina: %d/100", e.itemData.data.patinaAmount))
+    end
 end
 
 event.register('uiObjectTooltip', createNeedsTooltip)

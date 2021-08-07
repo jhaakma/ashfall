@@ -35,7 +35,7 @@ local function attachMeshToRef(ref, trinket)
     addTrinketSound(ref, trinket)
     local meshPath = trinket.mesh
     local trinketNode = getTrinketNode(ref.sceneNode)
-    local mesh = tes3.loadMesh(meshPath):clone()
+    local mesh = common.loadMesh(meshPath)
     trinketNode:attachChild(mesh)
     trinketNode:update()
     trinketNode:updateNodeEffects()

@@ -2,6 +2,7 @@
     Iterates over objects that  and updates their fuel level
 ]]
 local common = require ("mer.ashfall.common.common")
+
 local foodConfig = common.staticConfigs.foodConfig
 local hungerController = require("mer.ashfall.needs.hungerController")
 local thirstController = require("mer.ashfall.needs.thirstController")
@@ -49,6 +50,8 @@ local function updateBuffs(e)
     common.helper.iterateRefType("stewBuffedActor", doUpdateBuff)
 end
 
+
+
 local function updateStewers(e)
     
     local function doUpdate(stewerRef)
@@ -63,6 +66,7 @@ local function updateStewers(e)
         end
 
         if difference > updateInterval then
+            
             stewerRef.data.waterHeat = stewerRef.data.waterHeat or 0
             local hasWater = stewerRef.data.waterAmount and stewerRef.data.waterAmount > 0
             local waterIsBoiling = stewerRef.data.waterHeat and stewerRef.data.waterHeat >= common.staticConfigs.hotWaterHeatValue

@@ -625,7 +625,7 @@ this.utensils = {
         type = "cookingPot",
         capacity = 230,
         waterMaxScale = 1.3,
-        waterMaxHeight = 18,
+        waterMaxHeight = 25,
     },
     ashfall_cooking_pot_steel = {
         type = "cookingPot",
@@ -676,7 +676,7 @@ this.grills = {
     --Morrowind Crafting
     mc_skillet = {
         type = "grill",
-        meshOverride = "ashfall\\mc_skillet_attach.nif"
+        meshOverride = "ashfall\\fry_pan_01_attach.nif"
     }
 }
 

@@ -13,13 +13,24 @@ return {
         )
     end,
     callback = function(campfire)
-        mwscript.addItem{
+        --add grill
+        tes3.addItem{
             reference = tes3.player, 
             item = campfire.data.grillId,
-            count = 1
+            count = 1,
         }
+        --add patina data
+        if campfire.data.grillPatinaAmount then
+            local itemData = tes3.addItemData{
+                to = tes3.player,
+                item = campfire.data.grillId,
+            }
+            itemData.data.patinaAmount = campfire.data.grillPatinaAmount
+        end
+        --clear data and trigger updates
         campfire.data.grillId = nil
         campfire.data.hasGrill = nil
+        campfire.data.grillPatinaAmount = nil
         event.trigger("Ashfall:UpdateAttachNodes", {campfire = campfire,})
         tes3.playSound{ reference = tes3.player, sound = "Item Misc Up"  }
         --event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})

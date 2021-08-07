@@ -10,7 +10,7 @@ end
 
 local function attachMeshToRef(ref, meshPath)
     local attachCoverNode = getAttachCoverNode(ref.sceneNode)
-    local mesh = tes3.loadMesh(meshPath):clone()
+    local mesh = common.loadMesh(meshPath)
     attachCoverNode:attachChild(mesh)
     attachCoverNode:update()
     attachCoverNode:updateNodeEffects()

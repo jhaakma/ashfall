@@ -87,14 +87,14 @@ function this.playerHasEmpties()
                                 return true
                             end
                         else
-                            --no itemdata means empty bottle
+                            --no itemData means empty bottle
                             common.log:debug("no waterAmount")
                             return true
                         end
                     end
                 end
             else
-                --no itemdata means empty bottle
+                --no itemData means empty bottle
                 common.log:debug("no variables")          
                 return true
             end

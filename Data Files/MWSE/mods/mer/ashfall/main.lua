@@ -20,10 +20,12 @@ local Interop = require ("mer.ashfall.interop")
 
 local function initialized()
     if tes3.isModActive("Ashfall.esp") then
-        
-        require("mer.ashfall.survival")
-        -- load modules
+        --This has to go first so events trigger properly
         require("mer.ashfall.referenceController")
+
+        require("mer.ashfall.survival")
+       
+        
         
         require("mer.ashfall.intro")
         require ("mer.ashfall.scriptTimer")

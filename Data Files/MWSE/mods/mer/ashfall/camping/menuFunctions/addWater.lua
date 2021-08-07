@@ -21,7 +21,7 @@ return {
                 noResultsText = "You do not have any water.",
                 filter = function(e)
                     if not e.itemData then return false end
-                    local containerHasWater = e.itemData.data.waterAmount and e.itemData.data.waterAmount > 0
+                    local containerHasWater = e.itemData.data.waterAmount and e.itemData.data.waterAmount >= 1
                     local containerHasStew = not not e.itemData.data.stewLevels
                     local containerHasTea = e.itemData.data.waterType and e.itemData.data.waterType ~= "dirty"
                     local containerHasDirtyWater = e.itemData.data.waterType and e.itemData.data.waterType == "dirty"
@@ -94,7 +94,7 @@ return {
                         end
                         common.helper.createSliderPopup{
                             label = "Add water",
-                            min = 0,
+                            min = 1,
                             max = maxAmount,
                             varId = "amount",
                             table = t,

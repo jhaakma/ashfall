@@ -1,13 +1,15 @@
 local common = require ("mer.ashfall.common.common")
+local patinaController = require("mer.ashfall.camping.patinaController")
 
-local function addGrill(item, campfire)
-    mwscript.removeItem{ reference = tes3.player, item = item }
-    local grillData = common.staticConfigs.grills[item.id:lower()]
-
+local function addGrill(item, campfire, itemData)
+    --local grillData = common.staticConfigs.grills[item.id:lower()]
     tes3.playSound{ reference = tes3.player, sound = "Item Misc Down"  }
     campfire.data.hasGrill = true
     campfire.data.grillId = item.id:lower()
+    campfire.data.grillPatinaAmount = itemData and itemData.data.patinaAmount
     event.trigger("Ashfall:UpdateAttachNodes", {campfire = campfire})
+    tes3.removeItem{ reference = tes3.player, item = item, itemData = itemData }
+
     --event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})
 end
 
@@ -21,7 +23,7 @@ local function utensilSelect(campfire)
                 end,
             callback = function(e)
                 if e.item then
-                    addGrill(e.item, campfire)
+                    addGrill(e.item, campfire, e.itemData)
                 end
             end
         }

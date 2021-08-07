@@ -17,7 +17,7 @@ function CampFirePart:new(data)
 end
 
 function CampFirePart:loadMesh()
-    return tes3.loadMesh(self.nifId):clone()
+    return common.loadMesh(self.nifId)
 end
 
 

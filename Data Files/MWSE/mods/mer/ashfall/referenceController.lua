@@ -98,7 +98,6 @@ event.register("Ashfall:registerReference", onRefPlaced)
 
 
 local function onObjectInvalidated(e)
-    
     local ref = e.object
     for controllerName, controller in pairs(this.controllers) do
         if controller.references[ref] == true then
@@ -108,11 +107,11 @@ local function onObjectInvalidated(e)
 end
 event.register("objectInvalidated", onObjectInvalidated)
 
-local function registerReferenceController(e)
+function this.registerReferenceController(e)
     assert(e.id, "No id provided")
     assert(e.requirements, "No reference requirements provieded")
     this.controllers[e.id] =  ReferenceController:new{ requirements = e.requirements }
 end
-event.register("Ashfall:RegisterReferenceController", registerReferenceController)
+event.register("Ashfall:RegisterReferenceController", this.registerReferenceController)
 
 return this

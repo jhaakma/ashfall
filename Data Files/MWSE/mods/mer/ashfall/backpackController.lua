@@ -75,7 +75,7 @@ local function attachItem(item, parent)
     if existingMesh then
         parent:detachChild(existingMesh)
     end
-    local mesh = tes3.loadMesh(tes3.getObject(item).mesh):clone()
+    local mesh = common.loadMesh(tes3.getObject(item).mesh)
     mesh:clearTransforms()
     mesh.name = "AttachedMesh"
     mesh.appCulled = false
@@ -131,7 +131,7 @@ end
 
 local function attachBackpack(parent, fileName, ref)
     if not config.showBackpacks then return end
-    local node = tes3.loadMesh(fileName)
+    local node = common.loadMesh(fileName)
     if node then
         node = node:clone()
         node:clearTransforms()

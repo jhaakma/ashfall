@@ -23,10 +23,25 @@ return  {
         text = "Utensil must be emptied before it can be removed."
     },
     callback = function(campfire)
-        mwscript.addItem{ reference = tes3.player, item = campfire.data.utensilId }
+        --add utensil
+        tes3.addItem{ 
+            reference = tes3.player, 
+            item = campfire.data.utensilId,
+            count = 1
+        }
+        --add patina data
+        if campfire.data.utensilPatinaAmount then
+            local itemData = tes3.addItemData{
+                to = tes3.player,
+                item = campfire.data.utensilId,
+            }
+            itemData.data.patinaAmount = campfire.data.utensilPatinaAmount
+        end
+        --add ladle
         if campfire.data.ladle == true then
             mwscript.addItem{ reference = tes3.player, item = "misc_com_iron_ladle" }
         end
+        --clear data and trigger updates
         event.trigger("Ashfall:Campfire_clear_utensils", { campfire = campfire, removeUtensil = true})
         event.trigger("Ashfall:UpdateAttachNodes", {campfire = campfire,})
         tes3.playSound{ reference = tes3.player, sound = "Item Misc Up"  }

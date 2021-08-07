@@ -1,6 +1,6 @@
 local common = require ("mer.ashfall.common.common")
 
-local cookStates = {
+local decalStates = {
     cooked = {texPath = "textures\\Ashfall\\grill\\cooked.dds"},
     burnt = {texPath = "textures\\Ashfall\\grill\\burnt.dds"},
     diseased = {texPath = "textures\\Ashfall\\grill\\diseased.dds"},
@@ -25,9 +25,9 @@ end
 --pre-load textures
 local function preloadTextures()
     common.log:trace("Preloading Grill textures")
-    for _, cookState in pairs(cookStates) do
-        local texture = niSourceTexture.createFromPath(cookState.texPath)
-        cookState.texture = texture
+    for _, decalState in pairs(decalStates) do
+        local texture = niSourceTexture.createFromPath(decalState.texPath)
+        decalState.texture = texture
     end
 end
 preloadTextures()
@@ -37,17 +37,17 @@ preloadTextures()
 local function addDecal(property, decalState)
     local decal 
     if decalState then
-        decal = cookStates[decalState].texture
+        decal = decalStates[decalState].texture
     end
     --Remove old one if it exists
     for index, map in ipairs(property.maps) do
         local texture = map and map.texture
         local fileName = texture and texture.fileName
-        
+
         if fileName then
             common.log:trace("fileName: %s", fileName)
-            for _, cookState in pairs(cookStates) do
-                if fileName == cookState.texPath then
+            for _, state in pairs(decalStates) do
+                if fileName == state.texPath then
                     if decal then
                         common.log:trace("Found existing decal, replacing with %s", decal.fileName)
                         map.texture = decal
@@ -94,7 +94,6 @@ local function updateIngredient(e)
 end
 
 event.register("Ashfall:ingredCooked", updateIngredient)
-
 
 local function ingredPlaced(e)
     -- local safeRef = tes3.makeSafeObjectHandle(e.reference)

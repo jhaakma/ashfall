@@ -12,7 +12,9 @@ require("mer.ashfall.camping.cooking")
 require("mer.ashfall.camping.firewood")
 require("mer.ashfall.camping.fuelConsumerController")
 require("mer.ashfall.camping.gearPlacement")
-require("mer.ashfall.camping.grillDecals")
+require("mer.ashfall.camping.decals")
 
 require("mer.ashfall.camping.tents.tentController")
 require("mer.ashfall.camping.cushions")
+
+require("mer.ashfall.camping.patinaController")

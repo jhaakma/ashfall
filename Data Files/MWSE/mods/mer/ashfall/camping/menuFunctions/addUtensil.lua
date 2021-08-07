@@ -1,7 +1,7 @@
 local common = require ("mer.ashfall.common.common")
 
-local function addUtensil(item, campfire)
-    mwscript.removeItem{ reference = tes3.player, item = item }
+local function addUtensil(item, campfire, itemData)
+    tes3.removeItem{ reference = tes3.player, item = item, itemData = itemData }
     local utensilData = common.staticConfigs.utensils[item.id:lower()]
     
     tes3.playSound{ reference = tes3.player, sound = "Item Misc Down"  }
@@ -14,7 +14,9 @@ local function addUtensil(item, campfire)
     end
     campfire.data.utensil = utensilData.type
     campfire.data.utensilId = item.id:lower()
+    campfire.data.utensilPatinaAmount = itemData and itemData.data.patinaAmount
     campfire.data.waterCapacity = utensilData.capacity or 100
+
     common.log:debug("Set water capacity to %s", campfire.data.waterCapacity)
     event.trigger("Ashfall:UpdateAttachNodes", {campfire = campfire})
     --event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})
@@ -30,7 +32,7 @@ local function utensilSelect(campfire)
             end,
             callback = function(e)
                 if e.item then
-                    addUtensil(e.item, campfire)
+                    addUtensil(e.item, campfire, e.itemData)
                 end
             end
         }

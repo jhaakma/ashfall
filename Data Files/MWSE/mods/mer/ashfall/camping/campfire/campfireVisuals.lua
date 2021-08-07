@@ -1,5 +1,5 @@
 local common = require ("mer.ashfall.common.common")
-
+local patinaController = require("mer.ashfall.camping.patinaController")
 --[[
     Mapping of campfire states to switch node states.
 ]]
@@ -120,9 +120,10 @@ local function updateWaterHeight(campfire)
     if not campfire.data.waterCapacity then return end
     local utensilData = getUtensilData(campfire)
     if not utensilData then return end
-    local minSteamHeight = utensilData.waterMaxScale or 18
+    
     local waterMaxScale = utensilData.waterMaxScale or 1.0
     local waterMaxHeight = utensilData.waterMaxHeight or 20
+    local minSteamHeight = utensilData.minSteamHeight or (waterMaxHeight/2)
     local waterLevel = campfire.data.waterAmount or 0
     local scale = math.min(math.remap(waterLevel, 0, campfire.data.waterCapacity, 1, waterMaxScale), waterMaxScale )
     local height = math.min(math.remap(waterLevel, 0, campfire.data.waterCapacity, 0, waterMaxHeight), waterMaxHeight)
@@ -238,9 +239,10 @@ local function updateAttachNodes(e)
     local campfire = e.campfire
     local sceneNode = campfire.sceneNode
     local hangNode = sceneNode:getObjectByName("HANG_UTENSIL")
-
     --Hanging utensils
     if hangNode then
+
+
         local utensilID = campfire.data.utensilId
         common.log:trace("has hangNode")
         common.log:trace("children: %s", #hangNode.children)
@@ -263,10 +265,12 @@ local function updateAttachNodes(e)
                     common.log:error("%s is not a valid utensil, but was set to campfire.data.utensilId")
                 end
                 local meshId = utensilData and utensilData.meshOverride or utensilObj.mesh
-                local mesh = tes3.loadMesh(meshId):clone()
+                local mesh = common.loadMesh(meshId)
                 mesh.name = name
                 moveOriginToAttachPoint(mesh)
                 hangNode:attachChild(mesh)
+
+
                 common.log:trace("Attached %s to campfire", utensilID)
             end
         else
@@ -277,8 +281,13 @@ local function updateAttachNodes(e)
                 end
             end
         end
+
+        local patinaAmount = campfire.data.utensilPatinaAmount
+        common.log:debug("hangNode updateAttachNodes add patina amount: %s", patinaAmount)
+        patinaController.addPatina(hangNode, patinaAmount)
     end
     local grillNode = sceneNode:getObjectByName("ATTACH_GRILL")
+    local attachStand
     if grillNode then
         local grillId = campfire.data.grillId
         if grillId then
@@ -294,9 +303,18 @@ local function updateAttachNodes(e)
                     common.log:error("%s is not a valid grill, but was set to campfire.data.grillId")
                 end
                 local meshId = data and data.meshOverride or grillObj.mesh
-                local mesh = tes3.loadMesh(meshId):clone()
+                local mesh = common.loadMesh(meshId)
                 mesh.name = name
                 grillNode:attachChild(mesh)
+
+                --If the override mesh has an ATTACH_STAND node, then attach the original mesh to it
+                attachStand = mesh:getObjectByName("ATTACH_STAND")
+                if attachStand then
+                    common.log:debug("Found ATTACH_STAND node")
+                    local origMesh = common.loadMesh(grillObj.mesh)
+                    attachStand:attachChild(origMesh)
+                end
+
                 common.log:trace("Attached %s to campfire", grillId)
             end
         else
@@ -307,7 +325,15 @@ local function updateAttachNodes(e)
                 end
             end
         end
+
+        local patinaAmount = campfire.data.grillPatinaAmount
+        common.log:debug("grillNode updateAttachNodes add patina amount: %s", patinaAmount)
+        patinaController.addPatina((attachStand or grillNode), patinaAmount)
+
     end
+
+
+
 
     campfire.sceneNode:update()
     campfire.sceneNode:updateNodeEffects()
