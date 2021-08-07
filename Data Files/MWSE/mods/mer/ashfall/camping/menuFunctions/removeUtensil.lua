@@ -17,7 +17,7 @@ return  {
     end,
     enableRequirements = function(campfire)
         return ( not campfire.data.waterAmount or
-        campfire.data.waterAmount == 0 )
+        campfire.data.waterAmount < 1 )
     end,
     tooltipDisabled = {
         text = "Utensil must be emptied before it can be removed."

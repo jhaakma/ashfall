@@ -17,6 +17,16 @@ local restMultiplier = 1.0
 local conditionConfig = common.staticConfigs.conditionConfig
 local thirst = conditionConfig.thirst
 
+function this.handleEmpties(data)
+    if data.waterAmount and data.waterAmount < 1 then
+        data.waterType = nil
+        data.waterAmount = nil
+        data.stewLevels = nil
+        --restack
+        tes3ui.updateInventoryTiles()
+    end
+end
+
 function this.calculate(scriptInterval, forceUpdate)
     if  scriptInterval == 0 and not forceUpdate then return end
     if not thirst:isActive() then
@@ -112,13 +122,15 @@ local function addDysentry(amountDrank)
         return
     end
 
-    local amountDrankEffect = math.remap(amountDrank, 0, 100, 0.5, 1.0)
+    --determine max added dysentery
+    local maxDysentery = math.remap(amountDrank, 0, 100, 85, 120)
+    local minDysentery = maxDysentery / 4
 
     local dysentery = common.staticConfigs.conditionConfig.dysentery
-    local maxDysentery = amountDrankEffect * 120
-    local dysentryAmount = math.random(maxDysentery)
+    local dysentryAmount = math.random(minDysentery, maxDysentery)
     common.log:debug("Adding %s dysentery. Max was %s", dysentryAmount, maxDysentery)
     dysentery:setValue(dysentery:getValue() + dysentryAmount)
+    common.log:debug("New dysentery amount is %s", dysentery:getValue())
 end
 
 
@@ -235,8 +247,8 @@ local function doRefillContainer(e)
         common.helper.transferQuantity(source.data, itemData.data, "waterAmount", "waterAmount", fillAmount)
 
         --clean source if empty
-        if source.data.waterAmount == 0 then
-            source.data.waterType = nil
+        if source.data.waterAmount < 1 then
+            this.handleEmpties(source.data)
         end
     else
         itemData.data.waterAmount = bottleData.capacity

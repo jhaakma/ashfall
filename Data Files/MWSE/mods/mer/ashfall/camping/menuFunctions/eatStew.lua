@@ -21,7 +21,7 @@ return {
     callback = function(campfire)
         event.trigger("Ashfall:eatStew", { data = campfire.data})
         timer.delayOneFrame(function()
-            if campfire.data.waterAmount == 0 then
+            if campfire.data.waterAmount < 1 then
                 event.trigger("Ashfall:Campfire_clear_utensils", { campfire = campfire})
             end
         end)

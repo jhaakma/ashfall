@@ -17,15 +17,7 @@ local thirst = common.staticConfigs.conditionConfig.thirst
 local hunger = common.staticConfigs.conditionConfig.hunger
 local wetness = common.staticConfigs.conditionConfig.wetness
 
-local function handleEmpties(data)
-    if data.waterAmount and data.waterAmount < 1 then
-        data.waterType = nil
-        data.waterAmount = nil
-        data.stewLevels = nil
-        --restack
-        tes3ui.updateInventoryTiles()
-    end
-end
+
 
 local wetnessPerWater = 10
 local function douse(bottleData)
@@ -44,7 +36,7 @@ local function douse(bottleData)
         common.log:debug("Douse: Reducing amount in bottle by %s", math.ceil(waterUsed))
         --Reduce liquid in bottleData
         bottleData.waterAmount = bottleData.waterAmount - math.ceil(waterUsed)
-        handleEmpties(bottleData)
+        thirstController.handleEmpties(bottleData)
     end
 
     tes3.playSound{ reference = tes3.player, pitch = 0.8, sound = "Swim Right" }
@@ -60,8 +52,19 @@ local function callWaterMenu(e)
     common.log:debug("callWaterMenu: Water Type: %s", e.waterType)
     common.data.drinkingWaterType = e.waterType
     common.data.drinkingRain = e.rain
+
+    local message = "Clean Water"
+    if e.waterType == "dirty" then
+        message = "Dirty Water"
+    elseif e.waterType ~= nil then
+        local tea = teaConfig.teaTypes[e.waterType]
+        if tea and tea.name then
+            message = tea.name
+        end
+    end
+
     common.helper.messageBox{
-        message = "What would you like to do?",
+        message = message,
         buttons = {
             {
                 text = "Drink",
@@ -194,7 +197,7 @@ local function doDrinkWater(bottleData)
     end
     --Reduce liquid in bottleData
     bottleData.waterAmount = bottleData.waterAmount - thisSipSize
-    handleEmpties(bottleData)
+    thirstController.handleEmpties(bottleData)
 end
 
 local function getIsPotion(e)
@@ -266,7 +269,7 @@ local function drinkFromContainer(e)
                         text = "Empty", 
                         callback = function()
                             e.itemData.data.waterAmount = 0
-                            handleEmpties(e.itemData.data)
+                            thirstController.handleEmpties(e.itemData.data)
                             tes3.playSound({reference = tes3.player, sound = "Swim Left"})
                         end
                     },
@@ -301,7 +304,7 @@ local function drinkFromContainer(e)
                         text = "Empty", 
                         callback = function()
                             e.itemData.data.waterAmount = 0
-                            handleEmpties(e.itemData.data)
+                            thirstController.handleEmpties(e.itemData.data)
                             tes3.playSound({reference = tes3.player, sound = "Swim Left"})
                         end
                     }
@@ -362,7 +365,7 @@ local function onShiftActivateWater(e)
                     text = "Empty",
                     callback = function()
                         e.target.data.waterAmount = 0
-                        handleEmpties(e.target.data)
+                        thirstController.handleEmpties(e.target.data)
                         tes3.playSound({reference = tes3.player, sound = "Swim Left"})
                     end
                 },

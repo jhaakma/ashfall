@@ -1,4 +1,5 @@
 local common = require ("mer.ashfall.common.common")
+local thirstController = require("mer.ashfall.needs.thirstController")
 local teaConfig = common.staticConfigs.teaConfig
 return {
     text = "Add Water",
@@ -64,8 +65,8 @@ return {
                                 campfire.data.waterType = "dirty"
                             end
                             --clear contents if empty
-                            if e.itemData.data.waterAmount == 0 then
-                                e.itemData.data.waterType = nil
+                            if e.itemData.data.waterAmount < 1 then
+                                thirstController.handleEmpties(e.itemData.data)
                             end
 
                             local ratio = waterBefore / waterAfter

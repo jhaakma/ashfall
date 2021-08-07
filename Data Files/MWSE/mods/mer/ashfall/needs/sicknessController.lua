@@ -33,16 +33,16 @@ end
 local function calculateDysentry(scriptInterval)
     local drainRate
     if dysentery:getCurrentState() == dysentery.default then
-        common.log:trace("calculateDysentry using healthy rate")
+        common.log:debug("calculateDysentry using healthy rate")
         drainRate = drainRateHealthy
     else
-        common.log:trace("calculateDysentry using sick rate")
+        common.log:debug("calculateDysentry using sick rate")
         drainRate = drainRateSick
     end
 
     local newVal = dysentery:getValue() - ( scriptInterval * drainRate)
     
-    common.log:trace("New dysentery value: %s", newVal)
+    common.log:debug("New dysentery value: %s", newVal)
     dysentery:setValue(newVal)
 end
 
