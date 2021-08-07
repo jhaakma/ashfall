@@ -6,6 +6,7 @@ local foodConfig = staticConfigs.foodConfig
 local ratingsConfig = require('mer.ashfall.tempEffects.ratings.ratingsConfig')
 local climateConfig = require('mer.ashfall.config.weatherRegionConfig')
 local teaConfig = require('mer.ashfall.config.teaConfig')
+local Activator = require("mer.ashfall.objects.Activator")
 
 local function listValidActivatorTypes()
     local message = '\n'
@@ -60,6 +61,23 @@ local function registerActivators(e)
     return true
 end
 event.register("Ashfall:RegisterActivators", registerActivators)
+
+local function registerWaterSource(e)
+    assert(type(e.name) == "string", "registerWaterSource(): No name string provided")
+    assert(type(e.ids) == "table", "registerWaterSource(): No table of ids provided")
+    local waterType = e.isDirty and activatorConfig.types.dirtyWaterSource or activatorConfig.types.waterSource
+
+    local idList = {}
+    for _, id in ipairs(e.ids) do
+        idList[id] = true
+    end
+    activatorConfig.list[e.name] = Activator:new{
+        name = e.name,
+        type = waterType,
+        ids = idList
+    }
+    return true
+end
 
 local function registerWaterContainers(e)
     local includeOverrides = e.includeOverrides
@@ -285,6 +303,10 @@ local Interop = {
     registerActivators = function(data, usePatterns)
         return registerActivators({ data = data, usePatterns = usePatterns})
     end,
+    registerWaterSource = function(data)
+        return registerWaterSource(data)
+    end,
+
     registerWaterContainers = function(data, includeOverrides)
         return registerWaterContainers({ data = data, includeOverrides = includeOverrides })
     end,
