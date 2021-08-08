@@ -105,7 +105,8 @@ function this.getInside(reference)
 end
 
 function this.getRefUnderwater(reference)
-    local waterLevel = reference.cell.waterLevel or 0
+    local waterLevel = reference.cell.waterLevel
+    if not waterLevel then return false end
     return reference.position.z < waterLevel
 end
 
