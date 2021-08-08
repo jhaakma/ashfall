@@ -264,13 +264,13 @@ this.list.wood = Activator:new{
 this.list.fire = Activator:new{ 
     name = "Fire", 
     type = this.types.fire,
-    mcmSetting = "enableCooking",
     patterns = {
-        ["firepit_f"] = true,
-        ["firepit_lit"] = true,
-        ["firepit_roaring"] = true,
-        --["light_pitfire"] = true,
-        ["light_logpile"] = true
+        firepit_f = true,
+        firepit_lit = true,
+        firepit_roaring = true,
+        --light_pitfire = true,
+        light_logpile = true,
+        light_6th_brazier = true,
     }
 }
 
