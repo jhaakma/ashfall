@@ -142,7 +142,12 @@ function this.attachLantern(tentRef, lanternItem, lanternData)
             data = lanternData
         }
         if lanternData then
-            tentRef.data.lantern.data = lanternData
+            common.log:debug("Printing lanternData.data")
+            common.log:debug(json.encode(lanternData.data))
+            tentRef.data.lantern.data = {
+                timeLeft = lanternData.timeLeft,
+                data = lanternData.data
+            }
         end
         attachLightToRef(tentRef, lanternItem)
         tes3.removeItem{ reference = tes3.player, item = lanternItem, playSound = false}

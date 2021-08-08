@@ -80,7 +80,7 @@ function this.addPatina(rootNode, amount)
                 for _, pattern in ipairs(metalPatterns) do
                     if string.find(texture.maps[1].texture.fileName:lower(), pattern) then
                         common.log:trace("adding patina amount to %s", amount)
-                        mwse.log(texture.maps[1].texture.fileName)
+                        common.log:trace(texture.maps[1].texture.fileName)
                         if colorFromLowToHigh(node, amount, low, high) then
                             appliedPatina = true
                         end

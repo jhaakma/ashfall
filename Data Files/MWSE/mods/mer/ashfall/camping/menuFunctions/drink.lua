@@ -30,7 +30,8 @@ return {
         and (hasJustWater(campfire) or hasBrewedTea(campfire))
     end,
     enableRequirements = function(campfire)
-        local tooHotToDrink =  hasWaterAmount(campfire) 
+        local tooHotToDrink =  
+            hasWaterAmount(campfire) 
             and (not hasStew(campfire))
             and isBoiling(campfire) 
         if tooHotToDrink and not campfire.data.ladle then 

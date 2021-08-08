@@ -13,6 +13,7 @@ local refController = require("mer.ashfall.referenceController")
 --max distance where fire has an effect
 
 local fireValues = {
+    light_6th_brazier = 18,
     lantern = 3,
     lamp = 1,
     candle = 1, 
