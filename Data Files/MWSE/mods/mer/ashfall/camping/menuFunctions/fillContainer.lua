@@ -37,7 +37,7 @@ return  {
             waterType = waterType,
             stewLevels = stewLevels,
             callback = function()
-                if campfire.data.waterAmount <= 0 then
+                if (not campfire.data.waterAmount) or campfire.data.waterAmount <= 0 then
                     common.log:debug("Clearing utensil data")
                     event.trigger("Ashfall:Campfire_clear_utensils", { campfire = campfire})
                 end
