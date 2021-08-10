@@ -9,6 +9,7 @@ local randomStuffChances = {
 }
 
 local vanillaCampfires = {
+    mr_light_pitfire = { supports = true, rootHeight = 5, squareSupports = true },
     --Ugly ones
     light_pitfire00 =  { supports = false, scale = 0.9, rootHeight = 0 },  
     light_pitfire01 =  { supports = false, scale = 0.9, rootHeight = 0 },
@@ -253,19 +254,18 @@ local function checkKitBashObjects(vanillaRef)
                             skipRef = true
                         end
                     end
+                    if string.find(id, "_unique") then
+                        common.log:debug("Found a unique mesh (%s), ignoring campfire replacement", id)
+                        skipRef = true
+                    end
+                    
+                    if ref.object.script then
+                        common.log:debug("Found a scripted mesh (%s), ignoring campfire replacement", id)
+                        skipRef = true
+                    end
 
                     if not skipRef then
-                        --don't mess with campfires that have unique things nearby
-                        if string.find(id, "_unique") then
-                            common.log:debug("Found a unique mesh, ignoring campfire replacement")
-                            return false
-                        end
 
-                        
-                        if ref.object.script then
-                            common.log:debug("Found a scripted mesh, ignoring campfire replacement")
-                            return false
-                        end
 
                         if platforms[id] then
                             common.log:debug("Has platform")
@@ -365,6 +365,8 @@ local function replaceCampfire(e)
             if data.hasGrill then
                 common.log:debug("Has Grill")
                 replacement = "ashfall_campfire_grill"
+            elseif vanillaConfig.squareSupports then
+                replacement = "ashfall_campfire_mr"
             elseif vanillaConfig.supports == true then
                 replacement = "ashfall_campfire_static"
             elseif data.hasCookingPot then

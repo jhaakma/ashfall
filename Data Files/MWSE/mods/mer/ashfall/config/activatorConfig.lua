@@ -83,7 +83,8 @@ this.list.basin = Activator:new{
     type = this.types.waterSource,
     mcmSetting = nil,
     ids = {
-        ["act_basin_telv_wood"] = true --UL
+        ["act_basin_telv_wood"] = true, --UL
+        ["mr_imp_basin"] = true, --MR
     }
 }
 this.list.waterJug = Activator:new{
@@ -99,7 +100,6 @@ this.list.well = Activator:new{
     type = this.types.waterSource,
     mcmSetting = nil,
     ids = {
-        ["mr_hlaalu_well_01"] = true,
         ["ex_nord_well_01"] = true,
         ["ex_nord_well_01a"] = true,
         ["furn_well00"] = true,
@@ -152,6 +152,10 @@ this.list.well = Activator:new{
         --rebirth
         ["mr_hlaalu_fountain"] = true,
         ["mr_redoran_well"] = true,
+        ["mr_stronhold_well"] = true,
+        ["mr_hlaalu_well_01"] = true,
+        ["mr_imp_well_roofed"] = true,
+
 
         --well diversified
         ["_ex_hlaalu_well"] = true,
@@ -160,7 +164,7 @@ this.list.well = Activator:new{
         ["ex_s_well_01"] = true,
         ["bw_ex_hlaalu_well"] = true,
         ["rp_wooden_well"] = true,
-
+        ["mr_imp_well_01"] = true,
         --MD
         ["ab_ex_velwellfountain"] = true,
 
@@ -281,6 +285,7 @@ this.list.campfire = Activator:new{
     ids = {
         ["ashfall_campfire"] = true,
         ["ashfall_campfire_static"] = true,
+        ["ashfall_campfire_mr"] = true,
         ["ashfall_campfire_sup"] = true,
         ["ashfall_campfire_grill"] = true,
     },

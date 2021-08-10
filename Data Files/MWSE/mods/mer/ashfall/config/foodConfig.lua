@@ -806,6 +806,17 @@ this.ingredTypes = {
 
     --other
     ["ingred_kollop_meat_01"] = this.type.meat,
+
+    --Rebirth
+    ["mr_berries"] = this.type.herb,
+    ["mr_crab_pudding"] = this.type.food,
+    ["mr_guar_meat"] = this.type.meat,
+    ["mr_guar_sausage"] = this.type.cookedMeat,
+    ["mr_kwama_egg_blight"] = this.type.egg,
+    ["mr_marshmerrow_boiled"] = this.type.food,
+    ["mr_nether_salt"] = this.type.seasoning,
+    ["mr_sweetroll"] = this.type.food,
+    ["mr_wind_salt"] = this.type.seasoning,
 }
 
 return this
