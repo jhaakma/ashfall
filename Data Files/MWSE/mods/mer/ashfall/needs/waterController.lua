@@ -145,23 +145,18 @@ event.register(
 
 --Look straight up at the rain and activate to bring up water menu
 local function checkDrinkRain()
+    if not tes3.player then return end
     --thirst active
     local thirstActive = common.data and config.enableThirst
 
     --raining
     local weather = tes3.getCurrentWeather()
-    local raining = (
-            weather and weather.index == tes3.weather.rain or 
-            weather and weather.index == tes3.weather.thunder
-            
-    )
-    --looking up
-    local lookingUp = (
-        tes3.getCameraVector().z > 0.99
-    )
-    --uncovered
-    local uncovered = common.data and not common.data.isSheltered
+    local raining = weather and 
+        (weather.index == tes3.weather.rain 
+            or weather.index == tes3.weather.thunder)
 
+    local lookingUp = tes3.getCameraVector().z > 0.99
+    local uncovered = common.data and not common.data.isSheltered
 
     local doDrink = (
         thirstActive and
