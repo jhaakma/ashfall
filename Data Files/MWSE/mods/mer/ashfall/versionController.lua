@@ -44,7 +44,7 @@ showConfirmUpdate = function()
             text = tes3.findGMST(tes3.gmst.sYes).value,
             callback = function()
                 os.execute(
-                    "start https://github.com/jhaakma/ashfall/releases/latest/download/Ashfall.zip")
+                    "start https://github.com/jhaakma/ashfall/releases/latest/download/Ashfall.7z")
                 os.execute(
                     "start https://github.com/jhaakma/ashfall/releases/latest")
                 os.exit()
