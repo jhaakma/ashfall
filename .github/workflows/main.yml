@@ -14,8 +14,9 @@ jobs:
           fetch-depth: 50
 
       - name: Build Project
-        run: |
-          zip -r Ashfall.zip "Data Files"
+        uses: edgarrc/action-7z@v1
+        with:
+          args: 7z a Ashfall.7z "Data Files"
    
       - name: Create Release
         uses: notlmn/release-with-changelog@v2
@@ -30,4 +31,4 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: Ashfall.zip
+          files: Ashfall.7z
