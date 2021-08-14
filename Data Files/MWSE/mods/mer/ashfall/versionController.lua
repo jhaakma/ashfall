@@ -85,9 +85,10 @@ function this.checkForUpdates()
         currentVersion = this.getVersion()
         local body, code, headers, status = https.request(
             'http://api.github.com/repos/jhaakma/ashfall/tags')
-        if code == 200 and body and table.size(json.decode(body)) > 0 then
+        
+        if code == 200 then
             local body = json.decode(body)
-            latestVersion = body[1].name
+            latestVersion = body and body[1] and body[1].name
             if latestVersion ~= currentVersion then
                 timer.frame.delayOneFrame(function()
                     showUpdateMessageBox()

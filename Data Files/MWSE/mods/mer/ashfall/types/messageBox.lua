@@ -7,9 +7,8 @@
 ---@field requirements function (optional) function that, if provided, determines whether the button will be call the callback when clicked, or be disabled + greyed out.
 ---@field text string The label on the button.
 ---@field callback function The function to call when this button is clicked.
----@field tooltip table (optional) table with header and text that will display as a tooltip when the button is hovered over.
----@field tooltipDisabled table (optional) tooltip for when a button has been disabled.
-
+---@field tooltip AshfallTooltipData (optional) table with header and text that will display as a tooltip when the button is hovered over.
+---@field tooltipDisabled AshfallTooltipData (optional) tooltip for when a button has been disabled.
 
 ---@class AshfallMessageBoxData
 ---@field message string The message at the top of the messagebox.

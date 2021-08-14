@@ -1,6 +1,6 @@
 
 return {
-    checkForUpdates = true,
+    checkForUpdates = false,
     --intro setup
     doIntro = false, 
     manualTimeScale = 20,
