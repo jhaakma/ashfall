@@ -54,6 +54,7 @@ local function getRawItemWarmth(object)
                 return value
             end
         end
+        config.save()
     end
 
     --No pattern found in name, get default value 

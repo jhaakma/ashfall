@@ -625,7 +625,7 @@ this.utensils = {
         type = "cookingPot",
         capacity = 230,
         waterMaxScale = 1.3,
-        waterMaxHeight = 25,
+        waterMaxHeight = 18,
     },
     ashfall_cooking_pot_steel = {
         type = "cookingPot",

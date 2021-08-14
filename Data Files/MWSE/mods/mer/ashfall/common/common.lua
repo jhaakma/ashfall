@@ -125,15 +125,15 @@ local function checkSkillModule()
     end
 end
 
-local function initialiseLocalSettings()
-    --this.log:info("initialising category %s", category.id)
-    for setting, value in pairs(this.defaultValues) do
-        if config[setting] == nil then
-            config[setting] = value
-            this.log:info( "Initialising local data %s to %s", setting, value )
-        end
-    end
-end
+-- local function initialiseLocalSettings()
+--     --this.log:info("initialising category %s", category.id)
+--     for setting, value in pairs(this.defaultValues) do
+--         if config[setting] == nil then
+--             config[setting] = value
+--             this.log:info( "Initialising local data %s to %s", setting, value )
+--         end
+--     end
+-- end
 
 local function initData()
         --Persistent data stored on player reference 
@@ -156,7 +156,7 @@ local dataLoadedOnce = false
 local function onLoaded()
 
     checkSkillModule()
-    initialiseLocalSettings()
+    --initialiseLocalSettings()
     initData()
     doUpgrades()
 

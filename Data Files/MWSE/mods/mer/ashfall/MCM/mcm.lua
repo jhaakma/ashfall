@@ -1,12 +1,10 @@
 local common = require("mer.ashfall.common.common")
 
-local config = require("mer.ashfall.config.config")
+local config = require("mer.ashfall.config.config").config
 
---get local cache of config, then save on close
-local mcmConfig = mwse.loadConfig(config.configPath, config.defaultConfig)
 
 local function createTableVar(id)
-    return mwse.mcm.createTableVariable{ id = id, table = mcmConfig }
+    return mwse.mcm.createTableVariable{ id = id, table = config }
 end
 
 local sideBarDefault =
@@ -29,7 +27,7 @@ end
 local function registerModConfig()
     local template = mwse.mcm.createTemplate{ name = "Ashfall", headerImagePath = "textures/ashfall/MCMHeader.tga" }
     template.onClose = function()
-        config.save(mcmConfig)
+        config.save()
     end
     template:register()
 
@@ -86,7 +84,7 @@ local function registerModConfig()
                 ),
                 variable = mwse.mcm.createTableVariable{ 
                     id = "overrideFood", 
-                    table = mcmConfig, 
+                    table = config, 
                     restartRequired = true,  
                     --restartRequiredMessage = "Changing this setting requires a game restart to come into effect."
                 }
@@ -103,7 +101,7 @@ local function registerModConfig()
                     if tes3.player then
                         if self.variable.value == true then
                             
-                            local newTimeScale = mcmConfig.manualTimeScale
+                            local newTimeScale = config.manualTimeScale
                             tes3.setGlobal("TimeScale", newTimeScale)
                         end
                     end
@@ -123,7 +121,7 @@ local function registerModConfig()
                 variable = createTableVar("manualTimeScale"),
                 callback = function(self)
                     if tes3.player then
-                        if mcmConfig.overrideTimeScale == true then
+                        if config.overrideTimeScale == true then
                             tes3.setGlobal("TimeScale", self.variable.value)
                         end
                     end
@@ -476,7 +474,7 @@ local function registerModConfig()
         template:createExclusionsPage{
             label = "Camping Merchants",
             description = "Move merchants into the left list to allow them to sell camping gear. Changes won't take effect until the next time you enter the cell where the merchant is. Note that removing a merchant from the list won't remove the equipment if you have already visited the cell they are in.",
-            variable = mwse.mcm.createTableVariable{ id = "campingMerchants", table = mcmConfig },
+            variable = mwse.mcm.createTableVariable{ id = "campingMerchants", table = config },
             leftListLabel = "Merchants who sell camping equipment",
             rightListLabel = "Merchants",
             filters = {
@@ -518,7 +516,7 @@ local function registerModConfig()
         template:createExclusionsPage{
             label = "Food/Water Merchants",
             description = "Move merchants into the left list to allow them to sell additional food and offer water refill services. Changes won't take effect until the next time you enter the cell where the merchant is. Note that removing a merchant from the list won't remove the equipment if you have already visited the cell they are in.",
-            variable = mwse.mcm.createTableVariable{ id = "foodWaterMerchants", table = mcmConfig },
+            variable = mwse.mcm.createTableVariable{ id = "foodWaterMerchants", table = config },
             leftListLabel = "Merchants who sell food/refill water",
             rightListLabel = "Merchants",
             filters = {
@@ -672,6 +670,13 @@ local function registerModConfig()
         }
         
         pageDevOptions:createOnOffButton{
+            label = "Check For Updates",
+            description = "When enabled, you will be notified when a new version of Ashfall is available.",
+            variable = createTableVar("checkForUpdates"),
+            restartRequired = true,
+        }
+
+        pageDevOptions:createOnOffButton{
             label = "Enable Bushcrafting (in development)",
             description = "Get a sneak peak at the upcoming bushcrafting mechanics. Equip any item that has 'Crafting Material' in the tooltip to activate the bushcrafting menu.",
             variable = createTableVar("enableBushcrafting")
@@ -679,7 +684,7 @@ local function registerModConfig()
 
         pageDevOptions:createYesNoButton{
             label = "Show Config Menu on Startup",
-            description = "The next time you load a new or existing game, show the startup mcmConfig menu. This is mostly for testing, use the General Settings MCM page to adjsut startup settings.",
+            description = "The next time you load a new or existing game, show the startup config menu. This is mostly for testing, use the General Settings MCM page to adjsut startup settings.",
             variable = createTableVar("doIntro")
         }
 
@@ -721,16 +726,16 @@ local function registerModConfig()
             inGameOnly = true
         }
 
-        pageDevOptions:createCategory{
-            label = "Current Values",
-            description = (
-                "Dynamic data for Ashfall. Use with caution, " ..
-                "although the vast majority of these values are " ..
-                "re-calculated every frame so changing them here won't do much."
-            ),
-            postCreate = postCreateData,
-            inGameOnly = true
-        }
+        -- pageDevOptions:createCategory{
+        --     label = "Current Values",
+        --     description = (
+        --         "Dynamic data for Ashfall. Use with caution, " ..
+        --         "although the vast majority of these values are " ..
+        --         "re-calculated every frame so changing them here won't do much."
+        --     ),
+        --     postCreate = postCreateData,
+        --     inGameOnly = true
+        -- }
 
         -- pageDevOptions:createInfo{
         --     label = "Current Data: ",

@@ -57,6 +57,7 @@ function this.doDefaultSettings()
         enableSickness = true,
         enableBlightness = true,
     })
+    config.save()
 end
 
 function this.confirmDefaultSettings()
@@ -88,6 +89,7 @@ function this.doVanillaSettings()
         enableSickness = true,
         enableBlightness = true,
     })
+    config.save()
 end
 function this.confirmVanillaSettings()
     common.helper.messageBox{
@@ -112,6 +114,7 @@ function this.disableAshfall()
         enableSickness = false,
         enableBlightness = false,
     })
+    config.save()
 end
 
 

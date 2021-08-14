@@ -155,42 +155,9 @@ function this.isStack(reference)
         reference.attachments.variables.count > 1 
     )
 end
---[[
-    Allows the creation of messageboxes using buttons that each have their own callback.
 
-    callback: optional function that gets called when the button is clicked
-
-    tooltip: optional table with header and text that will display as a tooltip when the
-        button is hovered over
-
-    tooltipDisabled: optional tooltip for when a button has been disabled
-
-    requirements: optional function that, if provided, determines whether the button will be
-        call the callback when clicked, or be disabled + greyed out
-
-    {
-        message: string,
-        buttons: [
-            { 
-                text: string, 
-                callback?: function, 
-                tooltip?: { 
-                    header: string, 
-                    text: string
-                },
-                tooltipDisabled: { 
-                    header: string, 
-                    text: string
-                },
-                requirements?: function,
-                showRequirements?: function,
-                doesCancel = boolean --for cancel button compatibility with Right Click Menu Exit
-            }
-        ]
-    }
-]]
 local function populateButtons(e)
-    local buttons = e.buttons
+    local buttons = e.buttons ---@type AshfallMessageBoxButton[]
     local buttonsBlock = e.buttonsBlock
     local menu = e.menu
     local startIndex = e.startIndex
@@ -246,6 +213,11 @@ local function populateButtons(e)
     menu:updateLayout()
 end
 local messageBoxId = tes3ui.registerID("CustomMessageBox")
+
+
+
+
+--- @param params AshfallMessageBoxData
 function this.messageBox(params)
     local function enable(button)
         button.disabled = false
@@ -263,10 +235,12 @@ function this.messageBox(params)
     local buttons = params.buttons
     --create menu
     local menu = tes3ui.createMenu{ id = messageBoxId, fixedFrame = true }
+    menu:getContentElement().maxWidth = 400
     do
         menu:getContentElement().childAlignX = 0.5
         tes3ui.enterMenuMode(messageBoxId)
-        menu:createLabel{id = tes3ui.registerID("BardicInspiration:MessageBox_Title"), text = message}
+        local label = menu:createLabel{id = tes3ui.registerID("Ashfall:MessageBox_Title"), text = message}
+        label.wrapText = true
     end
 
     --create button block
@@ -332,11 +306,11 @@ function this.messageBox(params)
         local buttonId = tes3ui.registerID("CustomMessageBox_CancelButton")
         local cancelButton = menu:createButton{ id = buttonId, text = tes3.findGMST(tes3.gmst.sCancel).value }
         cancelButton:register( "mouseClick", function()
-            if params.cancelCallback then
-                params.cancelCallback()
-            end
             tes3ui.leaveMenuMode()
             menu:destroy()
+            if params.cancelCallback then
+                timer.frame.delayOneFrame(params.cancelCallback)
+            end
         end)
     end
     menu:updateLayout()
@@ -391,6 +365,7 @@ end
 
 
 --Generic Tooltip with header and description
+---@param e AshfallTooltipData
 function this.createTooltip(e)
     local thisHeader, thisLabel = e.header, e.text
     local tooltip = tes3ui.createTooltipMenu()
@@ -523,7 +498,7 @@ function this.createSliderPopup(params)
             menu:destroy()
             tes3ui.leaveMenuMode(menuId)
             if params.okayCallback then
-                timer.delayOneFrame(params.okayCallback)
+                timer.frame.delayOneFrame(params.okayCallback)
             end
         end
     )
@@ -536,7 +511,7 @@ function this.createSliderPopup(params)
             menu:destroy()
             tes3ui.leaveMenuMode(menuId)
             if params.cancelCallback then
-                timer.delayOneFrame(params.cancelCallback)
+                timer.frame.delayOneFrame(params.cancelCallback)
             end
         end
     )

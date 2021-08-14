@@ -21,72 +21,72 @@ local faderConfigs = {
 
 }
 local function faderSetup()
-    for _, config in pairs(faderConfigs) do
-        config.fader = tes3fader.new()
-        config.fader:setTexture(config.texture)
-        config.fader:setColor({ color = { 0.5, 0.5, 0.5 }, flag = false })
+    for _, faderConfig in pairs(faderConfigs) do
+        faderConfig.fader = tes3fader.new()
+        faderConfig.fader:setTexture(faderConfig.texture)
+        faderConfig.fader:setColor({ color = { 0.5, 0.5, 0.5 }, flag = false })
         event.register("enterFrame", 
             function()
-                config.fader:update()
+                faderConfig.fader:update()
             end
         )
     end
 end
 event.register("fadersCreated", faderSetup)
 
-local function setFading(config)
-    config.isFading = true
+local function setFading(faderConfig)
+    faderConfig.isFading = true
     timer.start{
         type = timer.real, 
         duration = fadeTime,
         callback = function()
             common.log:trace("Setting isFading back to false")
-            config.isFading = false
+            faderConfig.isFading = false
         end
     }
 end
 
-local function fadeIn(config)
-    config.active = true
-    config.fader:fadeTo({ value = 0.5, duration = fadeTime})
-    setFading(config)
-    if config.onSound then
+local function fadeIn(faderConfig)
+    faderConfig.active = true
+    faderConfig.fader:fadeTo({ value = 0.5, duration = fadeTime})
+    setFading(faderConfig)
+    if faderConfig.onSound then
         local effectsChannel = 2
-        tes3.playSound({ sound = config.onSound, mixChannel = effectsChannel })
+        tes3.playSound({ sound = faderConfig.onSound, mixChannel = effectsChannel })
     end
 end
 
-local function fadeOut(config)
-    config.active = false
-    config.fader:fadeOut({ duration = fadeTime })
-    setFading(config)
-    if config.offSound then
+local function fadeOut(faderConfig)
+    faderConfig.active = false
+    faderConfig.fader:fadeOut({ duration = fadeTime })
+    setFading(faderConfig)
+    if faderConfig.offSound then
         local effectsChannel = 2
-        tes3.playSound({ sound = config.offSound, mixChannel = effectsChannel })
+        tes3.playSound({ sound = faderConfig.offSound, mixChannel = effectsChannel })
     end
 end
 
 
 local function checkFaders()
-    for _, config in pairs(faderConfigs) do
-        if not config.isFading then
+    for _, faderConfig in pairs(faderConfigs) do
+        if not faderConfig.isFading then
             common.log:trace("Not already fading, checking fade values")
-            local condition = conditionConfig[config.condition]
+            local condition = conditionConfig[faderConfig.condition]
             local currentValue = condition:getValue()
 
             local outOfBounds = false
-            if config.conditionMin and currentValue < config.conditionMin then 
+            if faderConfig.conditionMin and currentValue < faderConfig.conditionMin then 
                 outOfBounds = true 
             end
-            if config.conditionMax and currentValue > config.conditionMax then
+            if faderConfig.conditionMax and currentValue > faderConfig.conditionMax then
                 outOfBounds = true 
             end
             --Deactivate
-            if outOfBounds and config.active then
-                fadeOut(config)
+            if outOfBounds and faderConfig.active then
+                fadeOut(faderConfig)
             --Activate
-            elseif not outOfBounds and not config.active then
-                fadeIn(config)
+            elseif not outOfBounds and not faderConfig.active then
+                fadeIn(faderConfig)
             end
         else
             common.log:trace("wait until fader is finished")
@@ -96,10 +96,10 @@ end
 event.register("simulate", checkFaders)
 
 event.register("loaded", function()
-    for _, config in pairs(faderConfigs) do
-        config.isFading = false
-        if config.active then
-            fadeOut(config)
+    for _, faderConfig in pairs(faderConfigs) do
+        faderConfig.isFading = false
+        if faderConfig.active then
+            fadeOut(faderConfig)
         end
     end
 end)

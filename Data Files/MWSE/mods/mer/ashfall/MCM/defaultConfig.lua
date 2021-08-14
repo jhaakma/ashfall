@@ -1,10 +1,11 @@
 
 return {
+    checkForUpdates = true,
     --intro setup
-    doIntro = true, 
+    doIntro = false, 
     manualTimeScale = 20,
-    overrideTimeScale = false,
-    overrideFood = false,
+    overrideTimeScale = true,
+    overrideFood = true,
 
     --dev stuff
     logLevel = "INFO",

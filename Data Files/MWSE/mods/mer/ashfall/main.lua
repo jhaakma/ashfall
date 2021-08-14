@@ -1,35 +1,21 @@
+local common = require("mer.ashfall.common.common")
+local Interop = require("mer.ashfall.interop")
+local versionController = require("mer.ashfall.versionController")
 --[[
     Plugin: Ashfall.esp
 --]]
-
-if not mwse.loadConfig("ashfall") then
-    mwse.saveConfig("ashfall", {})
-end
-
-local function getVersion()
-    local versionFile = io.open("Data Files/MWSE/mods/mer/ashfall/version.txt", "r")
-    local version = ""
-    for line in versionFile:lines() do -- Loops over all the lines in an open text file
-        version = line
-    end
-    return version
-end
-
-local common = require ("mer.ashfall.common.common")
-local Interop = require ("mer.ashfall.interop")
-
 local function initialized()
     if tes3.isModActive("Ashfall.esp") then
-        --This has to go first so events trigger properly
+        versionController.checkForUpdates()
+
+        -- This has to go first so events trigger properly
         require("mer.ashfall.referenceController")
 
         require("mer.ashfall.survival")
-       
-        
-        
+
         require("mer.ashfall.intro")
-        require ("mer.ashfall.scriptTimer")
-        --needs
+        require("mer.ashfall.scriptTimer")
+        -- needs
         require("mer.ashfall.needs.waterController")
         require("mer.ashfall.needs.needsTooltips")
         require("mer.ashfall.needs.extremeEffects")
@@ -45,8 +31,8 @@ local function initialized()
 
         require("mer.ashfall.quickKeys")
         require("mer.ashfall.activators.activationEvent")
-        
-        require("mer.ashfall.bedrollController")        
+
+        require("mer.ashfall.bedrollController")
         require("mer.ashfall.backpackController")
         require("mer.ashfall.merchants.merchantController")
         require("mer.ashfall.merchants.priceController")
@@ -55,11 +41,9 @@ local function initialized()
         require("mer.ashfall.branch.branches")
 
         require("mer.ashfall.crafting.controllers")
-        
-        event.trigger("Ashfall:Interop", Interop)
-        common.log:info("%s Initialised", getVersion())
 
-        
+        event.trigger("Ashfall:Interop", Interop)
+        common.log:info("%s Initialised", versionController.getVersion())
     end
 end
 
@@ -68,13 +52,10 @@ event.register("UIEXP:sandboxConsole", function(e)
     e.sandbox.ashfall.data = common.data
 end)
 
---Need to initialise immediately
-require ("mer.ashfall.effects.faderController")
+-- Need to initialise immediately
+require("mer.ashfall.effects.faderController")
 
 event.register("initialized", initialized)
 
 require("mer.ashfall.MCM.mcm")
-
-
-
 
