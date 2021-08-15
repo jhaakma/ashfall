@@ -28,7 +28,6 @@ local actions = {
 }
 
 local function keyPressed(e)
-    local config = mwse.loadConfig("ashfall")
     local doCrafting = (
         common.data and
         config.enableCrafting
