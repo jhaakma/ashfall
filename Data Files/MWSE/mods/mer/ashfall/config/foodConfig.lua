@@ -137,22 +137,22 @@ this.stewBuffs = {
 --min: fully cooked multi at lowest cooking skill
 --max fully cooked multi at highest cooking skill
 this.grillValues = {
-    [this.type.meat] = { min = 1.5, max = 1.7 },
-    [this.type.egg] = { min = 1.5, max = 1.7 },
-    [this.type.vegetable] = { min = 1.3, max = 1.5 },
-    [this.type.mushroom] = { min = 1.2, max = 1.4 },
+    [this.type.meat] = { min = 1.4, max = 1.7 },
+    [this.type.egg] = { min = 1.4, max = 1.7 },
+    [this.type.vegetable] = { min = 1.4, max = 1.7 },
+    [this.type.mushroom] = { min = 1.4, max = 1.7 },
 }
 
 --Nutrition at weight==1.0
 this.nutrition = {
-    [this.type.meat] = 12,
-    [this.type.cookedMeat] = (12 * this.grillValues[this.type.meat].min), 
-    [this.type.egg] = 10,
-    [this.type.vegetable] = 14,
-    [this.type.mushroom] = 13,
-    [this.type.seasoning] = 8,
-    [this.type.herb] = 10,
-    [this.type.food] = 30,
+    [this.type.meat] = 10,
+    [this.type.cookedMeat] = (10 * this.grillValues[this.type.meat].min), 
+    [this.type.egg] = 8,
+    [this.type.vegetable] = 8,
+    [this.type.mushroom] = 4,
+    [this.type.seasoning] = 2,
+    [this.type.herb] = 4,
+    [this.type.food] = 25,
     --[this.type.misc] = 0,
 }
 
