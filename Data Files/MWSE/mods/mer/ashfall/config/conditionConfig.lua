@@ -37,17 +37,17 @@ conditions.hunger = Condition:new{
         peckish = { 
             text = "Peckish", 
             min = 20, max = 40,
-            spell = "fw_h_peckish",
-            effects = { 
-                { id = tes3.effect.drainAttribute, attribute = tes3.attribute.agility, amount = 0.1 }
-            }
+            --spell = "fw_h_peckish",
+            -- effects = { 
+            --     { id = tes3.effect.drainAttribute, attribute = tes3.attribute.agility, amount = 0.1 }
+            -- }
         },
         wellFed = { 
             text = "Well Fed", 
             min = 0, max = 20, 
             spell = "fw_h_wellFed",
             effects = { 
-                { id = tes3.effect.fortifyAttribute, attribute = tes3.attribute.agility, amount = 0.2 }
+                { id = tes3.effect.fortifyAttribute, attribute = tes3.attribute.agility, amount = 0.1 }
             }
         },
     },
