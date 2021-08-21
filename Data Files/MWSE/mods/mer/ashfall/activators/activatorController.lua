@@ -123,54 +123,44 @@ end
 function this.callRayTest()
     this.current = nil
     this.currentRef = nil
-
+ 
     local eyePos = tes3.getPlayerEyePosition()
-    local eyeDirection = tes3.getPlayerEyeVector()
-
+    local eyeVec = tes3.getPlayerEyeVector()
+    local maxDist = tes3.findGMST(tes3.gmst.iMaxActivateDist).value
+ 
     local result = tes3.rayTest{
         position = eyePos,
-        direction = eyeDirection,
-        ignore = { tes3.player }
+        direction = eyeVec,
+        ignore = { tes3.player },
+        maxDistance = maxDist,
     }
-
-    if result then
-        if (result and result.reference ) then 
-            local distance = eyePos:distance(result.intersection)
-
-            --Look for activators from list
-            if distance < tes3.findGMST(tes3.gmst.iMaxActivateDist).value then
-                local targetRef = result.reference
-                for activatorId, activator in pairs(this.list) do
-                    if activator:isActivator(targetRef.object.id) then
-                        this.current = activatorId
-                        this.currentRef = targetRef
-                        this.parentNode = result.object.parent
-                    end
-                end
-                createActivatorIndicator()
-                return
+ 
+    if result and result.reference then
+        --Look for activators from list
+        local targetRef = result.reference
+        for activatorId, activator in pairs(this.list) do
+            if activator:isActivator(targetRef.object.id) then
+                this.current = activatorId
+                this.currentRef = targetRef
+                this.parentNode = result.object.parent
+                break
             end
         end
-
+    else
         --Special case for looking at water
         local cell =  tes3.player.cell
-        local waterLevel = cell.waterLevel or 0
-        local intersection = result.intersection
-        local adjustedIntersection = tes3vector3.new( intersection.x, intersection.y, waterLevel )
-        local adjustedDistance = tes3.getCameraPosition():distance(adjustedIntersection)
-        if adjustedDistance < 300 and cell.hasWater then
-            local blockedBySomething =
-                result.reference and
-                result.reference.baseObject.objectType ~= tes3.objectType.static
-            local cameraIsAboveWater = tes3.getCameraPosition().z > waterLevel
-            local isLookingAtWater = intersection.z < waterLevel
-            if cameraIsAboveWater and isLookingAtWater and not blockedBySomething then
+        local waterLevel = cell.hasWater and cell.waterLevel
+        if waterLevel and eyePos.z > waterLevel then
+            local intersection = (result and result.intersection) or (eyePos + eyeVec * maxDist)
+            if waterLevel >= intersection.z then
                 this.current = "water"
-            end 
+            end
         end
     end
+ 
     createActivatorIndicator()
 end
+
  
 local isBlocked
 local function blockScriptedActivate(e)
