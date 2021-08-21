@@ -2,8 +2,7 @@ return {
     text = "Add Ladle",
     showRequirements = function(campfire)
         return (
-            campfire.data.hasSupports and
-            campfire.data.utensil == "cookingPot" and
+            campfire.sceneNode:getObjectByName("SWITCH_LADLE") and
             not campfire.data.ladle and
             campfire.data.dynamicConfig and
             campfire.data.dynamicConfig.kettle == "dynamic"

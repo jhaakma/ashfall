@@ -913,39 +913,6 @@ function this.calculateTeaBuffDuration(amount, maxDuration)
     return duration * skillMulti
 end
 
-function this.getGenericUtensilName(obj)
-    local name = obj and obj.name
-    if name then
-        local colonIndex = string.find(obj.name, ":") or 0
-        return string.sub(obj.name, 0, colonIndex - 1 )
-    end
-end
 
-function this.getAttachmentLookingAt(campfire, node)
-    local attachments = {
-        HANG_UTENSIL = campfire.data.utensil,
-        SWITCH_GRILL = "grill",
-        ATTACH_GRILL = "grill",
-        Supports = "supports"
-    }
-    local lookingAt = "campfire"
-    while node.parent do
-        if attachments[node.name] then
-            lookingAt = attachments[node.name]
-        end
-        node = node.parent
-    end
-    local id
-    if lookingAt == "kettle" or lookingAt == "cookingPot" then
-        id = campfire.data.utensilId
-    elseif lookingAt == "grill" then
-        id = campfire.data.grillId
-    end
-    local obj = id and tes3.getObject(id)
-    return {
-        type = lookingAt,
-        object = obj
-    }
-end
 
 return this

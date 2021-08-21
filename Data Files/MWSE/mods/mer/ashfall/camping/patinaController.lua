@@ -1,4 +1,5 @@
 local common = require ("mer.ashfall.common.common")
+local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 local this = {}
 local metalPatterns = {
     "iron", "steel", "metal", "pewter", "copper"
@@ -68,7 +69,7 @@ end
 
 
 function this.addPatina(rootNode, amount)
-    common.log:trace("+++++ADD PATINA")
+    --common.log:trace("+++++ADD PATINA")
     if not rootNode then return end
     if not amount then return end
     local low, high = findLowestAndHighest(rootNode)
@@ -89,6 +90,8 @@ function this.addPatina(rootNode, amount)
             end
         end
     end
+    rootNode:update()
+    rootNode:updateNodeEffects()
     return appliedPatina
 end
 
@@ -101,7 +104,7 @@ local function doPatinaDrop(e)
             if patinaAmount > 0 and e.reference.position.z < e.reference.cell.waterLevel then
                 data.patinaAmount = nil
 
-                tes3.messageBox("You wash your %s.", common.helper.getGenericUtensilName(e.reference.object))
+                tes3.messageBox("You wash your %s.", CampfireUtil.getGenericUtensilName(e.reference.object))
                 
                 local cleanSeconds = 2
                 --Play some splashy sounds

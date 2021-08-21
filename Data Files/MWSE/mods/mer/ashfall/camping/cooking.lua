@@ -1,4 +1,5 @@
 local common = require ("mer.ashfall.common.common")
+local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 local foodConfig = common.staticConfigs.foodConfig
 local hungerController = require("mer.ashfall.needs.hungerController")
 local skillSurvivalGrillingIncrement = 5
@@ -10,8 +11,8 @@ local patinaController = require("mer.ashfall.camping.patinaController")
 
 
 --How much fuel level affects grill cook speed
-local function calculateCookMultiplier(fuelLevel)
-    return 350 * math.min(math.remap(fuelLevel, 0, 10, 0.5, 1.5), 1.5)
+local function calculateCookMultiplier(heatLevel)
+    return 350 * math.min(math.remap(heatLevel, 0, 10, 0.5, 2.5), 2.5)
 end
 
 --How much ingredient weight affects grill cook speed
@@ -109,11 +110,11 @@ local function grillFoodItem(ingredient, timestamp)
 
                 local difference = timestamp - ingredient.data.lastCookUpdated
                 if difference > 0.008 then
-                    common.log:debug("++++++We're fucking grilling here what's the problem")
+                    
                     addGrillPatina(campfire, difference)
                     ingredient.data.lastCookUpdated = timestamp
 
-                    local thisCookMulti = calculateCookMultiplier(campfire.data.fuelLevel)
+                    local thisCookMulti = calculateCookMultiplier(CampfireUtil.getHeat(campfire))
                     local weightMulti = calculateCookWeightModifier(ingredient.object)
                     ingredient.data.cookedAmount = ingredient.data.cookedAmount + ( difference * thisCookMulti * weightMulti)
                     local cookedAmount = ingredient.data.cookedAmount

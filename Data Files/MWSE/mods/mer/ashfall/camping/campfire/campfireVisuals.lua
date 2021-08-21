@@ -1,5 +1,6 @@
 local common = require ("mer.ashfall.common.common")
 local patinaController = require("mer.ashfall.camping.patinaController")
+local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 --[[
     Mapping of campfire states to switch node states.
 ]]
@@ -18,7 +19,7 @@ local switchNodeValues = {
     end,
     SWITCH_SUPPORTS = function(campfire)
         local state = { OFF = 0, ON = 1 }  
-        return campfire.data.hasSupports and state.ON or state.OFF
+        return campfire.data.supportsId and state.ON or state.OFF
     end,
     SWITCH_GRILL = function(campfire)
         local state = { OFF = 0, ON = 1 }  
@@ -61,6 +62,17 @@ local switchNodeValues = {
     end
 }
 
+local supportMapping = {
+    supports_01 = {
+        path = "ashfall/cf/Supports_01.nif",
+    },
+    supports_02 = {
+        path = "ashfall/cf/Supports_02.nif",
+    },
+    supports_03 = {
+        path = "ashfall/cf/Supports_03.nif",
+    }
+}
 
 --Iterate over switch nodes and update them based on the current state of the campfire
 local function updateSwitchNodes(campfire)
@@ -91,8 +103,8 @@ local function updateLightingRadius(campfire)
         if not campfire.data.isLit then
             campfire.light:setAttenuationForRadius(0)
         else
-            local fuelLevel = campfire.data.fuelLevel or 1
-            local newRadius = math.clamp( ( fuelLevel / 10 ), 0.1, 1) * radius
+            local heatLevel = CampfireUtil.getHeat(campfire)
+            local newRadius = math.clamp( ( heatLevel / 10 ), 0.1, 1) * radius
             campfire.light:setAttenuationForRadius(newRadius)
         end
     end
@@ -102,7 +114,7 @@ end
 local function updateFireScale(campfire)
     local fireNode = campfire.sceneNode:getObjectByName("FIRE_PARTICLE_NODE")
     if fireNode then
-        local fuelLevel = campfire.data.fuelLevel or 1
+        local fuelLevel = CampfireUtil.getHeat(campfire)
         local multiplier = 1 + ( fuelLevel * 0.05 )
         multiplier = math.clamp( multiplier, 0.5, 1.5)
         fireNode.scale = multiplier
@@ -169,59 +181,41 @@ end
 
 --Update the collision box of the campfire
 local function updateCollision(campfire)
-    local collisionNode = campfire.sceneNode:getObjectByName("COLLISION_SUPPORTS")
-    if collisionNode then
-        if campfire.data.hasSupports then
-            collisionNode.scale = 1.0
+    local collisionSupportsNode = campfire.sceneNode:getObjectByName("COLLISION_SUPPORTS")
+    if collisionSupportsNode then
+        if campfire.data.supportsId then
+            collisionSupportsNode.scale = 1.0
         else
-            collisionNode.scale = 0.0
+            collisionSupportsNode.scale = 0.0
         end
     end
-    local collisionSupportsNode = campfire.sceneNode:getObjectByName("COLLISION")
-    if collisionSupportsNode then
+    local collisionNode = campfire.sceneNode:getObjectByName("COLLISION")
+    if collisionNode then
         if campfire.data.destroyed then     
             --Remove collision node
-                collisionSupportsNode.scale = 0
+                collisionNode.scale = 0
         else
-            collisionSupportsNode.scale = 1.0
+            collisionNode.scale = 1.0
         end
     end
 end
 
-
+local function updateCampfireVisuals(campfire)
+    updateSwitchNodes(campfire)
+    updateLightingRadius(campfire)
+    updateFireScale(campfire)
+    updateWaterHeight(campfire)
+    updateSteamScale(campfire)
+    updateCollision(campfire)
+    campfire:updateSceneGraph()
+    campfire.sceneNode:update()
+    campfire.sceneNode:updateNodeEffects()
+end
 local function updateVisuals(e)
-    common.helper.iterateRefType("campfire", function(campfire)
-        e.all = e.all ~= nil and e.all or true
-        if e.all or e.nodes then
-            updateSwitchNodes(campfire)
-        end
-        if e.all or e.lighting then
-            updateLightingRadius(campfire)
-        end
-        if e.all or e.fire then
-            updateFireScale(campfire)
-        end
-        if e.all or e.water then
-            updateWaterHeight(campfire)
-        end
-        if e.all or e.steam then
-            updateSteamScale(campfire)
-        end
-        if e.all or e.collision then
-            updateCollision(campfire)
-        end
-        campfire:updateSceneGraph()
-    end)
+    common.helper.iterateRefType("campfire", updateCampfireVisuals)
 end
 
 event.register("simulate", updateVisuals)
-
-
-local idToNameMappings = {
-    kettle = "Kettle",
-    cookingPot = "Cooking Pot",
-    grill = "Grill"
-}
 
 
 local function moveOriginToAttachPoint(node)
@@ -234,31 +228,48 @@ local function moveOriginToAttachPoint(node)
     end
 end
 
-local function updateAttachNodes(e)
-    common.log:trace("Ashfall:UpdateAttachNodes")
-    local campfire = e.campfire
-    local sceneNode = campfire.sceneNode
-    local hangNode = sceneNode:getObjectByName("HANG_UTENSIL")
-    --Hanging utensils
-    if hangNode then
-
-
-        local utensilID = campfire.data.utensilId
-        common.log:trace("has hangNode")
-        common.log:trace("children: %s", #hangNode.children)
-        if campfire.data.utensil and utensilID then
-            local name = idToNameMappings[campfire.data.utensil]
-            if not name then 
-                common.log:error("No valid utensil type set on data.utensil")
-                return 
+local attachNodes = {
+    {
+        attachNodeName = "ATTACH_FIREWOOD",
+        getDoAttach = function(campfire)
+            return not not campfire.data.fuelLevel
+        end,
+        getAttachMesh = function(campfire) 
+            local firewoodMesh
+            --Vanilla replaced campfires get logs of wood, player made get branches
+            --TODO - do this properly
+            if campfire.data.staticCampfireInitialised then
+                firewoodMesh = "ashfall\\cf\\Firewood_02.nif"
+            else
+                firewoodMesh = "ashfall\\cf\\Firewood_01.nif"
             end
-            common.log:trace("Has utensil")
+            return common.loadMesh(firewoodMesh)
+        end
+    },
+    {
+        attachNodeName = "ATTACH_SUPPORTS",
+        getDoAttach = function(campfire)
+            return not not campfire.data.supportsId
+        end,
+        getAttachMesh = function(campfire)
+            local supportsItem = tes3.getObject(campfire.data.supportsId)
+            if supportsItem then
+                local mesh = common.loadMesh(supportsItem.mesh)
+                mesh.appCulled = false
+                return mesh
+            end
+        end
+    },
+    {
+        attachNodeName = "HANG_UTENSIL",
+        getDoAttach = function(campfire)
+            return (not not campfire.data.utensil)
+            and (not not campfire.data.utensilId)
+        end,
+        getAttachMesh = function(campfire)
+            local utensilID = campfire.data.utensilId
             local utensilObj = tes3.getObject(utensilID)
-            if utensilObj then
-                if #hangNode.children > 0 then
-                    hangNode:detachChildAt(1)
-                end
-                
+            if utensilObj then 
                 common.log:trace("utensil is a valid object")
                 local utensilData = common.staticConfigs.utensils[utensilID:lower()]
                 if not utensilData then
@@ -266,77 +277,119 @@ local function updateAttachNodes(e)
                 end
                 local meshId = utensilData and utensilData.meshOverride or utensilObj.mesh
                 local mesh = common.loadMesh(meshId)
-                mesh.name = name
+                local idToNameMappings = {
+                    kettle = "Kettle",
+                    cookingPot = "Cooking Pot",
+                }
                 moveOriginToAttachPoint(mesh)
-                hangNode:attachChild(mesh)
-
-
-                common.log:trace("Attached %s to campfire", utensilID)
+                mesh.name = idToNameMappings[campfire.data.utensil]
+                return mesh
             end
-        else
-            for i, childNode in ipairs(hangNode.children) do
-                if childNode then
-                    common.log:trace("removed utensil node")
-                    hangNode:detachChildAt(i)
-                end
-            end
+        end,
+        postAttach = function(campfire, attachNode)
+            local patinaAmount = campfire.data.utensilPatinaAmount
+            common.log:debug("hangNode updateAttachNodes add patina amount: %s", patinaAmount)
+            patinaController.addPatina(attachNode, patinaAmount)
         end
-
-        local patinaAmount = campfire.data.utensilPatinaAmount
-        common.log:debug("hangNode updateAttachNodes add patina amount: %s", patinaAmount)
-        patinaController.addPatina(hangNode, patinaAmount)
-    end
-    local grillNode = sceneNode:getObjectByName("ATTACH_GRILL")
-    local attachStand
-    if grillNode then
-        local grillId = campfire.data.grillId
-        if grillId then
-            local name = idToNameMappings["grill"]
+    },
+    {
+        attachNodeName = "ATTACH_GRILL",
+        getDoAttach = function (campfire)
+            return not not campfire.data.grillId
+        end,
+        getAttachMesh = function(campfire)
+            local grillId = campfire.data.grillId
             local grillObj = tes3.getObject(grillId)
             if grillObj then
-                if #grillNode.children > 0 then
-                    grillNode:detachChildAt(1)
-                end
-                
                 local data = common.staticConfigs.grills[grillId:lower()]
                 if not data then
                     common.log:error("%s is not a valid grill, but was set to campfire.data.grillId")
                 end
                 local meshId = data and data.meshOverride or grillObj.mesh
                 local mesh = common.loadMesh(meshId)
-                mesh.name = name
-                grillNode:attachChild(mesh)
-
-                --If the override mesh has an ATTACH_STAND node, then attach the original mesh to it
-                attachStand = mesh:getObjectByName("ATTACH_STAND")
-                if attachStand then
-                    common.log:debug("Found ATTACH_STAND node")
-                    local origMesh = common.loadMesh(grillObj.mesh)
-                    attachStand:attachChild(origMesh)
-                end
-
-                common.log:trace("Attached %s to campfire", grillId)
+                mesh.name = "Grill"
+                return mesh
             end
-        else
-            for i, childNode in ipairs(grillNode.children) do
+        end,
+    },
+    {
+        attachNodeName = "ATTACH_STAND",
+        getDoAttach = function(campfire)
+            return not not campfire.data.grillId
+        end,
+        getAttachMesh = function(campfire)
+            local grillId = campfire.data.grillId
+            if grillId then
+                local grillObj = tes3.getObject(grillId)
+                if grillObj then
+                    return common.loadMesh(grillObj.mesh)
+                end
+            end
+        end,
+        postAttach = function(campfire, attachNode)
+            local patinaAmount = campfire.data.grillPatinaAmount
+            common.log:debug("grillNode updateAttachNodes add patina amount: %s", patinaAmount)
+            patinaController.addPatina(attachNode, patinaAmount)
+        end
+    },
+    {
+        attachNodeName = "ATTACH_BELLOWS",
+        getDoAttach = function(campfire)
+            return not not campfire.data.bellowsId
+        end,
+        getAttachMesh = function(campfire)
+            local bellowsId = campfire.data.bellowsId
+            if bellowsId then
+                local bellowsMesh = tes3.getObject(bellowsId)
+                if bellowsMesh then
+                    return common.loadMesh(bellowsMesh.mesh)
+                end
+            end
+        end,
+    }
+}
+
+local function updateAttachNodes(e)
+    common.log:debug("Ashfall:UpdateAttachNodes")
+    local campfire = e.campfire
+    local sceneNode = campfire.sceneNode
+
+    for _, attachData in ipairs(attachNodes) do
+        common.log:debug("++++ATTACH NODE: %s+++++++", attachData.attachNodeName)
+        local attachNode = sceneNode:getObjectByName(attachData.attachNodeName)
+        if attachNode then
+            common.log:debug("found attach node")
+            --remove children
+            for i, childNode in ipairs(attachNode.children) do
                 if childNode then
-                    common.log:trace("removed utensil node")
-                    grillNode:detachChildAt(i)
+                    common.log:debug("removed %s children", attachData.attachNodeName)
+                    attachNode:detachChildAt(i)
+                end
+            end
+            if attachData.getDoAttach(campfire) then
+                common.log:debug("Do attach: tru, getting mesh")
+                local mesh = attachData.getAttachMesh(campfire)
+                if mesh then
+                    common.log:debug("Mesh succeed, attaching")
+                    attachNode:attachChild(mesh)
+                else
+                    common.log:debug("Failed to retrieve mesh")
+                end
+            else
+                common.log:debug("Do attach: false, removing mesh")
+            end
+            if attachData.postAttach then
+                local attachNode = sceneNode:getObjectByName(attachData.attachNodeName)
+                if attachNode then
+                    common.log:debug("Running Post attach for %s", attachData.attachNodeName)
+                    attachData.postAttach(campfire, attachNode)
                 end
             end
         end
-
-        local patinaAmount = campfire.data.grillPatinaAmount
-        common.log:debug("grillNode updateAttachNodes add patina amount: %s", patinaAmount)
-        patinaController.addPatina((attachStand or grillNode), patinaAmount)
-
     end
 
 
-
-
-    campfire.sceneNode:update()
-    campfire.sceneNode:updateNodeEffects()
+    updateCampfireVisuals(campfire)
 end
 event.register("Ashfall:UpdateAttachNodes", updateAttachNodes)
 

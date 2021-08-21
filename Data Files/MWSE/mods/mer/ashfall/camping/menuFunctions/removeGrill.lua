@@ -1,9 +1,10 @@
 local common = require ("mer.ashfall.common.common")
+local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 return {
     text = function(campfire)
         local grillId = campfire.data.grillId
         local grill = tes3.getObject(grillId)
-        return string.format("Remove %s", common.helper.getGenericUtensilName(grill) or "Utensil")
+        return string.format("Remove %s", CampfireUtil.getGenericUtensilName(grill) or "Utensil")
     end,
     showRequirements = function(campfire)
         return ( 

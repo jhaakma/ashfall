@@ -35,6 +35,8 @@ local vanillaCampfires = {
     --No Supports
     furn_de_firepit_f_01 = { supports = false, rootHeight = 0 },
     furn_de_firepit_f_01_400 = { supports = false, rootHeight = 0 },
+
+    furn_de_minercave_grill_01 = { supports = false, rootHeight = 0, hasGrill = true, rotation = 90 }
 }
 
 --A list of shit that campfires can be composed of
@@ -95,22 +97,92 @@ local ignorePatterns = {
     'sound_'
 }
 
+local function getRandomItem(list)
+    local item = table.choice(table.keys(list))
+    local attempts = 0
+    while not tes3.getObject(item) and attempts < 10 do
+        common.log:debug("Found invalid item %s, trying again", item)
+        item = table.choice(table.keys(list))
+        attempts = attempts + 1
+    end
+
+    common.log:debug("returning randomg item: %s", item)
+    return item
+end
+
+local function addWater(campfire)
+    if math.random() < randomStuffChances.water then
+        campfire.data.waterAmount = 10 + math.random(50)
+        if campfire.data.isLit then
+            campfire.data.waterHeat = campfire.data.isLit and 100 or 0
+            tes3.playSound{
+                reference = campfire, 
+                sound = "ashfall_boil",
+                loop = true
+            }
+        end
+        --add tea to kettleswaterHeat
+        if campfire.data.utensil == "kettle" then
+            if math.random() < randomStuffChances.tea then
+                local teaType = table.choice(common.staticConfigs.teaConfig.validTeas)
+                campfire.data.waterType = teaType
+                campfire.data.teaProgress = 100
+            end
+        --add random stew to cooking pots
+        elseif campfire.data.utensil == "cookingPot" then
+            if math.random() < randomStuffChances.stew then
+                campfire.data.ladle = true
+                campfire.data.stewLevels = {}
+                local stewTypes = {}
+                for stewType, _ in pairs(foodConfig.getStewBuffList()) do
+                    table.insert(stewTypes, stewType)
+                end
+                local thisStewType = table.choice(stewTypes)
+                campfire.data.stewLevels = {
+                    [thisStewType] = 10 + math.random(90)
+                }
+                campfire.data.stewProgress = 100
+            end
+        end
+    end
+end
 
 local function addCookingPot(campfire)
     campfire.data.utensil = "cookingPot"
-    campfire.data.utensilId =  table.choice(table.keys(common.staticConfigs.cookingPots))
+    campfire.data.utensilId = getRandomItem(common.staticConfigs.cookingPots)
     campfire.data.waterCapacity = common.staticConfigs.utensils[campfire.data.utensilId].capacity
     campfire.data.dynamicConfig.cookingPot = "static"
+    addWater(campfire)
 end
 
 local function addKettle(campfire)
     campfire.data.dynamicConfig.kettle = "static"
     campfire.data.utensil = "kettle"
-    campfire.data.utensilId = table.choice(table.keys(common.staticConfigs.kettles))
+    campfire.data.utensilId = getRandomItem(common.staticConfigs.kettles)
     campfire.data.waterCapacity = common.staticConfigs.utensils[campfire.data.utensilId].capacity
+    addWater(campfire)
 end
 
-local function attachRandomStuff(campfire)
+local function addSupports(campfire, vanillaConfig)
+    common.log:debug("Setting supports")
+    local supportsId = "ashfall_supports_01" --Use teepee for vanilla ones because of things leaning on them etc
+    if vanillaConfig.squareSupports then
+        supportsId = "ashfall_supports_02" --Morrowind Rebirth ones
+    elseif vanillaConfig.ironSupports then
+        supportsId = "ashfall_supports_03" --Metal supports
+    end
+    campfire.data.supportsId = supportsId
+end
+
+local function addGrill(campfire)
+    campfire.data.hasGrill = true
+    campfire.data.grillId = "ashfall_grill_miner"
+    campfire.data.grillMinHeight =  0
+    campfire.data.grillMaxHeight = 100
+    campfire.data.grillDistance = 40
+end
+
+local function attachRandomStuff(campfire, vanillaConfig)
     if string.find(campfire.cell.id:lower(), "tomb") then return end
     if campfire.data.staticCampfireInitialised then return end
 
@@ -120,60 +192,18 @@ local function attachRandomStuff(campfire)
 
     --Initialise static utensils
     if campfire.data.dynamicConfig.supports == "static" then
-        common.log:debug("Setting hasSupports to true")
-        campfire.data.hasSupports = true
-    end
-    if campfire.data.dynamicConfig.kettle == "static" then
-        addKettle(campfire)
-    end
-    if campfire.data.dynamicConfig.cookingPot == "static" then
-        addCookingPot(campfire)
+        addSupports(campfire, vanillaConfig)
     end
     if campfire.data.dynamicConfig.grill == "static" then
-        campfire.data.hasGrill = true
-        campfire.data.grillMinHeight =  0
-        campfire.data.grillMaxHeight = 100
-        campfire.data.grillDistance = 40
+        addGrill(campfire)
     end
+    
 
     --If supports, add utensils
-    if campfire.data.hasSupports then
+    if campfire.data.supportsId then
         if campfire.data.utensil == nil and math.random() < randomStuffChances.utensil then
             if math.random() < 0.5 then addKettle(campfire) else addCookingPot(campfire) end
-            if math.random() < randomStuffChances.water then
-                campfire.data.waterAmount = 10 + math.random(50)
-                if campfire.data.isLit then
-                    campfire.data.waterHeat = campfire.data.isLit and 100 or 0
-                    tes3.playSound{
-                        reference = campfire, 
-                        sound = "ashfall_boil",
-                        loop = true
-                    }
-                end
-                --add tea to kettleswaterHeat
-                if campfire.data.utensil == "kettle" then
-                    if math.random() < randomStuffChances.tea then
-                        local teaType = table.choice(common.staticConfigs.teaConfig.validTeas)
-                        campfire.data.waterType = teaType
-                        campfire.data.teaProgress = 100
-                    end
-                --add random stew to cooking pots
-                elseif campfire.data.utensil == "cookingPot" then
-                    if math.random() < randomStuffChances.stew then
-                        campfire.data.ladle = true
-                        campfire.data.stewLevels = {}
-                        local stewTypes = {}
-                        for stewType, _ in pairs(foodConfig.getStewBuffList()) do
-                            table.insert(stewTypes, stewType)
-                        end
-                        local thisStewType = table.choice(stewTypes)
-                        campfire.data.stewLevels = {
-                            [thisStewType] = 10 + math.random(90)
-                        }
-                        campfire.data.stewProgress = 100
-                    end
-                end
-            end
+            
         end
     end
 
@@ -182,9 +212,13 @@ local function attachRandomStuff(campfire)
 end
 
 --If vanilla mesh was a light, then it should be lit by default
-local function setInitialState(campfire, vanillaRef, data, hasSupports)
+local function setInitialState(campfire, vanillaRef, data, vanillaConfig)
 
-    if hasSupports == true then
+    if data.hasGrill or vanillaConfig.hasGrill then
+        campfire.data.dynamicConfig.grill = "static"
+    end
+
+    if vanillaConfig.supports == true then
         common.log:debug("setting dynamicConfig.supports to static")
         --prevent removal of supports for kitbashing reasons
         campfire.data.dynamicConfig.supports = "static"
@@ -193,6 +227,12 @@ local function setInitialState(campfire, vanillaRef, data, hasSupports)
         end
     elseif data.hasPlatform == true then
        campfire.data.dynamicConfig.supports = "none"
+    else
+        if data.hasCookingPot then
+            vanillaConfig.ironSupports = true
+            addSupports(campfire, vanillaConfig)
+            addCookingPot(campfire)
+        end
     end
 
     --fire is lit already?
@@ -361,20 +401,20 @@ local function replaceCampfire(e)
             --decide which campfire to replace with
             local data = checkKitBashObjects(e.reference)
             if not data then return end
-            local replacement = "ashfall_campfire_static"
-            if data.hasGrill then
-                common.log:debug("Has Grill")
-                replacement = "ashfall_campfire_grill"
-            elseif vanillaConfig.squareSupports then
-                replacement = "ashfall_campfire_mr"
-            elseif vanillaConfig.supports == true then
-                replacement = "ashfall_campfire_static"
-            elseif data.hasCookingPot then
-                common.log:debug("Has Pot, no supports")
-                replacement = "ashfall_campfire_sup"
-            else
-                replacement = "ashfall_campfire_static"
-            end
+            local replacement = "ashfall_campfire"
+            -- if data.hasGrill then
+            --     common.log:debug("Has Grill")
+            --     replacement = "ashfall_campfire_grill"
+            -- elseif vanillaConfig.squareSupports then
+            --     replacement = "ashfall_campfire_mr"
+            -- elseif vanillaConfig.supports == true then
+            --     replacement = "ashfall_campfire_static"
+            -- elseif data.hasCookingPot then
+            --     common.log:debug("Has Pot, no supports")
+            --     replacement = "ashfall_campfire_sup"
+            -- else
+            --     replacement = "ashfall_campfire_static"
+            -- end
 
             common.log:debug("\n\nREPLACING %s with %s", e.reference.object.id, replacement)
             common.log:debug("position %s", e.reference.position)
@@ -390,15 +430,15 @@ local function replaceCampfire(e)
                 orientation = {
                     e.reference.orientation.x,
                     e.reference.orientation.y,
-                    tes3.player.orientation.z
+                    tes3.player.orientation.z + math.rad(vanillaConfig.rotation or 0)
                 },
                 cell = e.reference.cell
             }
 
-            campfire.data.dynamicConfig = campfireConfig.getConfig(replacement)
+            campfire.data.dynamicConfig = campfireConfig.getConfig(campfire.object.id)
             
-            setInitialState(campfire, e.reference, data, vanillaConfig.supports)
-            attachRandomStuff(campfire)
+            setInitialState(campfire, e.reference, data, vanillaConfig)
+            attachRandomStuff(campfire, vanillaConfig)
             event.trigger("Ashfall:UpdateAttachNodes", { campfire = campfire })
 
             campfire.scale = e.reference.scale

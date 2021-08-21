@@ -29,6 +29,7 @@ local fireValues = {
 
 local heatCache = {}
 local function getHeatSourceValue(ref)
+
     local baseObject = ref.baseObject
     local cacheHit = heatCache[baseObject]
     if cacheHit then return cacheHit end
@@ -45,6 +46,7 @@ end
 refController.registerReferenceController{
     id = "heatSource",
     requirements = function(_, ref)
+        if ref.disabled then return false end
         local isLight = ref.baseObject.objectType == tes3.objectType.light
         if isLight then
             return getHeatSourceValue(ref) ~= nil
@@ -56,6 +58,7 @@ refController.registerReferenceController{
 refController.registerReferenceController{
     id = "flame",
     requirements = function(_, ref)
+        if ref.disabled then return false end
         return activatorConfig.list.fire:isActivator(ref.object.id) == true
     end
 }

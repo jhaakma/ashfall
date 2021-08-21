@@ -2,6 +2,7 @@
     --Handles the heating and cooling of objects that can boil water
 ]]
 local common = require ("mer.ashfall.common.common")
+local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 local patinaController = require("mer.ashfall.camping.patinaController")
 local waterHeatRate = 40--base water heat/cooling speed
 local updateInterval = 0.001
@@ -59,7 +60,7 @@ local function updateBoilers(e)
                 --Heats up or cools down depending on fuel/is lit
                 local heatEffect = -1--negative if cooling down
                 if boilerRef.data.isLit then--based on fuel if heating up
-                    heatEffect = math.remap(boilerRef.data.fuelLevel, 0, common.staticConfigs.maxWoodInFire, minFuelWaterHeat, maxFuelWaterHeat)
+                    heatEffect = math.remap(CampfireUtil.getHeat(boilerRef), 0, common.staticConfigs.maxWoodInFire, minFuelWaterHeat, maxFuelWaterHeat)
                     common.log:trace("BOILER heatEffect: %s", heatEffect)
                 end
 

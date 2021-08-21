@@ -1,15 +1,18 @@
 local common = require ("mer.ashfall.common.common")
-local patinaController = require("mer.ashfall.camping.patinaController")
 
-local function addGrill(item, campfire, itemData)
-    --local grillData = common.staticConfigs.grills[item.id:lower()]
+local function addUtensil(item, campfire, itemData)
+    if common.staticConfigs.grills[item.id:lower()] then
+        --local grillData = common.staticConfigs.grills[item.id:lower()]
+        campfire.data.hasGrill = true
+        campfire.data.grillId = item.id:lower()
+        campfire.data.grillPatinaAmount = itemData and itemData.data.patinaAmount
+    elseif common.staticConfigs.bellows[item.id:lower()] then
+        campfire.data.bellowsId = item.id:lower()
+    end
+
     tes3.playSound{ reference = tes3.player, sound = "Item Misc Down"  }
-    campfire.data.hasGrill = true
-    campfire.data.grillId = item.id:lower()
-    campfire.data.grillPatinaAmount = itemData and itemData.data.patinaAmount
-    event.trigger("Ashfall:UpdateAttachNodes", {campfire = campfire})
     tes3.removeItem{ reference = tes3.player, item = item, itemData = itemData }
-
+    event.trigger("Ashfall:UpdateAttachNodes", {campfire = campfire})
     --event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})
 end
 
@@ -19,11 +22,11 @@ local function utensilSelect(campfire)
             title = "Select Utensil",
             noResultsText = "You do not have any utensils.",
                 filter = function(e)
-                    return common.staticConfigs.grills[e.item.id:lower()] ~= nil
+                    return common.staticConfigs.groundUtensils[e.item.id:lower()] ~= nil
                 end,
             callback = function(e)
                 if e.item then
-                    addGrill(e.item, campfire, e.itemData)
+                    addUtensil(e.item, campfire, e.itemData)
                 end
             end
         }
@@ -33,12 +36,11 @@ end
 return {
     text = "Place Utensil",
     showRequirements = function(campfire)
-        return (not campfire.data.grillId) 
-            and (campfire.data.dynamicConfig 
-            and campfire.data.dynamicConfig.grill == "dynamic")
+        return (not campfire.data.grillId) and campfire.sceneNode:getObjectByName("ATTACH_GRILL")
+            or (not campfire.data.bellowsId) and campfire.sceneNode:getObjectByName("ATTACH_BELLOWS")
     end,
     enableRequirements = function()
-        for id, _ in pairs(common.staticConfigs.grills) do
+        for id, _ in pairs(common.staticConfigs.groundUtensils) do
             if  mwscript.getItemCount{ reference = tes3.player, item = id} > 0 then
                 return true
             end

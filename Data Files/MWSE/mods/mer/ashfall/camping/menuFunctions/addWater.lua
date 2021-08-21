@@ -56,7 +56,7 @@ return {
                             local waterTransferred = t.amount
                             e.itemData.data.waterAmount = e.itemData.data.waterAmount - waterTransferred
 
-                            campfire.data.waterAmount = campfire.data.waterAmount + waterTransferred
+                            campfire.data.waterAmount = math.floor(campfire.data.waterAmount + waterTransferred)
                             local waterAfter = campfire.data.waterAmount
                             tes3ui.updateInventoryTiles()
 

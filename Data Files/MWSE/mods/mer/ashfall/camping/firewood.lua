@@ -47,6 +47,7 @@ local function placeCampfire(e)
     common.helper.yeet(e.target)
     campfire:deleteDynamicLightAttachment()
     campfire.data.fuelLevel = e.target.stackSize or 1
+    event.trigger("Ashfall:UpdateAttachNodes", { campfire = campfire})
 end
 
 

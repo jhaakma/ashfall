@@ -1,4 +1,5 @@
 local common = require ("mer.ashfall.common.common")
+local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 
 local function checkDynamicStatus(campfire)
     return campfire.data.dynamicConfig[campfire.data.utensil] ~= "static"
@@ -8,7 +9,7 @@ return  {
     text = function(campfire)
         local utensilId = campfire.data.utensilId
         local utensil = tes3.getObject(utensilId)
-        return string.format("Remove %s", common.helper.getGenericUtensilName(utensil) or "Utensil")
+        return string.format("Remove %s", CampfireUtil.getGenericUtensilName(utensil) or "Utensil")
     end,
     showRequirements = function(campfire)
         return  campfire.data.utensilId ~= nil

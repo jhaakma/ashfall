@@ -1,60 +1,9 @@
 local common = require ("mer.ashfall.common.common")
+local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 
 --[[
     Mapping of which buttons can appear for each part of the campfire selected
 ]]
-local buttonMapping = {
-    ["grill"] = {
-        "removeGrill",
-    },
-    ["cookingPot"] = {
-        --actions
-        "drink",
-        "eatStew",
-        "companionEatStew",
-        "fillContainer",
-        "addIngredient",
-        "addWater",
-        "emptyPot",
-        --attach
-        "addLadle",
-        --remove
-        "removeLadle",
-        "removeUtensil",
-    },
-    ["kettle"] = {
-        --actions
-        "drink",
-        "brewTea",
-        "fillContainer",
-        "emptyKettle",
-        --attach
-        "addWater",
-        --remove
-        "removeUtensil",
-    },
-    ["supports"] = {
-        --attach
-        "addUtensil",
-        --remove
-        "removeUtensil",
-        "removeSupports",
-    },
-    ["campfire"] = {
-        --actions
-        "lightFire",
-        --attach
-        "addFirewood",
-        "addSupports",
-        "addGrill",
-        --remove
-        "removeSupports",
-        "removeGrill",
-        --destroy
-        "extinguish",
-        "destroy",
-    }
-}
 
 local function getDisabledText(disabledText, campfire)
     if type(disabledText) == "function" then
@@ -68,9 +17,9 @@ local function onActivateCampfire(e)
 
     local campfire = e.ref
     local node = e.node
-    local attachmentData = common.helper.getAttachmentLookingAt(campfire, node)
+    local attachmentConfig = CampfireUtil.getAttachmentConfig(node)
 
-    local addButton = function(tbl, buttonData)
+    local function addButton(tbl, buttonData)
         local showButton = (
             buttonData.showRequirements == nil or
             buttonData.showRequirements(campfire)
@@ -105,16 +54,8 @@ local function onActivateCampfire(e)
 
     local buttons = {}
     --Add contextual buttons
-    local buttonList = buttonMapping.campfire
-    
-    --If looking at an attachment, show buttons for it instead
-    local text
-    if buttonMapping[attachmentData.type] then
-        buttonList = buttonMapping[attachmentData.type]
-        text = common.helper.getGenericUtensilName(attachmentData.object) or "Campfire"
-        if attachmentData.type == "supports" then text = "Supports" end
-    end
-
+    local buttonList = attachmentConfig.commands
+    local text = CampfireUtil.getAttachmentName(campfire, attachmentConfig)
     for _, buttonType in ipairs(buttonList) do
         local buttonData = require(string.format("mer.ashfall.camping.menuFunctions.%s", buttonType))
         addButton(buttons, buttonData)

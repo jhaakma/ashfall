@@ -26,6 +26,13 @@ local function updateFuelConsumers(e)
             if fuelConsumer.data.isLit then
                 fuelConsumer.data.lastFuelUpdated = e.timestamp
 
+                local bellowsEffect = 1.0
+                local bellowsId = fuelConsumer.data.bellowsId and fuelConsumer.data.bellowsId:lower()
+                local bellowsData = common.staticConfigs.bellows[bellowsId]
+                if bellowsData then
+                    bellowsEffect = bellowsData.burnRateEffect
+                end
+
                 local rainEffect = 1.0
                 if not common.helper.checkRefSheltered(fuelConsumer) then
                     --raining and fuelConsumer exposed
@@ -37,9 +44,7 @@ local function updateFuelConsumers(e)
                     end
                 end
 
-
-
-                fuelConsumer.data.fuelLevel = fuelConsumer.data.fuelLevel - ( difference * fuelDecay * rainEffect )
+                fuelConsumer.data.fuelLevel = fuelConsumer.data.fuelLevel - ( difference * fuelDecay * rainEffect * bellowsEffect )
 
                 --static campfires never go out
                 if fuelConsumer.data.dynamicConfig and  fuelConsumer.data.dynamicConfig.campfire == "static" then

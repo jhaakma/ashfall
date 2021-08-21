@@ -43,7 +43,7 @@ return {
     text = "Hang Utensil",
     showRequirements = function(campfire)
         return (
-            campfire.data.hasSupports and
+            campfire.sceneNode:getObjectByName("HANG_UTENSIL") and
             not campfire.data.utensil and
             campfire.data.dynamicConfig and
             (campfire.data.dynamicConfig.kettle == "dynamic"

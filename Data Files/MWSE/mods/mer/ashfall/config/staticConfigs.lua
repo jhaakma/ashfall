@@ -655,6 +655,10 @@ for id, data in pairs(this.utensils) do
 end
 
 this.grills = {
+    ashfall_grill_miner = {
+        type = "grill",
+    },
+
     ashfall_grill = {
         type = "grill",
         meshOverride = "ashfall\\grill_attach.nif"
@@ -680,5 +684,23 @@ this.grills = {
     }
 }
 
+this.bellows = {
+    misc_de_bellows10 = {
+        type = "bellows",
+        --meshOverride
+        burnRateEffect = 1.5,
+        heatEffect = 2.0
+    }
+}
+
+this.groundUtensils = {}
+table.copy(this.grills, this.groundUtensils)
+table.copy(this.bellows, this.groundUtensils)
+
+this.supports = {
+    ashfall_supports_01 = { type = "supports", materials = { ashfall_firewood = 3 } }, --wooden teepee
+    ashfall_supports_02 = { type = "supports", materials = {  ashfall_firewood = 3 } }, --wooden MR
+    ashfall_supports_03 = { type = "supports" }, -- Iron
+}
 
 return this

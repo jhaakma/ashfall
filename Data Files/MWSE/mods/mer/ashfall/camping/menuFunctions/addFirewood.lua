@@ -38,6 +38,6 @@ return {
         campfire.data.fuelLevel = campfire.data.fuelLevel + getWoodFuel()
         campfire.data.burned = false
         mwscript.removeItem{ reference = tes3.player, item = common.staticConfigs.objectIds.firewood }
-        event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, nodes = true})
+        event.trigger("Ashfall:UpdateAttachNodes", { campfire = campfire})
     end,
 }

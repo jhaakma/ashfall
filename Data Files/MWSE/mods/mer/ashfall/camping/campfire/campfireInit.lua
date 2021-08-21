@@ -29,6 +29,11 @@ local function registerCampfire(e)
 
     --Do some stuff to update old campfires
     if e.reference.data then
+        if e.reference.data.hasSupports then
+            e.reference.data.supportsId = "ashfall_supports_01"
+            e.reference.data.hasSupports = nil
+        end
+
         if e.reference.data.kettleId then
             common.log:info("Found campfire with kettleId, replacing with utensilId")
             e.reference.data.utensilId = e.reference.data.kettleId
