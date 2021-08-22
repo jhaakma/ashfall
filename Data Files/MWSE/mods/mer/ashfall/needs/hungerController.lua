@@ -39,7 +39,7 @@ function this.getNutrition(object, itemData)
 
     local foodValue = foodData.nutrition
     --scale by weight
-    foodValue = foodValue * math.remap(object.weight, 1, 2, 1, 1.5)
+    foodValue = foodValue * math.remap(object.weight, 0, 1, 0.2, 1)
 
     local cookedAmount = itemData and itemData.data.cookedAmount
     if cookedAmount then

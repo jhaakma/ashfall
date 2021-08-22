@@ -145,13 +145,13 @@ this.grillValues = {
 
 --Nutrition at weight==1.0
 this.nutrition = {
-    [this.type.meat] = 10,
-    [this.type.cookedMeat] = (10 * this.grillValues[this.type.meat].min),
-    [this.type.egg] = 8,
-    [this.type.vegetable] = 8,
-    [this.type.mushroom] = 4,
-    [this.type.seasoning] = 2,
-    [this.type.herb] = 4,
+    [this.type.meat] = 12,
+    [this.type.cookedMeat] = (12 * this.grillValues[this.type.meat].min),
+    [this.type.egg] = 10,
+    [this.type.vegetable] = 10,
+    [this.type.mushroom] = 8,
+    [this.type.seasoning] = 5,
+    [this.type.herb] = 5,
     [this.type.food] = 25,
     --[this.type.misc] = 0,
 }
