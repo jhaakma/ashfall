@@ -22,7 +22,7 @@ local cushions = {
 }
 
 local function canRest()
-    return tes3.canRest() 
+    return tes3.canRest()
 end
 
 local function cushionMenu(e)
@@ -34,14 +34,14 @@ local function cushionMenu(e)
             text = "Sit Down",
             requirements = canRest,
             callback = function()
-                -- if (not cushions[ref.object.id:lower()]) and (activator and not activator.ids[ref.object.id:lower()]) then 
+                -- if (not cushions[ref.object.id:lower()]) and (activator and not activator.ids[ref.object.id:lower()]) then
                 --     common.log:error("Cushion menu called on cushion that isn't in config somehow.")
-                --     return 
+                --     return
                 -- end
 
                 local location = {
                     position = tes3vector3.new(
-                        ref.position.x, 
+                        ref.position.x,
                         ref.position.y,
                         ref.position.z + common.helper.getObjectHeight(ref.object) - 7
                     ),
@@ -54,16 +54,16 @@ local function cushionMenu(e)
                 }
                 local collisionRef
                 if activator then collisionRef = ref end
-                animCtrl.showFastTimeMenu{ 
-                    message = "Sit Down", 
+                animCtrl.showFastTimeMenu{
+                    message = "Sit Down",
                     anim = "sitting",
                     location = location,
-                    recovering = true, 
+                    recovering = true,
                     speeds = { 2, 5, 10 },
                     collisionRef = collisionRef
                 }
             end,
-            tooltipDisabled = { 
+            tooltipDisabled = {
                 text = "You can't wait here; enemies are nearby."
             },
         },
@@ -72,7 +72,7 @@ local function cushionMenu(e)
             showRequirements = function()
                 return not activator
             end,
-            callback = function() 
+            callback = function()
                 timer.delayOneFrame(function()
                     skipActivate = true
                     tes3.player:activate(ref)
@@ -81,7 +81,7 @@ local function cushionMenu(e)
         },
     }
     common.helper.messageBox{
-        message = message, 
+        message = message,
         buttons = buttons,
         doesCancel = true
     }
@@ -105,7 +105,7 @@ local function activateCushion(e)
         if common.helper.getRefUnderwater(e.target) then
             return
         end
-        
+
         cushionMenu({ ref = e.target })
         return false
     end
@@ -114,7 +114,7 @@ event.register("activate", activateCushion)
 
 
 event.register(
-    "Ashfall:ActivatorActivated", 
-    cushionMenu, 
-    { filter = common.staticConfigs.activatorConfig.types.cushion } 
+    "Ashfall:ActivatorActivated",
+    cushionMenu,
+    { filter = common.staticConfigs.activatorConfig.types.cushion }
 )

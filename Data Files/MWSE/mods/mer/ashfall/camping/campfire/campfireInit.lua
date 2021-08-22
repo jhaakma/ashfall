@@ -1,6 +1,6 @@
 --[[
     This script handles when campfires/cooking stations are first
-    placed in the world. This includes replacing vanilla campfires and 
+    placed in the world. This includes replacing vanilla campfires and
     player-placed campfires.
 
     - Add random supports/kettle/stew etc to vanilla replaced campfires
@@ -46,12 +46,12 @@ local function registerCampfire(e)
             else
                 e.reference.data.utensilId = table.choice{"misc_com_bucket_metal", "misc_com_bucket_01", "ashfall_cooking_pot"}
             end
-            common.log:info("Found campfire with a utensil and no utensilId, setting to %s", 
+            common.log:info("Found campfire with a utensil and no utensilId, setting to %s",
                 e.reference.data.utensilId)
         end
 
         local missingGrillId = e.reference.data.hasGrill
-            and e.reference.data.dynamicConfig  
+            and e.reference.data.dynamicConfig
             and e.reference.data.dynamicConfig.grill == "dynamic"
             and e.reference.data.grillId == nil
         if missingGrillId then
@@ -62,14 +62,14 @@ local function registerCampfire(e)
             local data = common.staticConfigs.utensils[e.reference.data.utensilId]
             local capacity = data and data.capacity or 100
             e.reference.data.waterCapacity = capacity
-            common.log:info("Found campfire with a utensil and no water capacity, setting to %s. utensilID: %s", 
+            common.log:info("Found campfire with a utensil and no water capacity, setting to %s. utensilID: %s",
                 capacity, e.reference.data.utensilId)
         end
     end
     local dynamicConfig = campfireConfig.getConfig(e.reference.object.id)
     local isActivator = activatorConfig.list.campfire:isActivator(e.reference.object.id)
     local initialised = e.reference.data and e.reference.data.campfireInitialised
-    if dynamicConfig and isActivator and not initialised then  
+    if dynamicConfig and isActivator and not initialised then
         local campfire = e.reference
         common.log:debug("registerCampfire %s", campfire.object.id)
         campfire.data.campfireInitialised = true

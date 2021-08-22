@@ -11,7 +11,7 @@ return {
     enableRequirements = function()
         return mwscript.getItemCount{ reference = tes3.player, item = "misc_com_iron_ladle"} > 0
     end,
-    tooltipDisabled = { 
+    tooltipDisabled = {
         text = "Requires 1 Iron Ladle."
     },
     callback = function(campfire)

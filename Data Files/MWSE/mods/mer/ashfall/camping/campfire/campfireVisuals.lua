@@ -18,11 +18,11 @@ local switchNodeValues = {
         return campfire.data.burned and state.BURNED or state.UNBURNED
     end,
     SWITCH_SUPPORTS = function(campfire)
-        local state = { OFF = 0, ON = 1 }  
+        local state = { OFF = 0, ON = 1 }
         return campfire.data.supportsId and state.ON or state.OFF
     end,
     SWITCH_GRILL = function(campfire)
-        local state = { OFF = 0, ON = 1 }  
+        local state = { OFF = 0, ON = 1 }
         return campfire.data.hasGrill and state.ON or state.OFF
     end,
     SWITCH_COOKING_POT = function(campfire)
@@ -34,22 +34,22 @@ local switchNodeValues = {
         return campfire.data.ladle == true and state.ON or state.OFF
     end,
     SWITCH_KETTLE = function(campfire)
-        local state = { OFF = 0, ON = 1 }  
+        local state = { OFF = 0, ON = 1 }
         return campfire.data.utensil == "kettle" and state.ON or state.OFF
     end,
     SWITCH_POT_STEAM = function(campfire)
-        local state = { OFF = 0, ON = 1 } 
-        local showSteam = ( 
-            campfire.data.utensil == "cookingPot" and 
+        local state = { OFF = 0, ON = 1 }
+        local showSteam = (
+            campfire.data.utensil == "cookingPot" and
             campfire.data.waterHeat and
             campfire.data.waterHeat >= common.staticConfigs.hotWaterHeatValue
         )
         return showSteam and state.ON or state.OFF
     end,
     SWITCH_KETTLE_STEAM = function(campfire)
-        local state = { OFF = 0, ON = 1 } 
-        local showSteam = ( 
-            campfire.data.utensil == "kettle" and 
+        local state = { OFF = 0, ON = 1 }
+        local showSteam = (
+            campfire.data.utensil == "kettle" and
             campfire.data.waterHeat and
             campfire.data.waterHeat >= common.staticConfigs.hotWaterHeatValue
         )
@@ -132,7 +132,7 @@ local function updateWaterHeight(campfire)
     if not campfire.data.waterCapacity then return end
     local utensilData = getUtensilData(campfire)
     if not utensilData then return end
-    
+
     local waterMaxScale = utensilData.waterMaxScale or 1.0
     local waterMaxHeight = utensilData.waterMaxHeight or 20
     local minSteamHeight = utensilData.minSteamHeight or (waterMaxHeight/2)
@@ -150,7 +150,7 @@ local function updateWaterHeight(campfire)
         stewNode.translation.z = height
         stewNode.scale = scale
     end
-    local steamNode = campfire.sceneNode:getObjectByName("POT_STEAM") 
+    local steamNode = campfire.sceneNode:getObjectByName("POT_STEAM")
     if steamNode then
         steamNode.translation.z = math.max(height, minSteamHeight)
     end
@@ -158,8 +158,8 @@ end
 
 --Update the size of the steam coming off a cooking pot
 local function updateSteamScale(campfire)
-    -- local hasSteam = ( 
-    --     campfire.data.utensil == "cookingPot" and 
+    -- local hasSteam = (
+    --     campfire.data.utensil == "cookingPot" and
     --     campfire.data.waterHeat and
     --     campfire.data.waterHeat >= common.staticConfigs.hotWaterHeatValue
     -- )
@@ -170,7 +170,7 @@ local function updateSteamScale(campfire)
     --     if steamNode then steamNode = steamNode.children[1] end
     --     steamNode.scale = steamScale
 
-        -- local potSteam = campfire.sceneNode:getObjectByName("POT_STEAM") 
+        -- local potSteam = campfire.sceneNode:getObjectByName("POT_STEAM")
         -- if potSteam then
         --     local steamScale = math.min(math.remap(campfire.data.waterHeat, common.staticConfigs.hotWaterHeatValue, 100, 0.1, 1.0), 1.0)
         --     local materialProperty = potSteam:getObjectByName("SuperSpray"):getProperty(0x2)
@@ -191,7 +191,7 @@ local function updateCollision(campfire)
     end
     local collisionNode = campfire.sceneNode:getObjectByName("COLLISION")
     if collisionNode then
-        if campfire.data.destroyed then     
+        if campfire.data.destroyed then
             --Remove collision node
                 collisionNode.scale = 0
         else
@@ -234,7 +234,7 @@ local attachNodes = {
         getDoAttach = function(campfire)
             return not not campfire.data.fuelLevel
         end,
-        getAttachMesh = function(campfire) 
+        getAttachMesh = function(campfire)
             local firewoodMesh
             --Vanilla replaced campfires get logs of wood, player made get branches
             --TODO - do this properly
@@ -269,7 +269,7 @@ local attachNodes = {
         getAttachMesh = function(campfire)
             local utensilID = campfire.data.utensilId
             local utensilObj = tes3.getObject(utensilID)
-            if utensilObj then 
+            if utensilObj then
                 common.log:trace("utensil is a valid object")
                 local utensilData = common.staticConfigs.utensils[utensilID:lower()]
                 if not utensilData then

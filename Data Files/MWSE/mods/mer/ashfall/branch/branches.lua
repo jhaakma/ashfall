@@ -32,7 +32,7 @@ end
 local function getBranchGroupFromRegion(tree)
     common.log:debug("Attempting to get type from region of %s", tree.object.id)
     local thisRegion = tree.cell.region and tree.cell.region.id:lower()
-    local branchGroup = branchConfig.branchRegions[thisRegion] 
+    local branchGroup = branchConfig.branchRegions[thisRegion]
     if branchGroup then
         common.log:debug("Found from region\n")
         return branchGroup
@@ -113,8 +113,8 @@ local function addBranchesToTree(tree)
         --Drop and orient the branch on the ground
         local didOrient = common.helper.orientRefToGround({ ref = branch, terrainOnly = true })
         --Check for fail conditions
-        if not didOrient then 
-            branch:disable() 
+        if not didOrient then
+            branch:disable()
             mwscript.setDelete{ reference = branch}
         end
         --Too steep means it landed on a wall or something

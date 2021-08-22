@@ -5,7 +5,7 @@ local function centerText(element)
     element.autoHeight = true
     element.autoWidth = true
     element.wrapText = true
-    element.justifyText = "center" 
+    element.justifyText = "center"
 end
 
 local AttachConfig = {
@@ -53,7 +53,7 @@ local AttachConfig = {
             "addLadle",
             --remove
             "removeLadle",
-            "removeUtensil",  
+            "removeUtensil",
         },
         tooltipExtra = function(campfire, tooltip)
             local waterAmount = campfire.data.waterAmount or 0
@@ -62,9 +62,9 @@ local AttachConfig = {
                 local waterHeat = campfire.data.waterHeat or 0
                 local waterLabel = tooltip:createLabel{
                     text = string.format(
-                        "Water: %d/%d %s| Heat: %d/100", 
-                        math.ceil(waterAmount), 
-                        campfire.data.waterCapacity, 
+                        "Water: %d/%d %s| Heat: %d/100",
+                        math.ceil(waterAmount),
+                        campfire.data.waterCapacity,
                         ( campfire.data.waterType == "dirty" and "(Dirty) " or ""),
                         waterHeat)
                 }
@@ -79,7 +79,7 @@ local AttachConfig = {
                     elseif progress < 100 then
                         teaLabelText = string.format("%s (%d%% Brewed)", teaLabelText, progress)
                     end
-    
+
                     local teaLabel = tooltip:createLabel({ text = teaLabelText })
                     teaLabel.color = tes3ui.getPalette("header_color")
                     centerText(teaLabel)
@@ -89,58 +89,58 @@ local AttachConfig = {
                         effectBlock.autoHeight = true
                         effectBlock.autoWidth = true
                         effectBlock.flowDirection = "left_to_right"
-    
+
                         local icon = effectBlock:createImage{ path = "Icons/ashfall/spell/teaBuff.dds" }
                         icon.height = 16
                         icon.width = 16
                         icon.scaleMode = true
                         icon.borderAllSides = 1
-                        
+
                         local effectLabelText = teaData.effectDescription
                         local effectLabel = effectBlock:createLabel{ text = effectLabelText }
                         effectLabel.borderLeft = 4
                     end
                 end
-    
+
                 if campfire.data.stewLevels then
                     local stewName = foodConfig.isStewNotSoup(campfire.data.stewLevels) and "Stew" or "Soup"
                     tooltip:createDivider()
-    
+
                     local progress = ( campfire.data.stewProgress or 0 )
                     local progressText
-    
+
                     if campfire.data.waterHeat < common.staticConfigs.hotWaterHeatValue then
                         progressText = string.format("%s (Cold)", stewName)
                     elseif progress < 100 then
-                        progressText = string.format("%s (%d%% Cooked)", stewName, progress ) 
-                    else 
+                        progressText = string.format("%s (%d%% Cooked)", stewName, progress )
+                    else
                         progressText = string.format("%s (Cooked)", stewName)
                     end
                     local stewProgressLabel = tooltip:createLabel({ text = progressText })
                     stewProgressLabel.color = tes3ui.getPalette("header_color")
                     centerText(stewProgressLabel)
-    
-                    
+
+
                     for foodType, ingredLevel in pairs(campfire.data.stewLevels) do
                         local value = math.min(ingredLevel, 100)
                         local stewBuff = foodConfig.getStewBuffForFoodType(foodType)
                         local spell = tes3.getObject(stewBuff.id)
                         local effect = spell.effects[1]
-    
+
                         local ingredText = string.format("(%d%% %s)", value, foodType )
                         local ingredLabel
-    
+
                         if progress >= 100 then
                             local block = tooltip:createBlock{}
                             block.autoHeight = true
                             block.autoWidth = true
                             block.childAlignX = 0.5
-    
-                            
+
+
                             local image = block:createImage{path=("icons\\" .. effect.object.icon)}
                             image.wrapText = false
                             image.borderLeft = 4
-    
+
                             --"Fortify Health"
                             local statName
                             if effect.attribute ~= -1 then
@@ -162,7 +162,7 @@ local AttachConfig = {
                             --for X hours
                             local duration = common.helper.calculateStewBuffDuration()
                             local hoursText = string.format("for %d hour%s", duration, (duration >= 2 and "s" or "") )
-    
+
                             ingredLabel = block:createLabel{text = string.format("%s %s: %s %s %s", spell.name, ingredText, effectNameText, pointsText, hoursText) }
                             ingredLabel.wrapText = false
                             ingredLabel.borderLeft = 4

@@ -16,7 +16,7 @@ return {
     showRequirements = function(campfire)
         getNearbyCompanions()
         return (
-            campfire.data.stewLevels and 
+            campfire.data.stewLevels and
             campfire.data.stewProgress and
             campfire.data.stewProgress == 100 and
            #(nearbyCompanions) > 0
@@ -35,7 +35,7 @@ return {
                     mwscript.removeSpell{ reference = companion, spell = buff.id }
                 end
             end
-            
+
             --Add buffs and set duration
             for foodType, ingredLevel in pairs(campfire.data.stewLevels) do
                 --add spell
@@ -56,7 +56,7 @@ return {
         end
         local stewName = foodConfig.isStewNotSoup(campfire.data.stewLevels) and "stew" or "soup"
         tes3.messageBox("Your companions eat the %s.", stewName)
-        
+
         campfire.data.waterAmount = campfire.data.waterAmount - maxAvailable
 
         if campfire.data.waterAmount < 1 then

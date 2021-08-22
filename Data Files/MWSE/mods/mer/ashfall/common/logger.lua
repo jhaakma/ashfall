@@ -1,6 +1,6 @@
 --[[
-    A logger class that can be registered by multiple mods. 
-    Each registered logger can set its own log level, and choose 
+    A logger class that can be registered by multiple mods.
+    Each registered logger can set its own log level, and choose
     to write to mwse.log or a custom log file.
 
     Author: Merlord
@@ -33,13 +33,13 @@ end
 
 --[[
     Creates a new logger. Can pass just a name or a table of options:
-    @string name: 
+    @string name:
         Name of mod, also counts as unique id of logger
-    @string outputFile: 
-        Optional. If set, logs will be sent to a file of this name 
+    @string outputFile:
+        Optional. If set, logs will be sent to a file of this name
         instead of mwse.log
-    @string logLevel: 
-        Optional. Set the log level. Options are: TRACE, DEBUG, INFO, WARN and ERROR. 
+    @string logLevel:
+        Optional. Set the log level. Options are: TRACE, DEBUG, INFO, WARN and ERROR.
         Defaults to INFO.
 ]]
 function Logger.new(nameOrData)
@@ -67,7 +67,7 @@ end
 
 function Logger.getLogger(name)
     local logger = registeredLoggers[name]
-    if logger then 
+    if logger then
         return logger
     else
         return false
@@ -81,7 +81,7 @@ function Logger:setLogLevel(newLogLevel)
 end
 
 --[[
-    Sets the name of the file to be written to. 
+    Sets the name of the file to be written to.
     @string outputFile
         MWSE.log or nil: reverts back to writing to MWSE.log
         Otherwise, creates a new file to start writing to
@@ -99,7 +99,7 @@ end
 
 --[[
     Generic write method, used by specific log functions
-    Formats the log message, and decides whether to write to 
+    Formats the log message, and decides whether to write to
     a file or to mwse.log.
 ]]
 function Logger:write(logLevel, message, ...)

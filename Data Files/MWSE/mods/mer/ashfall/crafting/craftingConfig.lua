@@ -4,18 +4,18 @@ local tentConfig = require("mer.ashfall.camping.tents.tentConfig")
 this.materials = {
     resin = {
         name = "Resin",
-        ids = {"ingred_resin_01", "ingred_shalk_resin_01" } 
+        ids = {"ingred_resin_01", "ingred_shalk_resin_01" }
     },
-    wood = { 
+    wood = {
         name = "Wood",
-        ids = {"ashfall_firewood"} 
+        ids = {"ashfall_firewood"}
     },
     leather = {
         name = "Leather",
-        ids = { 
-            "ingred_alit_hide_01", 
-            "ingred_guar_hide_01", 
-            "ingred_kagouti_hide_01", 
+        ids = {
+            "ingred_alit_hide_01",
+            "ingred_guar_hide_01",
+            "ingred_kagouti_hide_01",
             "ingred_netch_leather_01",
             "ingred_boar_leather"
         }

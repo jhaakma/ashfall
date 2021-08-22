@@ -62,7 +62,7 @@ this.placementConfig = {
     ashfall_bedroll = { maxSteepness = 0, drop = 25 },
     ashfall_cbroll_misc = { maxSteepness = 0, drop = 10 },
     ashfall_strawbed = { maxSteepness = 0, drop = 5  },
-    
+
     ashfall_tent_misc = { maxSteepness = 0.4},
     ashfall_tent_ashl_misc = { maxSteepness = 0.4},
     ashfall_tent_canv_b_misc = { maxSteepness = 0.4},
@@ -72,7 +72,7 @@ this.placementConfig = {
     ashfall_tent_imp_a = { maxSteepness = 0.4, drop = 170},
     ashfall_tent_qual_a = { maxSteepness = 0.4, drop = 170},
     ashfall_tent_ashl_a = { maxSteepness = 0.4, drop = 170},
-    
+
 
     ashfall_tent_active = { maxSteepness = 0.4, drop = 70},
     ashfall_tent_ashl_active = { maxSteepness = 0.4, drop = 70},
@@ -102,7 +102,7 @@ this.placementConfig = {
     ashfall_cushion_sq_04 = { maxSteepness = 0.2, drop = 5 },
     ashfall_cushion_sq_05 = { maxSteepness = 0.2, drop = 5 },
     ashfall_cushion_sq_06 = { maxSteepness = 0.2, drop = 5 },
-    ashfall_cushion_sq_07 = { maxSteepness = 0.2, drop = 5 },    
+    ashfall_cushion_sq_07 = { maxSteepness = 0.2, drop = 5 },
 
     ashfall_rug_01 = { maxSteepness = 1, drop = -2 },
     ashfall_rug_02 = { maxSteepness = 1, drop = -2 },
@@ -127,20 +127,20 @@ this.bottleConfig = {
     tankard = { capacity = 30, weight = 2 },
 
     --expensive, small, good weight efficiency
-    flask = { 
-        capacity = 80, 
+    flask = {
+        capacity = 80,
         value = 9,
         weight = 3 ,
     }, --waterPerDollar = 10, waterPerWeight = 30
 
-    limewareFlask = { 
+    limewareFlask = {
         capacity = 80,
         weight = 4 ,
     }, --waterPerDollar = 10, waterPerWeight = 30
 
     --cheap, small, medium weight efficiency
-    bottle = { 
-        capacity = 90, 
+    bottle = {
+        capacity = 90,
         value = 3,
         weight = 4,
     },-- waterPerDollar = 33, waterPerWeight = 25
@@ -164,50 +164,50 @@ this.bottleConfig = {
         weight = 6
     },
     --cheap, very large, low weight efficiency
-    jug = { 
-        capacity = 200, 
-        value = 5, 
-        weight = 10 
+    jug = {
+        capacity = 200,
+        value = 5,
+        weight = 10
     },--waterPerDollar = 44, waterPerWeight = 22
 
     --Pitchers tend to be best for large storage at home, not very portable
 
     --cheap, large, low weight efficiency
-    pitcher = { 
-        capacity = 190, 
-        value = 7, 
+    pitcher = {
+        capacity = 190,
+        value = 7,
         weight = 8,
     },--waterPerDollar = 25, waterPerWeight = 25
 
     --very cheap, large, very low weight efficiency
     metalPitcher = {
-        capacity = 190, 
-        value = 5, 
-        weight = 8 
+        capacity = 190,
+        value = 5,
+        weight = 8
     },--waterPerDollar = 100, waterPerWeight = 25
 
     --expensive, large, medium weight efficiency
-    redwarePitcher = { 
-        capacity = 200, 
-        value = 12, 
-        weight = 8 
+    redwarePitcher = {
+        capacity = 200,
+        value = 12,
+        weight = 8
     },--waterPerDollar = 25, waterPerWeight = 27.5
 
     --Expensive, large, medium weight efficiency
-    silverwarePitcher = { 
-        capacity = 200, 
-        value = 30, 
+    silverwarePitcher = {
+        capacity = 200,
+        value = 30,
         weight = 7,
     },--waterPerDollar = 7, waterPerWeight = 28.5
 
 
     --Expensive, large, medium weight efficiency
-    dwarvenPitcher = { 
-        capacity = 220, 
-        value = 40, 
-        weight = 8 
+    dwarvenPitcher = {
+        capacity = 220,
+        value = 40,
+        weight = 8
     }, --waterPerDollar = 5.5, waterPerWeight = 30
-} 
+}
 
 
 this.bottleList = {
@@ -274,7 +274,7 @@ this.bottleList = {
     misc_com_bottle_04 = this.bottleConfig.bottle,
     misc_com_bottle_05 = this.bottleConfig.bottle,
     misc_com_bottle_06 = this.bottleConfig.bottle,
-    
+
     misc_com_bottle_08 = this.bottleConfig.bottle,
     misc_com_bottle_09 = this.bottleConfig.bottle,
     misc_com_bottle_10 = this.bottleConfig.bottle,
@@ -324,7 +324,7 @@ this.bottleList = {
     t_ayl_claypot_01 = this.bottleConfig.pot,
     t_ayl_claypot_02 = this.bottleConfig.pot,
     t_ayl_claypot_03 = this.bottleConfig.pot,
- 
+
     t_nor_claypot_01 = this.bottleConfig.pot,
     t_nor_claypot_02 = this.bottleConfig.pot,
 
@@ -418,7 +418,7 @@ this.interiorTempValues = {
     ruin = -35,
     dungeon = -40,
     cave = -45,
-    tomb = -50, 
+    tomb = -50,
     barrow = -65
 }
 this.interiorTempPatterns = {
@@ -567,38 +567,38 @@ this.heatSourceValues = {
 
 this.utensils = {
     --iron
-    ashfall_kettle = { 
-        type = "kettle", 
+    ashfall_kettle = {
+        type = "kettle",
         capacity = 140
     },
     --steel
-    ashfall_kettle_01 = { 
-        type = "kettle", 
+    ashfall_kettle_01 = {
+        type = "kettle",
         capacity = 140
     },
     --ceramic
-    ashfall_kettle_02 = { 
-        type = "kettle", 
+    ashfall_kettle_02 = {
+        type = "kettle",
         capacity = 120
     },
     --ashl blue
-    ashfall_kettle_03 = { 
-        type = "kettle", 
+    ashfall_kettle_03 = {
+        type = "kettle",
         capacity = 130
     },
     --ashl red
-    ashfall_kettle_04 = { 
-        type = "kettle", 
+    ashfall_kettle_04 = {
+        type = "kettle",
         capacity = 130
     },
     --Ancient 6th house
-    ashfall_kettle_05 = { 
-        type = "kettle", 
+    ashfall_kettle_05 = {
+        type = "kettle",
         capacity = 150
     },
     --Pewter / Small
-    ashfall_kettle_06 = { 
-        type = "kettle", 
+    ashfall_kettle_06 = {
+        type = "kettle",
         capacity = 100
     },
     misc_com_bucket_metal = {
@@ -635,7 +635,7 @@ this.utensils = {
     },
 
     --RM's mod
-    dwrv_pan2 = {     
+    dwrv_pan2 = {
         type = "cookingPot",
         capacity = 230,
         waterMaxScale = 1.3,

@@ -67,9 +67,9 @@ local function onSkillsReady()
     end
 
     skillModule.registerSkill(
-        "Ashfall:Survival", 
-        {    
-            name = "Survival", 
+        "Ashfall:Survival",
+        {
+            name = "Survival",
             icon = "Icons/ashfall/survival.dds",
             value = this.skillStartValue,
             attribute = tes3.attribute.endurance,
@@ -89,7 +89,7 @@ event.register("OtherSkills:Ready", onSkillsReady)
 local function checkSkillModule()
     if not skillModule then
         this.helper.messageBox({
-            message = "Skills Module is not installed! This is a requirement for Ashfall and the mod will NOT work without it.", 
+            message = "Skills Module is not installed! This is a requirement for Ashfall and the mod will NOT work without it.",
             buttons = {
                 {
                     text = "Exit game and go to Skills Module Nexus page",
@@ -101,14 +101,14 @@ local function checkSkillModule()
                 {
                     text = "Continue with a broken game"
                 }
-            } 
+            }
         })
     end
 
     if ( skillModule.version == nil ) or ( skillModule.version < 1.4 ) then
 
         this.helper.messageBox({
-            message = "Outdated version of Skills Module detected.", 
+            message = "Outdated version of Skills Module detected.",
             buttons = {
                 {
                     text = "Exit game and go to Skills Module Nexus page",
@@ -120,7 +120,7 @@ local function checkSkillModule()
                 {
                     text = "Continue"
                 }
-            } 
+            }
         })
     end
 end
@@ -136,7 +136,7 @@ end
 -- end
 
 local function initData()
-        --Persistent data stored on player reference 
+        --Persistent data stored on player reference
     -- ensure data table exists
     local data = tes3.player.data
     data.Ashfall = data.Ashfall or {}

@@ -15,8 +15,8 @@ this.types = {
 }
 
 this.list = {}
-this.list.waterDirty = Activator:new{ 
-    name = "Water (Dirty)", 
+this.list.waterDirty = Activator:new{
+    name = "Water (Dirty)",
     type = this.types.dirtyWaterSource,
     mcmSetting = "enableThirst",
     ids = {
@@ -70,8 +70,8 @@ this.list.waterDirty = Activator:new{
     }
 }
 this.list.water = this.list.waterDirty
-this.list.waterClean = Activator:new{ 
-    name = "Water", 
+this.list.waterClean = Activator:new{
+    name = "Water",
     type = this.types.waterSource,
     mcmSetting = nil,
     ids = {
@@ -95,8 +95,8 @@ this.list.waterJug = Activator:new{
         ["a_water_jug"] = true --Yurts
     }
 }
-this.list.well = Activator:new{ 
-    name = "Well", 
+this.list.well = Activator:new{
+    name = "Well",
     type = this.types.waterSource,
     mcmSetting = nil,
     ids = {
@@ -170,10 +170,10 @@ this.list.well = Activator:new{
 
         --OAAB
         ["mr_imp_well"] = true,
-    } 
+    }
 }
-this.list.keg = Activator:new{ 
-    name = "Keg", 
+this.list.keg = Activator:new{
+    name = "Keg",
     type = this.types.waterSource,
     mcmSetting = nil,
     ids = {
@@ -196,7 +196,7 @@ this.list.vegetation = Activator:new{
         ["_fern_"] = true
     }
 }
-this.list.tree = Activator:new{ 
+this.list.tree = Activator:new{
     name = "Tree",
     type = this.types.woodSource,
     mcmSetting = nil,
@@ -227,7 +227,7 @@ this.list.tree = Activator:new{
         ["floraat_tree"] = true, --TR
         ['florabw_tree'] = true, --TR
         ['florach_tree'] = true, --TR
-        ['floragc_tree'] = true, --TR    
+        ['floragc_tree'] = true, --TR
         ['floragh_tree'] = true, --TR
         ['florahl_tree'] = true, --TR
         ['florajm_tree'] = true, --TR
@@ -235,10 +235,10 @@ this.list.tree = Activator:new{
         ['florakstr_tree'] = true, --TR
         ['floravm_tree'] = true, --TR
         ['floraww_tree'] = true, --TR
-        
+
     },
 }
-this.list.wood = Activator:new{ 
+this.list.wood = Activator:new{
     name = "Wood",
     type = this.types.woodSource,
     mcmSetting = nil,
@@ -265,8 +265,8 @@ this.list.wood = Activator:new{
         --["furn_log"] = true
     }
 }
-this.list.fire = Activator:new{ 
-    name = "Fire", 
+this.list.fire = Activator:new{
+    name = "Fire",
     type = this.types.fire,
     patterns = {
         firepit_f = true,
@@ -279,7 +279,7 @@ this.list.fire = Activator:new{
 }
 
 this.list.campfire = Activator:new{
-    name = "Campfire", 
+    name = "Campfire",
     type = this.types.campfire,
     mcmSetting = nil,
     ids = {

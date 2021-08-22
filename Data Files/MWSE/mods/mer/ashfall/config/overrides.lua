@@ -23,7 +23,7 @@ local overrides = {
         weight = 0.4,
         value = 2
     },
-    ["ingred_crab_meat_01"] = { 
+    ["ingred_crab_meat_01"] = {
         weight = 0.5,
         value = 2
     },
@@ -47,7 +47,7 @@ local overrides = {
 --[[
     Vanilla bug causes items to be unequipped on first load if inventory item named have changed
 
-    So we aren't renaming things anymore. 
+    So we aren't renaming things anymore.
 ]]
 
     --cooking equipment

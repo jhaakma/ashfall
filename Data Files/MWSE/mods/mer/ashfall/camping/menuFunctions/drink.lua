@@ -25,17 +25,17 @@ end
 return {
     text = "Drink",
     showRequirements = function(campfire)
-        return hasWaterAmount(campfire) 
+        return hasWaterAmount(campfire)
         and (not hasStew(campfire))
         and (hasJustWater(campfire) or hasBrewedTea(campfire))
     end,
     enableRequirements = function(campfire)
-        local tooHotToDrink =  
-            hasWaterAmount(campfire) 
+        local tooHotToDrink =
+            hasWaterAmount(campfire)
             and (not hasStew(campfire))
-            and isBoiling(campfire) 
-        if tooHotToDrink and not campfire.data.ladle then 
-            return false 
+            and isBoiling(campfire)
+        if tooHotToDrink and not campfire.data.ladle then
+            return false
         end
         return true
     end,
@@ -69,9 +69,9 @@ return {
             common.helper.messageBox{
                 message = "This water is dirty.",
                 buttons = {
-                    { 
-                        text = "Drink Anyway", 
-                        callback = function() doDrink() end 
+                    {
+                        text = "Drink Anyway",
+                        callback = function() doDrink() end
                     },
                 },
                 doesCancel = true,

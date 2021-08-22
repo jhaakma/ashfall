@@ -11,7 +11,7 @@ local randomStuffChances = {
 local vanillaCampfires = {
     mr_light_pitfire = { supports = true, rootHeight = 5, squareSupports = true },
     --Ugly ones
-    light_pitfire00 =  { supports = false, scale = 0.9, rootHeight = 0 },  
+    light_pitfire00 =  { supports = false, scale = 0.9, rootHeight = 0 },
     light_pitfire01 =  { supports = false, scale = 0.9, rootHeight = 0 },
     _ser_pitfire =  { supports = false, scale = 0.9, rootHeight = 0 },
     abtv_light_suryanfirepit = { supports = false, scale = 0.9, rootHeight = 0 },
@@ -71,7 +71,7 @@ local grills = {
 }
 
 
---Meshes that a campfire might be sitting on, 
+--Meshes that a campfire might be sitting on,
 --In which case we don't want to orient it
 --Still call orients but maxSteepness 0
 local platforms = {
@@ -116,7 +116,7 @@ local function addWater(campfire)
         if campfire.data.isLit then
             campfire.data.waterHeat = campfire.data.isLit and 100 or 0
             tes3.playSound{
-                reference = campfire, 
+                reference = campfire,
                 sound = "ashfall_boil",
                 loop = true
             }
@@ -197,13 +197,13 @@ local function attachRandomStuff(campfire, vanillaConfig)
     if campfire.data.dynamicConfig.grill == "static" then
         addGrill(campfire)
     end
-    
+
 
     --If supports, add utensils
     if campfire.data.supportsId then
         if campfire.data.utensil == nil and math.random() < randomStuffChances.utensil then
             if math.random() < 0.5 then addKettle(campfire) else addCookingPot(campfire) end
-            
+
         end
     end
 
@@ -248,17 +248,17 @@ local function setInitialState(campfire, vanillaRef, data, vanillaConfig)
     else
         campfire:deleteDynamicLightAttachment()
     end
-    
+
     timer.delayOneFrame(function()
         event.trigger("Ashfall:registerReference", { reference = campfire} )
     end)
-    
+
 end
 
 
 
 --[[
-    Finds nearby objects that might make up a campfire, 
+    Finds nearby objects that might make up a campfire,
     disables them and determines the replacement campfire
     based on what was found
 ]]
@@ -271,7 +271,7 @@ local function checkKitBashObjects(vanillaRef)
     local ignoreList = {}
     local foodList = {}
     for ref in vanillaRef.cell:iterateReferences() do
-        if ref.disabled then 
+        if ref.disabled then
             common.log:debug("%s is disabled, adding to ignore list", ref.object.id)
             table.insert(ignoreList, ref)
         else
@@ -280,10 +280,10 @@ local function checkKitBashObjects(vanillaRef)
             table.insert(ignoreList, ref)
         end
             local id = ref.object.id:lower()
-            
+
             if common.helper.getCloseEnough({ref1 = ref, ref2 = vanillaRef, distHorizontal = 75, distVertical = 200}) then
-                
-                
+
+
                 if ref ~= vanillaRef then
                     common.log:debug("Nearby ref: %s", ref.object.id)
 
@@ -298,7 +298,7 @@ local function checkKitBashObjects(vanillaRef)
                         common.log:debug("Found a unique mesh (%s), ignoring campfire replacement", id)
                         skipRef = true
                     end
-                    
+
                     if ref.object.script then
                         common.log:debug("Found a scripted mesh (%s), ignoring campfire replacement", id)
                         skipRef = true
@@ -311,7 +311,7 @@ local function checkKitBashObjects(vanillaRef)
                             common.log:debug("Has platform")
                             hasPlatform = true
                         end
-                        
+
                         --if you find an existing campfire, get rid of it
                         if campfireConfig.getConfig(id) then
                             common.log:debug("removing existing replaced campfire %s", ref.object.id)
@@ -324,7 +324,7 @@ local function checkKitBashObjects(vanillaRef)
                             table.insert(ignoreList, ref)
                             common.helper.yeet(ref)
                         end
-                        
+
                         if cauldrons[id] then
                             common.log:debug("Found existing cooking pot")
                             table.insert(ignoreList, ref)
@@ -337,7 +337,7 @@ local function checkKitBashObjects(vanillaRef)
                             hasGrill = true
                             common.helper.yeet(ref)
                         end
-                        if kitBashObjects[id] then      
+                        if kitBashObjects[id] then
                             common.log:debug("Found existing kitbash %s", id)
                             common.helper.yeet(ref)
                             table.insert(ignoreList, ref)
@@ -366,7 +366,7 @@ local function checkKitBashObjects(vanillaRef)
     return { foodList = foodList, ignoreList = ignoreList, hasGrill = hasGrill, hasCookingPot = hasCookingPot, hasPlatform = hasPlatform, isLit = isLit}
 end
 
-local function moveFood(campfire, foodList) 
+local function moveFood(campfire, foodList)
     for _, ingred in ipairs(foodList) do
         local ingredBottomDiff = ingred.sceneNode:createBoundingBox().min.z
         common.log:debug("ingredBottomDiff: %s", ingredBottomDiff)
@@ -391,10 +391,10 @@ local function replaceCampfire(e)
         local campfireReplaced = e.reference.data and e.reference.data.campfireReplaced
         if vanillaConfig and not campfireReplaced then
             common.log:debug("replaceCampfire() %s", e.reference.object.id)
-            
+
             if e.reference.disabled or e.reference.deleted then
                 common.log:debug("%s is disabled, not replacing", e.reference.object.id)
-                return 
+                return
             end
             e.reference:disable()
             e.reference.data.campfireReplaced = true
@@ -436,7 +436,7 @@ local function replaceCampfire(e)
             }
 
             campfire.data.dynamicConfig = campfireConfig.getConfig(campfire.object.id)
-            
+
             setInitialState(campfire, e.reference, data, vanillaConfig)
             attachRandomStuff(campfire, vanillaConfig)
             event.trigger("Ashfall:UpdateAttachNodes", { campfire = campfire })
@@ -454,8 +454,8 @@ local function replaceCampfire(e)
 
             local rootHeight = 0 -- vanillaConfig.rootHeight * campfire.scale
 
-            local orientedCorrectly = common.helper.orientRefToGround{ 
-                ref = campfire, 
+            local orientedCorrectly = common.helper.orientRefToGround{
+                ref = campfire,
                 maxSteepness = (data.hasPlatform and 0.0 or 0.2),
                 ignoreList = data.ignoreList,
                 rootHeight = rootHeight+5,
@@ -479,7 +479,7 @@ local function replaceCampfire(e)
                 }
             end
 
-            
+
             common.helper.yeet(e.reference)
 
             if data.hasGrill then

@@ -16,7 +16,7 @@ local backpacks = {
 
 local switchNodes = {
     SWITCH_AXE = {
-        items = { 
+        items = {
             ashfall_woodaxe = true,
             ashfall_woodaxe_steel = true,
         },
@@ -104,7 +104,7 @@ local function setSwitchNodes(e)
                 for item, _ in pairs(data.items) do
                     if ref.object.inventory:contains(item) then
                         index = 0
-                        
+
                         itemToAttach = item
                         break
                     end
@@ -124,7 +124,7 @@ local function setSwitchNodes(e)
     end
     ref.sceneNode:update()
     ref.sceneNode:updateNodeEffects()
-    --ref:updateEquipment() 
+    --ref:updateEquipment()
 end
 
 
@@ -149,10 +149,10 @@ local function attachBackpack(parent, fileName, ref)
             weight = ref.object.race.weight.female
             height = ref.object.race.height.female
         end
-        
+
         local weightMod = 1 / weight
         local heightMod = 1 / height
-        
+
         local r = node.rotation
         local scale = tes3vector3.new(heightMod, weightMod, weightMod)
         node.rotation = tes3matrix33.new(r.x * scale, r.y * scale, r.z * scale)
@@ -171,8 +171,8 @@ end
 local function onEquipped(e)
     -- must be a valid backpack
     local fileName = backpacks[e.item.id]
-    if not fileName then 
-        return 
+    if not fileName then
+        return
     end
 
     -- get parent for attaching
@@ -183,10 +183,10 @@ local function onEquipped(e)
     -- attach new backpack mesh
     attachBackpack(parent, fileName, e.reference)
 
-    --timer.delayOneFrame(function() 
+    --timer.delayOneFrame(function()
         setSwitchNodes{reference=e.reference}
     --end)
-    
+
     -- update parent scene node
     parent:update()
     parent:updateNodeEffects()
@@ -204,7 +204,7 @@ local function onUnequipped(e)
     -- detach old backpack mesh
     detachBackpack(parent)
 
-    timer.delayOneFrame(function() 
+    timer.delayOneFrame(function()
         setSwitchNodes{reference=e.reference}
     end)
 
@@ -239,17 +239,17 @@ event.register("activate", function(e)
     if e.activator == tes3.player then
         timer.delayOneFrame(function()
             common.log:trace("activate")
-            setSwitchNodes{ reference = e.activator } 
+            setSwitchNodes{ reference = e.activator }
         end)
     end
 end)
- 
+
 local function updatePlayer()
     common.log:trace("updating player backpack")
     if tes3.player and tes3.player.mobile then
         --check for existing backpack and equip it
         local equippedBackpack = tes3.getEquippedItem{
-            actor = tes3.player, 
+            actor = tes3.player,
             objectType = tes3.objectType.armor,
             slot = backpackSlot
         }
@@ -259,7 +259,7 @@ local function updatePlayer()
         end
 
         equippedBackpack = tes3.getEquippedItem{
-            actor = tes3.player, 
+            actor = tes3.player,
             objectType = tes3.objectType.clothing,
             slot = backpackSlot
         }

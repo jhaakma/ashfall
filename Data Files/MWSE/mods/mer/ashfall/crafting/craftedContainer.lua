@@ -5,8 +5,8 @@ local miscToContainerMapping = {
     ashfall_chest_01_m = "ashfall_chest_01_c"
 }
 local containerToMiscMapping = {}
-for misc, container in pairs(miscToContainerMapping) do 
-    containerToMiscMapping[container] = misc 
+for misc, container in pairs(miscToContainerMapping) do
+    containerToMiscMapping[container] = misc
 end
 
 local function buildName(object, customName)
@@ -35,8 +35,8 @@ local function onGearDropped(e)
         }
         if common.helper.isStack(e.reference) then
             tes3.addItem{
-                reference = tes3.player, 
-                item = e.reference.object, 
+                reference = tes3.player,
+                item = e.reference.object,
                 count = e.reference.attachments.variables.count - 1,
                 playSound = false
             }
@@ -86,12 +86,12 @@ local function rename(containerRef)
         {
             label = string.format("Label %s:", containerRef.object.name),
             variable = mwse.mcm.createTableVariable{
-                id = 'customName', 
+                id = 'customName',
                 table = containerRef.data
             },
-            callback = function() 
+            callback = function()
                 containerRef.modified = true
-                nameChosen(containerRef) 
+                nameChosen(containerRef)
             end
         }
     )
@@ -103,7 +103,7 @@ local skipActivate
 local function onActivate(e)
     if e.activator ~= tes3.player then return end
     local miscId = containerToMiscMapping[e.target.baseObject.id:lower()]
-    if not miscId then return end 
+    if not miscId then return end
     if skipActivate then
         skipActivate = nil
         return

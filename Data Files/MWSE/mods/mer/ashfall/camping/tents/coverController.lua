@@ -89,8 +89,8 @@ end
 
 local function onRefSceneNodeCreatedAddCovers(e)
     local coverId = e.reference
-                and e.reference.data 
-                and e.reference.data.tentCover 
+                and e.reference.data
+                and e.reference.data.tentCover
     if coverId and this.canHaveCover(e.reference) then
         local meshPath = tentConfig.coverToMeshMap[coverId:lower()]
         attachMeshToRef(e.reference, meshPath)

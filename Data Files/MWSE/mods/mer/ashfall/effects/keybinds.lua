@@ -31,7 +31,7 @@ local function keyPressed(e)
     local doCrafting = (
         common.data and
         config.enableCrafting
-    )    
+    )
     if doCrafting then
         for var, callback in pairs(actions) do
             local correctCombo = (

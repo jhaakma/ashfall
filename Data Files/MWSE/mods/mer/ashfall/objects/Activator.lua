@@ -1,7 +1,7 @@
 
 local Activator = {}
 
-Activator.type = nil 
+Activator.type = nil
 Activator.name = ""
 Activator.mcmSetting = nil
 Activator.ids = {}

@@ -6,14 +6,14 @@ This script gets region and weather info on cell change/weather change
 local this = {}
 local common = require('mer.ashfall.common.common')
 local climateConfig = require('mer.ashfall.config.weatherRegionConfig')
- -- 
+ --
 
 --Register heat source
 local temperatureController = require("mer.ashfall.temperatureController")
 temperatureController.registerExternalHeatSource("weatherTemp")
 
 local SEASON_MIN = 0.8
-local SEASON_MAX = 1.2 
+local SEASON_MAX = 1.2
 
 local currentWeather
 
@@ -65,7 +65,7 @@ end
 local lastCellWasInterior
 function this.calculateWeatherEffect(interval)
     if common.helper.getInside(tes3.player) then
-        common.data.weatherTemp = common.data.intWeatherEffect 
+        common.data.weatherTemp = common.data.intWeatherEffect
             or common.staticConfigs.interiorTempValues.default
         lastCellWasInterior = true
     else
@@ -76,7 +76,7 @@ function this.calculateWeatherEffect(interval)
             common.data.weatherTemp = weatherTemp
         else
             common.data.weatherTemp =(
-                common.data.weatherTemp + 
+                common.data.weatherTemp +
                 ((weatherTemp - common.data.weatherTemp) * math.min(1, interval * 40))
             )
         end

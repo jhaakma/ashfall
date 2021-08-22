@@ -36,12 +36,12 @@ local function callUpdates()
     --limit to 8 hours in case some crazy time leap
     interval = math.min(interval, 8.0)
     lastTime = hoursPassed
-    
+
     weather.calculateWeatherEffect(interval)
     sunEffect.calculate(interval)
     wetness.calculateWetTemp(interval)
     needs.hunger.processMealBuffs(interval)
-   
+
     --Needs:
     for _, script in pairs(needs) do
         script.calculate(interval)
@@ -58,7 +58,7 @@ local function callUpdates()
     hazardEffects.calculateHazards()
     survivalEffect.calculate()
     conditions.updateConditions() --1fps
-    
+
     --visuals
 
     frostBreath.doFrostBreath()
@@ -73,22 +73,22 @@ event.register("enterFrame", callUpdates)
 
 
 -- local function dataLoaded()
-    
+
 --     timer.delayOneFrame(
 --         function()
 --             --Use game timer when sleeping
 --             timer.start({
---                 duration =  0.1, 
+--                 duration =  0.1,
 --                 callback = function()
 --                     if tes3.player and tes3.menuMode() then
 --                         callUpdates()
---                     end 
---                 end, 
---                 type = timer.game, 
+--                     end
+--                 end,
+--                 type = timer.game,
 --                 iterations = -1
 --             })
 --         end
-        
+
 --     )
 -- end
 

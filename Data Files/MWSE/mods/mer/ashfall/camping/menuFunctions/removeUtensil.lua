@@ -13,7 +13,7 @@ return  {
     end,
     showRequirements = function(campfire)
         return  campfire.data.utensilId ~= nil
-        and campfire.data.dynamicConfig 
+        and campfire.data.dynamicConfig
         and checkDynamicStatus(campfire)
     end,
     enableRequirements = function(campfire)
@@ -25,8 +25,8 @@ return  {
     },
     callback = function(campfire)
         --add utensil
-        tes3.addItem{ 
-            reference = tes3.player, 
+        tes3.addItem{
+            reference = tes3.player,
             item = campfire.data.utensilId,
             count = 1
         }

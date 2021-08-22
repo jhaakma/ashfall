@@ -1,11 +1,11 @@
 local this = {}
 
 --[[
-    This script determines what static activator is being looked at, and 
-    creates the tooltip for it. 
+    This script determines what static activator is being looked at, and
+    creates the tooltip for it.
     Other scripts can see what the player is looking at by checking
     this.getCurrentActivator()
-]]-- 
+]]--
 
 local activatorConfig = require("mer.ashfall.config.staticConfigs").activatorConfig
 local config = require("mer.ashfall.config.config").config
@@ -29,7 +29,7 @@ function this.getRefActivator(reference)
     for _, activator in pairs(this.list) do
         if activator:isActivator(reference.object.id) then
             return activator
-        end 
+        end
     end
 end
 
@@ -50,36 +50,36 @@ local function centerText(element)
     element.autoHeight = true
     element.autoWidth = true
     element.wrapText = true
-    element.justifyText = "center" 
+    element.justifyText = "center"
 end
 
 local function doActivate()
     return (
-        this.current and 
-        not tes3.menuMode() and 
+        this.current and
+        not tes3.menuMode() and
         config[this.getCurrentActivator().mcmSetting] ~= false
     )
 end
 
 local function createActivatorIndicator()
-    
+
     local menu = tes3ui.findMenu(tes3ui.registerID("MenuMulti"))
     if menu then
         local mainBlock = menu:findChild(id_indicator)
-        
+
         if doActivate() then
             if mainBlock then
                 mainBlock:destroy()
             end
 
             mainBlock = menu:createBlock({id = id_indicator })
-            
+
             mainBlock.absolutePosAlignX = 0.5
             mainBlock.absolutePosAlignY = 0.03
             mainBlock.autoHeight = true
             mainBlock.autoWidth = true
 
-            
+
             local labelBackground = mainBlock:createRect({color = {0, 0, 0}})
             --labelBackground.borderTop = 4
             labelBackground.autoHeight = true
@@ -96,7 +96,7 @@ local function createActivatorIndicator()
             label.color = tes3ui.getPalette("header_color")
             centerText(label)
 
-            
+
 
             local eventData = {
                 label = label,
@@ -117,24 +117,24 @@ end
 
 
 --[[
-    Every frame, check whether the player is looking at 
+    Every frame, check whether the player is looking at
     a static activator
 ]]--
 function this.callRayTest()
     this.current = nil
     this.currentRef = nil
- 
+
     local eyePos = tes3.getPlayerEyePosition()
     local eyeVec = tes3.getPlayerEyeVector()
     local maxDist = tes3.findGMST(tes3.gmst.iMaxActivateDist).value
- 
+
     local result = tes3.rayTest{
         position = eyePos,
         direction = eyeVec,
         ignore = { tes3.player },
         maxDistance = maxDist,
     }
- 
+
     if result and result.reference then
         --Look for activators from list
         local targetRef = result.reference
@@ -157,11 +157,11 @@ function this.callRayTest()
             end
         end
     end
- 
+
     createActivatorIndicator()
 end
 
- 
+
 local isBlocked
 local function blockScriptedActivate(e)
     isBlocked = e.doBlock
@@ -181,7 +181,7 @@ local function doTriggerActivate()
             ref = this.currentRef,
             node = this.parentNode
         }
-        event.trigger("Ashfall:ActivatorActivated", eventData, { filter = eventData.activator.type }) 
+        event.trigger("Ashfall:ActivatorActivated", eventData, { filter = eventData.activator.type })
     end
 end
 

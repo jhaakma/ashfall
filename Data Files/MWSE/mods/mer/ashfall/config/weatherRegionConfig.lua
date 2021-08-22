@@ -12,7 +12,7 @@ local climate = {
 local defaultClimate = climate.temperate
 
 this.weathers = {
-    [tes3.weather.blight] = 40, 
+    [tes3.weather.blight] = 40,
     [tes3.weather.ash] = 30,
     [tes3.weather.clear] = 0,
     [tes3.weather.cloudy] = -10,

@@ -16,7 +16,7 @@ local config = require("mer.ashfall.config.config").config
 
 local function removeOldContainers(ref)
     local oldContainers = {
-        ashfall_crate_camping = true, 
+        ashfall_crate_camping = true,
         ashfall_crate_rnd = true,
         ashfall_gear_base = true,
         ashfall_gear_qual = true,
@@ -52,7 +52,7 @@ end
 ---@return table<number, string> containers a list of container ids to add
 local function determineMerchantContainers(reference)
     local containers = {}
-    
+
     --Add base container
     table.insert(containers, "ashfall_gear_base")
 
@@ -61,14 +61,14 @@ local function determineMerchantContainers(reference)
     local isDunmer = reference.baseObject.race and reference.baseObject.race.id == "Dark Elf"
     local isImperial = reference.baseObject.race and reference.baseObject.race.id == "Imperial"
 
-    if isDunmer then 
-        table.insert(containers, "ashfall_gear_dunmer") 
-    elseif isImperial then 
-        table.insert(containers, "ashfall_gear_imperial") 
-    elseif isRich then 
-        table.insert(containers, "ashfall_gear_qual") 
+    if isDunmer then
+        table.insert(containers, "ashfall_gear_dunmer")
+    elseif isImperial then
+        table.insert(containers, "ashfall_gear_imperial")
+    elseif isRich then
+        table.insert(containers, "ashfall_gear_qual")
     end
-    
+
     return containers
 end
 

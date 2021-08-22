@@ -16,12 +16,12 @@ function CampfireUtil.getHeat(campfire)
 
     local isLit = campfire.data.isLit
     local fuelLevel = campfire.data.fuelLevel or 0
-    if (not isLit) or (fuelLevel <= 0) then 
+    if (not isLit) or (fuelLevel <= 0) then
         return 0
     else
         return fuelLevel * bellowsEffect
     end
-    
+
 end
 
 function CampfireUtil.getAttachmentConfig(node)

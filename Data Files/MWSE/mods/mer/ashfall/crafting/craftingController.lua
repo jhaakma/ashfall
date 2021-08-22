@@ -52,7 +52,7 @@ local function createMaterialsTooltip(e)
 
     if isIngredient(e.object) then
         common.helper.addLabelToTooltip(e.tooltip, "Crafting Material", {175/255, 129/255, 184/255})
-    end 
+    end
 end
 
 event.register('uiObjectTooltip', createMaterialsTooltip)

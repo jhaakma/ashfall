@@ -43,7 +43,7 @@ local function addDiseaseOnDeath(e)
     if config.enableDiseasedMeat then
         local baseObj = e.reference.baseObject or e.reference.object
         if baseObj.objectType == tes3.objectType.creature then
-            
+
             local disease = getDiseaseFromCreature(e.reference.object)
             if disease then
                 common.log:debug("addDiseaseOnDeath() - Creature %s has %s", baseObj.name, disease.name)

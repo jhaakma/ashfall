@@ -3,7 +3,7 @@ local common = require("mer.ashfall.common.common")
 --[[
     Orients a placed object and lowers it into the ground so it lays flat against the terrain,
 ]]
- 
+
 local function onDropGear(e)
     local gearValues = common.staticConfigs.placementConfig[string.lower(e.reference.object.id)]
     if gearValues or (e.reference.object.sourceMod and e.reference.object.sourceMod:lower() == "ashfall.esp") then
@@ -14,9 +14,9 @@ local function onDropGear(e)
         if gearValues.drop then
             common.log:debug("Dropping %s by %s", e.reference.object.name, gearValues.drop)
             e.reference.position = {
-                e.reference.position.x, 
-                e.reference.position.y, 
-                e.reference.position.z - gearValues.drop, 
+                e.reference.position.x,
+                e.reference.position.y,
+                e.reference.position.z - gearValues.drop,
             }
         end
         event.trigger("Ashfall:GearDropped", e)
@@ -59,7 +59,7 @@ local function verticaliseNodes(e)
     if e.reference.disabled then return end
     if e.reference.sceneNode and e.reference.sceneNode:getObjectByName("ALIGN_VERTICAL") then
         local safeRef = tes3.makeSafeObjectHandle(e.reference)
-        local function f() 
+        local function f()
             if not safeRef:valid() then return end
             common.log:debug("Verticalising %s", e.reference.object.id)
             verticaliseNode{ node = e.reference.sceneNode }

@@ -32,7 +32,7 @@ local function onActivateCampfire(e)
                 text = buttonData.text
             end
             table.insert(tbl, {
-                text = text, 
+                text = text,
                 callback = function()
                     if buttonData.callback then
                         buttonData.callback(campfire)
@@ -60,15 +60,15 @@ local function onActivateCampfire(e)
         local buttonData = require(string.format("mer.ashfall.camping.menuFunctions.%s", buttonType))
         addButton(buttons, buttonData)
     end
-    common.helper.messageBox({ 
-        message = text, 
+    common.helper.messageBox({
+        message = text,
         buttons = buttons,
         doesCancel = true
     })
 end
 
 event.register(
-    "Ashfall:ActivatorActivated", 
-    onActivateCampfire, 
-    { filter = common.staticConfigs.activatorConfig.types.campfire } 
+    "Ashfall:ActivatorActivated",
+    onActivateCampfire,
+    { filter = common.staticConfigs.activatorConfig.types.campfire }
 )

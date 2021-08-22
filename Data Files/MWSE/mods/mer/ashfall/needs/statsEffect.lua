@@ -87,7 +87,7 @@ local function calcFatigue()
                 current = max,
                 name = "fatigue"
             })
-        end 
+        end
     end
 end
 

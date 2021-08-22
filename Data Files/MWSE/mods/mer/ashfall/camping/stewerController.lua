@@ -31,14 +31,14 @@ local function updateBuffs(e)
             reference.data.stewBuffTimeLeft = math.max((reference.data.stewBuffTimeLeft - interval), 0)
             --time's up, remove spells and heat
             if reference.data.stewBuffTimeLeft == 0 then
-                common.data.stewWarmEffect = 0 
+                common.data.stewWarmEffect = 0
 
                 common.helper.restoreFatigue()
                 for _, stewBuff in pairs(foodConfig.getStewBuffList()) do
                     mwscript.removeSpell({ reference = reference, spell = stewBuff.id})
                 end
                 tes3.messageBox("Stew effect has worn off.")
-                
+
 
                 reference.data.stewBuffTimeLeft = nil
                 reference.data.lastStewBuffUpdated = nil
@@ -53,24 +53,24 @@ end
 
 
 local function updateStewers(e)
-    
+
     local function doUpdate(stewerRef)
         stewerRef.data.lastStewUpdated = stewerRef.data.lastStewUpdated or e.timestamp
         local difference = e.timestamp - stewerRef.data.lastStewUpdated
-        
+
         if difference < 0 then
-            common.log:error("STEWER stewerRef.data.lastStewUpdated(%.4f) is ahead of e.timestamp(%.4f).", 
+            common.log:error("STEWER stewerRef.data.lastStewUpdated(%.4f) is ahead of e.timestamp(%.4f).",
                 stewerRef.data.lastStewUpdated, e.timestamp)
             --something fucky happened
             stewerRef.data.lastStewUpdated = e.timestamp
         end
 
         if difference > updateInterval then
-            
+
             stewerRef.data.waterHeat = stewerRef.data.waterHeat or 0
             local hasWater = stewerRef.data.waterAmount and stewerRef.data.waterAmount > 0
             local waterIsBoiling = stewerRef.data.waterHeat and stewerRef.data.waterHeat >= common.staticConfigs.hotWaterHeatValue
-            local hasStew = stewerRef.data.stewLevels 
+            local hasStew = stewerRef.data.stewLevels
             if hasWater and waterIsBoiling and hasStew then
                 stewerRef.data.lastStewUpdated = e.timestamp
                 --Cook the stew
@@ -109,21 +109,21 @@ local function eatStew(e)
         maxNutritionLevel = nutritionLevel + nutrition
     end
     local foodRatio = nutritionLevel / maxNutritionLevel
-    
+
     local highestNeed = math.max(common.staticConfigs.conditionConfig.hunger:getValue() / foodRatio, common.staticConfigs.conditionConfig.thirst:getValue())
     local maxDrinkAmount = math.min(e.data.waterAmount, 50, highestNeed )
 
     local amountAte = hungerController.eatAmount(maxDrinkAmount * foodRatio)
     local amountDrank = thirstController.drinkAmount{amount = maxDrinkAmount, waterType = e.data.waterType}
-    
+
     if amountAte >= 1 or amountDrank >= 1 then
         tes3.playSound{ reference = tes3.player, sound = "Swallow" }
         e.data.waterAmount = math.max( (e.data.waterAmount - amountDrank), 0)
-        
+
         if e.data.waterHeat and e.data.waterHeat >= common.staticConfigs.hotWaterHeatValue then
-            common.data.stewWarmEffect = common.helper.calculateStewWarmthBuff(e.data.waterHeat) 
+            common.data.stewWarmEffect = common.helper.calculateStewWarmthBuff(e.data.waterHeat)
         end
-        
+
         --Add buffs and set duration
         for foodType, ingredLevel in pairs(e.data.stewLevels) do
             --add spell

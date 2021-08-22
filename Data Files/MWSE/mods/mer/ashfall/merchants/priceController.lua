@@ -7,7 +7,7 @@ local teaConfig = common.staticConfigs.teaConfig
 
 local function calcItemDataPrice(e)
     if e.itemData then
-        
+
         local itemPrice = 1
 
         --Water amount

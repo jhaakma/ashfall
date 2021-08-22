@@ -3,7 +3,7 @@ local common = require("mer.ashfall.common.common")
 local this = {}
 
 local data = {
-    mesh = nil, 
+    mesh = nil,
     minutes = nil,
     callback = nil,
     previousAnimationMesh = nil,
@@ -133,7 +133,7 @@ local function startFastTime(e)
     local deltaMulti = math.clamp( timeScaleMulti, 1, 4)
     data.speed = deltaMulti
 
-    
+
     local timeScale = tes3.findGlobal("TimeScale")
     data.originalTimeScale = timeScale.value
     timeScale.value = timeScale.value * timeScaleMulti
@@ -196,7 +196,7 @@ function this.doAnimation(e)
             end
             common.log:debug("found location, moving to %s", data.location.position)
             common.helper.movePlayer(data.location)
-        end) 
+        end)
     end
     if data.recovering then
         common.log:debug("recovering: true")
@@ -221,7 +221,7 @@ function this.doAnimation(e)
     event.register("keyUp", onTabUp, { filter = tes3.getInputBinding(tes3.keybind.togglePOV).code })
     event.register("keyDown", checkKeyPress)
     event.register("Ashfall:WakeUp", this.cancel)
-    
+
 
     if data.sleeping then
         common.log:debug("Enabling isSleeping")
@@ -278,7 +278,7 @@ function this.cancel()
     event.unregister("keyDown", checkKeyPress)
     event.unregister("keyUp", onTabUp, { filter = tes3.getInputBinding(tes3.keybind.togglePOV).code })
     event.unregister("Ashfall:WakeUp", this.cancel)
-    
+
     if data.callback then
         common.log:debug("Callback")
         data.callback()
@@ -319,7 +319,7 @@ function this.showFastTimeMenu(e)
             end
         }
     }
-        
+
     for _, speed in ipairs(e.speeds)do
         table.insert(buttons, {
             text = string.format("%dx Speed", speed),

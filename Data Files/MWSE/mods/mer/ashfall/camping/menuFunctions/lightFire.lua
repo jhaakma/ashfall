@@ -9,7 +9,7 @@ return {
             campfire.data.fuelLevel and
             campfire.data.fuelLevel > 0.5
         )
-    end, 
+    end,
     callback = function(campfire)
         tes3.playSound{ reference = tes3.player, sound = "ashfall_light_fire"  }
         common.log:debug("Lighting Fire %s", campfire.object.id)

@@ -61,16 +61,16 @@ local function makeTooltip()
 end
 
 local function updateWaterServiceButton(e)
-    timer.frame.delayOneFrame(function()   
+    timer.frame.delayOneFrame(function()
         local menuDialog = tes3ui.findMenu(GUID_MenuDialog)
         if not menuDialog then return end
-    
+
         local topicsScrollPane = menuDialog:findChild(GUID_MenuDialog_TopicList)
         local waterServiceButton = topicsScrollPane:findChild(GUID_MenuDialog_WaterService)
         if not ( topicsScrollPane and waterServiceButton ) then
             return
         end
-    
+
         local merchant = menuDialog:getPropertyObject("PartHyperText_actor")
         local cost = getWaterCost(merchant.object)
         if getDisabled(cost) then
@@ -80,10 +80,10 @@ local function updateWaterServiceButton(e)
             waterServiceButton.disabled = false
             waterServiceButton.color = tes3ui.getPalette("normal_color")
         end
-    
+
         common.log:debug("Updating Water Service Button")
         waterServiceButton.text = getWaterText(merchant.object)
-    
+
         -- Reshow the button.
         waterServiceButton.visible = true
         topicsScrollPane.widget:contentsChanged()
@@ -94,13 +94,13 @@ end
 
 local function onMenuDialogActivated()
     if config.enableThirst ~= true then return end
-    
+
     common.log:debug("Dialog menu entered")
     local menuDialog = tes3ui.findMenu(GUID_MenuDialog)
     -- Get the actor that we're talking with.
 	local mobileActor = menuDialog:getPropertyObject("PartHyperText_actor")
     local ref = mobileActor.reference
-    
+
     common.log:debug("Actor: %s", ref.object.name)
 
     if common.isInnkeeper(ref) then
@@ -110,7 +110,7 @@ local function onMenuDialogActivated()
         local divider = topicsScrollPane:findChild(GUID_MenuDialog_Divider)
         local topicsList = divider.parent
         local waterServiceButton = topicsList:createTextSelect({ id = GUID_MenuDialog_WaterService, text = "" })
-        
+
         topicsList:reorderChildren(divider, waterServiceButton, 1)
         waterServiceButton:register("mouseClick", onWaterServiceClick)
         menuDialog:registerAfter("update", updateWaterServiceButton)

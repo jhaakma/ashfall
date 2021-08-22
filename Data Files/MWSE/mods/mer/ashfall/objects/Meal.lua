@@ -16,14 +16,14 @@ function Meal:applyBuff()
     local doRemoveOld = (
         common.data.mealTime and common.data.mealTime > 0 and
         common.data.mealBuff and
-        common.data.mealBuff ~= self.spellId 
+        common.data.mealBuff ~= self.spellId
     )
     if doRemoveOld then
         mwscript.removeSpell({ reference = tes3.player, spell = common.data.mealBuff })
     end
     --add new buff
     mwscript.addSpell({ reference = tes3.player, spell = self.spellId })
-    tes3.playSound({ sound = "restoration hit" })  
+    tes3.playSound({ sound = "restoration hit" })
 
     --Update player ref with current buff/duration
     common.data.mealTime = self.duration

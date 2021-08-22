@@ -49,9 +49,9 @@ local function harvest(activator, weapon)
         lastRef = targetRef
         swings = 0
     end
-    
+
     --Check if legal to harvest wood
-    local illegalToHarvest = ( 
+    local illegalToHarvest = (
         config.illegalHarvest and
         tes3.getPlayerCell().restingIsIllegal
     )
@@ -72,17 +72,17 @@ local function harvest(activator, weapon)
         local function getSwingsNeeded()
             return math.random(activatorConf.swingsNeeded, activatorConf.swingsNeeded + 2)
         end
-        
+
         if not swingsNeeded then
             swingsNeeded = getSwingsNeeded()
         end
-        
+
         --wait until chopped enough times
-        if swings >= swingsNeeded then 
+        if swings >= swingsNeeded then
             --wood collected based on strength of previous swings
             --Between 0.5 and 1.0 (at chop == 50)
 
-            --if skills are implemented, use Survival Skill                
+            --if skills are implemented, use Survival Skill
             local survivalSkill = common.skills.survival.value or 30
             --cap at 100
             survivalSkill = ( survivalSkill < 100 ) and survivalSkill or 100
@@ -97,7 +97,7 @@ local function harvest(activator, weapon)
             else
                 tes3.messageBox("You have harvested %d pieces of %s.", numHarvested, activatorConf.name)
             end
-            
+
             tes3.playSound({reference=tes3.player, sound="Item Misc Up"})
             mwscript.addItem{reference=tes3.player, item= activatorConf.item, count=numHarvested}
             event.trigger("Ashfall:triggerPackUpdate")
@@ -116,8 +116,8 @@ local function getIsAxe(weapon)
     local axe1h = 7
     local axe2h = 8
     local isAxe = weapon
-    and swingType == chop  
-    and (weapon.object.type == axe1h or weapon.object.type == axe2h) 
+    and swingType == chop
+    and (weapon.object.type == axe1h or weapon.object.type == axe2h)
     return isAxe
 end
 

@@ -1,8 +1,8 @@
 
 --[[
-    Initialises static campfires as Ashfall campfires, 
+    Initialises static campfires as Ashfall campfires,
     with a random chance of having utensils attached, that
-    may have water, tea or stew in them. 
+    may have water, tea or stew in them.
 
 ]]
 local common = require ("mer.ashfall.common.common")
@@ -44,7 +44,7 @@ local function initialiseCampfireSoundAndFlame()
                     reference = campfire
                 }
             end
-        end) 
+        end)
     end
 
     common.helper.iterateRefType("campfire", doUpdate)

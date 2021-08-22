@@ -29,7 +29,7 @@ local function turnLanternOn(tentRef)
     end
     lightNode.translation.z = 0
     lightNode:setAttenuationForRadius(512)
-    
+
     local attachLight = lanternNode
     attachLight:attachChild(lightNode)
 
@@ -66,11 +66,11 @@ end
 
 --Lantern stuff
 function this.isLantern(obj)
-    
+
     local isLight = obj.objectType == tes3.objectType.light
     local canCarry = obj.canCarry == true
     local idIsLantern = string.find(obj.id:lower(), "lantern")
-    local nameIsLantern = string.find(obj.name:lower(), "lantern") 
+    local nameIsLantern = string.find(obj.name:lower(), "lantern")
 
     if not isLight then return false end
     if not canCarry then return false end
@@ -187,7 +187,7 @@ end
 
 local function onRefSceneNodeCreatedAddTrinkets(e)
     local lanternId = e.reference
-                and e.reference.data 
+                and e.reference.data
                 and e.reference.data.lantern
                 and e.reference.data.lantern.id
     if lanternId and this.canHaveLantern(e.reference) then

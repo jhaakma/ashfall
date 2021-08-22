@@ -19,9 +19,9 @@ end
     ----------------
 
     Every piece of armor or clothing provides some degree of warmth. The raw warmth value is
-    either retrieved from the cache, or calculated using name pattern matching to values. 
+    either retrieved from the cache, or calculated using name pattern matching to values.
 
-    Raw warmth values are then multiplied by the coverage of the item. 
+    Raw warmth values are then multiplied by the coverage of the item.
 ]]
 
 
@@ -57,7 +57,7 @@ local function getRawItemWarmth(object)
         config.save()
     end
 
-    --No pattern found in name, get default value 
+    --No pattern found in name, get default value
     --Don't save to cache in case patterns get added later
     local value
     if object.enchantment then
@@ -90,7 +90,7 @@ function this.getTotalWarmth()
     local warmth = 0
     --clothing
     for _, slot in pairs(tes3.clothingSlot) do
-        local stack = tes3.getEquippedItem({ actor = tes3.player, objectType = tes3.objectType.clothing, slot = slot })     
+        local stack = tes3.getEquippedItem({ actor = tes3.player, objectType = tes3.objectType.clothing, slot = slot })
         local validSlot = this.isValidClothingSlot(slot)
         if stack and validSlot then
             warmth = warmth + this.getItemWarmth(stack.object)
@@ -99,7 +99,7 @@ function this.getTotalWarmth()
 
     --armor
     for _, slot in pairs(tes3.armorSlot) do
-        local stack = tes3.getEquippedItem({ actor = tes3.player, objectType = tes3.objectType.armor, slot = slot })     
+        local stack = tes3.getEquippedItem({ actor = tes3.player, objectType = tes3.objectType.armor, slot = slot })
         local validSlot = this.isValidArmorSlot(slot)
         if stack and validSlot then
             warmth = warmth + this.getItemWarmth(stack.object)
@@ -127,12 +127,12 @@ end
     COVERAGE
     ---------------------
 
-    Coverage is a measure the percentage of the body is covered by armor or clothing. 
+    Coverage is a measure the percentage of the body is covered by armor or clothing.
     Coverage is used in the following calculations:
         - How quickly the player gets wet in the rain, or dries off afterwards
         - How quickly the player temperature changes to match that of the environment
         - Coverage of an item acts as a multiplier of its warmth value
-    
+
 ]]
 
 --Returns a table of bodyParts covered by this item
@@ -183,7 +183,7 @@ function this.getCoveredParts()
     }
     --clothing
     for _, slot in pairs(tes3.clothingSlot) do
-        local stack = tes3.getEquippedItem({ actor = tes3.player, objectType = tes3.objectType.clothing, slot = slot })     
+        local stack = tes3.getEquippedItem({ actor = tes3.player, objectType = tes3.objectType.clothing, slot = slot })
         local validSlot = this.isValidClothingSlot(slot)
         if stack and validSlot then
             local parts = getItemBodyParts(stack.object)
@@ -195,7 +195,7 @@ function this.getCoveredParts()
 
     --armor
     for _, slot in pairs(tes3.armorSlot) do
-        local stack = tes3.getEquippedItem({ actor = tes3.player, objectType = tes3.objectType.armor, slot = slot })     
+        local stack = tes3.getEquippedItem({ actor = tes3.player, objectType = tes3.objectType.armor, slot = slot })
         local validSlot = ( slot ~= tes3.armorSlot.shield )
         if stack and validSlot then
             local parts = getItemBodyParts(stack.object)
@@ -215,7 +215,7 @@ function this.getTotalCoverage()
 
     for part, isCovered in pairs(partsCovered) do
         if isCovered then
-            totalCoverage = totalCoverage + ratingsConfig.bodyParts[part] 
+            totalCoverage = totalCoverage + ratingsConfig.bodyParts[part]
         end
     end
 

@@ -41,7 +41,7 @@ function this.doFrostBreath()
     local function addRemoveBreath(ref, isGuar)
 
         if ( ref.mobile and ref.sceneNode ) then
-            local node 
+            local node
             if isGuar then
                 node = ref.sceneNode:getObjectByName("Bip01 Ponytail12")
             else
@@ -87,7 +87,7 @@ function this.doFrostBreath()
     end
 
     node = tes3.worldController.worldCamera.cameraRoot
-    if node then 
+    if node then
         local isAboveWater = ( tes3.mobilePlayer.underwater == false )
         if isCold and not tes3.is3rdPerson() and isAboveWater and checkEnabled() then
             addBreath(node, 0, 5, -16)

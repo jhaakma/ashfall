@@ -47,7 +47,7 @@ local function registerActivators(e)
         assert(type(id) == 'string', "registerActivator(): Invalid id. Must be a string.")
 
         local activator = activatorConfig.list[activatorType]
-        assert(activator, string.format("registerActivator(): %s is an invalid activator type. Valid types include: %s", 
+        assert(activator, string.format("registerActivator(): %s is an invalid activator type. Valid types include: %s",
                 activatorType, listValidActivatorTypes()))
 
         if e.usePatterns then
@@ -55,7 +55,7 @@ local function registerActivators(e)
         else
             activator:addId(id)
         end
-        
+
         common.log:debug("    %s as %s", id, activatorType)
     end
     return true
@@ -98,7 +98,7 @@ local function registerWaterContainers(e)
             }
             common.log:debug("    %s: { capacity: %d%s%s%s }",
                 id,
-                data.capacity, 
+                data.capacity,
                 data.weight and string.format(", weight: %s", data.weight) or "",
                 data.value and string.format(", weight: %s", data.value) or "",
                 data.holdsStew and string.format(", holdsStew: %s", data.holdsStew) or ""
@@ -112,8 +112,8 @@ local function registerWaterContainers(e)
             local thisBottleConfig = staticConfigs.bottleConfig[data]
 
             assert(
-                thisBottleConfig, 
-                string.format("%s is not a valid water container type. Valid types include: %s", 
+                thisBottleConfig,
+                string.format("%s is not a valid water container type. Valid types include: %s",
                     data, listValidWaterContainers())
             )
 
@@ -123,11 +123,11 @@ local function registerWaterContainers(e)
                 value = includeOverrides and thisBottleConfig.value or nil,
                 weight = includeOverrides and thisBottleConfig.weight or nil,
             }
-            
+
             local finalConfig = staticConfigs.bottleList[id]
             common.log:debug("    %s: { capacity: %d%s%s }",
                 id,
-                finalConfig.capacity, 
+                finalConfig.capacity,
                 finalConfig.weight and string.format(", weight: %s", finalConfig.weight) or "",
                 finalConfig.value and string.format(", weight: %s", finalConfig.value) or "",
                 finalConfig.holdsStew and string.format(", holdsStew: %s", finalConfig.holdsStew) or ""

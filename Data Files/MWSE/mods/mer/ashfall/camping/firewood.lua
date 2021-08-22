@@ -25,8 +25,8 @@ local function placeCampfire(e)
         ground.normal.x < -maxSteepness or
         ground.normal.y > maxSteepness or
         ground.normal.y < -maxSteepness
-    ) 
-    if tooSteep then 
+    )
+    if tooSteep then
         tes3.messageBox{ message = "The ground is too steep here.", buttons = {tes3.findGMST(tes3.gmst.sOK).value}}
         return
     end

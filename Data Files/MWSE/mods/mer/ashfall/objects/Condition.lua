@@ -4,12 +4,12 @@ local config = require("mer.ashfall.config.config").config
 Condition.type = "Condition"
 Condition.fields = {
     id = true,
-    default = true, 
+    default = true,
     showMessageOption = true,
     enableOption = true,
     states = true,
     minDebuffState = true,
-    min = true, 
+    min = true,
     max = true,
     minCallback = true,
     maxCallback = true,
@@ -29,19 +29,19 @@ function Condition:scaleSpellValues()
     local spell = self:getCurrentSpellObj(state)
     if not spell then return end
     if not state.effects then return end
-    
+
     for _, stateEffect in ipairs(state.effects) do
         for _, spellEffect in ipairs(spell.effects) do
             local doScale = (
-                spellEffect.id == stateEffect.id and 
+                spellEffect.id == stateEffect.id and
                 spellEffect.attribute == stateEffect.attribute and
                 stateEffect.amount
             )
             if doScale then
                 --For drain/fortify attributes, we scale according
-                --to the player's base amount. 
+                --to the player's base amount.
                 if stateEffect.attribute then
-                    local baseAttr = tes3.mobilePlayer.attributes[stateEffect.attribute + 1].base 
+                    local baseAttr = tes3.mobilePlayer.attributes[stateEffect.attribute + 1].base
                     spellEffect.min = baseAttr * stateEffect.amount
                     spellEffect.max = spellEffect.min
                 end
@@ -52,8 +52,8 @@ function Condition:scaleSpellValues()
 end
 
 function Condition:isActive()
-    return ( 
-        self.enableOption == nil or config[self.enableOption] == true 
+    return (
+        self.enableOption == nil or config[self.enableOption] == true
     )
 end
 
@@ -67,7 +67,7 @@ function Condition:showUpdateMessages()
     if (
         self:isActive() and
         ( tes3.player.data.Ashfall.fadeBlock ~= true ) and
-        ( self.showMessageOption == nil or config[self.showMessageOption] == true ) 
+        ( self.showMessageOption == nil or config[self.showMessageOption] == true )
     ) then
         local message = self:getCurrentStateMessage()
         if message then
@@ -77,10 +77,10 @@ function Condition:showUpdateMessages()
 end
 
 function Condition:playConditionSound()
-    if not self:isActive() then return end 
+    if not self:isActive() then return end
     local sound = self:getCurrentStateData().sound
     if sound then
-        tes3.playSound{ sound = sound } 
+        tes3.playSound{ sound = sound }
     end
 end
 

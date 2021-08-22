@@ -1,5 +1,5 @@
 --[[
-    CampFirePart is an object that can be attached to a campfire, 
+    CampFirePart is an object that can be attached to a campfire,
     such as firewood or a cooking utensil.
 ]]--
 
@@ -27,7 +27,7 @@ end
 function CampFirePart:attach(reference)
     local node = reference.sceneNode:getObjectByName("AttachNode")
     if node then
-        local nif = self:loadMesh()  
+        local nif = self:loadMesh()
         if nif then
             common.log:info("attaching nif")
             node:attachChild(nif, true)

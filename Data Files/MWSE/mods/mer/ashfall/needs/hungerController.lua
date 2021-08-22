@@ -12,7 +12,7 @@ temperatureController.registerBaseTempMultiplier({ id = "hungerEffect", coldOnly
 local coldMulti = 4.0
 local foodPoisonMulti = 5.0
 local HUNGER_EFFECT_LOW = 1.3
-local HUNGER_EFFECT_HIGH = 1.0 
+local HUNGER_EFFECT_HIGH = 1.0
 local restMultiplier = 1.0
 
 
@@ -28,7 +28,7 @@ function this.getBurnLimit()
         common.log:error("No survival skill found")
         return 150
     end
-    
+
     local burnLimit = math.remap(survival, common.skillStartValue, 100, 120, 160)
     return burnLimit
 end
@@ -45,15 +45,15 @@ function this.getNutrition(object, itemData)
     if cookedAmount then
         local survival = common.skills.survival.value
         local survivalEffect = math.remap(
-            survival, 
-            common.skillStartValue, 100, 
+            survival,
+            common.skillStartValue, 100,
             foodData.grillValues.min, foodData.grillValues.max
         )
 
         local min = foodValue
         local max = math.ceil(foodValue * survivalEffect)
 
-        
+
         --value based on how cooked it is
         cookedAmount = math.min(cookedAmount, 100)
         foodValue = math.remap(cookedAmount, 0, 100, min, max)
@@ -71,7 +71,7 @@ function this.getNutrition(object, itemData)
 end
 
 
-function this.eatAmount( amount ) 
+function this.eatAmount( amount )
     if not config.enableHunger then
         return 0
     end
@@ -90,7 +90,7 @@ function this.eatAmount( amount )
         reference = tes3.mobilePlayer,
         current = healthIncrease,
         name = "health",
-    } 
+    }
     conditionsCommon.updateCondition("hunger")
     this.update()
     event.trigger("Ashfall:updateTemperature", { source = "eatAmount" })
@@ -137,11 +137,11 @@ function this.calculate(scriptInterval, forceUpdate)
     local hungerRate = config.hungerRate / 10
 
     local newHunger = hunger:getValue()
-    
+
     local temp = common.staticConfigs.conditionConfig.temp
 
     --Colder it gets, the faster you grow hungry
-    local coldEffect = math.clamp(temp:getValue(), temp.states.freezing.min, temp.states.chilly.max) 
+    local coldEffect = math.clamp(temp:getValue(), temp.states.freezing.min, temp.states.chilly.max)
     coldEffect = math.remap( coldEffect, temp.states.freezing.min,  temp.states.chilly.max, coldMulti, 1.0)
 
      --if you have food poisoning you get hungry more quickly
@@ -172,7 +172,7 @@ function this.update()
 end
 
 local function applyFoodBuff(foodId)
-    for _, meal in pairs(meals) do 
+    for _, meal in pairs(meals) do
         if meal.id == foodId then
             meal:applyBuff()
             event.trigger("Ashfall:updateTemperature", { source = "applyFoodBuff" } )
@@ -199,13 +199,13 @@ local function addFoodPoisoning(e)
             0, 100,--min in, max in
             1.0, 0.0
         )
-        local minPoison = 50 
+        local minPoison = 50
         local maxPoison = 120
         local poisonAmount = math.random(minPoison, maxPoison) * cookedEffect
         common.log:debug("Adding %s food poisoning. Min/Max: %s/%s", poisonAmount, minPoison, maxPoison)
         foodPoison:setValue(foodPoison:getValue() + poisonAmount)
     end
-end 
+end
 
 local function addDisease(e)
     if config.enableDiseasedMeat then
@@ -222,9 +222,9 @@ local function addDisease(e)
 end
 
 local function onEquipFood(e)
-    if common.getIsBlocked(e.item) then 
+    if common.getIsBlocked(e.item) then
         common.log:debug("Is Blocked")
-        return 
+        return
     end
     local nutrition = this.getNutrition(e.item, e.itemData)
     if nutrition then

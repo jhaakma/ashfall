@@ -41,7 +41,7 @@ function this.updateConditions()
 end
 
 
---Re-add the condition spell if the player healed their stats with a potion or spell. 
+--Re-add the condition spell if the player healed their stats with a potion or spell.
 local function refreshConditions(e)
     if e.target ~= tes3.player then return end
     local doRefresh = (
@@ -77,9 +77,9 @@ local function startRefreshConditionTimer()
     timer.start{
         type = timer.real,
         duration = 1,
-        iterations = -1, 
+        iterations = -1,
         callback = restoreConditionEffects
-    } 
+    }
 end
 event.register("loaded", startRefreshConditionTimer)
 
@@ -97,7 +97,7 @@ local function removeConditionEffects()
 end
 
 --[[
-    Prevent attribute capping caused by condition effects by 
+    Prevent attribute capping caused by condition effects by
     temporarily removing them when entering the level up screen.
 ]]
 

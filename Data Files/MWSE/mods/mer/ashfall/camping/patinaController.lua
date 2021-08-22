@@ -5,7 +5,7 @@ local metalPatterns = {
     "iron", "steel", "metal", "pewter", "copper"
 }
 
-local function findLowestAndHighest(sceneNode) 
+local function findLowestAndHighest(sceneNode)
     local lowest_vertex = tes3vector3.new(0, 0, math.huge)
     local highest_vertex = tes3vector3.new(0, 0, -math.huge)
     for node in table.traverse{sceneNode} do
@@ -44,7 +44,7 @@ local function colorFromLowToHigh(node, amount, low, high)
 
     local redLow = math.remap(amount, 0, 100, maxBrightness, 70)
     local redHigh = math.min(maxBrightness, redLow + maxBrightness)
-   
+
     local greenLow = math.remap(amount, 0, 100, maxBrightness, 35)
     local greenHigh = math.min(maxBrightness, greenLow + maxBrightness)
 
@@ -105,7 +105,7 @@ local function doPatinaDrop(e)
                 data.patinaAmount = nil
 
                 tes3.messageBox("You wash your %s.", CampfireUtil.getGenericUtensilName(e.reference.object))
-                
+
                 local cleanSeconds = 2
                 --Play some splashy sounds
                 tes3.playSound {sound = 'Swim Left'}
@@ -124,7 +124,7 @@ local function doPatinaDrop(e)
                     end
                 }
             end
-            
+
             this.addPatina(e.reference.sceneNode, e.reference.data.patinaAmount)
         end
     end

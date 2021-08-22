@@ -1,5 +1,5 @@
 local this = {}
-this.warmth = { 
+this.warmth = {
     multiplier = 0.40,
     --multiplier = 1.0,
     armor = {

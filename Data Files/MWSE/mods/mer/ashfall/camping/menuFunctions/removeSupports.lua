@@ -9,13 +9,13 @@ return {
     enableRequirements = function(campfire)
         return campfire.data.utensil == nil
     end,
-    tooltipDisabled = { 
+    tooltipDisabled = {
         text = "Utensil must be removed first."
     },
     callback = function(campfire)
         local supports = campfire.data.supportsId
         local data = common.staticConfigs.supports[supports:lower()]
-        
+
         common.log:debug("Removing supports %s", supports)
         if data.materials then
             for id, count in pairs(data.materials ) do
@@ -29,7 +29,7 @@ return {
         end
         campfire.data.supportsId = nil
         tes3.playSound{ reference = tes3.player, sound = "Item Misc Up"  }
-        
+
         --event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})
         event.trigger("Ashfall:UpdateAttachNodes", { campfire = campfire})
     end

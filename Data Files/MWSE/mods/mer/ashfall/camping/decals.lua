@@ -35,7 +35,7 @@ preloadTextures()
 
 
 local function addDecal(property, decalState)
-    local decal 
+    local decal
     if decalState then
         decal = decalStates[decalState].texture
     end
@@ -81,7 +81,7 @@ local function updateIngredient(e)
         decalState or "(removing)",
         reference.id
     )
-   
+
     for node in traverseNIF{ reference.sceneNode} do
         local success, texturingProperty, alphaProperty = pcall(function() return node:getProperty(0x4), node:getProperty(0x0) end)
         if (success and texturingProperty) then
@@ -102,7 +102,7 @@ local function ingredPlaced(e)
         local isIngredient = (
             e.reference and
             (not common.helper.isStack(e.reference) ) and
-            ( e.reference.object.objectType == tes3.objectType.ingredient or 
+            ( e.reference.object.objectType == tes3.objectType.ingredient or
             e.reference.baseObject.objectType == tes3.objectType.ingredient)
         )
         if isIngredient then

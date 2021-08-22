@@ -19,7 +19,7 @@ end
 local function addTrinketSound(ref, trinket)
     if trinket.soundPath then
         common.log:debug("playing sound on trinket")
-        tes3.playSound{ reference = ref, soundPath = trinket.soundPath, loop = true}   
+        tes3.playSound{ reference = ref, soundPath = trinket.soundPath, loop = true}
     end
 end
 
@@ -108,7 +108,7 @@ function this.removeTrinket(tentRef)
             trinketNode:updateNodeEffects()
             tes3.addItem{ reference = tes3.player, item = tentRef.data.trinket }
             removeTrinketSound(tentRef)
-            local trinket = tentConfig.getTrinketData(tentRef.data.trinket) 
+            local trinket = tentConfig.getTrinketData(tentRef.data.trinket)
             event.trigger("Ashfall:DisableTrinketEffect", trinket)
             tentRef.data.trinket = nil
         else
@@ -119,7 +119,7 @@ end
 
 local function onRefSceneNodeCreatedAddTrinkets(e)
     local trinketId = e.reference
-                and e.reference.data 
+                and e.reference.data
                 and e.reference.data.trinket
     if trinketId and this.canHaveTrinket(e.reference) then
         local trinket = tentConfig.getTrinketData(trinketId)

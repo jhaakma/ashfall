@@ -82,10 +82,10 @@ local function registerModConfig()
                     "as well as water containers like bottles and pots, to account for their additional " ..
                     "usefulness in survival mechanics."
                 ),
-                variable = mwse.mcm.createTableVariable{ 
-                    id = "overrideFood", 
-                    table = config, 
-                    restartRequired = true,  
+                variable = mwse.mcm.createTableVariable{
+                    id = "overrideFood",
+                    table = config,
+                    restartRequired = true,
                     --restartRequiredMessage = "Changing this setting requires a game restart to come into effect."
                 }
             }
@@ -100,7 +100,7 @@ local function registerModConfig()
                 callback = function(self)
                     if tes3.player then
                         if self.variable.value == true then
-                            
+
                             local newTimeScale = config.manualTimeScale
                             tes3.setGlobal("TimeScale", newTimeScale)
                         end
@@ -131,25 +131,25 @@ local function registerModConfig()
         end
 
         do --Survival Mechanics Category
-            local categorySurvival = pageGeneral:createCategory{ 
-                label = "Survival Mechanics", 
+            local categorySurvival = pageGeneral:createCategory{
+                label = "Survival Mechanics",
                 description = "Turn Ashfall Mechanics on and off."
             }
             categorySurvival:createYesNoButton{
                 label = "Enable Temperature & Weather Effects",
                 description = (
-                    "When enabled, you will need to find shelter from extreme temperatures or face delibitating condition effects. \n\n" .. 
+                    "When enabled, you will need to find shelter from extreme temperatures or face delibitating condition effects. \n\n" ..
                     "At night or in cold climates, stay well fed, wear plenty of clothinug, use torches or firepits or stay indoors to keep yourself warm. \n\n" ..
                     "In hotter climates, make sure you remain hydrated, wear clothing with low warmth ratings and avoid sources of heat like fire, lava or steam. \n\n" ..
-                    "Getting wet will cool you down significantly, as well as increase your fire resistance and lower your shock resistance.\n\n" 
+                    "Getting wet will cool you down significantly, as well as increase your fire resistance and lower your shock resistance.\n\n"
                 ),
                 variable = createTableVar("enableTemperatureEffects"),
             }
             categorySurvival:createYesNoButton{
                 label = "Enable Hunger",
-                description = ( 
-                    "When enabled, you must eat food regularly in order to survive. " .. 
-                    "Ingredients provide a small amount of nutritional value, but you can also cook meals at campfires, cooking pots and stoves. " 
+                description = (
+                    "When enabled, you must eat food regularly in order to survive. " ..
+                    "Ingredients provide a small amount of nutritional value, but you can also cook meals at campfires, cooking pots and stoves. "
                 ),
                 variable = createTableVar("enableHunger"),
             }
@@ -157,7 +157,7 @@ local function registerModConfig()
                 label = "Enable Thirst",
                 description = (
                     "When enabled, you must drink water regularly in order to survive " ..
-                    "Fill bottles with water at any nearby stream, well or keg. You can also drink directly from water sources."    
+                    "Fill bottles with water at any nearby stream, well or keg. You can also drink directly from water sources."
                 ),
                 variable = createTableVar("enableThirst"),
                 callback = tes3ui.updateInventoryTiles --to clear water bottle icons
@@ -165,7 +165,7 @@ local function registerModConfig()
             categorySurvival:createYesNoButton{
                 label = "Enable Sleep",
                 description = (
-                    "When enabled, you must sleep regularly or face debuffs from tiredness deprivation. " .. 
+                    "When enabled, you must sleep regularly or face debuffs from tiredness deprivation. " ..
                     "Sleeping in a bed or bedroll will allow you to become \"Well Rested\", while sleeping out in the open will not fully recover your tiredness."
                 ),
                 variable = createTableVar("enableTiredness"),
@@ -179,7 +179,7 @@ local function registerModConfig()
         end --\Survival Mechanics Category
 
         do --Condition Updates Category
-            local categoryConditions = pageGeneral:createCategory{   
+            local categoryConditions = pageGeneral:createCategory{
                 label = "Condition Updates",
                 description = "Choose which message updates appear when player conditions change.",
             }
@@ -212,8 +212,8 @@ local function registerModConfig()
         end --\Condition Updates Category
 
         do --Miscellanious Category
-            
-            local categoryMisc = pageGeneral:createCategory{ 
+
+            local categoryMisc = pageGeneral:createCategory{
                 label = "Miscellanious",
                 description = "Ashfall features not directly related to survival mechanics.",
             }
@@ -281,7 +281,7 @@ local function registerModConfig()
             categoryMisc:createYesNoButton{
                 label = "Harvest Wood in Wilderness Only",
                 description = (
-                    "If this is enabled, you can not harvest wood with an axe while in town."   
+                    "If this is enabled, you can not harvest wood with an axe while in town."
                 ),
                 variable = createTableVar("illegalHarvest"),
             }
@@ -289,7 +289,7 @@ local function registerModConfig()
             categoryMisc:createYesNoButton{
                 label = "Allow Camping in Settlements",
                 description = (
-                    "If this is enabled, you can make campfires and pitch tents within settlement exteriors."   
+                    "If this is enabled, you can make campfires and pitch tents within settlement exteriors."
                 ),
                 variable = createTableVar("canCampInSettlements"),
             }
@@ -297,7 +297,7 @@ local function registerModConfig()
             categoryMisc:createYesNoButton{
                 label = "Diseased Meat",
                 description = (
-                    "If this is enabled, meat harvested from diseased or blighted animals can make you sick if you eat it."   
+                    "If this is enabled, meat harvested from diseased or blighted animals can make you sick if you eat it."
                 ),
                 variable = createTableVar("enableDiseasedMeat"),
             }
@@ -339,13 +339,13 @@ local function registerModConfig()
                 description = "Change hunger components.",
             }
 
-            
+
             categoryTime:createSlider{
                 label = "Hunger Rate",
                 description = string.format(
                     "Determines how much hunger you gain per hour. When set to 10, you gain 1%% hunger every hour "
                     .."(not taking into account temperature effects). "
-                    .."\n\nThe default hunger rate is %s.", 
+                    .."\n\nThe default hunger rate is %s.",
                     common.defaultValues.hungerRate
                 ),
                 min = 0,
@@ -367,7 +367,7 @@ local function registerModConfig()
                 description = string.format(
                     "Determines how much thirst you gain per hour. When set to 10, you gain 1%% thirst every hour "
                     .."(not taking into account temperature effects). "
-                    .."\n\nThe default thirst rate is %s.", 
+                    .."\n\nThe default thirst rate is %s.",
                     common.defaultValues.thirstRate
                 ),
                 min = 0,
@@ -463,7 +463,7 @@ local function registerModConfig()
                 {
                     label = "Drinks",
                     type = "Object",
-                    objectType = tes3.objectType.alchemy   
+                    objectType = tes3.objectType.alchemy
                 }
             }
         }
@@ -495,7 +495,7 @@ local function registerModConfig()
                             end
                             return false
                         end
-    
+
                         local merchants = {}
                         for obj in tes3.iterateObjects(tes3.objectType.npc) do
                             if not (obj.baseObject and obj.baseObject.id ~= obj.id ) then
@@ -538,7 +538,7 @@ local function registerModConfig()
                             end
                             return false
                         end
-    
+
                         local merchants = {}
                         for obj in tes3.iterateObjects(tes3.objectType.npc) do
                             if not (obj.baseObject and obj.baseObject.id ~= obj.id ) then
@@ -560,7 +560,7 @@ local function registerModConfig()
 
         local function addLine(text, line, indent)
             for i = 0, indent, 1 do
-                text = text .. " "   
+                text = text .. " "
             end
             text = string.format("%s%s", text, line)
             return text
@@ -582,7 +582,7 @@ local function registerModConfig()
                         indent = indent - 1
                         line = "},\n"
                         text = addLine(text, line, indent)
-                        
+
                     else
                         local line = string.format("%s: %s,\n", key, val)
                         text = addLine(text, line, indent)
@@ -599,16 +599,16 @@ local function registerModConfig()
             --clear the existing components
             self.elements.subcomponentsContainer:destroyChildren()
             self.components = {}
-            
+
             local path = "Ashfall"
             local data = common.data
             local function recurse(component)
-                
+
                 --Boolean: buttons
                 for key, val in pairs(data) do
                     if type(val) == "boolean" then
                         component:createOnOffButton{
-                            label = key, 
+                            label = key,
                             variable = mwse.mcm.createPlayerData {
                                 id = key,
                                 path = path
@@ -623,7 +623,7 @@ local function registerModConfig()
                 for key, val in pairs(data) do
                     if type(val) == "string" then
                         component:createTextField{
-                            label = key, 
+                            label = key,
                             variable = mwse.mcm.createPlayerData {
                                 id = key,
                                 path = path
@@ -635,7 +635,7 @@ local function registerModConfig()
                 for key, val in pairs(data) do
                     if type(val) == "number" then
                         component:createTextField{
-                            label = key, 
+                            label = key,
                             variable = mwse.mcm.createPlayerData {
                                 id = key,
                                 path = path
@@ -648,7 +648,7 @@ local function registerModConfig()
                 for key, val in pairs(data) do
                     if type(val) == "table" and not string.find(key, "__") then
                         local category = component:createCategory(key)
-                        
+
                         local prevData = data
                         local prevPath = path
                         path = path .. "." .. key
@@ -668,7 +668,7 @@ local function registerModConfig()
             label = "Development Options",
             description = "Tools for debugging etc. Don't touch unless you know what you're doing.",
         }
-        
+
         pageDevOptions:createOnOffButton{
             label = "Check For Updates",
             description = "When enabled, you will be notified when a new version of Ashfall is available.",
@@ -719,7 +719,7 @@ local function registerModConfig()
         pageDevOptions:createButton{
             buttonText = "Print data to log",
             description = "Print all Ashfall data to Morrowind/MWSE.log. If you are having issues with Ashfall, recreate the issue in-game, press this button, then send the MWSE.log file to Merlord at the Morrowind Modding Discord channel.",
-            callback = function() 
+            callback = function()
                 mwse.log("Ashfall Data:")
                 mwse.log(json.encode(common.data, { indent = true }))
             end,
@@ -739,7 +739,7 @@ local function registerModConfig()
 
         -- pageDevOptions:createInfo{
         --     label = "Current Data: ",
-        --     inGameOnly = true, 
+        --     inGameOnly = true,
         --     text = "",
         --     postCreate = function(self)
         --         self.elements.info.text = recursivePrint()
@@ -747,7 +747,7 @@ local function registerModConfig()
         -- }
     end --\Dev Options
 
-   
+
 end
 
 event.register("modConfigReady", registerModConfig)

@@ -97,7 +97,7 @@ local function onActivate(e)
     if e.activator ~= tes3.player then return end
     local ref = e.target
     local miscId = getMiscFromActive(ref)
-    if not miscId then return end 
+    if not miscId then return end
     if tes3ui.menuMode() then
         pickup()
         return false
@@ -121,7 +121,7 @@ local function onActivate(e)
             {
                 text = "Collect",
                 requirements = function()
-                    return ref.data.crabCount ~= nil 
+                    return ref.data.crabCount ~= nil
                         and ref.data.crabCount >= 1
                 end,
                 tooltipDisabled = {
@@ -175,8 +175,8 @@ local function onGearDropped(e)
         initPotData(crabpot)
         if common.helper.isStack(e.reference) then
             tes3.addItem{
-                reference = tes3.player, 
-                item = e.reference.object, 
+                reference = tes3.player,
+                item = e.reference.object,
                 count = e.reference.attachments.variables.count - 1,
                 playSound = false
             }
@@ -204,7 +204,7 @@ local function updatePots(e)
             --catch more crabs in deeper water
             local waterDepth = math.min(common.helper.getDepthUnderwater(crabPotRef), crabpotConfig.maxWaterDepth)
             local waterEffect = math.remap(waterDepth, 0, crabpotConfig.maxWaterDepth, 1, crabpotConfig.crabRateWaterEffect)
-            
+
             --catch more crabs in cells where mudcrabs are present
             local crabCellEffect = crabPotRef.data.inCrabCell and crabpotConfig.crabCellEffect or 1.0
 
@@ -240,7 +240,7 @@ local function updatePots(e)
                 playCrabSound(crabPotRef)
                 updateSwitchNodes(crabPotRef)
             end
-            
+
             crabPotRef.data.lastCrabUpdated = e.timestamp
         end
     end

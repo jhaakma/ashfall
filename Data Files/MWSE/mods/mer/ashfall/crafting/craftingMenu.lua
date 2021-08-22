@@ -58,7 +58,7 @@ end
 
 local function closeMenu()
     local menu = tes3ui.findMenu(uiids.craftingMenu)
-    if  menu then 
+    if  menu then
         menu:destroy()
         tes3ui.leaveMenuMode()
     end
@@ -91,7 +91,7 @@ local menuButtons = {
         id = tes3ui.registerID("Ashfall_Button_CraftItem"),
         name = "Craft",
         callback = craftItem,
-        requirements = function() 
+        requirements = function()
             return checkHasIngredients(selectedRecipe)
         end
     },
@@ -154,7 +154,7 @@ local function updateRequirementsPane(recipe)
             outerBlock.paddingRight = 6
             outerBlock.maxWidth = 300
             outerBlock.autoWidth = true
-            outerBlock.autoHeight = true   
+            outerBlock.autoHeight = true
             outerBlock.childAlignX = 0.5
 
             local header =  outerBlock:createLabel{ text = getIngredName(ingredData)}
@@ -182,9 +182,9 @@ local function updateRequirementsPane(recipe)
                 end
             end
         end)
-            
+
         if hasIngredient(ingredData) then
-            requirement.color = tes3ui.getPalette("normal_color")  
+            requirement.color = tes3ui.getPalette("normal_color")
         else
             requirement.color = tes3ui.getPalette("disabled_color")
         end
@@ -212,17 +212,17 @@ local function updatePreviewPane(recipe)
 
     local itemId = recipe.id
     local item = tes3.getObject(itemId)
-    if item then 
+    if item then
         --nifPreviewBLock
         local nifPreviewBlock = craftingMenu:findChild(uiids.nifPreviewBlock)
-        if nifPreviewBlock then 
+        if nifPreviewBlock then
             nifPreviewBlock:destroyChildren()
             local mesh = recipe.mesh or item.mesh
             local nif = nifPreviewBlock:createNif{ id = uiids.nif, path = mesh}
-            if not nif then return end 
+            if not nif then return end
             --nif.scaleMode = true
             craftingMenu:updateLayout()
-            
+
 
             common.log:debug("mesh: %s", mesh)
             common.log:debug(nif.sceneNode.name)
@@ -252,7 +252,7 @@ local function updatePreviewPane(recipe)
 
             local lowestPoint = bb.min.z
             common.log:debug("lowestPoint = %s", lowestPoint)
-            node.translation.z = node.translation.z - lowestPoint*node.scale 
+            node.translation.z = node.translation.z - lowestPoint*node.scale
 
             do --add properties
                 local vertexColorProperty = niVertexColorProperty.new()
@@ -270,8 +270,8 @@ local function updatePreviewPane(recipe)
             m1:toRotationX(math.rad(-15))
             m2:toRotationZ(math.rad(180))
             node.rotation = node.rotation * m1:copy() * m2:copy()
-            
-            
+
+
             node.appCulled = false
             node:updateProperties()
             node:update()
@@ -328,15 +328,15 @@ end
 
 local function rotateNif(e)
     local menu = tes3ui.findMenu(uiids.craftingMenu)
-    if not menu then 
+    if not menu then
         event.unregister("enterFrame", rotateNif)
-        return 
+        return
     end
     local nif = menu:findChild(uiids.nif)
-    
+
     if nif and nif.sceneNode then
         local node = nif.sceneNode
-        
+
 
         m2:toRotationZ(math.rad(15) * e.delta)
         node.rotation = node.rotation * m2
@@ -413,7 +413,7 @@ local function createRecipeListPane(parent)
     block.paddingAllSides = 10
     block.widthProportional = 1.0
     block.heightProportional = 1.0
-    
+
     local title = block:createLabel()
     title.color = tes3ui.getPalette("header_color")
     title.text = "Recipes:"
@@ -453,7 +453,7 @@ local function createRequirementsPane(parent)
     block.paddingAllSides = 10
     block.widthProportional = 1.0
     block.heightProportional = 1.0
-    
+
     local title = block:createLabel()
     title.color = tes3ui.getPalette("header_color")
     title.text = "Requirements:"
@@ -501,12 +501,12 @@ function this.openMenu(recipeList)
     --recipes on the left
     local recipeBlock = createRecipeListPane(outerBlock)
     recipeBlock.widthProportional = 0.9
-    
+
     --Results on the right, consisting of a preview pane, description, and requirements list
     local resultsBlock = createTopToBottomBlock(outerBlock)
     resultsBlock.widthProportional = 1.1
     createPreviewPane(resultsBlock)
-    createDescriptionPane(resultsBlock) 
+    createDescriptionPane(resultsBlock)
     createRequirementsPane(resultsBlock)
 
     --Craft and Cancel buttons on the bottom

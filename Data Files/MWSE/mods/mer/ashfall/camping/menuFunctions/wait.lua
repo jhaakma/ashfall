@@ -9,11 +9,11 @@ return {
         text = "You can't wait here; enemies are nearby."
     },
     callback = function()
-        animCtrl.showFastTimeMenu{ 
-            message = "Sit Down", 
-            anim = "sitting", 
-            recovering = true, 
-            speeds = { 2, 5, 10 } 
+        animCtrl.showFastTimeMenu{
+            message = "Sit Down",
+            anim = "sitting",
+            recovering = true,
+            speeds = { 2, 5, 10 }
         }
     end,
-} 
+}

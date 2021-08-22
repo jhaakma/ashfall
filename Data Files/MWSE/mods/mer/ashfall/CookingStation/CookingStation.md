@@ -1,6 +1,6 @@
 # Cooking Station Mechanics
 
-Objects such as campfires, ovens, grills etc are considered "cooking stations". 
+Objects such as campfires, ovens, grills etc are considered "cooking stations".
 
 The cooking station code is the base code which implements the following mechanics:
 
@@ -36,4 +36,4 @@ Visuals management may have to be station specific
 Base station functionality:
     * Add fuel
     * Provide warmth
-    * Menu 
+    * Menu

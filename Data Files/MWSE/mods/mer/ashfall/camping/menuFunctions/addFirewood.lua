@@ -11,9 +11,9 @@ local function getFirewoodCount()
 end
 
 local function canAddFireWoodToCampfire(campfire)
-    return ( 
-        campfire.data.fuelLevel < common.staticConfigs.maxWoodInFire or 
-        campfire.data.burned == true 
+    return (
+        campfire.data.fuelLevel < common.staticConfigs.maxWoodInFire or
+        campfire.data.burned == true
     )
 end
 

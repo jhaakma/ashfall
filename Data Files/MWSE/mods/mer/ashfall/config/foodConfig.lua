@@ -92,42 +92,42 @@ this.type = {
 
 
 this.stewBuffs = {
-    [this.type.meat] = { 
+    [this.type.meat] = {
         notSoup = true,
         stewNutrition = 1.0,
-        min = 10, max = 30, 
+        min = 10, max = 30,
         id = "ashfall_stew_hearty",
         tooltip = "A hearty meat stew that fortifies your health.",
         ingredTooltip = "Adds Fortify Health buff."
     }, -- fortify health
-    [this.type.vegetable] = { 
+    [this.type.vegetable] = {
         notSoup = true,
         stewNutrition = 0.9,
-        min = 10, max = 30, 
+        min = 10, max = 30,
         id = "ashfall_stew_nutritious",
         tooltip = "A nutritious vegetable stew that fortifies your fatigue.",
         ingredTooltip = "Adds Fortify Fatigue buff"
     }, --fortify fatigue
-    [this.type.mushroom] = { 
+    [this.type.mushroom] = {
         notSoup = true,
         stewNutrition = 0.8,
-        min = 10, max = 25, 
+        min = 10, max = 25,
         id = "ashfall_stew_chunky",
         tooltip = "A chunky mushroom stew that fortifies your magicka.",
         ingredTooltip = "Adds Fortify Magicka buff."
     }, --fortify magicka
-    [this.type.seasoning] = { 
+    [this.type.seasoning] = {
         notSoup = false,
         stewNutrition = 0.3,
-        min = 5, max = 20, 
+        min = 5, max = 20,
         id = "ashfall_stew_tasty",
         tooltip = "A tasty seasoned soup that fortifies your agility.",
         ingredTooltip = "Adds Fortify Agility buff."
     }, --fortify agility
-    [this.type.herb] = { 
+    [this.type.herb] = {
         notSoup = false,
         stewNutrition = 0.4,
-        min = 5, max = 20, 
+        min = 5, max = 20,
         id = "ashfall_stew_aromatic",
         tooltip = "An aromatic soup, rich in herbs,that fortifies your personality.",
         ingredTooltip = "Adds Fortify Personality buff."
@@ -146,7 +146,7 @@ this.grillValues = {
 --Nutrition at weight==1.0
 this.nutrition = {
     [this.type.meat] = 10,
-    [this.type.cookedMeat] = (10 * this.grillValues[this.type.meat].min), 
+    [this.type.cookedMeat] = (10 * this.grillValues[this.type.meat].min),
     [this.type.egg] = 8,
     [this.type.vegetable] = 8,
     [this.type.mushroom] = 4,
@@ -378,7 +378,7 @@ this.ingredTypes = {
     ["t_ingfood_wheat_01"] = this.type.food,
 
     --cannibals
-    
+
     ["mor_redguard_heart"] = this.type.meat,
     ["mor_redguard_flesh"] = this.type.meat,
     ["mor_redguard_eye"] = this.type.meat,
@@ -422,10 +422,10 @@ this.ingredTypes = {
     ["mor_altmer_heart"] = this.type.meat,
     ["mor_altmer_flesh"] = this.type.meat,
     ["mor_altmer_brain"] = this.type.meat,
-    ["mor_altmer_eye"] = this.type.meat,    
-    
+    ["mor_altmer_eye"] = this.type.meat,
+
     --pl creatures
-    
+
     ["plx_wasp_sting"] = this.type.misc,
     ["plx_vissed_meat"] = this.type.meat,
     ["plx_squirrel_tail"] = this.type.misc,
@@ -467,9 +467,9 @@ this.ingredTypes = {
     ["plx_alit_meat_b"] = this.type.misc,
     ["plx_alit_meat"] = this.type.meat,
 
-    
+
     --abot's water life and birds
-    
+
     ["ab01ingred_bee"] = this.type.misc,
     ["ab01ingred_bird_meat"] = this.type.meat,
     ["ab01ingred_bird_plumes"] = this.type.misc,
@@ -552,18 +552,18 @@ this.ingredTypes = {
     ["ab01ingred_alga02"] = this.type.herb,
     ["ab01ingred_alga01"] = this.type.herb,
 
-    
+
     --danae's cliff racers
     ["mc_racer_raw"] = this.type.meat,
-    
+
     --my custom
 
     ["mer_ingfood_fish"] = this.type.meat,
-    
+
     --tr
     ["t_ingspice_saffron_01"] = this.type.seasoning,
     ["t_ingspice_pepper_01"] = this.type.seasoning,
-    ["t_ingspice_nigella_01"] = this.type.seasoning,    
+    ["t_ingspice_nigella_01"] = this.type.seasoning,
     ["t_ingspice_muscat_01"] = this.type.seasoning,
     ["t_ingspice_hibiscus_01"] = this.type.herb,
     ["t_ingspice_curcuma_01"] = this.type.seasoning,

@@ -20,7 +20,7 @@ local function getNearbyBug()
     ---A position in front of the player from which to distance check nearby bugs
     local checkPosition = eyePos + eyeOri * bugConfig.checkDistance
 
-    -- tes3.createReference{ 
+    -- tes3.createReference{
     --     object = "misc_com_redware_cup",
     --     position = checkPosition,
     --     cell = tes3.player.cell
@@ -36,7 +36,7 @@ local function getNearbyBug()
                     local distance = checkPosition:distance(bugNode.worldTransform.translation)
                     if distance < bugConfig.maxRadius and distance < closestDistance then
                         common.log:trace("Distance: %s. Required: %d", distance, bugConfig.maxRadius)
-                        
+
                         closestBug = container
                         closestDistance = distance
                     end
@@ -64,20 +64,20 @@ local function onAttack(e)
     local mob = e.mobile
     ---@type tes3weapon
     local weapon = mob.readiedWeapon and mob.readiedWeapon.object
-    if not weapon then 
+    if not weapon then
         common.log:trace("Not using a weapon")
-        return 
+        return
     end
 
 
-    if not isBugNet(weapon) then 
+    if not isBugNet(weapon) then
         common.log:trace("Not a bug net")
-        return 
+        return
     end
     local bug = getNearbyBug()
-    if not bug then 
+    if not bug then
         common.log:trace("No nearby bugs")
-        return 
+        return
     end
     catchBug(bug)
 end

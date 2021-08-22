@@ -65,7 +65,7 @@ local function stewSelectMenu()
 end
 
 local function onStewServiceClick()
-    common.log:debug("Activating stew menu")  
+    common.log:debug("Activating stew menu")
     stewSelectMenu()
 end
 
@@ -83,7 +83,7 @@ local function getDisabled(cost)
     --check player can afford
     if tes3.getPlayerGold() < cost then return true end
     if isFull() then return true end
-    
+
     return false
 end
 
@@ -139,16 +139,16 @@ local function updateStewServiceButton(e)
 end
 
 
- 
+
 local function onMenuDialogActivated()
     if config.enableThirst ~= true then return end
-    
+
     common.log:debug("Dialog menu entered")
     local menuDialog = tes3ui.findMenu(GUID_MenuDialog)
     -- Get the actor that we're talking with.
 	local mobileActor = menuDialog:getPropertyObject("PartHyperText_actor")
     local ref = mobileActor.reference
-    
+
     common.log:debug("Actor: %s", ref.object.name)
 
     if common.isInnkeeper(ref) then
@@ -158,7 +158,7 @@ local function onMenuDialogActivated()
         local divider = topicsScrollPane:findChild(GUID_MenuDialog_Divider)
         local topicsList = divider.parent
         local stewServiceButton = topicsList:createTextSelect({ id = GUID_MenuDialog_StewService, text = "" })
-        
+
         topicsList:reorderChildren(divider, stewServiceButton, 1)
         stewServiceButton:register("mouseClick", onStewServiceClick)
         menuDialog:registerAfter("update", updateStewServiceButton)

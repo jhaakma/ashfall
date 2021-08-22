@@ -26,7 +26,7 @@ function this.calculateRaceEffects()
     end
 
     --being werewolf overrides khajiit
-    
+
     if tes3.mobilePlayer.werewolf then
         common.data.furTemp = werewolfWarmth
     end

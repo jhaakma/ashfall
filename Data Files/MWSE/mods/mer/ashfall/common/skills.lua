@@ -30,9 +30,9 @@
 --     end
 
 --     skillModule.registerSkill(
---         "Ashfall:Survival", 
---         {    
---             name = "Survival", 
+--         "Ashfall:Survival",
+--         {
+--             name = "Survival",
 --             icon = "Icons/ashfall/survival.dds",
 --             value = skills.skillStartValue,
 --             attribute = tes3.attribute.endurance,
@@ -42,9 +42,9 @@
 --     )
 
 --     skillModule.registerSkill(
---         "Ashfall:Cooking", 
---         {    
---             name = "Cooking", 
+--         "Ashfall:Cooking",
+--         {
+--             name = "Cooking",
 --             icon = "Icons/ashfall/cooking.dds",
 --             value = skills.skillStartValue,
 --             attribute = tes3.attribute.intelligence,

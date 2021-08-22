@@ -17,5 +17,5 @@ return {
     callback = function()
         common.data.recoveringFatigue = true
         animCtrl.sitDown{ recovering = true }
-    end 
+    end
 }

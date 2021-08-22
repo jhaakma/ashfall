@@ -29,7 +29,7 @@ local function addUtensilPatina(campfire,interval)
 end
 
 local function updateBoilers(e)
-    
+
     local function doUpdate(boilerRef)
         common.log:trace("BOILER updating %s", boilerRef.object.id)
         boilerRef.data.lastWaterUpdated = boilerRef.data.lastWaterUpdated or e.timestamp
@@ -38,14 +38,14 @@ local function updateBoilers(e)
         common.log:trace("BOILER timeSinceLastUpdate %s", timeSinceLastUpdate)
 
         if timeSinceLastUpdate < 0 then
-            common.log:error("BOILER boilerRef.data.lastWaterUpdated(%.4f) is ahead of e.timestamp(%.4f).", 
+            common.log:error("BOILER boilerRef.data.lastWaterUpdated(%.4f) is ahead of e.timestamp(%.4f).",
                 boilerRef.data.lastWaterUpdated, e.timestamp)
             --something fucky happened
             boilerRef.data.lastWaterUpdated = e.timestamp
         end
 
         if timeSinceLastUpdate > updateInterval then
-            
+
             common.log:trace("BOILER interval passed, updating heat")
             local hasFilledPot = (
                 boilerRef.data.waterAmount and
@@ -77,20 +77,20 @@ local function updateBoilers(e)
                 local heatBefore = boilerRef.data.waterHeat
                 boilerRef.data.waterHeat = math.clamp((boilerRef.data.waterHeat + heatChange), 0, 100)
                 local heatAfter = boilerRef.data.waterHeat
-                
+
                 common.log:trace("BOILER heatAfter: %s", heatAfter)
 
                 --add sound if crossing the boiling barrior
                 if heatBefore < common.staticConfigs.hotWaterHeatValue and heatAfter > common.staticConfigs.hotWaterHeatValue then
                     tes3.playSound{
-                        reference = boilerRef, 
+                        reference = boilerRef,
                         sound = "ashfall_boil"
                     }
                 end
                 --remove boiling sound
                 if heatBefore > common.staticConfigs.hotWaterHeatValue and heatAfter < common.staticConfigs.hotWaterHeatValue then
                     tes3.removeSound{
-                        reference = boilerRef, 
+                        reference = boilerRef,
                         sound = "ashfall_boil"
                     }
                 end
@@ -107,7 +107,7 @@ local function updateBoilers(e)
             end
         end
     end
-    common.helper.iterateRefType("boiler", doUpdate) 
+    common.helper.iterateRefType("boiler", doUpdate)
 end
 
  event.register("simulate", updateBoilers)

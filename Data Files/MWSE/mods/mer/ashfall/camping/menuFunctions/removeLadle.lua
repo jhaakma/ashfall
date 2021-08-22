@@ -17,7 +17,7 @@ return  {
     },
     callback = function(campfire)
         mwscript.addItem{ reference = tes3.player, item = "misc_com_iron_ladle" }
-        campfire.data.ladle = false       
+        campfire.data.ladle = false
         tes3.playSound{ reference = tes3.player, sound = "Item Misc Up"  }
         --event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})
     end

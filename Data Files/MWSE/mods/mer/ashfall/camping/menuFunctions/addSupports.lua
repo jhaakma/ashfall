@@ -13,9 +13,9 @@ local function playerHasMaterials(materials)
 end
 
 local function addSupports(item, campfire, itemData)
-    
+
     local supportsData = common.staticConfigs.supports[item.id:lower()]
-    
+
     tes3.playSound{ reference = tes3.player, sound = "Item Misc Down"  }
 
     if supportsData.materials then
@@ -68,7 +68,7 @@ return {
     showRequirements = function(campfire)
         return (
             campfire.sceneNode:getObjectByName("ATTACH_SUPPORTS") and
-            not campfire.data.supportsId and 
+            not campfire.data.supportsId and
             campfire.data.dynamicConfig and
             campfire.data.dynamicConfig.supports == "dynamic"
         )
@@ -85,10 +85,10 @@ return {
                 end
             end
         end
-        
+
         return false
     end,
-    tooltipDisabled = { 
+    tooltipDisabled = {
         text = "You don't have any supports or enough firewood."
     },
     callback = supportsSelect

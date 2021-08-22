@@ -63,8 +63,8 @@ showConfirmDisableNotifications = function()
     local message = "Disable update notifications?"
     ---@type AshfallMessageBoxButton[]
     local buttons = {
-        { 
-            text = tes3.findGMST(tes3.gmst.sYes).value, 
+        {
+            text = tes3.findGMST(tes3.gmst.sYes).value,
             callback = function()
                 config.checkForUpdates = false
                 config.save()
@@ -85,7 +85,7 @@ function this.checkForUpdates()
         currentVersion = this.getVersion()
         local body, code, headers, status = https.request(
             'http://api.github.com/repos/jhaakma/ashfall/tags')
-        
+
         if code == 200 then
             local body = json.decode(body)
             latestVersion = body and body[1] and body[1].name

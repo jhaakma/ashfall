@@ -9,16 +9,16 @@ local tentConfig = require("mer.ashfall.camping.tents.tentConfig")
 function this.hourToClockTime ( time )
     local gameTime = time or tes3.findGlobal("GameHour").value
     local formattedTime
-    
+
     local isPM = false
     if gameTime > 12 then
         isPM = true
         gameTime = gameTime - 12
     end
-    
+
 
     local hourString = math.floor(gameTime)
-    -- if gameTime < 10 then 
+    -- if gameTime < 10 then
     --     hourString = string.sub(gameTime, 1, 1)
     -- else
     --     hourString  = string.sub(gameTime, 1, 2)
@@ -78,14 +78,14 @@ function this.checkRefSheltered(reference)
     if results then
         for _, result in ipairs(results) do
             if result and result.reference and result.reference.object then
-                sheltered = 
+                sheltered =
                     ( result.reference.object.objectType == tes3.objectType.static or
                     result.reference.object.objectType == tes3.objectType.activator ) == true
                 if tentConfig.tentActivetoMiscMap[result.reference.object.id:lower()] then
                     --We're covered by a tent, so we are a bit warmer
                     tent = result.reference
                 end
-                --this looks weird but it makes sense because we don't break out 
+                --this looks weird but it makes sense because we don't break out
                 --of the for loop if sheletered is false
                 if sheltered == true then break end
             end
@@ -99,7 +99,7 @@ function this.getInside(reference)
     reference = reference or tes3.player
     return (
         reference.cell and
-        reference.cell.isInterior and 
+        reference.cell.isInterior and
         not reference.cell.behavesAsExterior
     )
 end
@@ -127,7 +127,7 @@ end
 
 
 --[[
-    Moves the player, designed for short movements 
+    Moves the player, designed for short movements
     which probably won't change cell. but if a cell change
     is required, it uses positionCell as a fallback
 ]]
@@ -149,10 +149,10 @@ function this.movePlayer(e)
 end
 
 function this.isStack(reference)
-    return ( 
+    return (
         reference.attachments and
-        reference.attachments.variables and 
-        reference.attachments.variables.count > 1 
+        reference.attachments.variables and
+        reference.attachments.variables.count > 1
     )
 end
 
@@ -208,7 +208,7 @@ local function populateButtons(e)
                 end)
             end
         end
-        
+
     end
     menu:updateLayout()
 end
@@ -224,7 +224,7 @@ function this.messageBox(params)
         button.widget.state = 1
         button.color = tes3ui.getPalette("normal_color")
     end
-    
+
     local function disable(button)
         button.disabled = true
         button.widget.state = 2
@@ -283,7 +283,7 @@ function this.messageBox(params)
 
             populateButtons{ buttons= buttons, menu = menu, buttonsBlock = buttonsBlock, startIndex = startIndex, endIndex = endIndex}
         end)
-        
+
         nextButton:register("mouseClick", function()
             --move start index forward, check if enable prev  button
             startIndex = startIndex + maxButtonsPerColumn
@@ -296,11 +296,11 @@ function this.messageBox(params)
             if endIndex >= #buttons then
                 disable(nextButton)
             end
-           
+
             populateButtons{ buttons= buttons, menu = menu, buttonsBlock = buttonsBlock, startIndex = startIndex, endIndex = endIndex}
         end)
     end
-    
+
     -- add cancel button
     if params.doesCancel then
         local buttonId = tes3ui.registerID("CustomMessageBox_CancelButton")
@@ -317,7 +317,7 @@ function this.messageBox(params)
 end
 
 --[[
-    Checks if two refs are near each other, with 
+    Checks if two refs are near each other, with
     separate horizontal and vertical distance checks
     params:
         ref1, ref2
@@ -369,7 +369,7 @@ end
 function this.createTooltip(e)
     local thisHeader, thisLabel = e.header, e.text
     local tooltip = tes3ui.createTooltipMenu()
-    
+
     local outerBlock = tooltip:createBlock({ id = tes3ui.registerID("Ashfall:temperatureIndicator_outerBlock") })
     outerBlock.flowDirection = "top_to_bottom"
     outerBlock.paddingTop = 6
@@ -378,8 +378,8 @@ function this.createTooltip(e)
     outerBlock.paddingRight = 6
     outerBlock.maxWidth = 300
     outerBlock.autoWidth = true
-    outerBlock.autoHeight = true    
-    
+    outerBlock.autoHeight = true
+
     if thisHeader then
         local headerText = thisHeader
         local headerLabel = outerBlock:createLabel({ id = tes3ui.registerID("Ashfall:temperatureIndicator_header"), text = headerText })
@@ -396,7 +396,7 @@ function this.createTooltip(e)
         descriptionLabel.width = 285
         descriptionLabel.wrapText = true
     end
-    
+
     tooltip:updateLayout()
 end
 
@@ -414,7 +414,7 @@ function this.recoverStats(e)
             healthRecovery = math.min(healthRecovery, remaining)
             tes3.modStatistic{ reference = tes3.player, name = "health", current = healthRecovery }
         end
-        
+
         --magicka
         if not isStunted then
             local intelligence = tes3.mobilePlayer.intelligence.base
@@ -539,8 +539,8 @@ function this.getUniqueCellId(cell)
         return cell.id:lower()
     else
         return string.format("%s (%s,%s)",
-        cell.id:lower(), 
-        cell.gridX, 
+        cell.id:lower(),
+        cell.gridX,
         cell.gridY)
     end
 end
@@ -584,7 +584,7 @@ function this.fadeTimeOut( hoursPassed, secondsTaken, callback )
                 timer.start({
                     type = timer.real,
                     iterations = 1,
-                    duration = fadeBackTime, 
+                    duration = fadeBackTime,
                     callback = fadeTimeIn
                 })
             end
@@ -617,7 +617,7 @@ end
     Restore lost fatigue to prevent collapsing
 ]]
 function this.restoreFatigue()
-    
+
     local previousFatigue = tes3.mobilePlayer.fatigue.current
     timer.delayOneFrame(function()
         local newFatigue = tes3.mobilePlayer.fatigue.current
@@ -626,7 +626,7 @@ function this.restoreFatigue()
         end
     end)
 end
- 
+
 --[[
     Attempt to contract a disease
 ]]
@@ -634,16 +634,16 @@ local defaultChance = 1.0
 local maxSurvivalEffect = 0.5
 function this.tryContractDisease(spellID)
     local spell = tes3.getObject(spellID)
-    local resistDisease = tes3.mobilePlayer.resistCommonDisease 
+    local resistDisease = tes3.mobilePlayer.resistCommonDisease
     if spell.castType == tes3.spellType.blight then
-        resistDisease = tes3.mobilePlayer.resistBlightDisease 
+        resistDisease = tes3.mobilePlayer.resistBlightDisease
     end
 
     local survival = skillModule.getSkill("Ashfall:Survival").value
     local resistEffect = math.remap( math.min(resistDisease, 100), 0, 100, 1.0, 0.0 )
     local survivalEffect =  math.remap( math.min(survival, 100), 0, 100, 1.0, maxSurvivalEffect )
 
-    
+
     local catchChance = defaultChance * resistEffect * survivalEffect
     local roll= math.random()
     if roll < catchChance then
@@ -655,7 +655,7 @@ function this.tryContractDisease(spellID)
 end
 
 --[[
-    Get a number between 0 and 1 based on the current day of the year, 
+    Get a number between 0 and 1 based on the current day of the year,
     where 0 is the middle of Winter and 1 is the middle of Summer
 ]]
 local day
@@ -664,7 +664,7 @@ function this.getSeasonMultiplier()
     day = day or tes3.worldController.day
     month = month or tes3.worldController.month
     local dayOfYear = day.value + tes3.getCumulativeDaysForMonth(month.value)
-    local dayAdjusted = dayOfYear < 196 and dayOfYear  or ( 196 - ( dayOfYear - 196 ) ) 
+    local dayAdjusted = dayOfYear < 196 and dayOfYear  or ( 196 - ( dayOfYear - 196 ) )
     local seasonMultiplier = math.remap(dayAdjusted, 0, 196, 0, 1)
     return seasonMultiplier
 end
@@ -734,12 +734,12 @@ function this.rotationDifference(vec1, vec2)
 end
 
 function this.getGroundBelowRef(e)
-    local ref = e.ref 
+    local ref = e.ref
     local ignoreList = e.ignoreList
     if not ref then return end
     local height = -ref.object.boundingBox.min.z + 5
     local result = tes3.rayTest{
-        position = {ref.position.x, ref.position.y, ref.position.z + height}, 
+        position = {ref.position.x, ref.position.y, ref.position.z + height},
         direction = {0, 0, -1},
         ignore = ignoreList or {ref, tes3.player},
         returnNormal = true,
@@ -784,7 +784,7 @@ function this.orientRefToGround(params)
         end
         ref.position = { ref.position.x, ref.position.y, result.intersection.z - offset }
     end
-    
+
     local ref = params.ref
     local maxSteepness = params.maxSteepness or 0.4
     local ignoreList = params.ignoreList or {ref, tes3.player}
@@ -801,9 +801,9 @@ function this.orientRefToGround(params)
     end
 
     local result = this.getGroundBelowRef{
-        ref = ref, 
-        ignoreList = ignoreList, 
-        rootHeight = rootHeight, 
+        ref = ref,
+        ignoreList = ignoreList,
+        rootHeight = rootHeight,
         terrainOnly = terrainOnly
     }
     if not result then return false end
@@ -824,7 +824,7 @@ function this.removeCollision(sceneNode)
     end
 end
 
-function this.removeLight(lightNode) 
+function this.removeLight(lightNode)
 
     for node in this.traverseRoots{lightNode} do
         --Kill particles
@@ -841,22 +841,22 @@ function this.removeLight(lightNode)
             --node.appCulled = true
             node.parent:detachChild(node)
         end
-        
-        -- Kill materialProperty 
+
+        -- Kill materialProperty
         local materialProperty = node:getProperty(0x2)
         if materialProperty then
             if (materialProperty.emissive.r > 1e-5 or materialProperty.emissive.g > 1e-5 or materialProperty.emissive.b > 1e-5 or materialProperty.controller) then
                 materialProperty = node:detachProperty(0x2):clone()
                 node:attachProperty(materialProperty)
-        
+
                 -- Kill controllers
                 materialProperty:removeAllControllers()
-                
+
                 -- Kill emissives
                 local emissive = materialProperty.emissive
                 emissive.r, emissive.g, emissive.b = 0,0,0
                 materialProperty.emissive = emissive
-        
+
                 node:updateProperties()
             end
         end
@@ -868,7 +868,7 @@ function this.removeLight(lightNode)
         end
         if (texturingProperty and texturingProperty.maps[5]) then
             texturingProperty.maps[5].texture = niSourceTexture.createFromPath(newTextureFilepath)
-        end 
+        end
     end
     lightNode:update()
     lightNode:updateNodeEffects()

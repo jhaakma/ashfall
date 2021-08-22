@@ -27,10 +27,10 @@ return {
                         campfire.data.teaProgress = 0
                         campfire.data.waterHeat = campfire.data.waterHeat or 0
                         campfire.data.waterHeat = math.max(0, (campfire.data.waterHeat - 10))
-                        
+
                         common.skills.survival:progressSkill(skillSurvivalTeaBrewIncrement)
 
-                            
+
                         tes3.player.object.inventory:removeItem{
                             mobile = tes3.mobilePlayer,
                             item = e.item,

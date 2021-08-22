@@ -29,7 +29,7 @@ local function findGriller(ingredient)
         local distance = ref.data.grillDistance or 0
 
             if common.helper.getCloseEnough{
-                ref1 = ref, ref2 = ingredient, 
+                ref1 = ref, ref2 = ingredient,
                 distVertical = maxHeight,
                 distHorizontal = distance
             } then
@@ -43,13 +43,13 @@ end
 
 
 local function resetCookingTime(ingredient)
-    if not common.helper.isStack(ingredient) and ingredient.data then 
-        ingredient.data.lastCookUpdated = nil 
+    if not common.helper.isStack(ingredient) and ingredient.data then
+        ingredient.data.lastCookUpdated = nil
     end
 end
 
 local function startCookingIngredient(ingredient, timestamp)
-    
+
     --If you placed a stack, return all but one to the player
     if common.helper.isStack(ingredient) then
         local count = ingredient.attachments.variables.count
@@ -100,8 +100,8 @@ local function grillFoodItem(ingredient, timestamp)
         local campfire = findGriller(ingredient)
         if campfire then
             if campfire.data.isLit then
-                if common.helper.isStack(ingredient) or ingredient.data.lastCookUpdated == nil then 
-                    startCookingIngredient(ingredient, timestamp) 
+                if common.helper.isStack(ingredient) or ingredient.data.lastCookUpdated == nil then
+                    startCookingIngredient(ingredient, timestamp)
                     return
                 end
 
@@ -110,7 +110,7 @@ local function grillFoodItem(ingredient, timestamp)
 
                 local difference = timestamp - ingredient.data.lastCookUpdated
                 if difference > 0.008 then
-                    
+
                     addGrillPatina(campfire, difference)
                     ingredient.data.lastCookUpdated = timestamp
 
@@ -159,7 +159,7 @@ local function grillFoodItem(ingredient, timestamp)
                             tes3.messageBox("%s is fully cooked.", ingredient.object.name)
                         end
                     end
-                    
+
                     local helpMenu = tes3ui.findHelpLayerMenu(tes3ui.registerID("HelpMenu"))
                     if helpMenu and helpMenu.visible == true then
                         tes3ui.refreshTooltip()
@@ -199,7 +199,7 @@ local function foodPlaced(e)
             timer.frame.delayOneFrame(function()
                 resetCookingTime(ingredient)
                 grillFoodItem(ingredient, timestamp)
-            end) 
+            end)
         end
     end
 end
@@ -211,7 +211,7 @@ event.register("referenceSceneNodeCreated" , foodPlaced)
 
 --Empty a cooking pot or kettle, reseting all data
 local function clearUtensilData(e)
-    
+
     common.log:debug("Clearing Utensil Data")
     local campfire = e.campfire
     campfire.data.stewProgress = nil
@@ -230,8 +230,8 @@ local function clearUtensilData(e)
         campfire.data.utensilPatinaAmount = nil
     end
     if not e.isContainer then
-        tes3.removeSound{ 
-            reference = campfire, 
+        tes3.removeSound{
+            reference = campfire,
             sound = "ashfall_boil"
         }
         --event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})

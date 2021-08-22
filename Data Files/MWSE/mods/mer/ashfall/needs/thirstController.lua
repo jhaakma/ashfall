@@ -58,7 +58,7 @@ function this.calculate(scriptInterval, forceUpdate)
     else
         currentThirst = currentThirst + ( scriptInterval * thirstRate * heatEffect * dysentryEffect )
     end
-    currentThirst = math.clamp(currentThirst, 0, 100) 
+    currentThirst = math.clamp(currentThirst, 0, 100)
     thirst:setValue(currentThirst)
     --The thirstier you are, the more extreme heat temps are
     local thirstEffect = math.remap(currentThirst, 0, 100, THIRST_EFFECT_HIGH, THIRST_EFFECT_LOW)
@@ -81,7 +81,7 @@ function this.playerHasEmpties()
             common.log:debug("Found a bottle")
             if stack.variables then
                 common.log:debug("Has data")
-                if #stack.variables < stack.count then 
+                if #stack.variables < stack.count then
                     common.log:debug("Some bottles have no data")
                     return true
                 end
@@ -105,7 +105,7 @@ function this.playerHasEmpties()
                 end
             else
                 --no itemData means empty bottle
-                common.log:debug("no variables")          
+                common.log:debug("no variables")
                 return true
             end
         end
@@ -151,10 +151,10 @@ function this.drinkAmount(e)
     common.log:debug("drinkAmount. WaterType: %s", e.waterType)
     local amount = e.amount or 100
     local waterType = e.waterType
-    if not conditionConfig.thirst:isActive() then 
-        return 0 
+    if not conditionConfig.thirst:isActive() then
+        return 0
     end
-    
+
     local currentThirst = thirst:getValue()
     if currentThirst <= 0.1 then
         tes3.messageBox("You are fully hydrated.")
@@ -214,8 +214,8 @@ local function doRefillContainer(e)
     local stewLevels = e.stewLevels
 
     if not itemData then
-        itemData = tes3.addItemData{ 
-            to = tes3.player, 
+        itemData = tes3.addItemData{
+            to = tes3.player,
             item = item,
             updateGUI = true
         }
@@ -289,12 +289,12 @@ local function filterWaterContainer(e)
     local waterType = e.waterType
     local hasWater = (
         e.itemData and
-        e.itemData.data.waterAmount and 
+        e.itemData.data.waterAmount and
         e.itemData.data.waterAmount > 0
     )
 
     local hasTea = (
-        e.itemData and 
+        e.itemData and
         teaConfig.teaTypes[e.itemData.data.waterType]
     )
     local hasStew = (
@@ -303,8 +303,8 @@ local function filterWaterContainer(e)
     )
 
     --Can only fill empty bottles with tea/stew
-    if (stewLevels or waterType) and hasWater then 
-        return false 
+    if (stewLevels or waterType) and hasWater then
+        return false
     end
 
     --Can't fill bottles that already have tea/stew
@@ -317,7 +317,7 @@ local function filterWaterContainer(e)
     if bottleData then
         local capacity = bottleData.capacity
         local currentAmount = e.itemData and e.itemData.data.waterAmount or 0
-        
+
         --If adding a stew, check it's a valid pot
         if stewLevels and not bottleData.holdsStew then
             return false
@@ -355,7 +355,7 @@ function this.fillContainer(params)
                 }
             end,
             callback = function(e)
-                if e.item then 
+                if e.item then
                     this.callWaterMenuAction(function()
                         doRefillContainer({
                             cost = cost,

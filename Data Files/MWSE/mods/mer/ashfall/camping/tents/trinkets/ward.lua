@@ -12,11 +12,11 @@ local function doWardEffect(e)
             local mobile = reference.mobile
             if mobile and mobile.fight > 80 then
                 local previousFlee = reference.data.ashfallWardedPrevFlee
- 
+
                 local refType = reference.object.objectType
                 local isWarded = common.data.creatureWard and refType == tes3.objectType.creature
                     or common.data.npcWard and refType == tes3.objectType.npc
- 
+
                 if isWarded then
                     local closeEnough = reference.position:distance(tes3.player.position) < 1000
                     if closeEnough and not previousFlee then
@@ -24,7 +24,7 @@ local function doWardEffect(e)
                         mobile.flee = math.min(100, mobile.flee + fleeIncrease)
                         common.log:debug("Making %s flee", reference.object.id)
                     end
- 
+
                     if previousFlee and not closeEnough then
                         mobile.flee = previousFlee
                         reference.data.ashfallWardedPrevFlee = nil

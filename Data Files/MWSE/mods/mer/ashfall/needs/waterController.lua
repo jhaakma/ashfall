@@ -1,10 +1,10 @@
 
 --[[
-    When the player looks at a water source (fresh water, wells, etc), 
+    When the player looks at a water source (fresh water, wells, etc),
     a tooltip will display, and pressing the activate button will bring up
     a menu that allows the player to drink or fill up a container with water.
 ]]--
- 
+
 
 local thirstController = require("mer.ashfall.needs.thirstController")
 local common = require("mer.ashfall.common.common")
@@ -120,7 +120,7 @@ end
 
 --Register events
 event.register(
-    "Ashfall:ActivatorActivated", 
+    "Ashfall:ActivatorActivated",
     function(e)
         if e.activator.owned then
             local innkeeper = findInnkeeperInCell(e.ref.cell)
@@ -131,15 +131,15 @@ event.register(
         end
         callWaterMenu()
     end,
-    { filter = activatorConfig.types.waterSource } 
+    { filter = activatorConfig.types.waterSource }
 )
 
 event.register(
-    "Ashfall:ActivatorActivated", 
+    "Ashfall:ActivatorActivated",
     function()
         callWaterMenu({ waterType = "dirty" })
-    end, 
-    { filter = activatorConfig.types.dirtyWaterSource } 
+    end,
+    { filter = activatorConfig.types.dirtyWaterSource }
 )
 
 
@@ -151,8 +151,8 @@ local function checkDrinkRain()
 
     --raining
     local weather = tes3.getCurrentWeather()
-    local raining = weather and 
-        (weather.index == tes3.weather.rain 
+    local raining = weather and
+        (weather.index == tes3.weather.rain
             or weather.index == tes3.weather.thunder)
 
     local lookingUp = tes3.getCameraVector().z > 0.99
@@ -160,8 +160,8 @@ local function checkDrinkRain()
 
     local doDrink = (
         thirstActive and
-        raining and 
-        lookingUp and 
+        raining and
+        lookingUp and
         uncovered
     )
     if doDrink then
@@ -196,13 +196,13 @@ local function doDrinkWater(bottleData)
 end
 
 local function getIsPotion(e)
-    return e.item.objectType == tes3.objectType.alchemy 
+    return e.item.objectType == tes3.objectType.alchemy
         and not foodConfig.getFoodType(e.item)
         and not mwscript.getScript()
 end
 
 local function drinkFromContainer(e)
-    
+
     if common.getIsBlocked(e.item) then return end
     if not config.enableThirst then return end
     --First check potions, gives a little hydration
@@ -228,7 +228,7 @@ local function drinkFromContainer(e)
         if tes3.worldController.inputController:isKeyDown(config.modifierHotKey.keyCode) then
             doPrompt = true
         end
-        
+
         if doPrompt then
             local waterName = ""
             if e.itemData.data.waterType == "dirty" then
@@ -244,7 +244,7 @@ local function drinkFromContainer(e)
             local currentAmount = e.itemData.data.waterAmount
             local maxAmount = thirstController.getBottleData(e.item.id).capacity
             local message = string.format("%s (%d/%d)", waterName, currentAmount, maxAmount)
-    
+
 
             common.helper.messageBox{
                 message = message,
@@ -260,8 +260,8 @@ local function drinkFromContainer(e)
                             douse(e.itemData.data)
                         end
                     },
-                    { 
-                        text = "Empty", 
+                    {
+                        text = "Empty",
                         callback = function()
                             e.itemData.data.waterAmount = 0
                             thirstController.handleEmpties(e.itemData.data)
@@ -296,7 +296,7 @@ local function drinkFromContainer(e)
                         end
                     },
                     {
-                        text = "Empty", 
+                        text = "Empty",
                         callback = function()
                             e.itemData.data.waterAmount = 0
                             thirstController.handleEmpties(e.itemData.data)
@@ -398,7 +398,7 @@ local function addWaterToWorld(e)
                 if math.random() < chanceToFill then
                     local fillAmount = math.random(fillMin, bottleData.capacity)
                     ref.data.waterAmount = fillAmount
-                    
+
                     if math.random() < teaChance then
                         local waterType = table.choice(teaConfig.validTeas)
                         --Make sure it's not a tea added by a mod the player doesn't have

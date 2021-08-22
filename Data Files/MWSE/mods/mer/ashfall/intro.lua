@@ -119,7 +119,7 @@ end
 
 
 function this.startAshfall()
-    
+
     if config.doIntro == true then
         local introMessage = (
             "Welcome to Ashfall! \n"..

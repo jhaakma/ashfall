@@ -22,7 +22,7 @@ function this.registerExternalHeatSource(heatSource)
     end
 
     if type(heatSource) == "table" and heatSource.id then
-        table.insert(this.externalHeatSources, 
+        table.insert(this.externalHeatSources,
             {
                 id = heatSource.id,
                 coldOnly = heatSource.coldOnly,
@@ -39,7 +39,7 @@ function this.registerInternalHeatSource(heatSource)
         heatSource = { id = heatSource }
     end
     if type(heatSource) == "table" and heatSource.id then
-        table.insert(this.internalHeatSources, 
+        table.insert(this.internalHeatSources,
             {
                 id = heatSource.id,
                 coldOnly = heatSource.coldOnly,
@@ -57,7 +57,7 @@ function this.registerBaseTempMultiplier(multiplier)
        multiplier = { id = multiplier }
     end
     if type(multiplier) == "table" and multiplier.id then
-        table.insert(this.baseTempMultipliers, 
+        table.insert(this.baseTempMultipliers,
         {
             id = multiplier.id,
             coldOnly = multiplier.coldOnly,
@@ -73,9 +73,9 @@ function this.registerRateMultiplier(multiplier)
     if type(multiplier) == "string" then
         multiplier = { id = multiplier }
      end
-     
+
      if type(multiplier) == "table" and multiplier.id then
-         table.insert(this.rateMultipliers, 
+         table.insert(this.rateMultipliers,
          {
              id = multiplier.id,
              coolingOnly = multiplier.coolingOnly,
@@ -84,7 +84,7 @@ function this.registerRateMultiplier(multiplier)
      )
      else
         common.log:error("Incorrect formatting of rateMultiplier: %s", multiplier and multiplier.id or multiplier)
-     end    
+     end
 end
 
 
@@ -109,16 +109,16 @@ local function getExternalHeat()
 
         local addHeatSource = true--(
         --     --cold and NOT warmOnly
-        --     ( 
-        --         ( not isTempLimitHot(common.data[heatSource.id]) ) and   
-        --         heatSource.warmOnly ~= true 
-        --     ) 
-            
-        --     or 
+        --     (
+        --         ( not isTempLimitHot(common.data[heatSource.id]) ) and
+        --         heatSource.warmOnly ~= true
+        --     )
+
+        --     or
         --     --warm and not coldOnly
-        --     ( 
-        --         isTempLimitHot(common.data[heatSource.id]) and             
-        --         heatSource.coldOnly ~= true 
+        --     (
+        --         isTempLimitHot(common.data[heatSource.id]) and
+        --         heatSource.coldOnly ~= true
         --     )
         -- )
         if addHeatSource then
@@ -145,16 +145,16 @@ local function getInternalHeat()
 
         local addHeatSource = true --(
         --     --cold and NOT warmOnly
-        --     ( 
-        --         ( not isTempLimitHot(common.data[heatSource.id]) ) and   
-        --         heatSource.warmOnly ~= true 
-        --     ) 
-            
-        --     or 
+        --     (
+        --         ( not isTempLimitHot(common.data[heatSource.id]) ) and
+        --         heatSource.warmOnly ~= true
+        --     )
+
+        --     or
         --     --warm and not ColdOnly
-        --     ( 
-        --         isTempLimitHot(common.data[heatSource.id]) and             
-        --         heatSource.coldOnly ~= true 
+        --     (
+        --         isTempLimitHot(common.data[heatSource.id]) and
+        --         heatSource.coldOnly ~= true
         --     )
         -- )
         if addHeatSource then
@@ -170,7 +170,7 @@ local function getInternalHeat()
 end
 
 local function getBaseTempMultiplier()
-    
+
     local function isBaseTempHot()
         return common.data.tempLimit  > 0
     end
@@ -192,20 +192,20 @@ local function getBaseTempMultiplier()
     --multipliers that directly affect temperature
     local result = 1
     for _, multiplier in ipairs(this.baseTempMultipliers) do
-        
-        
+
+
         local addMultiplier = (
             --cold and NOT warmOnly
-            ( 
-                ( not isBaseTempHot() ) and   
-                multiplier.warmOnly ~= true 
-            ) 
-            
-            or 
+            (
+                ( not isBaseTempHot() ) and
+                multiplier.warmOnly ~= true
+            )
+
+            or
             --warm and not ColdOnly
-            ( 
-                isBaseTempHot() and             
-                multiplier.coldOnly ~= true 
+            (
+                isBaseTempHot() and
+                multiplier.coldOnly ~= true
             )
         )
         if addMultiplier then
@@ -257,7 +257,7 @@ end
 
 function this.calculate(interval, forceUpdate)
     if not forceUpdate and interval == 0 then return end
-    
+
     if not common.data then return end
     if not config.enableTemperatureEffects then
         common.data.tempLimit = 0
@@ -287,7 +287,7 @@ function this.calculate(interval, forceUpdate)
 
     --Move towards external temp
     common.data.temp = (
-        common.data.temp + 
+        common.data.temp +
         ( common.data.tempLimit - common.data.temp ) * getInternalChangeMultiplier(interval) * differenceMulti
     )
 

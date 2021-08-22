@@ -7,7 +7,7 @@ return {
         return string.format("Remove %s", CampfireUtil.getGenericUtensilName(grill) or "Utensil")
     end,
     showRequirements = function(campfire)
-        return ( 
+        return (
             campfire.data.grillId and
             campfire.data.dynamicConfig and
             campfire.data.dynamicConfig.grill == "dynamic"
@@ -16,7 +16,7 @@ return {
     callback = function(campfire)
         --add grill
         tes3.addItem{
-            reference = tes3.player, 
+            reference = tes3.player,
             item = campfire.data.grillId,
             count = 1,
         }
@@ -46,7 +46,7 @@ return {
                 common.log:debug("maxHeight: %s", maxHeight)
                 common.log:debug("distance: %s", distance)
                 if common.helper.getCloseEnough{
-                    ref1 = campfire, ref2 = ingredient, 
+                    ref1 = campfire, ref2 = ingredient,
                     distVertical = maxHeight,
                     distHorizontal = distance
                 } then

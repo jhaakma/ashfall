@@ -3,7 +3,7 @@ local common = require ("mer.ashfall.common.common")
 local function addUtensil(item, campfire, itemData)
     tes3.removeItem{ reference = tes3.player, item = item, itemData = itemData }
     local utensilData = common.staticConfigs.utensils[item.id:lower()]
-    
+
     tes3.playSound{ reference = tes3.player, sound = "Item Misc Down"  }
 
     if utensilData.type == "cookingPot" then
@@ -58,7 +58,7 @@ return {
         end
         return false
     end,
-    tooltipDisabled = { 
+    tooltipDisabled = {
         text = "You don't have any suitable utensils."
     },
     callback = utensilSelect

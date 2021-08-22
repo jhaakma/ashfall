@@ -1,6 +1,6 @@
 --[[
     Checks for nearby fires and adds warmth
-    based on how far away they are. 
+    based on how far away they are.
     Will need special logic for player-built fires which
     have heat based on firewood level
 ]]--
@@ -17,7 +17,7 @@ local fireValues = {
     light_6th_brazier = 18,
     lantern = 3,
     lamp = 1,
-    candle = 1, 
+    candle = 1,
     chandelier = 1,
     sconce = 5,
     torch = 12,
@@ -33,7 +33,7 @@ local function getHeatSourceValue(ref)
     local baseObject = ref.baseObject
     local cacheHit = heatCache[baseObject]
     if cacheHit then return cacheHit end
- 
+
     local lowerId = baseObject.id:lower()
     for pattern, value in pairs(fireValues) do
         if string.find(lowerId, pattern) then
@@ -74,7 +74,7 @@ local temperatureController = require("mer.ashfall.temperatureController")
 temperatureController.registerExternalHeatSource("fireTemp")
 
 --Check if player has Magic ready stance
-local warmingHands 
+local warmingHands
 local triggerWarmMessage
 local function checkWarmHands()
     if tes3.mobilePlayer.castReady then
@@ -107,7 +107,7 @@ function this.calculateFireEffect()
         local isValid = distance < maxDistance
             and (not ref.disabled)
             and ref.data.isLit
-        
+
         if isValid then
             --For survival skill
             common.data.nearCampfire = true
@@ -115,7 +115,7 @@ function this.calculateFireEffect()
             local heatAtMaxDistance = math.clamp(math.remap(fuel, 0, 10, 20, 60), 0, 60)
             checkWarmHands()
             if warmingHands then
-                heatAtMaxDistance = heatAtMaxDistance * warmHandsBonus 
+                heatAtMaxDistance = heatAtMaxDistance * warmHandsBonus
             end
             local heatAtThisDistance = getHeatAtDistance(heatAtMaxDistance, distance)
             totalHeat = totalHeat + heatAtThisDistance
@@ -131,7 +131,7 @@ function this.calculateFireEffect()
             local heatAtMaxDistance = maxFirepitHeat
             checkWarmHands()
             if warmingHands then
-                heatAtMaxDistance = heatAtMaxDistance * warmHandsBonus 
+                heatAtMaxDistance = heatAtMaxDistance * warmHandsBonus
             end
             local heatAtThisDistance = getHeatAtDistance(heatAtMaxDistance, distance)
             totalHeat = totalHeat + heatAtThisDistance

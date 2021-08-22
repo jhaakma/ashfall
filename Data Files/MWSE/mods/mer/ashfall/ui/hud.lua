@@ -180,7 +180,7 @@ local function updateTooltips()
             local iconPath = string.lower(text.parent.parent.children[1].contentPath)
             for _, needData in pairs(needsData) do
                 if string.find(iconPath, needData.stat) then
-                    
+
 
                     local stat = tes3.mobilePlayer[needData.stat]
                     local maxStat = statsEffect.getMaxStat(needData.stat)
@@ -200,7 +200,7 @@ local function updateTooltips()
                             local newValueText
                             local stateText = common.staticConfigs.conditionConfig[needData.needId]:getCurrentStateData().text
                             local negValText = (stat.base - maxStat)
-                            newValueText =  string.format("%s: -%d", 
+                            newValueText =  string.format("%s: -%d",
                                 stateText,
                                 negValText
                             )
@@ -208,7 +208,7 @@ local function updateTooltips()
                             debuffText.color = tes3ui.getPalette("negative_color")
                         end
                     end
-                    
+
                 end
             end
         end

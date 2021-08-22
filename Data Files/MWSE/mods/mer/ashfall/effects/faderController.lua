@@ -25,7 +25,7 @@ local function faderSetup()
         faderConfig.fader = tes3fader.new()
         faderConfig.fader:setTexture(faderConfig.texture)
         faderConfig.fader:setColor({ color = { 0.5, 0.5, 0.5 }, flag = false })
-        event.register("enterFrame", 
+        event.register("enterFrame",
             function()
                 faderConfig.fader:update()
             end
@@ -37,7 +37,7 @@ event.register("fadersCreated", faderSetup)
 local function setFading(faderConfig)
     faderConfig.isFading = true
     timer.start{
-        type = timer.real, 
+        type = timer.real,
         duration = fadeTime,
         callback = function()
             common.log:trace("Setting isFading back to false")
@@ -75,11 +75,11 @@ local function checkFaders()
             local currentValue = condition:getValue()
 
             local outOfBounds = false
-            if faderConfig.conditionMin and currentValue < faderConfig.conditionMin then 
-                outOfBounds = true 
+            if faderConfig.conditionMin and currentValue < faderConfig.conditionMin then
+                outOfBounds = true
             end
             if faderConfig.conditionMax and currentValue > faderConfig.conditionMax then
-                outOfBounds = true 
+                outOfBounds = true
             end
             --Deactivate
             if outOfBounds and faderConfig.active then

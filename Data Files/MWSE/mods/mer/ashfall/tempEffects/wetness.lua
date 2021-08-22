@@ -34,7 +34,7 @@ local wetTempMax = -35
 function this.checkForShelter()
     local sheltered = common.helper.checkRefSheltered()
     if common.helper.getInTent() then
-        sheltered = true 
+        sheltered = true
     end
 
     if sheltered ~= nil then
@@ -44,12 +44,12 @@ end
 event.register("Ashfall:CheckForShelter", this.checkForShelter)
 
 
---[[ 
+--[[
     Called by tempTimer
 ]]--
 function this.calculateWetTemp(interval)
     if not common.data then
-        return 
+        return
     end
     this.checkForShelter()
     --Check if Ashfall is disabled
@@ -62,7 +62,7 @@ function this.calculateWetTemp(interval)
     end
     local currentWetness = wetness:getValue()
 
-    --Check if player is submerged 
+    --Check if player is submerged
     -- does not care about coverage
     local cell = tes3.getPlayerCell()
     if cell.hasWater then
@@ -73,13 +73,13 @@ function this.calculateWetTemp(interval)
         minWetness = math.clamp(minWetness, 0, 100)
         currentWetness = math.max(minWetness, currentWetness)
     end
-    
+
     --increase wetness if it's raining, otherwise reduce wetness over time
     -- wetness decreased by coverage
     local weather = tes3.getCurrentWeather()
     local playerTemp = common.staticConfigs.conditionConfig.temp:getValue()
-    
-    local coverage = math.remap( common.data.coverageRating, 0, 1,  0, 0.85 )    
+
+    local coverage = math.remap( common.data.coverageRating, 0, 1,  0, 0.85 )
 
     local isSheltered = common.data.isSheltered or common.helper.getInside(tes3.player)
     local isRaining = weather and weather.rainActive == true
@@ -94,17 +94,17 @@ function this.calculateWetTemp(interval)
         --Raining
         if weather.index == tes3.weather.rain then
             currentWetness = currentWetness + rainEffect * interval * ( 1.0 - coverage )
-    
+
         --Thunder
         elseif weather.index == tes3.weather.thunder then
             currentWetness = currentWetness + thunderEffect * interval * ( 1.0 - coverage )
         end
     end
-    
+
     --assert min/max values
     currentWetness = currentWetness < 0 and 0 or currentWetness
     currentWetness = currentWetness > 100 and 100 or currentWetness
-    
+
     --Update wetness and wetTemp on player data
     common.data.wetness = currentWetness
     common.data.wetTemp = (currentWetness / 100) * wetTempMax

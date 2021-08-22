@@ -98,24 +98,24 @@ local function activateRestMenu (e)
     local labelText = restMenu:findChild( tes3ui.registerID("MenuRestWait_label_text") )
 
     --Prevent rest if not using a bed
-    if isUsingBed ~= true and common.helper.getInside(tes3.player) ~= true then 
+    if isUsingBed ~= true and common.helper.getInside(tes3.player) ~= true then
         forceWait(restMenu)
         labelText.text = "You must find a bed or go indoors to rest."
     end
 
     if ( tempLimit < coldRestLimit ) or ( tempLimit > hotRestLimit ) then
-        labelText.text = string.format("It is too %s to %s, you must find shelter!", 
-            ( tempLimit < 0 and "cold" or "hot"), 
+        labelText.text = string.format("It is too %s to %s, you must find shelter!",
+            ( tempLimit < 0 and "cold" or "hot"),
             ( mustWait and "rest" or "wait" )
         )
         hideSleepItems(restMenu)
     elseif hunger:getValue() > hunger.states.starving.min then
-        labelText.text = string.format("You are too hungry to %s.", 
+        labelText.text = string.format("You are too hungry to %s.",
             ( mustWait and "wait" or "rest")
         )
         hideSleepItems(restMenu)
     elseif thirst:getValue() > thirst.states.dehydrated.min then
-        labelText.text = string.format("You are too thirsty to %s.", 
+        labelText.text = string.format("You are too thirsty to %s.",
             ( mustWait and "wait" or "rest")
         )
         hideSleepItems(restMenu)
@@ -175,29 +175,29 @@ local function checkInterruptSleep()
             --Wake PC
             wakeUp()
             --Message PC
-            tes3.messageBox({ message = "You are starving.", buttons = { "Okay" } }) 
+            tes3.messageBox({ message = "You are starving.", buttons = { "Okay" } })
         elseif thirst:getValue() > thirst.states.dehydrated.min - 1  then
             --Cap the thirst loss
             wakeUp()
             --Wake PC
             thirst:setValue(thirst.states.dehydrated.min)
             --Message PC
-            tes3.messageBox({ message = "You are dehydrated.", buttons = { "Okay" } }) 
+            tes3.messageBox({ message = "You are dehydrated.", buttons = { "Okay" } })
         elseif (tiredness:getValue() > tiredness.states.exhausted.min - 1) and common.helper.getIsWaiting() then
             --Cap the tiredness loss
             tiredness:setValue(tiredness.states.exhausted.min)
             --Rouse PC
             wakeUp()
             --Message PC
-            tes3.messageBox({ message = "You are exhausted.", buttons = { "Okay" } }) 
+            tes3.messageBox({ message = "You are exhausted.", buttons = { "Okay" } })
         end
-        
+
         if tes3.mobilePlayer.sleeping and isUsingBed then
             if not common.data.usingBed then
                 common.log:debug("setting inBed to true")
                 event.trigger("Ashfall:SetBedTemp", { isUsingBed = true})
             end
-        end 
+        end
 
         --resting until healed, wake up if health/magicka/fatigue are at their needs max
         if common.data.restingUntilHealed then
@@ -235,9 +235,9 @@ function this.calculate(scriptInterval, forceUpdate)
     local currentTiredness = tiredness:getValue()
     local loseSleepRate = config.loseSleepRate / 10
     local loseSleepWaiting = config.loseSleepWaiting / 10
-    local gainSleepRate = config.gainSleepRate / 10  
+    local gainSleepRate = config.gainSleepRate / 10
     local gainSleepBed = config.gainSleepBed / 10
-    
+
     --slows tiredness drain
     local hackloEffect = common.data.hackloTeaEffect or 1
     --speeds up tiredness recovery while sleeping

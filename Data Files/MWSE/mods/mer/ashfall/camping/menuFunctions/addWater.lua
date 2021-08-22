@@ -9,7 +9,7 @@ return {
             campfire.data.waterAmount < campfire.data.waterCapacity
         )
         local hasUtensil = (
-            campfire.data.utensil == "kettle" or 
+            campfire.data.utensil == "kettle" or
             campfire.data.utensil == "cookingPot"
         )
         local isTea = teaConfig.teaTypes[campfire.data.waterType] ~= nil
@@ -84,7 +84,7 @@ return {
                             local after = campfire.data.waterHeat
                             if before > common.staticConfigs.hotWaterHeatValue and after < common.staticConfigs.hotWaterHeatValue then
                                 tes3.removeSound{
-                                    reference = campfire, 
+                                    reference = campfire,
                                     sound = "ashfall_boil"
                                 }
                             end

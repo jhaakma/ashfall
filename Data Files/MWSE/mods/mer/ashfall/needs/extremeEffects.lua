@@ -1,6 +1,6 @@
 --[[
     Deal with when your needs are at extreme levels. Passing out from exhaustion etc
-    Doesn't deal with hunger because you just die. 
+    Doesn't deal with hunger because you just die.
 ]]
 local common = require("mer.ashfall.common.common")
 local config = require("mer.ashfall.config.config").config
@@ -24,7 +24,7 @@ local function passOut()
         --common.data.blockNeeds = false
         passedOut = false
         tes3.messageBox{
-            message = "You passed out from exhaustion", 
+            message = "You passed out from exhaustion",
             buttons = {"Okay"}
         }
     end
@@ -34,8 +34,8 @@ local function checkTired()
     --Sleep
     local isPassedOut = (
         config.enableTiredness and
-        tiredness:getValue() >= 100 and 
-        tes3.mobilePlayer.fatigue.current <= 0  and 
+        tiredness:getValue() >= 100 and
+        tes3.mobilePlayer.fatigue.current <= 0  and
         passedOut ~= true
     )
     if isPassedOut then
@@ -62,7 +62,7 @@ local function checkHot()
     end
 end
 
- 
+
 
 
 local function checkStats()
@@ -75,9 +75,9 @@ event.register("simulate", checkStats)
 --Thirst
 local function applyThirstDamage()
     local doDamage = (
-        not tes3.menuMode() and 
+        not tes3.menuMode() and
         config.enableThirst and
-        tes3.mobilePlayer.health.current > 0 and 
+        tes3.mobilePlayer.health.current > 0 and
         thirst:getValue() >= thirst.max and
         config.needsCanKill == true and
         common.data.blockForFade ~= true

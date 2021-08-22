@@ -14,7 +14,7 @@ function Recipe:new(data)
     return t
 end
 
- 
+
 function Recipe.getPlayerIngredientCount(ingredient)
     local count = 0
     for _, id in ipairs(ingredient.ids) do
@@ -42,4 +42,4 @@ function Recipe:checkIngredients()
     return hasIngredients
 end
 
-return Recipe 
+return Recipe

@@ -14,7 +14,7 @@ this.tentMiscToActiveMap = {
     ashfall_tent_imp_m = 'ashfall_tent_imp_a',
     ashfall_tent_qual_m = 'ashfall_tent_qual_a',
     ashfall_tent_ashl_m = 'ashfall_tent_ashl_a',
-    
+
 }
 this.tentActivetoMiscMap = {}
 for miscId, activeId in pairs(this.tentMiscToActiveMap) do
@@ -63,7 +63,7 @@ this.trinkets = {
         onCallback = function()
             event.trigger("Ashfall:ActivateBouquet")
         end,
-        offCallback = function() 
+        offCallback = function()
             event.trigger("Ashfall:DeactivateBouquet")
         end,
     },
@@ -77,7 +77,7 @@ this.trinkets = {
         onCallback = function()
             event.trigger("Ashfall:ActivateWindChimes")
         end,
-        offCallback = function() 
+        offCallback = function()
             event.trigger("Ashfall:DeactivateWindChimes")
         end,
     },
@@ -92,7 +92,7 @@ this.trinkets = {
         onCallback = function()
             event.trigger("Ashfall:ActivateDreamCatcher")
         end,
-        offCallback = function() 
+        offCallback = function()
             event.trigger("Ashfall:DeactivateDreamCatcher")
         end,
     },
@@ -104,10 +104,10 @@ this.trinkets = {
         soundPath = nil,
         message = "Creatures flee at the sight of the bone ward.",
         effects = nil,
-        onCallback = function() 
+        onCallback = function()
             event.trigger("Ashfall:ActivateWard", { refType = tes3.objectType.creature })
         end,
-        offCallback = function() 
+        offCallback = function()
             event.trigger("Ashfall:DeactivateWard", { refType = tes3.objectType.creature })
         end,
     },
@@ -118,10 +118,10 @@ this.trinkets = {
         soundPath = nil,
         message = "Enemies flee at the sight of the skull ward.",
         effects = nil,
-        onCallback = function() 
+        onCallback = function()
             event.trigger("Ashfall:ActivateWard", { refType = tes3.objectType.npc })
         end,
-        offCallback = function() 
+        offCallback = function()
             event.trigger("Ashfall:DeactivateWard", { refType = tes3.objectType.npc })
         end,
     },

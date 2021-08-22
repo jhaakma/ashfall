@@ -15,7 +15,7 @@ local function getHeat(ref)
     if distance < maxDistance then
         heat = math.remap(distance, maxDistance, 0, 0, hazardTemp)
     end
-    
+
     return heat
 end
 

@@ -2,7 +2,7 @@
 return {
     checkForUpdates = false,
     --intro setup
-    doIntro = false, 
+    doIntro = false,
     manualTimeScale = 20,
     overrideTimeScale = true,
     overrideFood = true,
@@ -61,7 +61,7 @@ return {
     enableBranchPlacement = true,
     enableCooking = false,--depreciated
     enableBushcrafting = false,
-    
+
     showTemp = true,
     showHunger = true,
     showThirst = true,

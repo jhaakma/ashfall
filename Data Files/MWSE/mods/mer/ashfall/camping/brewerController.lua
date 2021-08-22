@@ -35,7 +35,7 @@ local function updateBuffs(e)
             common.data.teaDrank = nil
             common.data.teaBuffTimeLeft = nil
             common.data.lastTeaBuffUpdated = nil
-            
+
         else
             common.data.lastTeaBuffUpdated = e.timestamp
         end
@@ -65,9 +65,9 @@ local function onDrinkTea(e)
     end
 
     if teaData.spell then
-        
+
         local teaSpell = tes3.getObject(teaData.spell.id)
-        if not teaSpell then 
+        if not teaSpell then
             common.log:debug("onDrinkTea: Creating new spell")
             teaSpell = tes3spell.create(teaData.spell.id, teaData.teaName)
             teaSpell.castType = tes3.spellType.ability
@@ -102,7 +102,7 @@ local function updateBrewers(e)
 
 
         if difference < 0 then
-            common.log:error("BREWER brewerRef.data.lastBrewUpdated(%.4f) is ahead of e.timestamp(%.4f).", 
+            common.log:error("BREWER brewerRef.data.lastBrewUpdated(%.4f) is ahead of e.timestamp(%.4f).",
                 brewerRef.data.lastBrewUpdated, e.timestamp)
             --something fucky happened
             brewerRef.data.lastBrewUpdated = e.timestamp
@@ -124,7 +124,7 @@ local function updateBrewers(e)
             end
         end
     end
-    common.helper.iterateRefType("brewer", doUpdate) 
+    common.helper.iterateRefType("brewer", doUpdate)
 end
 
  event.register("simulate", updateBrewers)

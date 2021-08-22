@@ -22,7 +22,7 @@ end
 
 local function hasCapacityForIngred(campfire, foodType)
     return not campfire.data.stewLevels or
-    not campfire.data.stewLevels[foodType] or 
+    not campfire.data.stewLevels[foodType] or
     campfire.data.stewLevels[foodType] < 100
 end
 
@@ -119,7 +119,7 @@ return {
     text = "Add Ingredient",
     showRequirements = function(campfire)
         return campfire.data.utensil == "cookingPot"
-            and campfire.data.waterAmount 
+            and campfire.data.waterAmount
             and campfire.data.waterAmount > 0
     end,
     enableRequirements = function(campfire)
@@ -136,8 +136,8 @@ return {
             local hasFood =  playerHasFood(foodType)
             local hasCapacity  =  hasCapacityForIngred(campfire, foodType)
 
-            table.insert(buttons, { 
-                text = foodType, 
+            table.insert(buttons, {
+                text = foodType,
                 callback = function() ingredientSelect(campfire, foodType) end,
                 requirements = function()
                     return hasFood and hasCapacity

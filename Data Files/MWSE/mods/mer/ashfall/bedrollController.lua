@@ -6,7 +6,7 @@ local skipActivate
 local function canRest()
     if not tes3.canRest() then return false end
     if tes3.player.cell.restingIsIllegal then
-        return config.canCampInSettlements 
+        return config.canCampInSettlements
     end
     return true
 end
@@ -37,7 +37,7 @@ local function bedrollMenu(ref)
                 doRestMenu(isCoveredBedroll)
             end,
             requirements = canRest,
-            tooltipDisabled = { 
+            tooltipDisabled = {
                 text = tes3.canRest() and "It is illegal to rest here." or "You can't rest here; enemies are nearby."
             },
         },
@@ -52,7 +52,7 @@ local function bedrollMenu(ref)
                 if isCoveredBedroll then
                     location = {
                         position = tes3vector3.new(
-                            ref.position.x, 
+                            ref.position.x,
                             ref.position.y,
                             ref.position.z
                         ),
@@ -66,7 +66,7 @@ local function bedrollMenu(ref)
                 else
                     location = {
                         position = tes3vector3.new(
-                            ref.position.x, 
+                            ref.position.x,
                             ref.position.y,
                             ref.position.z -- + 12
                         ),
@@ -89,13 +89,13 @@ local function bedrollMenu(ref)
                     speeds = { 5, 10, 20}
                 }
             end,
-            tooltipDisabled = { 
+            tooltipDisabled = {
                 text = tes3.canRest() and "It is illegal to rest here." or "You can't wait here; enemies are nearby."
             },
         },
         {
             text = "Pick up",
-            callback = function() 
+            callback = function()
                 timer.delayOneFrame(function()
                     skipActivate = true
                     tes3.player:activate(ref)
@@ -104,7 +104,7 @@ local function bedrollMenu(ref)
         },
     }
     common.helper.messageBox{
-        message = message, 
+        message = message,
         buttons = buttons,
         doesCancel = true
     }
@@ -128,8 +128,8 @@ local function activateBedroll(e)
         if common.helper.getRefUnderwater(e.target) then
             return
         end
-        
-        
+
+
         bedrollMenu(e.target)
         return false
     end

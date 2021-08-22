@@ -2,9 +2,9 @@ local this = {}
 local config = require("mer.ashfall.config.config").config
 local conditions = require("mer.ashfall.config.conditionConfig")
 
-this.tooltipColor = { 
-    138 / 255, 
-    201 / 255, 
+this.tooltipColor = {
+    138 / 255,
+    201 / 255,
     71 / 225
 }
 this.teaTypes = {}
@@ -27,7 +27,7 @@ this.teaTypes["ingred_bittergreen_petals_01"] = {
 }
 
 --Ascadian Isles, Azura's Coast
-this.teaTypes["ingred_black_anther_01"] = { 
+this.teaTypes["ingred_black_anther_01"] = {
     teaName = "Black Anther Tea",
     teaDescription = "A popular drink among socialites and those who wish to stand out, Black Anther tea gives the skin a healthy, radiant glow.",
     effectDescription = "Light 5 Points on Self",
@@ -45,7 +45,7 @@ this.teaTypes["ingred_black_anther_01"] = {
 }
 
 --West Gash
-this.teaTypes["ingred_chokeweed_01"] = { 
+this.teaTypes["ingred_chokeweed_01"] = {
     teaName = "Chokeweed Tea",
     teaDescription = "Drinking Chokeweed tea helps to boost your immune system. Like any good medicine, it taste absolutely terrible.",
     effectDescription = "Resist Common Disease 30 Points",
@@ -64,7 +64,7 @@ this.teaTypes["ingred_chokeweed_01"] = {
 
 
 --Ascadian Isles, Azura's Coast
-this.teaTypes["ingred_gold_kanet_01"] = { 
+this.teaTypes["ingred_gold_kanet_01"] = {
     teaName = "Gold Kanet Tea",
     teaDescription = "Tea brewed from the Gold Kanet flower is known to enhance one's strength.",
     effectDescription = "Fortify Strength 5 Points",
@@ -102,7 +102,7 @@ this.teaTypes["ingred_heather_01"] = {
 }
 
 --West Gash, Ascadian Isles, Azura's Coast, Sheogorad
-this.teaTypes["ingred_stoneflower_petals_01"] = { 
+this.teaTypes["ingred_stoneflower_petals_01"] = {
     teaName = "Stoneflower Tea",
     teaDescription = "The pleasant, floral aroma of Stoneflower tea lingers on the breath longer after it is consumed.",
     effectDescription = "Fortify Speechcraft 10 Points",
@@ -183,7 +183,7 @@ this.teaTypes["ingred_kresh_fiber_01"] = {
     teaName = "Kreshweed Tea",
     teaDescription = "Kreshweed tea is a powerful laxative, making it an effective cure for food poisoning.",
     effectDescription = "Cures Food Poisoning",
-    priceMultiplier = 5.0, 
+    priceMultiplier = 5.0,
     onCallback = function()
         conditions.foodPoison:setValue(conditions.foodPoison:getValue() - 50)
     end
@@ -201,7 +201,7 @@ this.teaTypes["ingred_roobrush_01"] = {
 }
 
 --Ascadian Isles - exclusively - used for alcohol
-this.teaTypes["ingred_comberry_01"] = { 
+this.teaTypes["ingred_comberry_01"] = {
     teaName = "Comberry Tea",
     teaDescription = "A tea brewed from comberries is a well known home remedy for the flu.",
     effectDescription = "Cures the Flu",
@@ -212,7 +212,7 @@ this.teaTypes["ingred_comberry_01"] = {
 }
 
 --Ashlands, dry regions
-this.teaTypes["ingred_scathecraw_01"] = { 
+this.teaTypes["ingred_scathecraw_01"] = {
     teaName = "Scathecraw Tea",
     teaDescription = "Scathecraw Tea provides a modest resistance against blight disease.",
     effectDescription = "Resist Blight 40 Points",
@@ -246,7 +246,7 @@ this.teaTypes["ingred_fire_petal_01"] = {
 }
 
 --Solstheim
-this.teaTypes["ingred_holly_01"] = { 
+this.teaTypes["ingred_holly_01"] = {
     teaName = "Holly Tea",
     teaDescription = "A sweet, fragrant tea often served in Solstheim for its ability to stave off the cold.",
     effectDescription = "Reduce Cold Weather Effects by 10%",
@@ -262,7 +262,7 @@ this.teaTypes["ingred_holly_01"] = {
 
 
 
---Grazelands    
+--Grazelands
 this.teaTypes["ingred_hackle-lo_leaf_01"] = {
     teaName = "Hackle-lo Tea",
     teaDescription = "Hackle-lo tea increases energy and alertness, allowing one to stay awake for longer.",
@@ -277,7 +277,7 @@ this.teaTypes["ingred_hackle-lo_leaf_01"] = {
     end
 }
 
---Ashlands, Molag Amur, 
+--Ashlands, Molag Amur,
 this.teaTypes["ingred_trama_root_01"] = {
     teaName = "Trama Root Tea",
     teaDescription = "Trama Root tea is dark and bitter. The Ashlanders drink this tea for its calming effects.",
@@ -336,7 +336,7 @@ this.teaTypes["ingred_golden_sedge_01"] = {
 }
 
 --Mournhold
-this.teaTypes["ingred_meadow_rye_01"] = { 
+this.teaTypes["ingred_meadow_rye_01"] = {
     teaName = "Meadow Rye Tea",
     teaDescription = "Tea brewed from Meadow Rye acts as a powerful stimulant, increasing one's speed.",
     effectDescription = "Fortify Speed 5 Points",

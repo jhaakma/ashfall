@@ -23,7 +23,7 @@ local function calculateFoodPoison(scriptInterval)
     else
         common.log:trace("calculateFoodPoison using sick rate")
         drainRate = drainRateSick
-    end 
+    end
 
     local newVal = foodPoison:getValue() - ( scriptInterval * drainRate)
     foodPoison:setValue(newVal)
@@ -41,7 +41,7 @@ local function calculateDysentry(scriptInterval)
     end
 
     local newVal = dysentery:getValue() - ( scriptInterval * drainRate)
-    
+
     common.log:trace("New dysentery value: %s", newVal)
     dysentery:setValue(newVal)
 end
@@ -63,20 +63,20 @@ local function calculateBlightness(scriptInterval)
     weatherController = weatherController or tes3.worldController.weatherController
     local weather = weatherController.currentWeather
     local isBlightWeather = (
-        weather and 
+        weather and
         weather.blightDiseaseChance and
         weather.blightDiseaseChance > 0
-    ) 
+    )
 
     local exposedToBlight = (
-        isBlightWeather and 
-        not common.helper.getInside(tes3.player) and 
+        isBlightWeather and
+        not common.helper.getInside(tes3.player) and
         not common.helper.getInTent()
     )
 
     if exposedToBlight then
         common.log:trace("In a blight storm")
-        
+
         --half from coverage
         local coverage = common.data.coverageRating
         local coverageMulti = math.remap(coverage, 0.0, 1.0, 0.5, 0.0)
@@ -92,9 +92,9 @@ local function calculateBlightness(scriptInterval)
         common.log:trace("----------------blight per hour: %s", blightGainRate * coveragePlusFaceMulti)
 
 
-        local newVal = blightness:getValue() + ( 
-            scriptInterval * 
-            blightGainRate * 
+        local newVal = blightness:getValue() + (
+            scriptInterval *
+            blightGainRate *
             coveragePlusFaceMulti
         )
         blightness:setValue(newVal)
@@ -182,7 +182,7 @@ local function sneezeTimer()
                     reference = tes3.player,
                     soundPath = getSneezeSound()
                 }
-                tes3.messageBox("*Achoo!*")  
+                tes3.messageBox("*Achoo!*")
             end
             sneezeTimer()
         end
@@ -232,7 +232,7 @@ local parts = {
 local function checkFaceCovered(e)
     if not common.data then return end
     if (e.reference ~= tes3.player) then
-        return 
+        return
     end
 
     if not e.bodyPart then
@@ -267,9 +267,9 @@ local function checkFaceCovered(e)
 end
 event.register("bodyPartAssigned", checkFaceCovered)
 
-event.register("loaded", function() 
+event.register("loaded", function()
     if not tes3.player.data.equipmentUpdated then
-        tes3.player:updateEquipment() 
+        tes3.player:updateEquipment()
         tes3.player.data.equipmentUpdated = true
         timer.delayOneFrame(function()
             tes3.player.data.equipmentUpdated = nil

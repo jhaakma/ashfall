@@ -18,7 +18,7 @@ local ReferenceController = {
     removeReference = function(self, ref)
             self.references[ref] = nil
     end,
- 
+
     references = nil,
     requirements = nil
 }

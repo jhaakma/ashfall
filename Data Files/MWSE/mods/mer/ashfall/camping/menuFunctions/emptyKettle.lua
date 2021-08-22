@@ -12,7 +12,7 @@ return {
         common.helper.messageBox{
             message = "Empty Kettle?",
             buttons = {
-                { 
+                {
                     text = "Yes",
                     callback = function()
                         event.trigger("Ashfall:Campfire_clear_utensils", { campfire = campfire})

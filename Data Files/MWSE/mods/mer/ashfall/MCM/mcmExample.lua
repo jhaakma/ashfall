@@ -16,7 +16,7 @@ event.register("modConfigReady", registerModConfig)]]--
 --Get our config file
 local confPath = "config_test"
 local config = mwse.loadConfig(confPath)
-if not config then 
+if not config then
     config = { blocked = {} }
 end
 
@@ -35,8 +35,8 @@ local function registerModConfig()
     local category = page:createCategory("Settings")
 
     --Make some settings
-    category:createButton({ 
-        buttonText = "Hello", 
+    category:createButton({
+        buttonText = "Hello",
         description = "A useless button",
         callback = function(self)
             tes3.messageBox("Button pressed!")

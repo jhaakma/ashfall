@@ -56,7 +56,7 @@ function this.calculate(interval)
     local seasonMulti = math.remap( common.helper.getSeasonMultiplier() , 0, 1, SEASON_MIN, SEASON_MAX)
 
     local sunHeat = (
-        common.staticConfigs.maxSunTemp * 
+        common.staticConfigs.maxSunTemp *
         timeMulti *
         seasonMulti *
         shadeMultiplier
@@ -64,7 +64,7 @@ function this.calculate(interval)
 
     common.data.sunTemp = common.data.sunTemp or 0
     common.data.sunTemp = (
-        common.data.sunTemp + 
+        common.data.sunTemp +
         ((sunHeat - common.data.sunTemp) * math.min(1, interval * 500))
     )
 end

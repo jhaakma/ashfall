@@ -38,7 +38,7 @@ local function canUnpack()
         if not config.canCampInSettlements then
             return false
         end
-    end 
+    end
     return true
 end
 
@@ -58,7 +58,7 @@ local function unpackTent(miscRef)
         event.trigger("Ashfall:registerReference", { reference = newTent})
         common.helper.yeet(miscRef)
         tes3.playSound{ sound = "Item Misc Up", reference = tes3.player }
-    end) 
+    end)
 end
 
 local function packTent(activeRef)
@@ -89,7 +89,7 @@ local function packedTentMenu(miscRef)
         {
             text = "Unpack",
             requirements = canUnpack,
-            tooltipDisabled = { 
+            tooltipDisabled = {
                 text = "You can't unpack your tent here."
             },
             callback = function()
@@ -107,7 +107,7 @@ local function packedTentMenu(miscRef)
         },
     }
     common.helper.messageBox{
-        message = message, 
+        message = message,
         buttons = buttons,
         doesCancel = true
     }
@@ -120,7 +120,7 @@ local function activeTentMenu(activeRef)
     local buttons = {
         {
             text = "Attach Cover",
-            showRequirements = function() 
+            showRequirements = function()
                 return coverController.canHaveCover(activeRef)
                     and not coverController.tentHasCover(activeRef)
             end,
@@ -130,7 +130,7 @@ local function activeTentMenu(activeRef)
         },
         {
             text = "Remove Cover",
-            showRequirements = function() 
+            showRequirements = function()
                 return coverController.canHaveCover(activeRef)
                     and coverController.tentHasCover(activeRef)
             end,
@@ -141,7 +141,7 @@ local function activeTentMenu(activeRef)
         },
         {
             text = "Attach Lantern",
-            showRequirements = function() 
+            showRequirements = function()
                 return lanternController.canHaveLantern(activeRef)
                     and not lanternController.tentHasLantern(activeRef)
                     and not trinketController.tentHasTrinket(activeRef)
@@ -152,7 +152,7 @@ local function activeTentMenu(activeRef)
         },
         {
             text = "Remove Lantern",
-            showRequirements = function() 
+            showRequirements = function()
                 return lanternController.canHaveLantern(activeRef)
                     and lanternController.tentHasLantern(activeRef)
             end,
@@ -163,7 +163,7 @@ local function activeTentMenu(activeRef)
         },
         {
             text = "Attach Trinket",
-            showRequirements = function() 
+            showRequirements = function()
                 return trinketController.canHaveTrinket(activeRef)
                     and not lanternController.tentHasLantern(activeRef)
                     and not trinketController.tentHasTrinket(activeRef)
@@ -174,7 +174,7 @@ local function activeTentMenu(activeRef)
         },
         {
             text = "Remove Trinket",
-            showRequirements = function() 
+            showRequirements = function()
                 return trinketController.canHaveTrinket(activeRef)
                     and trinketController.tentHasTrinket(activeRef)
             end,
@@ -189,7 +189,7 @@ local function activeTentMenu(activeRef)
         },
     }
     common.helper.messageBox{
-        message = message, 
+        message = message,
         buttons = buttons,
         doesCancel = true
     }
@@ -233,7 +233,7 @@ event.register("activate", activateTent)
 
 local currentTent --not on data because it's not json serialisable
 local function checkTentRef()
-    if currentTent and not currentTent:valid() then 
+    if currentTent and not currentTent:valid() then
         common.log:debug("tent has become invalid")
         currentTent = nil
     end
@@ -250,7 +250,7 @@ local function setTentTempMulti()
     elseif coverController.tentHasCover(currentTent) then
         --in modular tent with cover, get cover value
         local coverId = currentTent.data.tentCover:lower()
-        tempMulti = tentConfig.tempMultis[coverId] 
+        tempMulti = tentConfig.tempMultis[coverId]
             or tentConfig.tempMultis.coverDefault
     else
         --in modular tent, no cover, get tent value
@@ -274,7 +274,7 @@ local function setTentSwitchNodes()
         if tentNode then
             local canvasNode = tentNode:getObjectByName("SWITCH_CANVAS")
             if canvasNode then
-                
+
                 canvasNode.switchIndex = common.data.insideTent and onIndex or 0
             end
         end

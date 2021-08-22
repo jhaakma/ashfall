@@ -4,7 +4,7 @@ local bodyPartCoverages = {}
 do
     --[[
         "Coverage" represents how much of your body a piece of clothing protects.
-        This is based on which bodyparts are used by that item. 
+        This is based on which bodyparts are used by that item.
 
         Different bodyparts represent a different % of your body
     ]]

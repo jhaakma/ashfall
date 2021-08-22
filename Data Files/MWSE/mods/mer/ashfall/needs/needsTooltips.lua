@@ -8,13 +8,13 @@ local foodConfig = common.staticConfigs.foodConfig
 
 
 
---Adds fillbar showing how much water is left in a bottle. 
+--Adds fillbar showing how much water is left in a bottle.
 --Height of fillbar border based on capacity of bottle.
 local function updateFoodAndWaterTile(e)
     if not common.data then return end
 
     --bottles show water amount
-    local bottleData = thirstController.getBottleData(e.item.id) 
+    local bottleData = thirstController.getBottleData(e.item.id)
     if bottleData then
         local liquidLevel = e.itemData and e.itemData.data.waterAmount or 0
         local capacity = bottleData.capacity
@@ -61,15 +61,15 @@ local function updateFoodAndWaterTile(e)
 
         --Food shows cooked amount
         local hasCookedValue = (
-            e.itemData and 
-            e.itemData.data and 
-            e.itemData.data.cookedAmount and 
+            e.itemData and
+            e.itemData.data and
+            e.itemData.data.cookedAmount and
             e.itemData.data.cookedAmount > 0
         )
         if hasCookedValue then
             local cookedAmount =  e.itemData.data.cookedAmount
             local capacity = 100
-            
+
             local indicatorImage = "textures/menu_bar_red.dds"
             if e.itemData.data.grillState == "burnt" then
                 indicatorImage = "textures/menu_bar_gray.dds"
@@ -91,7 +91,7 @@ event.register( "itemTileUpdated", updateFoodAndWaterTile )
 local function onMenuInventorySelectMenu(e)
     local scrollpane = e.menu:findChild(tes3ui.registerID("MenuInventorySelect_scrollpane"))
     local itemList = e.menu:findChild(tes3ui.registerID("PartScrollPane_pane"))
-    
+
     --Disable UI EXP filtering for tea brewing and grilling
     if common.data.inventorySelectTeaBrew or common.data.inventorySelectStew or common.data.inventorySelectTrinket then
         local uiEXPFilterID = tes3ui.registerID("UIEXP:FiltersearchBlock")
@@ -229,7 +229,7 @@ local function createNeedsTooltip(e)
                 local effectText = teaConfig.teaTypes[e.itemData.data.waterType].effectDescription
                 local effectLabel = effectBlock:createLabel{ text = effectText }
                 effectLabel.borderLeft = 5
-            
+
             --Stew
             elseif e.itemData and e.itemData.data.stewLevels then
                 local stewName = foodConfig.isStewNotSoup(e.itemData.data.stewLevels) and "Stew" or "Soup"
@@ -240,7 +240,7 @@ local function createNeedsTooltip(e)
                     local spell = tes3.getObject(stewBuff.id)
                     local effect = spell.effects[1]
 
-                    
+
 
                     local outerBlock = common.helper.addLabelToTooltip(tooltip)
                     local block = outerBlock:createBlock{}
@@ -248,7 +248,7 @@ local function createNeedsTooltip(e)
                     block.autoWidth = true
                     block.childAlignX = 0.5
 
-                    
+
                     local image = block:createImage{path=("icons\\" .. effect.object.icon)}
                     image.wrapText = false
                     image.borderLeft = 4
@@ -292,7 +292,7 @@ local function createNeedsTooltip(e)
             if icon then
                 updateFoodAndWaterTile{
                     itemData = e.itemData,
-                    element = icon, 
+                    element = icon,
                     item = e.object
                 }
             end
