@@ -22,7 +22,13 @@ local function utensilSelect(campfire)
             title = "Select Utensil",
             noResultsText = "You do not have any utensils.",
                 filter = function(e)
-                    return common.staticConfigs.groundUtensils[e.item.id:lower()] ~= nil
+                    if not campfire.data.grillId then
+                        if common.staticConfigs.grills[e.item.id:lower()] ~= nil then return true end
+                    end
+                    if not campfire.data.bellowsId then
+                        if common.staticConfigs.bellows[e.item.id:lower()] ~= nil then return true end
+                    end
+                    return false
                 end,
             callback = function(e)
                 if e.item then
@@ -39,10 +45,19 @@ return {
         return (not campfire.data.grillId) and campfire.sceneNode:getObjectByName("ATTACH_GRILL")
             or (not campfire.data.bellowsId) and campfire.sceneNode:getObjectByName("ATTACH_BELLOWS")
     end,
-    enableRequirements = function()
-        for id, _ in pairs(common.staticConfigs.groundUtensils) do
-            if  mwscript.getItemCount{ reference = tes3.player, item = id} > 0 then
-                return true
+    enableRequirements = function(campfire)
+        if not campfire.data.grillId then
+            for id, _ in pairs(common.staticConfigs.grills) do
+                if  mwscript.getItemCount{ reference = tes3.player, item = id} > 0 then
+                    return true
+                end
+            end
+        end
+        if not campfire.data.bellowsId then
+            for id, _ in pairs(common.staticConfigs.bellows) do
+                if  mwscript.getItemCount{ reference = tes3.player, item = id} > 0 then
+                    return true
+                end
             end
         end
         return false
