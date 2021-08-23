@@ -436,6 +436,7 @@ local function replaceCampfire(e)
             }
 
             campfire.data.dynamicConfig = campfireConfig.getConfig(campfire.object.id)
+            campfire.data.dynamicConfig.campfire = "static"
 
             setInitialState(campfire, e.reference, data, vanillaConfig)
             attachRandomStuff(campfire, vanillaConfig)
