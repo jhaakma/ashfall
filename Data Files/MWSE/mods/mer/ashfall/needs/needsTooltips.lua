@@ -199,103 +199,101 @@ local function createNeedsTooltip(e)
     end
 
     --Water tooltips
-    if config.enableThirst then
-        local bottleData = thirstController.getBottleData(e.object.id)
-        if bottleData then
-            local liquidLevel = e.itemData and e.itemData.data.waterAmount or 0
+    local bottleData = thirstController.getBottleData(e.object.id)
+    if bottleData then
+        local liquidLevel = e.itemData and e.itemData.data.waterAmount or 0
 
 
-            --Dirty Water
-            if e.itemData and e.itemData.data.waterType == "dirty" then
-                labelText = string.format('Water: %d/%d (Dirty)', math.ceil(liquidLevel), bottleData.capacity)
-            --Tea
-            elseif e.itemData and teaConfig.teaTypes[e.itemData.data.waterType] then
-                local teaName = teaConfig.teaTypes[e.itemData.data.waterType].teaName
-                labelText = string.format('%s: %d/%d', teaName, math.ceil(liquidLevel), bottleData.capacity)
+        --Dirty Water
+        if e.itemData and e.itemData.data.waterType == "dirty" then
+            labelText = string.format('Water: %d/%d (Dirty)', math.ceil(liquidLevel), bottleData.capacity)
+        --Tea
+        elseif e.itemData and teaConfig.teaTypes[e.itemData.data.waterType] then
+            local teaName = teaConfig.teaTypes[e.itemData.data.waterType].teaName
+            labelText = string.format('%s: %d/%d', teaName, math.ceil(liquidLevel), bottleData.capacity)
 
-                --Tea description
-                local effectBlock = common.helper.addLabelToTooltip(tooltip)
-                effectBlock.borderAllSides = 6
-                effectBlock.childAlignX = 0.5
-                effectBlock.autoHeight = true
-                effectBlock.widthProportional = 1.0
-                effectBlock.flowDirection = "left_to_right"
+            --Tea description
+            local effectBlock = common.helper.addLabelToTooltip(tooltip)
+            effectBlock.borderAllSides = 6
+            effectBlock.childAlignX = 0.5
+            effectBlock.autoHeight = true
+            effectBlock.widthProportional = 1.0
+            effectBlock.flowDirection = "left_to_right"
 
-                local icon = effectBlock:createImage{ path = "Icons/ashfall/spell/teaBuff.dds" }
-                icon.height = 16
-                icon.width = 16
-                icon.scaleMode = true
+            local icon = effectBlock:createImage{ path = "Icons/ashfall/spell/teaBuff.dds" }
+            icon.height = 16
+            icon.width = 16
+            icon.scaleMode = true
 
-                local effectText = teaConfig.teaTypes[e.itemData.data.waterType].effectDescription
-                local effectLabel = effectBlock:createLabel{ text = effectText }
-                effectLabel.borderLeft = 5
+            local effectText = teaConfig.teaTypes[e.itemData.data.waterType].effectDescription
+            local effectLabel = effectBlock:createLabel{ text = effectText }
+            effectLabel.borderLeft = 5
 
-            --Stew
-            elseif e.itemData and e.itemData.data.stewLevels then
-                local stewName = foodConfig.isStewNotSoup(e.itemData.data.stewLevels) and "Stew" or "Soup"
-                labelText = string.format('%s: %d/%d', stewName, math.ceil(liquidLevel), bottleData.capacity)
-                for foodType, ingredLevel in pairs(e.itemData.data.stewLevels) do
-                    local value = math.min(ingredLevel, 100)
-                    local stewBuff = foodConfig.getStewBuffForFoodType(foodType)
-                    local spell = tes3.getObject(stewBuff.id)
-                    local effect = spell.effects[1]
-
-
-
-                    local outerBlock = common.helper.addLabelToTooltip(tooltip)
-                    local block = outerBlock:createBlock{}
-                    block.autoHeight = true
-                    block.autoWidth = true
-                    block.childAlignX = 0.5
+        --Stew
+        elseif e.itemData and e.itemData.data.stewLevels then
+            local stewName = foodConfig.isStewNotSoup(e.itemData.data.stewLevels) and "Stew" or "Soup"
+            labelText = string.format('%s: %d/%d', stewName, math.ceil(liquidLevel), bottleData.capacity)
+            for foodType, ingredLevel in pairs(e.itemData.data.stewLevels) do
+                local value = math.min(ingredLevel, 100)
+                local stewBuff = foodConfig.getStewBuffForFoodType(foodType)
+                local spell = tes3.getObject(stewBuff.id)
+                local effect = spell.effects[1]
 
 
-                    local image = block:createImage{path=("icons\\" .. effect.object.icon)}
-                    image.wrapText = false
-                    image.borderLeft = 4
 
-                    --"Fortify Health"
-                    local statName
-                    if effect.attribute ~= -1 then
-                        local stat = effect.attribute
-                        statName = tes3.findGMST(888 + stat).value
-                    elseif effect.skill ~= -1 then
-                        local stat = effect.skill
-                        statName = tes3.findGMST(896 + stat).value
-                    end
-                    local effectNameText
-                    local effectName = tes3.findGMST(1283 + effect.id).value
-                    if statName then
-                        effectNameText = effectName:match("%S+") .. " " .. statName
-                    else
-                        effectNameText = effectName
-                    end
-                    --points " 25 points "
-                    local pointsText = string.format("%d pts", common.helper.calculateStewBuffStrength(value, stewBuff.min, stewBuff.max) )
-                    --for X hours
-                    local duration = common.helper.calculateStewBuffDuration() * (math.ceil(liquidLevel)/100)
-                    local hoursText = string.format("for %d hour%s", duration, (duration >= 2 and "s" or "") )
+                local outerBlock = common.helper.addLabelToTooltip(tooltip)
+                local block = outerBlock:createBlock{}
+                block.autoHeight = true
+                block.autoWidth = true
+                block.childAlignX = 0.5
 
-                    local ingredLabel = block:createLabel{text = string.format("%s %s %s", effectNameText, pointsText, hoursText) }
-                    ingredLabel.wrapText = false
-                    ingredLabel.borderLeft = 4
 
+                local image = block:createImage{path=("icons\\" .. effect.object.icon)}
+                image.wrapText = false
+                image.borderLeft = 4
+
+                --"Fortify Health"
+                local statName
+                if effect.attribute ~= -1 then
+                    local stat = effect.attribute
+                    statName = tes3.findGMST(888 + stat).value
+                elseif effect.skill ~= -1 then
+                    local stat = effect.skill
+                    statName = tes3.findGMST(896 + stat).value
                 end
-            --Regular Water
-            else
-                labelText = string.format('Water: %d/%d', math.ceil(liquidLevel), bottleData.capacity)
+                local effectNameText
+                local effectName = tes3.findGMST(1283 + effect.id).value
+                if statName then
+                    effectNameText = effectName:match("%S+") .. " " .. statName
+                else
+                    effectNameText = effectName
+                end
+                --points " 25 points "
+                local pointsText = string.format("%d pts", common.helper.calculateStewBuffStrength(value, stewBuff.min, stewBuff.max) )
+                --for X hours
+                local duration = common.helper.calculateStewBuffDuration() * (math.ceil(liquidLevel)/100)
+                local hoursText = string.format("for %d hour%s", duration, (duration >= 2 and "s" or "") )
+
+                local ingredLabel = block:createLabel{text = string.format("%s %s %s", effectNameText, pointsText, hoursText) }
+                ingredLabel.wrapText = false
+                ingredLabel.borderLeft = 4
+
             end
+        --Regular Water
+        else
+            labelText = string.format('Water: %d/%d', math.ceil(liquidLevel), bottleData.capacity)
+        end
 
-            common.helper.addLabelToTooltip(tooltip, labelText)
+        common.helper.addLabelToTooltip(tooltip, labelText)
 
 
-            local icon = e.tooltip:findChild(tes3ui.registerID("HelpMenu_icon"))
-            if icon then
-                updateFoodAndWaterTile{
-                    itemData = e.itemData,
-                    element = icon,
-                    item = e.object
-                }
-            end
+        local icon = e.tooltip:findChild(tes3ui.registerID("HelpMenu_icon"))
+        if icon then
+            updateFoodAndWaterTile{
+                itemData = e.itemData,
+                element = icon,
+                item = e.object
+            }
         end
     end
 
@@ -306,6 +304,16 @@ local function createNeedsTooltip(e)
     end
     if e.itemData and e.itemData.data and e.itemData.data.patinaAmount then
         common.helper.addLabelToTooltip(tooltip, string.format("Patina: %d/100", e.itemData.data.patinaAmount))
+    end
+
+    --Bellows
+    local bellowsData = common.staticConfigs.bellows[e.object.id:lower()]
+    if bellowsData then
+        common.helper.addLabelToTooltip(tooltip,
+            string.format("%sx Fuel burn", bellowsData.burnRateEffect) )
+        common.helper.addLabelToTooltip(tooltip,
+            string.format("%sx Heat", bellowsData.heatEffect) )
+
     end
 end
 

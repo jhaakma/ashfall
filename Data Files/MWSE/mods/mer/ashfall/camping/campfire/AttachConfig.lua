@@ -18,10 +18,6 @@ local AttachConfig = {
         "addFirewood",
         "addSupports",
         "placeUtensil",
-        --remove
-        "removeSupports",
-        "removeGrill",
-        "removeBellows",
         --destroy
         "extinguish",
         "destroy",
@@ -189,10 +185,10 @@ local AttachConfig = {
         tooltipExtra = function(campfire, tooltip)
             if campfire.data.bellowsId then
                 local bellowsId = campfire.data.bellowsId
-                local bellowsObject = tes3.getObject(campfire.data.bellowsId)
-                local bellowsName = bellowsObject and bellowsObject.name
                 local bellowsData = common.staticConfigs.bellows[bellowsId:lower()]
-                local text = string.format("%s: %.1fx heat", bellowsName, bellowsData.heatEffect)
+
+                local text = string.format("%sx Heat | %sx Fuel burn",
+                    bellowsData.heatEffect, bellowsData.burnRateEffect)
                 local bellowsLabel = tooltip:createLabel({ text = text })
                 centerText(bellowsLabel)
             end
