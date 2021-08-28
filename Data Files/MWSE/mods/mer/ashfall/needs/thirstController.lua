@@ -82,34 +82,34 @@ function this.playerHasEmpties()
     for stack in tes3.iterate(tes3.player.object.inventory.iterator) do
         local bottleData = this.getBottleData(stack.object.id)
         if bottleData then
-            common.log:debug("Found a bottle")
+            common.log:trace("Found a bottle")
             if stack.variables then
-                common.log:debug("Has data")
+                common.log:trace("Has data")
                 if #stack.variables < stack.count then
-                    common.log:debug("Some bottles have no data")
+                    common.log:trace("Some bottles have no data")
                     return true
                 end
 
                 for _, itemData in pairs(stack.variables) do
                     if itemData then
-                        common.log:debug("itemData: %s", itemData)
-                        common.log:debug("waterAmount: %s", itemData and itemData.data.waterAmount )
+                        common.log:trace("itemData: %s", itemData)
+                        common.log:trace("waterAmount: %s", itemData and itemData.data.waterAmount )
                         if itemData.data.waterAmount then
                             if itemData.data.waterAmount < bottleData.capacity then
                                 --at least one bottle can be filled
-                                common.log:debug("below capacity")
+                                common.log:trace("below capacity")
                                 return true
                             end
                         else
                             --no itemData means empty bottle
-                            common.log:debug("no waterAmount")
+                            common.log:trace("no waterAmount")
                             return true
                         end
                     end
                 end
             else
                 --no itemData means empty bottle
-                common.log:debug("no variables")
+                common.log:trace("no variables")
                 return true
             end
         end
@@ -196,10 +196,13 @@ end
 event.register("Ashfall:Drink", this.drinkAmount, {reference = tes3.player})
 
 function this.callWaterMenuAction(callback)
+    common.log:debug("calling water menu action")
     if common.data.drinkingRain == true then
+        common.log:debug("Drinking rain is true")
         common.data.drinkingRain = nil
         common.helper.fadeTimeOut( 0.25, 2, callback )
     else
+        common.log:debug("Drinking rain is false")
         callback()
     end
     common.data.drinkingWaterType = nil

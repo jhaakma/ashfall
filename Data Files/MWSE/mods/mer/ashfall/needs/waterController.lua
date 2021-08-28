@@ -76,7 +76,7 @@ local function callWaterMenu(e)
                 },
                 callback = function()
                     thirstController.callWaterMenuAction(function()
-                        local waterType = common.data.drinkingWaterType
+                        local waterType = e.waterType
                         thirstController.drinkAmount{amount = 100, waterType = waterType }
                     end)
                 end
@@ -88,16 +88,14 @@ local function callWaterMenu(e)
                     text = "You have no containers to fill."
                 },
                 callback = function()
-
                     thirstController.fillContainer{
                         source = {
                             data = {
-                                waterType = 'dirty',
+                                waterType = e.waterType,
                                 waterAmount = 1000
                             }
                         }
                     }
-
                 end
             },
             {
@@ -113,11 +111,11 @@ local function callWaterMenu(e)
         },
         doesCancel = true,
     }
-    timer.delayOneFrame(function()
+    --triple delay frame...
+    timer.delayOneFrame(function()timer.delayOneFrame(function()timer.delayOneFrame(function()timer.delayOneFrame(function()
         common.log:debug("common.data.drinkingRain = false drink")
-        common.data.drinkingRain = false
-
-    end)
+        common.data.drinkingRain = nil
+    end)end)end)end)
 end
 event.register("Ashfall:WaterMenu", callWaterMenu)
 
