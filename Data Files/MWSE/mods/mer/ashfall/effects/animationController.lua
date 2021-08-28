@@ -37,11 +37,13 @@ local animConfig = {
 }
 
 function this.sitDown(e)
+    event.trigger("Ashfall:SitDown")
     table.copy(animConfig.sitCrossed, e)
     this.doAnimation(e)
 end
 
 function this.layDown(e)
+    event.trigger("Ashfall:LayDown")
     table.copy(animConfig.layBack, e)
     this.doAnimation(e)
 end
@@ -118,6 +120,8 @@ local function stopAnimation()
         group = tes3.animationGroup.idle,
         startFlag = 1
     })
+
+    event.trigger("Ashfall:CancelAnimation")
     event.trigger("Ashfall:triggerPackUpdate")
     data.previousAnimationMesh = nil
 end
@@ -291,8 +295,11 @@ end
 
 local function buttonPressed(e)
     if e.anim == "sitting" then
+
         this.sitDown(e)
     elseif e.anim == "layingDown" then
+
+
         this.layDown(e)
     else
         this.doAnimation(e)
