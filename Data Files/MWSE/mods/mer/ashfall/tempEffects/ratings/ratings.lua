@@ -29,11 +29,11 @@ end
 local function getRawItemWarmth(object)
     local id = object.id:lower()
     --get item type
-    local type
+    local objType
     if object.objectType == tes3.objectType.armor then
-        type = "armor"
+        objType = "armor"
     elseif object.objectType == tes3.objectType.clothing then
-        type = "clothing"
+        objType = "clothing"
     else
         common.log:error("Tried to get warmth value of incompatabile item type %s" .. object.objectType )
         return
@@ -41,29 +41,31 @@ local function getRawItemWarmth(object)
 
 
     --Find in cache
-    if config.warmthValues[type][id] then
-        return config.warmthValues[type][id]
+    if config.warmthValues[objType][id] then
+        common.log:debug("Found %s in cache", id)
+        return config.warmthValues[objType][id]
 
     --Not in cache, generate from name and save to cache
     else
         local itemName = string.lower(object.name)
         --String search item names
-        for pattern, value in pairs(ratingsConfig.warmth[type].values) do
+        for pattern, value in pairs(ratingsConfig.warmth[objType].values) do
             if string.find(itemName, string.lower(pattern)) then
-                config.warmthValues[type][id] = value
+                config.warmthValues[objType][id] = value
+                config.save()
                 return value
             end
         end
-        config.save()
+        common.log:debug("Couldn't find a value for %s", id)
     end
 
     --No pattern found in name, get default value
     --Don't save to cache in case patterns get added later
     local value
     if object.enchantment then
-        value = ratingsConfig.warmth[type].enchanted
+        value = ratingsConfig.warmth[objType].enchanted
     else
-        value = ratingsConfig.warmth[type].default
+        value = ratingsConfig.warmth[objType].default
     end
 
     if not value then
