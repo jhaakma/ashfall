@@ -344,12 +344,12 @@ local function filterWaterContainer(e)
     )
 
     --Can't mix water types
-    if targetHasWater then
+    if e.source and targetHasWater then
         if targetWaterType ~= sourceWaterType then
             return false
         end
     end
-    if targetHasWater then
+    if e.source and targetHasWater then
         if targetStewLevels ~= sourceStewLevels then
             return false
         end

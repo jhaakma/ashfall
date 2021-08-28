@@ -87,7 +87,18 @@ local function callWaterMenu(e)
                 tooltipDisabled = {
                     text = "You have no containers to fill."
                 },
-                callback = thirstController.fillContainer
+                callback = function()
+
+                    thirstController.fillContainer{
+                        source = {
+                            data = {
+                                waterType = 'dirty',
+                                waterAmount = 1000
+                            }
+                        }
+                    }
+
+                end
             },
             {
                 text = "Douse",
