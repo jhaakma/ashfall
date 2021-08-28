@@ -239,6 +239,23 @@ end
 event.register("equip", onEquipFood, { filter = tes3.player, priority = -100 } )
 
 
+local function onShiftActivateFood(e)
+    local nutrition = this.getNutrition(e.target.object, e.target.itemData)
+    if nutrition then
+        local inputController = tes3.worldController.inputController
+        local isModifierKeyPressed = (
+            inputController:isKeyDown(config.modifierHotKey.keyCode)
+        )
+        local hasAccess = tes3.hasOwnershipAccess{ target = e.target }
+        if hasAccess and isModifierKeyPressed then
+            timer.delayOneFrame(function ()
+                tes3.player.mobile:equip{ item = e.target.object}
+            end)
+        end
+    end
+end
+event.register("activate", onShiftActivateFood, { filter = tes3.player, priority = -100})
+
 --Interop eat event
 local function onEat(e)
     if e.reference == tes3.player then
