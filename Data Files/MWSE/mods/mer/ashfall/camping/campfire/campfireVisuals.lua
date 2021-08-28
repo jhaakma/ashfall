@@ -294,7 +294,7 @@ local attachNodes = {
                 common.log:trace("utensil is a valid object")
                 local utensilData = common.staticConfigs.utensils[utensilID:lower()]
                 if not utensilData then
-                    common.log:error("%s is not a valid utensil, but was set to campfire.data.utensilId")
+                    common.log:error("%s is not a valid utensil, but was set to campfire.data.utensilId", utensilID)
                 end
                 local meshId = utensilData and utensilData.meshOverride or utensilObj.mesh
                 local mesh = common.loadMesh(meshId)

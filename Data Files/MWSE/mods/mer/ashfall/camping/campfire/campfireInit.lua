@@ -29,25 +29,38 @@ local function registerCampfire(e)
 
     --Do some stuff to update old campfires
     if e.reference.data then
+        --Legacy Supports flag
         if e.reference.data.hasSupports then
             e.reference.data.supportsId = "ashfall_supports_01"
             e.reference.data.hasSupports = nil
         end
 
+        --Legacy kettle Id
         if e.reference.data.kettleId then
             common.log:info("Found campfire with kettleId, replacing with utensilId")
             e.reference.data.utensilId = e.reference.data.kettleId
             e.reference.data.kettleId = nil
         end
 
-        if e.reference.data.utensil ~= nil and e.reference.data.utensilId == nil then
-            if e.reference.data.utensil == "kettle" then
-                e.reference.data.utensilId = "ashfall_kettle"
-            else
-                e.reference.data.utensilId = table.choice{"misc_com_bucket_metal", "misc_com_bucket_01", "ashfall_cooking_pot"}
+
+        local oldCookingPots = {
+            misc_com_bucket_metal = true,
+            misc_com_bucket_01 = true
+        }
+        if e.reference.data.utensil ~= nil then
+            if e.reference.data.utensilId == nil then
+                if e.reference.data.utensil == "kettle" then
+                    e.reference.data.utensilId = "ashfall_kettle"
+                else
+                    e.reference.data.utensilId = "ashfall_cooking_pot"
+                end
+                common.log:info("Found campfire with a utensil and no utensilId, setting to %s",
+                    e.reference.data.utensilId)
+            elseif oldCookingPots[e.reference.data.utensilId] then
+                e.reference.data.utensilId = "ashfall_cooking_pot"
+                common.log:info("Found campfire with an invalid cooking pot, setting to %s",
+                    e.reference.data.utensilId)
             end
-            common.log:info("Found campfire with a utensil and no utensilId, setting to %s",
-                e.reference.data.utensilId)
         end
 
         local missingGrillId = e.reference.data.hasGrill
