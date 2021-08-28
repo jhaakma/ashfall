@@ -12,30 +12,8 @@ return  {
         return hasWaterAmount and (hasJustWater or hasBrewedTea or hasCookedStew)
     end,
     callback = function(campfire)
-        --fill bottle
-        local waterType
-        local hasBrewedTea = (
-            campfire.data.teaProgress and
-            campfire.data.teaProgress >= 100 and
-            teaConfig.teaTypes[campfire.data.waterType]
-        )
-        if hasBrewedTea  then
-            waterType = campfire.data.waterType
-        end
-
-        local stewLevels
-        local hasStew = (
-            campfire.data.stewProgress and
-            campfire.data.stewProgress >= 100 and
-            campfire.data.stewLevels
-        )
-        if hasStew then
-            stewLevels = campfire.data.stewLevels
-        end
         thirstController.fillContainer{
             source = campfire,
-            waterType = waterType,
-            stewLevels = stewLevels,
             callback = function()
                 if (not campfire.data.waterAmount) or campfire.data.waterAmount <= 0 then
                     common.log:debug("Clearing utensil data")

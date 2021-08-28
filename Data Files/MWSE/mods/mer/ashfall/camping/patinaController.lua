@@ -98,13 +98,16 @@ end
 local function doPatinaDrop(e)
     if e.reference and e.reference.sceneNode and e.reference.data then
         local data = e.reference.data
-        local patinaAmount = data.patinaAmount
-        if patinaAmount then
-            common.log:trace("doPatinaDrop amount: %s", patinaAmount)
-            if patinaAmount > 0 and e.reference.position.z < e.reference.cell.waterLevel then
+
+
+        if e.reference.cell.waterLevel and e.reference.position.z < e.reference.cell.waterLevel then
+            local showMessage = false
+            local patinaAmount = data.patinaAmount
+            if patinaAmount and patinaAmount > 0 then
+                common.log:trace("doPatinaDrop amount: %s", patinaAmount)
                 data.patinaAmount = nil
 
-                tes3.messageBox("You wash your %s.", CampfireUtil.getGenericUtensilName(e.reference.object))
+                showMessage = true
 
                 local cleanSeconds = 2
                 --Play some splashy sounds
@@ -123,9 +126,18 @@ local function doPatinaDrop(e)
                         tes3.playSound {sound = 'Swim Right'}
                     end
                 }
+                this.addPatina(e.reference.sceneNode, e.reference.data.patinaAmount)
             end
 
-            this.addPatina(e.reference.sceneNode, e.reference.data.patinaAmount)
+            if data.waterAmount then
+                showMessage = true
+                event.trigger("Ashfall:Campfire_clear_utensils", { campfire = e.reference})
+
+            end
+
+            if showMessage then
+                tes3.messageBox("You wash your %s.", CampfireUtil.getGenericUtensilName(e.reference.object))
+            end
         end
     end
 end

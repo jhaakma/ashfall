@@ -12,17 +12,28 @@ return  {
         return string.format("Remove %s", CampfireUtil.getGenericUtensilName(utensil) or "Utensil")
     end,
     showRequirements = function(campfire)
-        return  campfire.data.utensilId ~= nil
-        and campfire.data.dynamicConfig
-        and checkDynamicStatus(campfire)
+        if campfire.data.stewLevels then
+            return (
+                campfire.data.stewProgress and
+                campfire.data.stewProgress >= 100
+            )
+        elseif campfire.data.teaProgress then
+            return campfire.data.teaProgress >= 100
+        else
+            return  campfire.data.utensilId ~= nil
+                and campfire.data.dynamicConfig
+                and checkDynamicStatus(campfire)
+        end
     end,
-    enableRequirements = function(campfire)
-        return ( not campfire.data.waterAmount or
-        campfire.data.waterAmount < 1 )
-    end,
-    tooltipDisabled = {
-        text = "Utensil must be emptied before it can be removed."
-    },
+    -- enableRequirements = function(campfire)
+
+    --     else
+    --         return true
+    --     end
+    -- end,
+    -- tooltipDisabled = {
+    --     text = "Wait until stew/tea has finished cooking/brewing."
+    -- },
     callback = function(campfire)
         --add utensil
         tes3.addItem{
@@ -31,13 +42,30 @@ return  {
             count = 1
         }
         --add patina data
+        local itemData
         if campfire.data.utensilPatinaAmount then
-            local itemData = tes3.addItemData{
+            itemData = tes3.addItemData{
                 to = tes3.player,
                 item = campfire.data.utensilId,
             }
             itemData.data.patinaAmount = campfire.data.utensilPatinaAmount
         end
+
+        --If campfire has water, initialise the bottle with it
+        if campfire.data.waterAmount then
+            itemData = itemData or tes3.addItemData{
+                to = tes3.player,
+                item = campfire.data.utensilId,
+            }
+            itemData.data.waterAmount = campfire.data.waterAmount
+            itemData.data.stewLevels = campfire.data.stewLevels
+            itemData.data.stewProgress = campfire.data.stewProgress
+            itemData.data.teaProgress = campfire.data.teaProgress
+            itemData.data.waterType = campfire.data.waterType
+            itemData.data.waterHeat = campfire.data.waterHeat
+            itemData.data.lastWaterUpdated = campfire.data.lastWaterUpdated
+        end
+
         --add ladle
         if campfire.data.ladle == true then
             mwscript.addItem{ reference = tes3.player, item = "misc_com_iron_ladle" }

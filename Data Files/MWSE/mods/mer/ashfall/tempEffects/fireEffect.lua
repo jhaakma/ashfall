@@ -111,7 +111,7 @@ function this.calculateFireEffect()
         if isValid then
             --For survival skill
             common.data.nearCampfire = true
-            local fuel = CampfireUtil.getHeat(ref)
+            local fuel = CampfireUtil.getHeat(ref.data)
             local heatAtMaxDistance = math.clamp(math.remap(fuel, 0, 10, 20, 60), 0, 60)
             checkWarmHands()
             if warmingHands then

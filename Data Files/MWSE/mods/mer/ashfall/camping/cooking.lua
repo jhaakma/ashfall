@@ -114,7 +114,7 @@ local function grillFoodItem(ingredient, timestamp)
                     addGrillPatina(campfire, difference)
                     ingredient.data.lastCookUpdated = timestamp
 
-                    local thisCookMulti = calculateCookMultiplier(CampfireUtil.getHeat(campfire))
+                    local thisCookMulti = calculateCookMultiplier(CampfireUtil.getHeat(campfire.data))
                     local weightMulti = calculateCookWeightModifier(ingredient.object)
                     ingredient.data.cookedAmount = ingredient.data.cookedAmount + ( difference * thisCookMulti * weightMulti)
                     local cookedAmount = ingredient.data.cookedAmount
@@ -236,5 +236,6 @@ local function clearUtensilData(e)
         }
         --event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})
     end
+    event.trigger("Ashfall:UpdateAttachNodes", {campfire = campfire})
 end
 event.register("Ashfall:Campfire_clear_utensils", clearUtensilData)

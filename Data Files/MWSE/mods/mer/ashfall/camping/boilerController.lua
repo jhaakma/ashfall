@@ -1,15 +1,13 @@
+
+local thirstController = require "mer.ashfall.needs.thirstController"
 --[[
     --Handles the heating and cooling of objects that can boil water
 ]]
 local common = require ("mer.ashfall.common.common")
 local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 local patinaController = require("mer.ashfall.camping.patinaController")
-local waterHeatRate = 40--base water heat/cooling speed
 local updateInterval = 0.001
-local minFuelWaterHeat = 5--min fuel multiplier on water heating
-local maxFuelWaterHeat = 10--max fuel multiplier on water heating
 
-local maxSpeedForCapacity = 10.0
 
 local function addUtensilPatina(campfire,interval)
     if campfire.sceneNode and campfire.data.utensilId then
@@ -54,28 +52,13 @@ local function updateBoilers(e)
             if hasFilledPot then
                 addUtensilPatina(boilerRef,timeSinceLastUpdate)
                 common.log:trace("BOILER hasFilledPot")
-                boilerRef.data.waterHeat = boilerRef.data.waterHeat or 0
-                boilerRef.data.lastWaterUpdated = e.timestamp
-
-                --Heats up or cools down depending on fuel/is lit
-                local heatEffect = -1--negative if cooling down
-                if boilerRef.data.isLit then--based on fuel if heating up
-                    heatEffect = math.remap(CampfireUtil.getHeat(boilerRef), 0, common.staticConfigs.maxWoodInFire, minFuelWaterHeat, maxFuelWaterHeat)
-                    common.log:trace("BOILER heatEffect: %s", heatEffect)
-                end
-
-                --Amount of water determines how quickly it boils
-                local filledAmount = boilerRef.data.waterAmount / boilerRef.data.waterCapacity
-                common.log:trace("BOILER filledAmount: %s", filledAmount)
-                local filledAmountEffect = math.remap(filledAmount, 0.0, 1.0, maxSpeedForCapacity, 1.0)
-                common.log:trace("BOILER filledAmountEffect: %s", filledAmountEffect)
-
-                --Calculate change
-                local heatChange = timeSinceLastUpdate * heatEffect * filledAmountEffect * waterHeatRate
-                common.log:trace("BOILER heatChange: %s", heatChange)
 
                 local heatBefore = boilerRef.data.waterHeat
-                boilerRef.data.waterHeat = math.clamp((boilerRef.data.waterHeat + heatChange), 0, 100)
+                local bottleData = thirstController.getBottleData(boilerRef.object.id)
+                local utensilData = CampfireUtil.getUtensilData(boilerRef)
+                local capacity = (bottleData and bottleData.capacity) or ( utensilData and utensilData.capacity )
+
+                CampfireUtil.updateWaterHeat(boilerRef.data, capacity)
                 local heatAfter = boilerRef.data.waterHeat
 
                 common.log:trace("BOILER heatAfter: %s", heatAfter)
@@ -93,6 +76,7 @@ local function updateBoilers(e)
                         reference = boilerRef,
                         sound = "ashfall_boil"
                     }
+                    event.trigger("Ashfall:UpdateAttachNodes", {campfire = boilerRef})
                 end
 
                 if boilerRef.data.waterHeat > common.staticConfigs.hotWaterHeatValue then
@@ -101,6 +85,7 @@ local function updateBoilers(e)
                         boilerRef.data.waterType = nil
                     end
                 end
+                tes3ui.refreshTooltip()
             else
                 common.log:trace("BOILER no filled pot, setting waterUpdated to nil")
                 boilerRef.data.lastWaterUpdated = nil
@@ -108,6 +93,20 @@ local function updateBoilers(e)
         end
     end
     common.helper.iterateRefType("boiler", doUpdate)
-end
 
- event.register("simulate", updateBoilers)
+end
+event.register("simulate", updateBoilers)
+
+-- --Utensils make boiling sound when placed
+-- event.register("referenceSceneNodeCreated", function(e)
+--     if e.reference.data
+--         and e.reference.data.waterHeat
+--         and e.reference.data.waterHeat > common.staticConfigs.hotWaterHeatValue
+--     then
+--         tes3.playSound{
+--             reference = e.reference,
+--             sound = "ashfall_boil",
+--             loop = true
+--         }
+--     end
+-- end)

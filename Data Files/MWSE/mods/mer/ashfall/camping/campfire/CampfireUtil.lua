@@ -6,22 +6,21 @@ local common = require ("mer.ashfall.common.common")
 --[[
     Get heat based on fuel level and modifiers
 ]]
-function CampfireUtil.getHeat(campfire)
+function CampfireUtil.getHeat(data)
     local bellowsEffect = 1.0
-    local bellowsId = campfire.data.bellowsId and campfire.data.bellowsId:lower()
+    local bellowsId = data.bellowsId and data.bellowsId:lower()
     local bellowsData = common.staticConfigs.bellows[bellowsId]
     if bellowsData then
         bellowsEffect = bellowsData.heatEffect
     end
 
-    local isLit = campfire.data.isLit
-    local fuelLevel = campfire.data.fuelLevel or 0
+    local isLit = data.isLit
+    local fuelLevel = data.fuelLevel or 0
     if (not isLit) or (fuelLevel <= 0) then
         return 0
     else
         return fuelLevel * bellowsEffect
     end
-
 end
 
 function CampfireUtil.getAttachmentConfig(node)
@@ -62,6 +61,53 @@ function CampfireUtil.addExtraTooltip(attachmentConfig, campfire, tooltip)
     if attachmentConfig.tooltipExtra then
         attachmentConfig.tooltipExtra(campfire, tooltip)
     end
+end
+
+function CampfireUtil.getUtensilData(ref)
+    local utensilId = ref.data.utensilId
+    local utensilData = common.staticConfigs.utensils[utensilId]
+
+    if not utensilData then
+        utensilData = common.staticConfigs.utensils[ref.object.id:lower()]
+    end
+    return utensilData
+end
+
+
+--[[
+    Update the water heat withing an
+]]
+local heatLossAtMinCapacity = 3.0
+local heatLossAtMaxCapacity = 1.0
+local waterHeatRate = 20--base water heat/cooling speed
+local minFuelWaterHeat = 5--min fuel multiplier on water heating
+local maxFuelWaterHeat = 10--max fuel multiplier on water heating
+function CampfireUtil.updateWaterHeat(refData, capacity)
+    if not refData.waterAmount then return end
+    local now = tes3.getSimulationTimestamp()
+    refData.lastWaterUpdated = refData.lastWaterUpdated or now
+    local timeSinceLastUpdate = now - refData.lastWaterUpdated
+    refData.lastWaterUpdated = now
+    refData.waterHeat = refData.waterHeat or 0
+    --Heats up or cools down depending on fuel/is lit
+    local heatEffect = -1--negative if cooling down
+    if refData.isLit then--based on fuel if heating up
+        heatEffect = math.remap(CampfireUtil.getHeat(refData), 0, common.staticConfigs.maxWoodInFire, minFuelWaterHeat, maxFuelWaterHeat)
+        common.log:trace("BOILER heatEffect: %s", heatEffect)
+    end
+
+    --Amount of water determines how quickly it boils
+
+    local filledAmount = refData.waterAmount / capacity
+    common.log:trace("BOILER filledAmount: %s", filledAmount)
+    local filledAmountEffect = math.remap(filledAmount, 0.0, 1.0, heatLossAtMinCapacity, heatLossAtMaxCapacity)
+    local heatLossAtMaxCapacity = 1.0
+    common.log:trace("BOILER filledAmountEffect: %s", filledAmountEffect)
+
+    --Calculate change
+    local heatChange = timeSinceLastUpdate * heatEffect * filledAmountEffect * waterHeatRate
+
+    refData.waterHeat = math.clamp((refData.waterHeat + heatChange), 0, 100)
 end
 
 return CampfireUtil

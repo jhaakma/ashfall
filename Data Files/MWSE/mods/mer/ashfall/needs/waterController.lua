@@ -105,6 +105,7 @@ local function callWaterMenu(e)
     timer.delayOneFrame(function()
         common.log:debug("common.data.drinkingRain = false drink")
         common.data.drinkingRain = false
+
     end)
 end
 event.register("Ashfall:WaterMenu", callWaterMenu)
@@ -231,7 +232,9 @@ local function drinkFromContainer(e)
 
         if doPrompt then
             local waterName = ""
-            if e.itemData.data.waterType == "dirty" then
+            if e.itemData.data.stewLevels then
+                waterName = "Stew"
+            elseif e.itemData.data.waterType == "dirty" then
                 waterName = "Dirty Water"
             elseif teaConfig.teaTypes[e.itemData.data.waterType] then
                 waterName = teaConfig.teaTypes[e.itemData.data.waterType].teaName
@@ -253,11 +256,24 @@ local function drinkFromContainer(e)
                         text = "Douse",
                         showRequirements = function()
                             return common.data.wetness <= wetness.states.soaked.min
-                                and (e.itemData.waterType == "dirty" or not e.itemData.waterType)
-                                and (not e.itemData.stewLevels)
+                                and (e.itemData.data.waterType == "dirty" or not e.itemData.data.waterType)
+                                and (not e.itemData.data.stewLevels)
+                                and (not e.itemData.data.waterHeat or e.itemData.data.waterHeat < common.staticConfigs.hotWaterHeatValue)
                         end,
                         callback = function()
                             douse(e.itemData.data)
+                        end
+                    },
+                    {
+                        text = "Fill Container",
+                        requirements = thirstController.playerHasEmpties,
+                        tooltipDisabled = {
+                            text = "You have no containers to fill."
+                        },
+                        callback = function()
+                            thirstController.fillContainer{
+                                source = e.itemData
+                            }
                         end
                     },
                     {
@@ -280,19 +296,50 @@ local function drinkFromContainer(e)
             common.helper.messageBox{
                 message = message,
                 buttons = {
+                    -- {
+                    --     text = "Drink",
+                    --     callback = function() doDrinkWater(e.itemData.data) end
+                    -- },
                     {
                         text = "Drink",
-                        callback = function() doDrinkWater(e.itemData.data) end
+                        showRequirements = function()
+                            return e.itemData.data.stewLevels == nil
+                        end,
+                        callback = function()
+                            doDrinkWater(e.itemData.data)
+                        end
+                    },
+                    {
+                        text = "Eat",
+                        showRequirements = function()
+                            return e.itemData.data.stewLevels ~= nil
+                        end,
+                        callback = function()
+                            event.trigger("Ashfall:eatStew", { data = e.itemData.data})
+                        end
                     },
                     {
                         text = "Douse",
                         showRequirements = function()
                             return common.data.wetness <= wetness.states.soaked.min
-                                and (e.itemData.waterType == "dirty" or not e.itemData.waterType)
-                                and (not e.itemData.stewLevels)
+                                and (e.itemData.data.waterType == "dirty" or not e.itemData.data.waterType)
+                                and (not e.itemData.data.stewLevels)
+                                and (not e.itemData.data.waterHeat or e.itemData.data.waterHeat < common.staticConfigs.hotWaterHeatValue)
                         end,
                         callback = function()
                             douse(e.itemData.data)
+                        end
+                    },
+                    {
+                        text = "Fill Container",
+                        requirements = thirstController.playerHasEmpties,
+                        tooltipDisabled = {
+                            text = "You have no containers to fill."
+                        },
+                        callback = function()
+                            thirstController.fillContainer{
+                                source = e.itemData
+                            }
                         end
                     },
                     {
@@ -308,7 +355,11 @@ local function drinkFromContainer(e)
             }
         --Otherwise drink straight away
         else
-            doDrinkWater(e.itemData.data)
+            if e.itemData.data.stewLevels then
+                event.trigger("Ashfall:eatStew", { data = e.itemData.data})
+            else
+                doDrinkWater(e.itemData.data)
+            end
         end
 
     end
@@ -331,7 +382,9 @@ local function onShiftActivateWater(e)
         local hasAccess = tes3.hasOwnershipAccess{ target = e.target }
         if hasAccess and isModifierKeyPressed then
             local message = "Water"
-            if e.target.data.waterType == "dirty" then
+            if e.target.data.stewLevels then
+                message = "Stew"
+            elseif e.target.data.waterType == "dirty" then
                 message = "Dirty Water"
             elseif teaConfig.teaTypes[e.target.data.waterType] then
                 message = teaConfig.teaTypes[e.target.data.waterType].teaName
@@ -341,19 +394,47 @@ local function onShiftActivateWater(e)
             local buttons = {
                 {
                     text = "Drink",
+                    showRequirements = function()
+                        return e.target.data.stewLevels == nil
+                    end,
                     callback = function()
                         doDrinkWater(e.target.data)
+                        event.trigger("Ashfall:UpdateAttachNodes", {campfire = e.target})
+                    end
+                },
+                {
+                    text = "Eat",
+                    showRequirements = function()
+                        return e.target.data.stewLevels ~= nil
+                    end,
+                    callback = function()
+                        event.trigger("Ashfall:eatStew", { data = e.target.data})
+                        event.trigger("Ashfall:UpdateAttachNodes", {campfire = e.target})
                     end
                 },
                 {
                     text = "Douse",
                     showRequirements = function()
-                        return common.data.wetness <= wetness.states.soaked.min
+                        return common.data.wetness <= wetness.states.soaked.max
                             and (e.target.data.waterType == "dirty" or not e.target.data.waterType)
                             and (not e.target.data.stewLevels)
+                            and (not e.target.data.waterHeat or e.target.data.waterHeat < common.staticConfigs.hotWaterHeatValue)
                     end,
                     callback = function()
                         douse(e.target.data)
+                        event.trigger("Ashfall:UpdateAttachNodes", {campfire = e.target})
+                    end
+                },
+                {
+                    text = "Fill Container",
+                    requirements = thirstController.playerHasEmpties,
+                    tooltipDisabled = {
+                        text = "You have no containers to fill."
+                    },
+                    callback = function()
+                        thirstController.fillContainer{
+                            source = e.target
+                        }
                     end
                 },
                 {
@@ -362,6 +443,7 @@ local function onShiftActivateWater(e)
                         e.target.data.waterAmount = 0
                         thirstController.handleEmpties(e.target.data)
                         tes3.playSound({reference = tes3.player, sound = "Swim Left"})
+                        event.trigger("Ashfall:UpdateAttachNodes", {campfire = e.target})
                     end
                 },
                 {

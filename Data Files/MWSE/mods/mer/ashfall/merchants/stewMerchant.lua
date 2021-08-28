@@ -124,12 +124,8 @@ local function updateStewServiceButton(e)
         if getDisabled(cost) then
             stewServiceButton.disabled = true
             stewServiceButton.widget.state = 2
-            --stewServiceButton.color = tes3ui.getPalette("disabled_color")
         else
-            --stewServiceButton.disabled = false
-            --stewServiceButton.widget.state = 1
             stewServiceButton.disabled = false
-            --stewServiceButton.color = tes3ui.getPalette("normal_color")
         end
 
         common.log:debug("Updating Stew Service Button")

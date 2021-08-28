@@ -1,6 +1,7 @@
 local common = require ("mer.ashfall.common.common")
 local patinaController = require("mer.ashfall.camping.patinaController")
 local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
+local referenceController = require("mer.ashfall.referenceController")
 --[[
     Mapping of campfire states to switch node states.
 ]]
@@ -39,8 +40,8 @@ local switchNodeValues = {
     end,
     SWITCH_POT_STEAM = function(campfire)
         local state = { OFF = 0, ON = 1 }
+        if campfire.data.utensil and campfire.data.utensil ~= "cookingPot" then return state.OFF end
         local showSteam = (
-            campfire.data.utensil == "cookingPot" and
             campfire.data.waterHeat and
             campfire.data.waterHeat >= common.staticConfigs.hotWaterHeatValue
         )
@@ -48,8 +49,8 @@ local switchNodeValues = {
     end,
     SWITCH_KETTLE_STEAM = function(campfire)
         local state = { OFF = 0, ON = 1 }
+        if campfire.data.utensil and campfire.data.utensil ~= "kettle" then return state.OFF end
         local showSteam = (
-            campfire.data.utensil == "kettle" and
             campfire.data.waterHeat and
             campfire.data.waterHeat >= common.staticConfigs.hotWaterHeatValue
         )
@@ -57,9 +58,9 @@ local switchNodeValues = {
     end,
     SWITCH_STEW = function(campfire)
         local state = { OFF = 0, WATER = 1, STEW = 2}
-        if campfire.data.utensil ~= "cookingPot" then return state.OFF end
+        if campfire.data.utensil and campfire.data.utensil ~= "cookingPot" then return state.OFF end
         return campfire.data.stewLevels and state.STEW or state.WATER
-    end
+    end,
 }
 
 local supportMapping = {
@@ -90,7 +91,8 @@ local function updateSwitchNodes(campfire)
         for nodeName, getIndex in pairs(switchNodeValues) do
             switchNode = sceneNode:getObjectByName(nodeName)
             if switchNode then
-                switchNode.switchIndex = getIndex(campfire)
+                local index = getIndex(campfire)
+                switchNode.switchIndex = index
             end
         end
     end
@@ -103,7 +105,7 @@ local function updateLightingRadius(campfire)
         if not campfire.data.isLit then
             campfire.light:setAttenuationForRadius(0)
         else
-            local heatLevel = CampfireUtil.getHeat(campfire)
+            local heatLevel = CampfireUtil.getHeat(campfire.data)
             local newRadius = math.clamp( ( heatLevel / 10 ), 0.1, 1) * radius
             campfire.light:setAttenuationForRadius(newRadius)
         end
@@ -114,43 +116,45 @@ end
 local function updateFireScale(campfire)
     local fireNode = campfire.sceneNode:getObjectByName("FIRE_PARTICLE_NODE")
     if fireNode then
-        local fuelLevel = CampfireUtil.getHeat(campfire)
+        local fuelLevel = CampfireUtil.getHeat(campfire.data)
         local multiplier = 1 + ( fuelLevel * 0.05 )
         multiplier = math.clamp( multiplier, 0.5, 1.5)
         fireNode.scale = multiplier
     end
 end
 
-local function getUtensilData(campfire)
-    local utensilId = campfire.data.utensilId
-    local utensilData = common.staticConfigs.utensils[utensilId]
-    return utensilData
-end
 
 --Update the water level of the cooking pot
-local function updateWaterHeight(campfire)
-    if not campfire.data.waterCapacity then return end
-    local utensilData = getUtensilData(campfire)
+local function updateWaterHeight(ref)
+
+
+    local utensilData = CampfireUtil.getUtensilData(ref)
     if not utensilData then return end
+
+    local capacity = utensilData.capacity
+    if not capacity then
+        common.log:trace("Couldn't get capacity")
+        return
+    end
 
     local waterMaxScale = utensilData.waterMaxScale or 1.0
     local waterMaxHeight = utensilData.waterMaxHeight or 20
     local minSteamHeight = utensilData.minSteamHeight or (waterMaxHeight/2)
-    local waterLevel = campfire.data.waterAmount or 0
-    local scale = math.min(math.remap(waterLevel, 0, campfire.data.waterCapacity, 1, waterMaxScale), waterMaxScale )
-    local height = math.min(math.remap(waterLevel, 0, campfire.data.waterCapacity, 0, waterMaxHeight), waterMaxHeight)
+    local waterLevel = ref.data.waterAmount or 0
+    local scale = math.min(math.remap(waterLevel, 0, capacity, 1, waterMaxScale), waterMaxScale )
+    local height = math.min(math.remap(waterLevel, 0, capacity, 0, waterMaxHeight), waterMaxHeight)
 
-    local waterNode = campfire.sceneNode:getObjectByName("POT_WATER")
+    local waterNode = ref.sceneNode:getObjectByName("POT_WATER")
     if waterNode then
         waterNode.translation.z = height
         waterNode.scale = scale
     end
-    local stewNode = campfire.sceneNode:getObjectByName("POT_STEW")
+    local stewNode = ref.sceneNode:getObjectByName("POT_STEW")
     if stewNode then
         stewNode.translation.z = height
         stewNode.scale = scale
     end
-    local steamNode = campfire.sceneNode:getObjectByName("POT_STEAM")
+    local steamNode = ref.sceneNode:getObjectByName("POT_STEAM")
     if steamNode then
         steamNode.translation.z = math.max(height, minSteamHeight)
     end
@@ -200,7 +204,23 @@ local function updateCollision(campfire)
     end
 end
 
+local function updateSounds(campfire)
+    if campfire.data.waterHeat and campfire.data.waterHeat >= common.staticConfigs.hotWaterHeatValue then
+        tes3.playSound{
+            reference = campfire,
+            sound = "ashfall_boil",
+            loop = true
+        }
+    else
+        tes3.removeSound{
+            reference = campfire,
+            sound = "ashfall_boil"
+        }
+    end
+end
+
 local function updateCampfireVisuals(campfire)
+    common.log:trace("updateCampfireVisuals: %s", campfire.object.id)
     updateSwitchNodes(campfire)
     updateLightingRadius(campfire)
     updateFireScale(campfire)
@@ -217,11 +237,12 @@ end
 
 event.register("simulate", updateVisuals)
 
-
+---@param node niNode
 local function moveOriginToAttachPoint(node)
     local attachPoint = node:getObjectByName("ATTACH_POINT")
     if attachPoint then
         common.log:trace("Found attach point located at %s", attachPoint.translation)
+        node.rotation = attachPoint.rotation:copy()
         node.translation.x = node.translation.x - attachPoint.translation.x
         node.translation.y = node.translation.y - attachPoint.translation.y
         node.translation.z = node.translation.z - attachPoint.translation.z
@@ -288,7 +309,7 @@ local attachNodes = {
         end,
         postAttach = function(campfire, attachNode)
             local patinaAmount = campfire.data.utensilPatinaAmount
-            common.log:debug("hangNode updateAttachNodes add patina amount: %s", patinaAmount)
+            common.log:trace("hangNode updateAttachNodes add patina amount: %s", patinaAmount)
             patinaController.addPatina(attachNode, patinaAmount)
         end
     },
@@ -328,7 +349,7 @@ local attachNodes = {
         end,
         postAttach = function(campfire, attachNode)
             local patinaAmount = campfire.data.grillPatinaAmount
-            common.log:debug("grillNode updateAttachNodes add patina amount: %s", patinaAmount)
+            common.log:trace("grillNode updateAttachNodes add patina amount: %s", patinaAmount)
             patinaController.addPatina(attachNode, patinaAmount)
         end
     },
@@ -350,45 +371,45 @@ local attachNodes = {
 }
 
 local function updateAttachNodes(e)
-    common.log:debug("Ashfall:UpdateAttachNodes")
+    common.log:trace("Ashfall:UpdateAttachNodes: %s", e.campfire.object.id)
     local campfire = e.campfire
     local sceneNode = campfire.sceneNode
 
     for _, attachData in ipairs(attachNodes) do
-        common.log:debug("++++ATTACH NODE: %s+++++++", attachData.attachNodeName)
+        common.log:trace("++++ATTACH NODE: %s+++++++", attachData.attachNodeName)
         local attachNode = sceneNode:getObjectByName(attachData.attachNodeName)
         if attachNode then
-            common.log:debug("found attach node")
+            common.log:trace("found attach node")
             --remove children
             for i, childNode in ipairs(attachNode.children) do
                 if childNode then
-                    common.log:debug("removed %s children", attachData.attachNodeName)
+                    common.log:trace("removed %s children", attachData.attachNodeName)
                     attachNode:detachChildAt(i)
                 end
             end
             if attachData.getDoAttach(campfire) then
-                common.log:debug("Do attach: tru, getting mesh")
+                common.log:trace("Do attach: tru, getting mesh")
                 local mesh = attachData.getAttachMesh(campfire)
                 if mesh then
-                    common.log:debug("Mesh succeed, attaching")
+                    common.log:trace("Mesh succeed, attaching")
                     attachNode:attachChild(mesh)
                 else
-                    common.log:debug("Failed to retrieve mesh")
+                    common.log:trace("Failed to retrieve mesh")
                 end
             else
-                common.log:debug("Do attach: false, removing mesh")
+                common.log:trace("Do attach: false, removing mesh")
             end
             if attachData.postAttach then
                 local attachNode = sceneNode:getObjectByName(attachData.attachNodeName)
                 if attachNode then
-                    common.log:debug("Running Post attach for %s", attachData.attachNodeName)
+                    common.log:trace("Running Post attach for %s", attachData.attachNodeName)
                     attachData.postAttach(campfire, attachNode)
                 end
             end
         end
     end
 
-
+    updateSounds(campfire)
     updateCampfireVisuals(campfire)
 end
 event.register("Ashfall:UpdateAttachNodes", updateAttachNodes)
@@ -400,3 +421,12 @@ local function initialiseAttachNodes()
 end
 event.register("cellChanged", initialiseAttachNodes)
 event.register("loaded", initialiseAttachNodes)
+
+event.register("referenceSceneNodeCreated", function(e)
+    if referenceController.controllers.utensil:requirements(e.reference) then
+        updateAttachNodes{ campfire = e.reference }
+    end
+    if referenceController.controllers.kettle:requirements(e.reference) then
+        updateAttachNodes{ campfire = e.reference }
+    end
+end)

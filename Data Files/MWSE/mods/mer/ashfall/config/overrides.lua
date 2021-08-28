@@ -50,15 +50,15 @@ local overrides = {
     So we aren't renaming things anymore.
 ]]
 
-    --cooking equipment
-    ["misc_com_bucket_metal"] = {
-        --name = "Bucket: Metal",
-        value = 15
-    },
-    ["misc_com_bucket_01"] = {
-        --name = "Bucket: Wood",
-        value = 15
-    },
+    -- --cooking equipment
+    -- ["misc_com_bucket_metal"] = {
+    --     --name = "Bucket: Metal",
+    --     value = 15
+    -- },
+    -- ["misc_com_bucket_01"] = {
+    --     --name = "Bucket: Wood",
+    --     value = 15
+    -- },
     ["misc_com_iron_ladle"] = {
         weight = 1,
         value = 5

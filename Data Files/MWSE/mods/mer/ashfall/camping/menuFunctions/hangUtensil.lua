@@ -17,7 +17,22 @@ local function addUtensil(item, campfire, itemData)
     campfire.data.utensilPatinaAmount = itemData and itemData.data.patinaAmount
     campfire.data.waterCapacity = utensilData.capacity or 100
 
+
+    --If utensil has water, initialise the campfire with it
+    if itemData and itemData.data.waterAmount then
+        campfire.data.waterAmount =  itemData.data.waterAmount
+        campfire.data.stewLevels =  itemData.data.stewLevels
+        campfire.data.stewProgress = itemData.data.stewProgress
+        campfire.data.teaProgress = itemData.data.teaProgress
+        campfire.data.waterType =  itemData.data.waterType
+        campfire.data.waterHeat = itemData.data.waterHeat or 0
+        campfire.data.lastWaterUpdated = nil
+    end
+
     common.log:debug("Set water capacity to %s", campfire.data.waterCapacity)
+    common.log:debug("Set water heat to %s", campfire.data.waterHeat)
+    common.log:debug("Set lastWaterUpdated to %s", campfire.data.lastWaterUpdated)
+    event.trigger("Ashfall:registerReference", { reference = campfire})
     event.trigger("Ashfall:UpdateAttachNodes", {campfire = campfire})
     --event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})
 end

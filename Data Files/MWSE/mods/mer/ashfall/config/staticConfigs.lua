@@ -109,7 +109,11 @@ this.placementConfig = {
     ashfall_rug_03 = { maxSteepness = 1, drop = -2 },
     ashfall_rug_04 = { maxSteepness = 1, drop = -2 },
 
-    ashfall_crabpot_01_m = { maxSteepness = 1, drop = 25 }
+    ashfall_crabpot_01_m = { maxSteepness = 1, drop = 25 },
+
+    ashfall_cooking_pot = { maxSteepness = 0.05 },
+    ashfall_cooking_pot_iron = { maxSteepness = 0.05 },
+    ashfall_cooking_pot_steel = { maxSteepness = 0.05 },
 }
 
 this.capacities = {
@@ -601,37 +605,42 @@ this.utensils = {
         type = "kettle",
         capacity = 100
     },
-    misc_com_bucket_metal = {
-        type = "cookingPot",
-        meshOverride = "ashfall\\bucket_metal.nif",
-        capacity = 150,
-        waterMaxScale = 1.3,
-        waterMaxHeight = 28
-    },
-    misc_com_bucket_01 = {
-        type = "cookingPot",
-        meshOverride = "ashfall\\bucket_wooden.nif",
-        capacity = 140,
-        waterMaxScale = 1.3,
-        waterMaxHeight = 28
-    },
+    -- misc_com_bucket_metal = {
+    --     type = "cookingPot",
+    --     meshOverride = "ashfall\\bucket_metal.nif",
+    --     capacity = 150,
+    --     waterMaxScale = 1.3,
+    --     waterMaxHeight = 28,
+    --     holdsStew = true
+    -- },
+    -- misc_com_bucket_01 = {
+    --     type = "cookingPot",
+    --     meshOverride = "ashfall\\bucket_wooden.nif",
+    --     capacity = 140,
+    --     waterMaxScale = 1.3,
+    --     waterMaxHeight = 28,
+    --     holdsStew = true
+    -- },
     ashfall_cooking_pot = {
         type = "cookingPot",
         capacity = 200,
         waterMaxScale = 1.3,
-        waterMaxHeight = 28
+        waterMaxHeight = 28,
+        holdsStew = true
     },
     ashfall_cooking_pot_iron = {
         type = "cookingPot",
         capacity = 230,
         waterMaxScale = 1.3,
         waterMaxHeight = 18,
+        holdsStew = true
     },
     ashfall_cooking_pot_steel = {
         type = "cookingPot",
         capacity = 200,
         waterMaxScale = 1.3,
-        waterMaxHeight = 28
+        waterMaxHeight = 28,
+        holdsStew = true
     },
 
     --RM's mod
@@ -640,9 +649,11 @@ this.utensils = {
         capacity = 230,
         waterMaxScale = 1.3,
         waterMaxHeight = 18,
-        meshOverride = "ashfall\\cooking_pot_iron.nif"
+        meshOverride = "ashfall\\cooking_pot_iron.nif",
+        holdsStew = true
     },
 }
+table.copy(this.utensils, this.bottleList)
 
 this.kettles = {}
 this.cookingPots = {}

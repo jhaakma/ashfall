@@ -50,7 +50,7 @@ this.controllers = {
         requirements = function(_, ref)
             return (
                 ref.data and
-                ref.data.utensil
+                ref.data.waterHeat
         )
         end
     },
@@ -83,7 +83,20 @@ this.controllers = {
         requirements = function(_, ref)
             return staticConfigs.heatSourceValues[ref.object.id:lower()]
         end
-    }
+    },
+
+
+    utensil = ReferenceController:new{
+        requirements = function(_, ref)
+            return ref.sceneNode and ref.sceneNode:getObjectByName("POT_WATER")
+        end
+    },
+    kettle = ReferenceController:new{
+        requirements = function(_, ref)
+            return ref.sceneNode and ref.sceneNode:getObjectByName("SWITCH_KETTLE_STEAM")
+        end
+    },
+
 }
 
 local function onRefPlaced(e)

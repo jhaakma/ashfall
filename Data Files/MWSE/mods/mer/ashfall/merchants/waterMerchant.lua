@@ -76,10 +76,8 @@ local function updateWaterServiceButton(e)
         if getDisabled(cost) then
             waterServiceButton.widget.state = 2
             waterServiceButton.disabled = true
-        --     waterServiceButton.color = tes3ui.getPalette("disabled_color")
         else
             waterServiceButton.disabled = false
-        --     waterServiceButton.color = tes3ui.getPalette("normal_color")
         end
 
         common.log:debug("Updating Water Service Button")

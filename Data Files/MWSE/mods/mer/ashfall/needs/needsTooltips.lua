@@ -1,5 +1,6 @@
 local common = require("mer.ashfall.common.common")
 local config = require("mer.ashfall.config.config").config
+local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 local teaConfig = common.staticConfigs.teaConfig
 local hungerController = require('mer.ashfall.needs.hungerController')
 local thirstController = require('mer.ashfall.needs.thirstController')
@@ -38,6 +39,10 @@ local function updateFoodAndWaterTile(e)
                 levelIndicator.color = teaConfig.tooltipColor
             elseif e.itemData.data.stewLevels then
                 levelIndicator.color = { 0.9, 0.7, 0.4 }
+            end
+            --Make the icon more red if it's hot
+            if e.itemData.data.waterHeat and e.itemData.data.waterHeat > common.staticConfigs.hotWaterHeatValue then
+                indicatorBlock.color = {1, 0, 0}
             end
         end
 
@@ -203,7 +208,6 @@ local function createNeedsTooltip(e)
     if bottleData then
         local liquidLevel = e.itemData and e.itemData.data.waterAmount or 0
 
-
         --Dirty Water
         if e.itemData and e.itemData.data.waterType == "dirty" then
             labelText = string.format('Water: %d/%d (Dirty)', math.ceil(liquidLevel), bottleData.capacity)
@@ -286,6 +290,17 @@ local function createNeedsTooltip(e)
 
         common.helper.addLabelToTooltip(tooltip, labelText)
 
+        --recalculate heat whenever you interact with it
+        local hasWaterAndHeat = e.itemData
+            and e.itemData.data
+            and e.itemData.data.waterAmount
+            and e.itemData.data.waterHeat
+            and e.itemData.data.waterHeat > 0
+        if hasWaterAndHeat then
+
+            CampfireUtil.updateWaterHeat(e.itemData.data, bottleData.capacity)
+            common.helper.addLabelToTooltip(tooltip, string.format("Heat: %d/100", e.itemData.data.waterHeat))
+        end
 
         local icon = e.tooltip:findChild(tes3ui.registerID("HelpMenu_icon"))
         if icon then
@@ -297,14 +312,11 @@ local function createNeedsTooltip(e)
         end
     end
 
-    --Utensil tooltips
-    local utensilData = common.staticConfigs.utensils[e.object.id:lower()]
-    if utensilData and utensilData.capacity then
-        common.helper.addLabelToTooltip(tooltip, string.format("Capacity: %d", utensilData.capacity))
-    end
+    --Patina
     if e.itemData and e.itemData.data and e.itemData.data.patinaAmount then
         common.helper.addLabelToTooltip(tooltip, string.format("Patina: %d/100", e.itemData.data.patinaAmount))
     end
+
 
     --Bellows
     local bellowsData = common.staticConfigs.bellows[e.object.id:lower()]

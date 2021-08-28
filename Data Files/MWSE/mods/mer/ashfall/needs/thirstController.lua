@@ -1,3 +1,5 @@
+
+local CampfireUtil = require "mer.ashfall.camping.campfire.CampfireUtil"
 local this = {}
 local common = require("mer.ashfall.common.common")
 local config = require("mer.ashfall.config.config").config
@@ -22,7 +24,9 @@ function this.handleEmpties(data)
         data.waterType = nil
         data.waterAmount = nil
         data.stewLevels = nil
-        --restack
+        data.waterHeat = nil
+        --restack / remove sound
+
         tes3ui.updateInventoryTiles()
     end
 end
@@ -70,7 +74,7 @@ function this.update()
 end
 
 function this.getBottleData(id)
-    return common.staticConfigs.bottleList[string.lower(id)]
+    return common.staticConfigs.bottleList[id and string.lower(id)]
 end
 
 
@@ -201,20 +205,22 @@ function this.callWaterMenuAction(callback)
     common.data.drinkingWaterType = nil
 end
 
+
 --[[
     Transfers water, stew or tea
 ]]
-local function doRefillContainer(e)
+function this.transferLiquid(e)
     --initialise itemData
     local item = e.item
-    local itemData = e.itemData
+    ---@type any
+    local target = e.itemData
     local cost = e.cost
     local source = e.source
     local callback = e.callback
-    local stewLevels = e.stewLevels
+    local amount = e.amount
 
-    if not itemData then
-        itemData = tes3.addItemData{
+    if item and not target then
+        target = tes3.addItemData{
             to = tes3.player,
             item = item,
             updateGUI = true
@@ -224,51 +230,89 @@ local function doRefillContainer(e)
     --dirty container if drinking from raw water
     if common.data.drinkingWaterType then
         common.log:debug("Fill water DIRTY")
-        itemData.data.waterType = common.data.drinkingWaterType
+        target.data.waterType = common.data.drinkingWaterType
         common.data.drinkingWaterType = nil
     end
     local fillAmount
-    local bottleData = this.getBottleData(item.id)
+    local bottleData = this.getBottleData(item and item.id)
+    local utensilData = target.object and CampfireUtil.getUtensilData(target)
+    local capacity = (bottleData and bottleData.capacity) or ( utensilData and utensilData.capacity )
 
-    itemData.data.waterAmount = itemData.data.waterAmount or 0
 
+    target.data.waterAmount = target.data.waterAmount or 0
+
+    local waterBefore = target.data.waterAmount
     if source then
         --add tea or stew
         if source.data.waterType then
-            itemData.data.waterType = source.data.waterType
+            target.data.waterType = source.data.waterType
         elseif source.data.stewLevels then
-            itemData.data.stewLevels = table.copy(source.data.stewLevels, {} )
+            target.data.stewLevels = table.copy(source.data.stewLevels, {} )
         end
 
         fillAmount = math.min(
-            bottleData.capacity - itemData.data.waterAmount,
+            capacity - target.data.waterAmount,
             source.data.waterAmount
         )
-        common.helper.transferQuantity(source.data, itemData.data, "waterAmount", "waterAmount", fillAmount)
+        if amount then
+            fillAmount = math.min(amount, fillAmount)
+        end
+
+        --Set new waterHeat based on heat and amount of incoming and existing water
+        local fillHeat = source.data.waterHeat or 0
+        local existingHeat = target.data.waterHeat or 0
+        local existingAmount = target.data.waterAmount or 0
+        target.data.waterHeat =
+            (fillHeat * fillAmount + existingHeat * existingAmount)
+            / (fillAmount + existingAmount)
+
+        common.helper.transferQuantity(source.data, target.data, "waterAmount", "waterAmount", fillAmount)
+
+        target.data.lastWaterUpdated = nil
+
+        common.log:debug("fillHeat: %s", fillHeat)
+        common.log:debug("fillAmount: %s", fillAmount)
+        common.log:debug("existingHeat: %s", existingHeat)
+        common.log:debug("existingAmount: %s", existingAmount)
+        common.log:debug("New water heat: %s", target.data.waterHeat)
 
         --clean source if empty
         if source.data.waterAmount < 1 then
             this.handleEmpties(source.data)
         end
+        if source.object then
+            event.trigger("Ashfall:UpdateAttachNodes", {campfire = source})
+        end
     else
-        itemData.data.waterAmount = bottleData.capacity
+        target.data.waterAmount = capacity
+    end
+
+    local waterAfter = target.data.waterAmount
+    --reduce ingredient levels
+    if target.data.stewLevels then
+        local ratio = waterBefore / waterAfter
+        for name, stewLevel in pairs( target.data.stewLevels) do
+            target.data.stewLevels[name] = stewLevel * ratio
+        end
     end
 
     tes3ui.updateInventoryTiles()
     tes3.playSound({reference = tes3.player, sound = "Swim Left"})
     local contents = "water"
-    if itemData.data.waterType == "dirty" then
+    if target.data.waterType == "dirty" then
         contents = "dirty water"
-    elseif teaConfig.teaTypes[itemData.data.waterType] then
-        contents = teaConfig.teaTypes[itemData.data.waterType].teaName
-    elseif itemData.data.stewLevels then
-        contents = foodConfig.isStewNotSoup(stewLevels) and "stew" or "soup"
+    elseif teaConfig.teaTypes[target.data.waterType] then
+        contents = teaConfig.teaTypes[target.data.waterType].teaName
+    elseif target.data.stewLevels then
+        contents = foodConfig.isStewNotSoup(target.data.stewLevels) and "stew" or "soup"
     end
-    tes3.messageBox(
-        "%s filled with %s.",
-        item.name,
-        contents
-    )
+    if item then
+        tes3.messageBox(
+            "%s filled with %s.",
+            item.name,
+            contents
+        )
+    end
 
     if callback then callback() end
 
@@ -285,31 +329,30 @@ end
     For inventorySelectMenu, filters containers that can be filled
 ]]
 local function filterWaterContainer(e)
-    local stewLevels = e.stewLevels
-    local waterType = e.waterType
-    local hasWater = (
+    --Filter out the source item
+    if (e.source and e.source.data) == (e.itemData and e.itemData.data) then return false end
+
+    local sourceStewLevels = e.source and e.source.data and e.source.data.stewLevels
+    local targetStewLevels = e.itemData and e.itemData.data.stewLevels
+    local sourceWaterType = e.source and e.source.data and e.source.data.waterType
+    local targetWaterType = e.itemData and e.itemData.data.waterType
+    local sourceIsTea = sourceWaterType and sourceWaterType ~= "dirty"
+    local targetHasWater = (
         e.itemData and
         e.itemData.data.waterAmount and
         e.itemData.data.waterAmount > 0
     )
 
-    local hasTea = (
-        e.itemData and
-        teaConfig.teaTypes[e.itemData.data.waterType]
-    )
-    local hasStew = (
-        e.itemData and
-        e.itemData.data.stewLevels
-    )
-
-    --Can only fill empty bottles with tea/stew
-    if (stewLevels or waterType) and hasWater then
-        return false
+    --Can't mix water types
+    if targetHasWater then
+        if targetWaterType ~= sourceWaterType then
+            return false
+        end
     end
-
-    --Can't fill bottles that already have tea/stew
-    if hasTea or hasStew then
-        return false
+    if targetHasWater then
+        if targetStewLevels ~= sourceStewLevels then
+            return false
+        end
     end
 
     --Check if we have a valid bottle
@@ -319,7 +362,11 @@ local function filterWaterContainer(e)
         local currentAmount = e.itemData and e.itemData.data.waterAmount or 0
 
         --If adding a stew, check it's a valid pot
-        if stewLevels and not bottleData.holdsStew then
+        if sourceStewLevels and not bottleData.holdsStew then
+            return false
+        end
+        --Likewise, can't add tea to pots
+        if sourceIsTea and bottleData.holdsStew then
             return false
         end
         return currentAmount < capacity
@@ -335,11 +382,9 @@ function this.fillContainer(params)
     local cost = params.cost
     local source = params.source
     local fillContainerCallback = params.callback
-    local waterType = params.waterType
-    local stewLevels = params.stewLevels
     timer.delayOneFrame(function()
         local noResultsText =  "You have no containers to fill."
-        if waterType then
+        if source and source.data and source.data.waterType then
             --because tea can only be placed in empty containers
             noResultsText = "You have no empty containers to fill."
         end
@@ -350,20 +395,18 @@ function this.fillContainer(params)
                 return filterWaterContainer{
                     item = e.item,
                     itemData = e.itemData,
-                    stewLevels = stewLevels,
-                    waterType = waterType
+                    source = source
                 }
             end,
             callback = function(e)
                 if e.item then
                     this.callWaterMenuAction(function()
-                        doRefillContainer({
+                        this.transferLiquid({
                             cost = cost,
                             source = source,
                             callback = fillContainerCallback,
                             item = e.item,
                             itemData = e.itemData,
-                            stewLevels = stewLevels
                         })
                     end )
                 end
