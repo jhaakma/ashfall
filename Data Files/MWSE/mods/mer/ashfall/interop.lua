@@ -1,4 +1,6 @@
 
+local branchInterop = require "mer.ashfall.branch.branchInterop"
+
 local common = require("mer.ashfall.common.common")
 local staticConfigs = common.staticConfigs
 local activatorConfig = staticConfigs.activatorConfig
@@ -38,6 +40,49 @@ local function listValidClimateTypes()
         message = message .. '\n' .. typeString
     end
     return message
+end
+
+local function registerActivatorType(e)
+    assert(type(e.id) == 'string', "registerActivatorType: Missing id")
+    assert(type(e.name) == 'string', "registerActivatorType: Missing name")
+    assert(type(e.type) == 'string', "registerActivatorType: missing type")
+    if e.ids then
+        assert(type(e.ids) == 'table')
+    end
+    if e.patterns then
+        assert(type(e.patterns) == 'table')
+    end
+    common.log:debug("Registering '%s' as a new Activator Type", e.type)
+
+    if not activatorConfig.types[e.type] then
+        common.log:debug('Type "%s" does not exist, creating', e.type)
+        activatorConfig.types[e.type] = activatorConfig.types[e.type]
+    end
+    local idList = {}
+    if e.ids then
+        for _, id in ipairs(e.ids) do
+            idList[id] = true
+        end
+    end
+    local patternList = {}
+    if e.patterns then
+        for _, id in ipairs(e.patterns) do
+            patternList[id] = true
+        end
+    end
+
+    if not activatorConfig.list[e.id] then
+        activatorConfig.list[e.id] = Activator:new{
+            name = e.name,
+            type = e.type,
+            ids = idList,
+            patterns = patternList
+        }
+    else
+        error(string.format("registerActivatorType: %s already exists as an activator type", e.id))
+    end
+
+    return true
 end
 
 local function registerActivators(e)
@@ -246,6 +291,8 @@ local function registerWoodAxes(data)
     return true
 end
 
+
+
 local Interop = {
     --Block or unblock hunger, thirst and sleep
     blockNeeds = function()
@@ -300,6 +347,7 @@ local Interop = {
         end
     end,
     --object registrations
+    registerActivatorType = registerActivatorType,
     registerActivators = function(data, usePatterns)
         return registerActivators({ data = data, usePatterns = usePatterns})
     end,
@@ -357,6 +405,8 @@ local Interop = {
     registerWoodAxes = function(data)
         return registerWoodAxes(data)
     end,
+
+    registerTreeBranches = branchInterop.registerTreeBranches
 
     --ratings, WIP, need to add support for ids
 

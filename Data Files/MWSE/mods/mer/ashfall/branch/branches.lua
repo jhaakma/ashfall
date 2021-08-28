@@ -24,6 +24,7 @@ end
 local function isTree(reference)
     return common.staticConfigs.activatorConfig.list.tree:isActivator(reference.object.id)
 end
+
 local function formatCellId(cell)
     return cell.editorName:lower()
 end
@@ -54,12 +55,11 @@ local function getBranchTypeFromTexture(tree)
             end
         end
     end
-
 end
 
-local function getBranchTypeBytreeId(tree)
-    common.log:debug("Attempting to get type from ID of %s", tree.object.id)
-    for pattern, group in pairs(branchConfig.idMapping) do
+local function getBranchTypeBytreeIdPattern(tree)
+    common.log:debug("Attempting to get type from pattern for id of %s", tree.object.id)
+    for pattern, group in pairs(branchConfig.patternMapping) do
         if string.find(tree.object.id:lower(), pattern) then
             common.log:debug("Found from Tree ID\n")
             return group
@@ -67,10 +67,20 @@ local function getBranchTypeBytreeId(tree)
     end
 end
 
+local function getBranchTypeBytreeId(tree)
+    common.log:debug("Attempting to get type from ID of %s", tree.object.id)
+    local group = branchConfig.idMapping[tree.object.id:lower()]
+    if group then
+        common.log:debug("Found mapping for id")
+        return group
+    end
+end
+
 local function getBranchGroup(tree)
-    local branchGroup = getBranchGroupFromRegion(tree)
+    local branchGroup = getBranchTypeBytreeId(tree)
+                     or getBranchGroupFromRegion(tree)
                      or getBranchTypeFromTexture(tree)
-                     or getBranchTypeBytreeId(tree)
+                     or getBranchTypeBytreeIdPattern(tree)
                      or branchConfig.defaultBranchGroup
     return branchGroup
 end

@@ -9,6 +9,7 @@ local this = {}
 
 local activatorConfig = require("mer.ashfall.config.staticConfigs").activatorConfig
 local config = require("mer.ashfall.config.config").config
+local common = require("mer.ashfall.common.common")
 this.list = activatorConfig.list
 this.current = nil
 this.currentRef = nil
@@ -176,11 +177,13 @@ event.register("loaded", function() isBlocked = false end)
 ]]--
 local function doTriggerActivate()
     if doActivate() and not isBlocked then
+
         local eventData = {
             activator = this.list[this.current],
             ref = this.currentRef,
             node = this.parentNode
         }
+        common.log:trace("triggering activator filtering on %s", eventData.activator.type)
         event.trigger("Ashfall:ActivatorActivated", eventData, { filter = eventData.activator.type })
     end
 end
