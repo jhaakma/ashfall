@@ -221,14 +221,7 @@ local function registerTeas(e)
             assert(type(spell.id) == 'string', "spell id must be string")
             assert(type(spell.effects) == 'table', "Spell effects must be table")
         end
-        teaConfig.teaTypes[id:lower()] = {
-            teaName = teaData.teaName,
-            teaDescription = teaData.teaDescription,
-            effectDescription = teaData.effectDescription,
-            priceMultiplier = teaData.priceMultiplier or 5.0,
-            onCallBack = teaData.onCallBack,
-            spell = teaData.spell,
-        }
+        teaConfig.teaTypes[id:lower()] = teaData
     end
     return true
 end
