@@ -12,9 +12,13 @@ local updateInterval = 0.001
 
 
 local function removeTeaEffect(teaData)
+    common.log:debug("onDrinkTea: removing previous effect")
     if teaData.spell then
-        common.helper.restoreFatigue()
-        mwscript.removeSpell({ reference = tes3.player, spell = teaData.spell.id})
+        --DelayThreeFrames, to give the spell plenty of time to initialise if drinking multiple teas from inventory
+        timer.delayOneFrame(function()timer.delayOneFrame(function()timer.delayOneFrame(function()
+            common.helper.restoreFatigue()
+            mwscript.removeSpell({ reference = tes3.player, spell = teaData.spell.id})
+        end)end)end)
     elseif teaData.offCallback then
         teaData.offCallback()
     end
@@ -53,7 +57,7 @@ local function onDrinkTea(e)
     tes3.messageBox("Drank %s.", teaData.teaName)
     --remove previous tea
     if common.data.teaDrank then
-        common.log:debug("onDrinkTea: removing previous effect")
+
         local previousTeaData = teaConfig.teaTypes[common.data.teaDrank]
         removeTeaEffect(previousTeaData)
     end
@@ -70,20 +74,21 @@ local function onDrinkTea(e)
         if not teaSpell then
             common.log:debug("onDrinkTea: Creating new spell")
             teaSpell = tes3spell.create(teaData.spell.id, teaData.teaName)
-            teaSpell.castType = tes3.spellType.ability
-            for i=1, #teaData.spell.effects do
-                local effect = teaSpell.effects[i]
-                local newEffect = teaData.spell.effects[i]
-
-                effect.id = newEffect.id
-                effect.attribute = newEffect.attribute
-                effect.skill = newEffect.skill
-                effect.rangeType = tes3.effectRange.self
-                effect.min = newEffect.amount or 0
-                effect.max = newEffect.amount or 0
-                effect.radius = newEffect.radius
-            end
         end
+        teaSpell.castType = tes3.spellType.ability
+        for i=1, #teaData.spell.effects do
+            local effect = teaSpell.effects[i]
+            local newEffect = teaData.spell.effects[i]
+
+            effect.id = newEffect.id
+            effect.attribute = newEffect.attribute
+            effect.skill = newEffect.skill
+            effect.rangeType = tes3.effectRange.self
+            effect.min = newEffect.amount or 0
+            effect.max = newEffect.amount or 0
+            effect.radius = newEffect.radius
+        end
+
         common.log:debug("onDrinkTea: has spell: adding %s", teaData.spell.id)
         mwscript.addSpell{ reference = tes3.player, spell = teaSpell }
     elseif teaData.onCallback then
