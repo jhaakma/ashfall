@@ -24,6 +24,7 @@ function this.handleEmpties(data)
         data.waterType = nil
         data.waterAmount = nil
         data.stewLevels = nil
+        data.stewBuffs = nil
         data.waterHeat = nil
         --restack / remove sound
 
@@ -250,6 +251,7 @@ function this.transferLiquid(e)
         if source.data.waterType then
             target.data.waterType = source.data.waterType
         elseif source.data.stewLevels then
+            target.data.stewProgress = source.data.stewProgress
             target.data.stewLevels = table.copy(source.data.stewLevels, {} )
         end
 
@@ -273,6 +275,15 @@ function this.transferLiquid(e)
 
         target.data.lastWaterUpdated = nil
 
+        local waterAfter = target.data.waterAmount
+        --reduce ingredient levels
+        if (not source.data.stewLevels) and target.data.stewLevels then
+            local ratio = waterBefore / waterAfter
+            for name, stewLevel in pairs( target.data.stewLevels) do
+                target.data.stewLevels[name] = stewLevel * ratio
+            end
+        end
+
         common.log:debug("fillHeat: %s", fillHeat)
         common.log:debug("fillAmount: %s", fillAmount)
         common.log:debug("existingHeat: %s", existingHeat)
@@ -290,14 +301,7 @@ function this.transferLiquid(e)
         target.data.waterAmount = capacity
     end
 
-    local waterAfter = target.data.waterAmount
-    --reduce ingredient levels
-    if target.data.stewLevels then
-        local ratio = waterBefore / waterAfter
-        for name, stewLevel in pairs( target.data.stewLevels) do
-            target.data.stewLevels[name] = stewLevel * ratio
-        end
-    end
+
 
     tes3ui.updateInventoryTiles()
     tes3.playSound({reference = tes3.player, sound = "Swim Left"})
