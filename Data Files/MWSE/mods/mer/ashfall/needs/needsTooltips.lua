@@ -296,9 +296,12 @@ local function createNeedsTooltip(e)
             and e.itemData.data.waterAmount
             and e.itemData.data.waterHeat
             and e.itemData.data.waterHeat > 0
-        if hasWaterAndHeat then
 
-            CampfireUtil.updateWaterHeat(e.itemData.data, bottleData.capacity)
+        if hasWaterAndHeat then
+            if not e.reference then
+                --only update heat on tooltip when in inventory, otherwise it messes with the boilerController update
+                CampfireUtil.updateWaterHeat(e.itemData.data, bottleData.capacity)
+            end
             common.helper.addLabelToTooltip(tooltip, string.format("Heat: %d/100", e.itemData.data.waterHeat))
         end
 

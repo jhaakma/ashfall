@@ -193,12 +193,8 @@ local function doDrinkWater(bottleData)
 
     local amountDrank = thirstController.drinkAmount{amount = thisSipSize, waterType = bottleData.waterType}
     --Tea and stew effects if you drank enough
-    if hydrationNeeded > 0.1 then
-        if teaConfig.teaTypes[bottleData.waterType] then
-            event.trigger("Ashfall:DrinkTea", { teaType = bottleData.waterType, amountDrank = amountDrank})
-        elseif bottleData.stewLevels then
-            event.trigger("Ashfall:eatStew",{data = bottleData})
-        end
+    if hydrationNeeded > 0.1 and teaConfig.teaTypes[bottleData.waterType] then
+        event.trigger("Ashfall:DrinkTea", { teaType = bottleData.waterType, amountDrank = amountDrank})
     end
     --Reduce liquid in bottleData
     bottleData.waterAmount = bottleData.waterAmount - thisSipSize
@@ -271,6 +267,15 @@ local function drinkFromContainer(e)
                         end,
                         callback = function()
                             douse(e.itemData.data)
+                        end
+                    },
+                    {
+                        text = "Eat",
+                        showRequirements = function()
+                            return e.itemData.data.stewLevels ~= nil
+                        end,
+                        callback = function()
+                            event.trigger("Ashfall:eatStew", { data = e.itemData.data})
                         end
                     },
                     {

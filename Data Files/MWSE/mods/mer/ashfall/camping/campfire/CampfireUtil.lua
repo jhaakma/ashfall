@@ -79,7 +79,7 @@ end
 ]]
 local heatLossAtMinCapacity = 3.0
 local heatLossAtMaxCapacity = 1.0
-local waterHeatRate = 20--base water heat/cooling speed
+local waterHeatRate = 40--base water heat/cooling speed
 local minFuelWaterHeat = 5--min fuel multiplier on water heating
 local maxFuelWaterHeat = 10--max fuel multiplier on water heating
 function CampfireUtil.updateWaterHeat(refData, capacity)

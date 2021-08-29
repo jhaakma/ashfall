@@ -29,11 +29,11 @@ end
 local function updateBoilers(e)
 
     local function doUpdate(boilerRef)
-        common.log:trace("BOILER updating %s", boilerRef.object.id)
+        --common.log:trace("BOILER updating %s", boilerRef.object.id)
         boilerRef.data.lastWaterUpdated = boilerRef.data.lastWaterUpdated or e.timestamp
         local timeSinceLastUpdate = e.timestamp - boilerRef.data.lastWaterUpdated
 
-        common.log:trace("BOILER timeSinceLastUpdate %s", timeSinceLastUpdate)
+        --common.log:trace("BOILER timeSinceLastUpdate %s", timeSinceLastUpdate)
 
         if timeSinceLastUpdate < 0 then
             common.log:error("BOILER boilerRef.data.lastWaterUpdated(%.4f) is ahead of e.timestamp(%.4f).",
@@ -43,17 +43,17 @@ local function updateBoilers(e)
         end
 
         if timeSinceLastUpdate > updateInterval then
-
-            common.log:trace("BOILER interval passed, updating heat")
             local hasFilledPot = (
                 boilerRef.data.waterAmount and
                 boilerRef.data.waterAmount > 0
             )
             if hasFilledPot then
+                common.log:trace("BOILER interval passed, updating heat for %s", boilerRef)
                 addUtensilPatina(boilerRef,timeSinceLastUpdate)
                 common.log:trace("BOILER hasFilledPot")
 
                 local heatBefore = boilerRef.data.waterHeat
+                common.log:trace("BOILER heatBefore: %s", heatBefore)
                 local bottleData = thirstController.getBottleData(boilerRef.object.id)
                 local utensilData = CampfireUtil.getUtensilData(boilerRef)
                 local capacity = (bottleData and bottleData.capacity) or ( utensilData and utensilData.capacity )
@@ -72,6 +72,7 @@ local function updateBoilers(e)
                 end
                 --remove boiling sound
                 if heatBefore > common.staticConfigs.hotWaterHeatValue and heatAfter < common.staticConfigs.hotWaterHeatValue then
+                    common.log:trace("No longer hot")
                     tes3.removeSound{
                         reference = boilerRef,
                         sound = "ashfall_boil"

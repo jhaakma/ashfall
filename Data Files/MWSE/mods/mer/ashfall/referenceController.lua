@@ -48,10 +48,11 @@ this.controllers = {
 
     boiler = ReferenceController:new{
         requirements = function(_, ref)
-            return (
+            local isboiler = (
                 ref.data and
-                ref.data.waterHeat
-        )
+                ref.data.waterHeat ~= nil
+            )
+            return isboiler
         end
     },
 
