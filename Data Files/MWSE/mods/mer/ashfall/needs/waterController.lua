@@ -258,15 +258,12 @@ local function drinkFromContainer(e)
                 message = message,
                 buttons = {
                     {
-                        text = "Douse",
+                        text = "Drink",
                         showRequirements = function()
-                            return common.data.wetness <= wetness.states.soaked.min
-                                and (e.itemData.data.waterType == "dirty" or not e.itemData.data.waterType)
-                                and (not e.itemData.data.stewLevels)
-                                and (not e.itemData.data.waterHeat or e.itemData.data.waterHeat < common.staticConfigs.hotWaterHeatValue)
+                            return e.itemData.data.stewLevels == nil
                         end,
                         callback = function()
-                            douse(e.itemData.data)
+                            doDrinkWater(e.itemData.data)
                         end
                     },
                     {
@@ -276,6 +273,18 @@ local function drinkFromContainer(e)
                         end,
                         callback = function()
                             event.trigger("Ashfall:eatStew", { data = e.itemData.data})
+                        end
+                    },
+                    {
+                        text = "Douse",
+                        showRequirements = function()
+                            return common.data.wetness <= wetness.states.soaked.min
+                                and (e.itemData.data.waterType == "dirty" or not e.itemData.data.waterType)
+                                and (not e.itemData.data.stewLevels)
+                                and (not e.itemData.data.waterHeat or e.itemData.data.waterHeat < common.staticConfigs.hotWaterHeatValue)
+                        end,
+                        callback = function()
+                            douse(e.itemData.data)
                         end
                     },
                     {

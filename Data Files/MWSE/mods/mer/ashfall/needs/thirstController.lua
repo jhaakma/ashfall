@@ -97,9 +97,11 @@ function this.playerHasEmpties()
                         common.log:trace("waterAmount: %s", itemData and itemData.data.waterAmount )
                         if itemData.data.waterAmount then
                             if itemData.data.waterAmount < bottleData.capacity then
-                                --at least one bottle can be filled
-                                common.log:trace("below capacity")
-                                return true
+                                if not itemData.data.stewLevels and not itemData.data.waterType then
+                                    --at least one bottle can be filled
+                                    common.log:trace("below capacity")
+                                    return true
+                                end
                             end
                         else
                             --no itemData means empty bottle
@@ -335,9 +337,9 @@ end
 --[[
     For inventorySelectMenu, filters containers that can be filled
 ]]
-local function filterWaterContainer(e)
+function this.filterWaterContainer(e)
     --Filter out the source item
-    if (e.source and e.source.data) == (e.itemData and e.itemData.data) then return false end
+    if e.source and (e.source and e.source.data) == (e.itemData and e.itemData.data) then return false end
 
     local sourceStewLevels = e.source and e.source.data and e.source.data.stewLevels
     local targetStewLevels = e.itemData and e.itemData.data.stewLevels
@@ -351,13 +353,19 @@ local function filterWaterContainer(e)
     )
 
     --Can't mix water types
-    if e.source and targetHasWater then
-        if targetWaterType ~= sourceWaterType then
-            return false
+    if e.source then
+        if targetHasWater then
+            if targetWaterType ~= sourceWaterType then
+                return false
+            end
         end
-    end
-    if e.source and targetHasWater then
-        if targetStewLevels ~= sourceStewLevels then
+        if targetHasWater then
+            if targetStewLevels ~= sourceStewLevels then
+                return false
+            end
+        end
+    else
+        if targetWaterType or targetStewLevels then
             return false
         end
     end
@@ -399,7 +407,7 @@ function this.fillContainer(params)
             title = "Select Water Container",
             noResultsText = noResultsText,
             filter = function(e)
-                return filterWaterContainer{
+                return this.filterWaterContainer{
                     item = e.item,
                     itemData = e.itemData,
                     source = source
