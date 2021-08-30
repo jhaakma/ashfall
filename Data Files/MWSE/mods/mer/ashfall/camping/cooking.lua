@@ -160,10 +160,7 @@ local function grillFoodItem(ingredient, timestamp)
                         end
                     end
 
-                    local helpMenu = tes3ui.findHelpLayerMenu(tes3ui.registerID("HelpMenu"))
-                    if helpMenu and helpMenu.visible == true then
-                        tes3ui.refreshTooltip()
-                    end
+                    tes3ui.refreshTooltip()
                 end
             else
                 --reset grill time if campfire is unlit

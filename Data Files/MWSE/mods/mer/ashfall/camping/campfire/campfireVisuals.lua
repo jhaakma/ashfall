@@ -418,6 +418,9 @@ local function initialiseAttachNodes()
     common.helper.iterateRefType("campfire", function(campfire)
         updateAttachNodes{ campfire = campfire }
     end)
+    common.helper.iterateRefType("boiler", function(campfire)
+        updateAttachNodes{ campfire = campfire }
+    end)
 end
 event.register("cellChanged", initialiseAttachNodes)
 event.register("loaded", initialiseAttachNodes)
