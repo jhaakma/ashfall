@@ -128,7 +128,6 @@ local function updateStewServiceButton(e)
             stewServiceButton.disabled = false
         end
 
-        common.log:debug("Updating Stew Service Button")
         stewServiceButton.text = getStewMenuText(merchant.object)
 
         -- Reshow the button.

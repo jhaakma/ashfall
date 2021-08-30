@@ -80,7 +80,7 @@ local function updateSwitchNodes(campfire)
     local sceneNode = campfire.sceneNode
     local switchNode
 
-    if campfire.data.destroyed then
+    if campfire.data and campfire.data.destroyed then
         for nodeName, _ in pairs(switchNodeValues) do
             switchNode = sceneNode:getObjectByName(nodeName)
             if switchNode then
@@ -205,7 +205,7 @@ local function updateCollision(campfire)
 end
 
 local function updateSounds(campfire)
-    if campfire.data.waterHeat and campfire.data.waterHeat >= common.staticConfigs.hotWaterHeatValue then
+    if campfire.data and campfire.data.waterHeat and campfire.data.waterHeat >= common.staticConfigs.hotWaterHeatValue then
         tes3.playSound{
             reference = campfire,
             sound = "ashfall_boil",

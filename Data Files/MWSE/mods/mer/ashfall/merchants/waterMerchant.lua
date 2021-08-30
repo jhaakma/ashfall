@@ -80,7 +80,7 @@ local function updateWaterServiceButton(e)
             waterServiceButton.disabled = false
         end
 
-        common.log:debug("Updating Water Service Button")
+        common.log:trace("Updating Water Service Button")
         waterServiceButton.text = getWaterText(merchant.object)
 
         -- Reshow the button.
