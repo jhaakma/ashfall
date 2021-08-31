@@ -109,6 +109,15 @@ this.recipes = {
             { material = this.materials.rope, count = 1 },
             { material = this.materials.leather, count = 4 },
         }
+    },
+    {
+        id = "ashfall_tent_leather_m",
+        description = "A heavy tent stitched together from various animal hides",
+        materials = {
+            { material = this.materials.leather, count = 10 },
+            { material = this.materials.wood, count = 6 },
+            { material = this.materials.rope, count = 8 },
+        }
     }
 }
 

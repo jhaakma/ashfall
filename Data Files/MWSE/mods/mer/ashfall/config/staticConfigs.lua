@@ -72,7 +72,7 @@ this.placementConfig = {
     ashfall_tent_imp_a = { maxSteepness = 0.4, drop = 170},
     ashfall_tent_qual_a = { maxSteepness = 0.4, drop = 170},
     ashfall_tent_ashl_a = { maxSteepness = 0.4, drop = 170},
-
+    ashfall_tent_leather_a = { maxSteepness = 0.4, drop = 170},
 
     ashfall_tent_active = { maxSteepness = 0.4, drop = 70},
     ashfall_tent_ashl_active = { maxSteepness = 0.4, drop = 70},

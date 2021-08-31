@@ -14,6 +14,7 @@ this.tentMiscToActiveMap = {
     ashfall_tent_imp_m = 'ashfall_tent_imp_a',
     ashfall_tent_qual_m = 'ashfall_tent_qual_a',
     ashfall_tent_ashl_m = 'ashfall_tent_ashl_a',
+    ashfall_tent_leather_m = 'ashfall_tent_leather_a',
 
 }
 this.tentActivetoMiscMap = {}
@@ -139,7 +140,8 @@ this.tempMultis = {
     --tents that come with covers
     ashfall_tent_imp_a = 0.80,
     ashfall_tent_qual_a = 0.8,
-    ashfall_tent_base_m = 0.85
+    ashfall_tent_base_m = 0.85,
+    ashfall_tent_leather_m = 0.88
 }
 
 function this.getTrinketData(trinketId)
