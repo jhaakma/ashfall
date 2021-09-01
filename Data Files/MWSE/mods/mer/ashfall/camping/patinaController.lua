@@ -145,7 +145,7 @@ local function doPatinaDrop(e)
 
 end
 event.register("itemDropped", doPatinaDrop)
-event.register("referenceActivated", doPatinaDrop)
+--event.register("referenceActivated", doPatinaDrop)
 
 
 
