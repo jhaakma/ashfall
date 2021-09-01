@@ -52,6 +52,7 @@ local function onActivateCampfire(e)
         end
     end
 
+
     local buttons = {}
     --Add contextual buttons
     local buttonList = attachmentConfig.commands
@@ -60,6 +61,7 @@ local function onActivateCampfire(e)
         local buttonData = require(string.format("mer.ashfall.camping.menuFunctions.%s", buttonType))
         addButton(buttons, buttonData)
     end
+
     common.helper.messageBox({
         message = text,
         buttons = buttons,

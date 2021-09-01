@@ -269,10 +269,11 @@ function this.transferLiquid(e)
         local fillHeat = source.data.waterHeat or 0
         local existingHeat = target.data.waterHeat or 0
         local existingAmount = target.data.waterAmount or 0
-        target.data.waterHeat =
-            (fillHeat * fillAmount + existingHeat * existingAmount)
-            / (fillAmount + existingAmount)
 
+        local newHeat =
+             (fillHeat * fillAmount + existingHeat * existingAmount)
+            / (fillAmount + existingAmount)
+        CampfireUtil.setHeat(target.data, newHeat, target)
         common.helper.transferQuantity(source.data, target.data, "waterAmount", "waterAmount", fillAmount)
 
         target.data.lastWaterUpdated = nil

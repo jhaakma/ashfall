@@ -206,6 +206,10 @@ end
 
 local function updateSounds(campfire)
     if campfire.data and campfire.data.waterHeat and campfire.data.waterHeat >= common.staticConfigs.hotWaterHeatValue then
+        tes3.removeSound{
+            reference = campfire,
+            sound = "ashfall_boil"
+        }
         tes3.playSound{
             reference = campfire,
             sound = "ashfall_boil",

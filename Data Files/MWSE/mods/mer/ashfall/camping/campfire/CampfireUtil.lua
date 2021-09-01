@@ -74,15 +74,41 @@ function CampfireUtil.getUtensilData(ref)
 end
 
 
---[[
-    Update the water heat withing an
-]]
+function CampfireUtil.setHeat(refData, newHeat, reference)
+    common.log:debug("Setting heat of %s to %s", reference or "[unknown]", newHeat)
+    local heatBefore = refData.waterHeat
+    refData.waterHeat = math.clamp(newHeat, 0, 100)
+    local heatAfter = refData.waterHeat
+    --add sound if crossing the boiling barrior
+    if reference then
+        if heatBefore < common.staticConfigs.hotWaterHeatValue and heatAfter > common.staticConfigs.hotWaterHeatValue then
+            tes3.removeSound{
+                reference = reference,
+                sound = "ashfall_boil"
+            }
+            tes3.playSound{
+                reference = reference,
+                sound = "ashfall_boil"
+            }
+        end
+        --remove boiling sound
+        if heatBefore > common.staticConfigs.hotWaterHeatValue and heatAfter < common.staticConfigs.hotWaterHeatValue then
+            common.log:debug("No longer hot")
+            tes3.removeSound{
+                reference = reference,
+                sound = "ashfall_boil"
+            }
+            event.trigger("Ashfall:UpdateAttachNodes", {campfire = reference})
+        end
+    end
+end
+
 local heatLossAtMinCapacity = 3.0
 local heatLossAtMaxCapacity = 1.0
 local waterHeatRate = 40--base water heat/cooling speed
 local minFuelWaterHeat = 5--min fuel multiplier on water heating
 local maxFuelWaterHeat = 10--max fuel multiplier on water heating
-function CampfireUtil.updateWaterHeat(refData, capacity)
+function CampfireUtil.updateWaterHeat(refData, capacity, reference)
     if not refData.waterAmount then return end
     local now = tes3.getSimulationTimestamp()
     refData.lastWaterUpdated = refData.lastWaterUpdated or now
@@ -101,13 +127,12 @@ function CampfireUtil.updateWaterHeat(refData, capacity)
     local filledAmount = refData.waterAmount / capacity
     common.log:trace("BOILER filledAmount: %s", filledAmount)
     local filledAmountEffect = math.remap(filledAmount, 0.0, 1.0, heatLossAtMinCapacity, heatLossAtMaxCapacity)
-    local heatLossAtMaxCapacity = 1.0
     common.log:trace("BOILER filledAmountEffect: %s", filledAmountEffect)
 
     --Calculate change
     local heatChange = timeSinceLastUpdate * heatEffect * filledAmountEffect * waterHeatRate
 
-    refData.waterHeat = math.clamp((refData.waterHeat + heatChange), 0, 100)
+    CampfireUtil.setHeat(refData, refData.waterHeat + heatChange, reference)
 end
 
 return CampfireUtil

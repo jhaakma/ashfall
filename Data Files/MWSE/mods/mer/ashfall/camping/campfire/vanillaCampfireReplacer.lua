@@ -1,4 +1,5 @@
 local common = require ("mer.ashfall.common.common")
+local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 local foodConfig = common.staticConfigs.foodConfig
 local campfireConfig = common.staticConfigs.campfireConfig
 local randomStuffChances = {
@@ -114,12 +115,7 @@ local function addWater(campfire)
     if math.random() < randomStuffChances.water then
         campfire.data.waterAmount = 10 + math.random(50)
         if campfire.data.isLit then
-            campfire.data.waterHeat = campfire.data.isLit and 100 or 0
-            tes3.playSound{
-                reference = campfire,
-                sound = "ashfall_boil",
-                loop = true
-            }
+            CampfireUtil.setHeat(campfire.data, 100, campfire)
         end
         --add tea to kettleswaterHeat
         if campfire.data.utensil == "kettle" then

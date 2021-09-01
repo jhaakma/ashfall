@@ -89,8 +89,6 @@ local function addGrillPatina(campfire,interval)
         else
             common.log:debug("Mesh incompatible with patina mechanic, did not apply")
         end
-    else
-        common.log:debug("Campfire invalid for some reason")
     end
 end
 

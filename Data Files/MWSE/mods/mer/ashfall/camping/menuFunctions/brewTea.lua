@@ -1,4 +1,5 @@
 local common = require ("mer.ashfall.common.common")
+local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 local teaConfig = common.staticConfigs.teaConfig
 local skillSurvivalTeaBrewIncrement = 5
 return {
@@ -25,8 +26,9 @@ return {
                     if e.item then
                         campfire.data.waterType = e.item.id:lower()
                         campfire.data.teaProgress = 0
-                        campfire.data.waterHeat = campfire.data.waterHeat or 0
-                        campfire.data.waterHeat = math.max(0, (campfire.data.waterHeat - 10))
+                        local currentHeat = campfire.data.waterHeat or 0
+                        local newHeat = currentHeat + math.max(0, (campfire.data.waterHeat - 10))
+                        CampfireUtil.setHeat(campfire.data, newHeat, campfire)
 
                         common.skills.survival:progressSkill(skillSurvivalTeaBrewIncrement)
 

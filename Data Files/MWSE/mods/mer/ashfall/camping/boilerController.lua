@@ -48,38 +48,14 @@ local function updateBoilers(e)
                 boilerRef.data.waterAmount > 0
             )
             if hasFilledPot then
-                common.log:trace("BOILER interval passed, updating heat for %s", boilerRef)
+                common.log:debug("BOILER interval passed, updating heat for %s", boilerRef)
                 addUtensilPatina(boilerRef,timeSinceLastUpdate)
-                common.log:trace("BOILER hasFilledPot")
-
-                local heatBefore = boilerRef.data.waterHeat
-                common.log:trace("BOILER heatBefore: %s", heatBefore)
+                common.log:debug("BOILER hasFilledPot")
                 local bottleData = thirstController.getBottleData(boilerRef.object.id)
                 local utensilData = CampfireUtil.getUtensilData(boilerRef)
                 local capacity = (bottleData and bottleData.capacity) or ( utensilData and utensilData.capacity )
 
-                CampfireUtil.updateWaterHeat(boilerRef.data, capacity)
-                local heatAfter = boilerRef.data.waterHeat
-
-                common.log:trace("BOILER heatAfter: %s", heatAfter)
-
-                --add sound if crossing the boiling barrior
-                if heatBefore < common.staticConfigs.hotWaterHeatValue and heatAfter > common.staticConfigs.hotWaterHeatValue then
-                    tes3.playSound{
-                        reference = boilerRef,
-                        sound = "ashfall_boil"
-                    }
-                end
-                --remove boiling sound
-                if heatBefore > common.staticConfigs.hotWaterHeatValue and heatAfter < common.staticConfigs.hotWaterHeatValue then
-                    common.log:trace("No longer hot")
-                    tes3.removeSound{
-                        reference = boilerRef,
-                        sound = "ashfall_boil"
-                    }
-                    event.trigger("Ashfall:UpdateAttachNodes", {campfire = boilerRef})
-                end
-
+                CampfireUtil.updateWaterHeat(boilerRef.data, capacity, boilerRef)
                 if boilerRef.data.waterHeat > common.staticConfigs.hotWaterHeatValue then
                     --boil dirty water away
                     if boilerRef.data.waterType == "dirty" then
