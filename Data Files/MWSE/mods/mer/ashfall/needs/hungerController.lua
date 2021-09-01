@@ -222,6 +222,7 @@ local function addDisease(e)
 end
 
 local function onEquipFood(e)
+    common.log:debug("EQUIP")
     if common.getIsBlocked(e.item) then
         common.log:debug("Is Blocked")
         return
@@ -248,9 +249,20 @@ local function onShiftActivateFood(e)
         )
         local hasAccess = tes3.hasOwnershipAccess{ target = e.target }
         if hasAccess and isModifierKeyPressed then
-            timer.delayOneFrame(function ()
-                tes3.player.mobile:equip{ item = e.target.object}
-            end)
+            common.log:debug("Shift Activated %s has nutrition of %s", e.target, nutrition)
+            local eventData = {
+                item = e.target.object,
+                itemData = e.target.itemData,
+                reference = tes3.player
+            }
+            local response = event.trigger("equip", eventData, { filter = tes3.player })
+            if response.block ~= true then
+                common.log:debug("Equipping %s", e.target)
+                tes3.player.mobile:equip{
+                    item = e.target.object,
+                    itemData = e.target.itemData
+                }
+            end
         end
     end
 end
