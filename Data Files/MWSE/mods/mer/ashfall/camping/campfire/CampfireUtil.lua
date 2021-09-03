@@ -75,12 +75,12 @@ end
 
 
 function CampfireUtil.setHeat(refData, newHeat, reference)
-    common.log:debug("Setting heat of %s to %s", reference or "[unknown]", newHeat)
+    common.log:trace("Setting heat of %s to %s", reference or "[unknown]", newHeat)
     local heatBefore = refData.waterHeat or 0
     refData.waterHeat = math.clamp(newHeat, 0, 100)
     local heatAfter = refData.waterHeat
     --add sound if crossing the boiling barrior
-    if reference then
+    if reference and not reference.disabled then
         if heatBefore < common.staticConfigs.hotWaterHeatValue and heatAfter > common.staticConfigs.hotWaterHeatValue then
             tes3.removeSound{
                 reference = reference,

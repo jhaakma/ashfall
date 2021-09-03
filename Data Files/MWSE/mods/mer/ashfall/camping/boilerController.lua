@@ -48,9 +48,9 @@ local function updateBoilers(e)
                 boilerRef.data.waterAmount > 0
             )
             if hasFilledPot then
-                common.log:debug("BOILER interval passed, updating heat for %s", boilerRef)
+                common.log:trace("BOILER interval passed, updating heat for %s", boilerRef)
                 addUtensilPatina(boilerRef,timeSinceLastUpdate)
-                common.log:debug("BOILER hasFilledPot")
+                common.log:trace("BOILER hasFilledPot")
                 local bottleData = thirstController.getBottleData(boilerRef.object.id)
                 local utensilData = CampfireUtil.getUtensilData(boilerRef)
                 local capacity = (bottleData and bottleData.capacity) or ( utensilData and utensilData.capacity )

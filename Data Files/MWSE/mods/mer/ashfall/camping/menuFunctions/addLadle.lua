@@ -5,7 +5,7 @@ return {
             campfire.sceneNode:getObjectByName("SWITCH_LADLE") and
             not campfire.data.ladle and
             campfire.data.dynamicConfig and
-            campfire.data.dynamicConfig.kettle == "dynamic"
+            campfire.data.dynamicConfig.cookingPot == "dynamic"
         )
     end,
     enableRequirements = function()

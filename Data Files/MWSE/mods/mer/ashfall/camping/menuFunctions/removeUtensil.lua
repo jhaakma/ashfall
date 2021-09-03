@@ -1,18 +1,22 @@
 local common = require ("mer.ashfall.common.common")
 local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 
-local function isDynamicCampfire(campfire)
-    return campfire.data.dynamicConfig and campfire.data.dynamicConfig[campfire.data.utensil] ~= "static"
+local function isStaticCampfire(campfire)
+    return campfire.data.dynamicConfig and campfire.data.dynamicConfig[campfire.data.utensil] == "static"
 end
 
 return  {
     text = function(campfire)
         local utensilId = campfire.data.utensilId
-        local utensil = tes3.getObject(utensilId)
-        return string.format("Remove %s", CampfireUtil.getGenericUtensilName(utensil) or "Utensil")
+        if utensilId then
+            common.log:debug("utensilId: %s", utensilId)
+            local utensil = tes3.getObject(utensilId)
+            return string.format("Remove %s", CampfireUtil.getGenericUtensilName(utensil) or "Utensil")
+        end
     end,
     showRequirements = function(campfire)
-        if not isDynamicCampfire(campfire) then
+        if isStaticCampfire(campfire) then
+            common.log:debug("It's a static campfire, can not remove")
             return false
         elseif campfire.data.stewLevels then
             return (
@@ -21,6 +25,8 @@ return  {
             )
         elseif campfire.data.teaProgress then
             return campfire.data.teaProgress >= 100
+        else
+            return  campfire.data.utensilId ~= nil
         end
     end,
     -- enableRequirements = function(campfire)
