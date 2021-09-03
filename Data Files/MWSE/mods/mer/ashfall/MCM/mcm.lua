@@ -1,4 +1,5 @@
 local common = require("mer.ashfall.common.common")
+local versionController = require("mer.ashfall.versionController")
 
 local config = require("mer.ashfall.config.config").config
 
@@ -8,20 +9,17 @@ local function createTableVar(id)
 end
 
 local sideBarDefault =
-[[
-Welcome to Ashfall, the ultimate survival mod for Morrowind!
+[[Use the configuration menu to turn various mechanics, features and udpate messages on or off.
 
-Use the configuration menu to turn various mechanics, features and udpate messages on or off.
-
-Hover over individual settings to see more information.
-
-]]
+Hover over individual settings to see more information.]]
 
 local function postFormat(self)
     self.elements.outerContainer.borderAllSides = self.indent
     self.elements.outerContainer.alignY = 1.0
     --self.elements.outerContainer.layoutHeightFraction = 1.0
-    self.elements.info.layoutOriginFractionX = 0.5
+    if self.elements.info then
+        self.elements.info.layoutOriginFractionX = 0.5
+    end
 end
 
 local function registerModConfig()
@@ -32,35 +30,56 @@ local function registerModConfig()
     template:register()
 
     local function addSideBar(component)
+        local versionText = string.format("Ashfall Version %s", versionController.getVersion())
+        local summaryCategory = component.sidebar:createCategory(versionText)
         component.sidebar:createInfo{ text = sideBarDefault}
-        component.sidebar:createHyperLink{
+
+        local linksCategory = component.sidebar:createCategory("Links")
+        linksCategory:createHyperLink{
+            text = "Release history",
+            url = "https://github.com/jhaakma/ashfall/releases"
+        }
+        linksCategory:createHyperLink{
+            text = "Wiki",
+            url = "https://github.com/jhaakma/ashfall/wiki"
+        }
+        linksCategory:createHyperLink{
+            text = "Nexus",
+            url = "https://www.nexusmods.com/morrowind/mods/49057"
+        }
+
+
+        local creditsCategory = component.sidebar:createCategory("Credits")
+
+
+        creditsCategory:createHyperLink{
             text = "Made by Merlord",
-            exec = "start https://www.nexusmods.com/users/3040468?tab=user+files",
-            postCreate = postFormat,
+            url = "https://www.nexusmods.com/users/3040468?tab=user+files",
+            --postCreate = postFormat,
         }
 
-        component.sidebar:createHyperLink{
+        creditsCategory:createHyperLink{
             text = "Graphic Design by XeroFoxx",
-            exec = "start https://www.youtube.com/channel/UCcx5oYt3NtLtadZTSjI3KEw",
-            postCreate = postFormat,
+            url = "https://www.youtube.com/channel/UCcx5oYt3NtLtadZTSjI3KEw",
+            --postCreate = postFormat,
         }
 
-        component.sidebar:createHyperLink{
+        creditsCategory:createHyperLink{
             text = "Tent Covers by Draconik",
-            exec = "start https://www.nexusmods.com/morrowind/users/86600168",
-            postCreate = postFormat
+            url = "https://www.nexusmods.com/morrowind/users/86600168",
+            --postCreate = postFormat,
         }
 
-        component.sidebar:createHyperLink{
+        creditsCategory:createHyperLink{
             text = "Dream Catcher mesh by Remiros",
-            exec = "start https://www.nexusmods.com/morrowind/users/899234",
-            postCreate = postFormat
+            url = "https://www.nexusmods.com/morrowind/users/899234",
+            --postCreate = postFormat,
         }
 
-        component.sidebar:createHyperLink{
+        creditsCategory:createHyperLink{
             text = "Sitting/sleeping animations by Vidi Aquam",
-            exec = "start https://www.nexusmods.com/morrowind/mods/48782",
-            postCreate = postFormat,
+            url = "https://www.nexusmods.com/morrowind/mods/48782",
+            --postCreate = postFormat,
         }
     end
 
