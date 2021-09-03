@@ -402,8 +402,7 @@ local function onShiftActivateWater(e)
         local isModifierKeyPressed = (
             inputController:isKeyDown(config.modifierHotKey.keyCode)
         )
-        local hasAccess = tes3.hasOwnershipAccess{ target = e.target }
-        if hasAccess and isModifierKeyPressed then
+        if isModifierKeyPressed then
             local message = "Water"
             if e.target.data.stewLevels then
                 message = "Stew"
