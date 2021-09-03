@@ -1,8 +1,8 @@
 local common = require ("mer.ashfall.common.common")
 local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 
-local function checkDynamicStatus(campfire)
-    return campfire.data.dynamicConfig[campfire.data.utensil] ~= "static"
+local function isDynamicCampfire(campfire)
+    return campfire.data.dynamicConfig and campfire.data.dynamicConfig[campfire.data.utensil] ~= "static"
 end
 
 return  {
@@ -12,17 +12,15 @@ return  {
         return string.format("Remove %s", CampfireUtil.getGenericUtensilName(utensil) or "Utensil")
     end,
     showRequirements = function(campfire)
-        if campfire.data.stewLevels then
+        if not isDynamicCampfire(campfire) then
+            return false
+        elseif campfire.data.stewLevels then
             return (
                 campfire.data.stewProgress and
                 campfire.data.stewProgress >= 100
             )
         elseif campfire.data.teaProgress then
             return campfire.data.teaProgress >= 100
-        else
-            return  campfire.data.utensilId ~= nil
-                and campfire.data.dynamicConfig
-                and checkDynamicStatus(campfire)
         end
     end,
     -- enableRequirements = function(campfire)
