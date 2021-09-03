@@ -32,7 +32,9 @@ local function getHeatSourceValue(ref)
 
     local baseObject = ref.baseObject
     local cacheHit = heatCache[baseObject]
-    if cacheHit then return cacheHit end
+    if cacheHit then
+        return cacheHit
+    end
 
     local lowerId = baseObject.id:lower()
     for pattern, value in pairs(fireValues) do
@@ -50,6 +52,8 @@ refController.registerReferenceController{
         local isLight = ref.baseObject.objectType == tes3.objectType.light
         if isLight then
             return getHeatSourceValue(ref) ~= nil
+                and not activatorConfig.list.fire:isActivator(ref.object.id)
+                and not activatorConfig.list.campfire:isActivator(ref.object.id)
         end
         return false
     end
@@ -60,6 +64,7 @@ refController.registerReferenceController{
     requirements = function(_, ref)
         if ref.disabled then return false end
         return activatorConfig.list.fire:isActivator(ref.object.id) == true
+            and not activatorConfig.list.campfire:isActivator(ref.object.id)
     end
 }
 
@@ -135,7 +140,6 @@ function this.calculateFireEffect()
             end
             local heatAtThisDistance = getHeatAtDistance(heatAtMaxDistance, distance)
             totalHeat = totalHeat + heatAtThisDistance
-
             closeEnough = true
         end
     end
