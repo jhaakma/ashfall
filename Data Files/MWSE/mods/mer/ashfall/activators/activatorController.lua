@@ -57,13 +57,11 @@ end
 local function doActivate()
     return (
         this.current and
-        not tes3.menuMode() and
         config[this.getCurrentActivator().mcmSetting] ~= false
     )
 end
 
 local function createActivatorIndicator()
-
     local menu = tes3ui.findMenu(tes3ui.registerID("MenuMulti"))
     if menu then
         local mainBlock = menu:findChild(id_indicator)
@@ -122,13 +120,23 @@ end
     a static activator
 ]]--
 function this.callRayTest()
-    this.current = nil
-    this.currentRef = nil
+    --if not tes3ui.menuMode() then
+        this.current = nil
+        this.currentRef = nil
+    --end
 
-    local eyePos = tes3.getPlayerEyePosition()
-    local eyeVec = tes3.getPlayerEyeVector()
+    local eyePos
+    local eyeVec
     local maxDist = tes3.findGMST(tes3.gmst.iMaxActivateDist).value
 
+    if tes3ui.menuMode() then
+        local cursor = tes3.getCursorPosition()
+        local camera = tes3.worldController.worldCamera.camera
+        eyePos, eyeVec = camera:windowPointToRay{cursor.x, cursor.y}
+    else
+        eyePos = tes3.getPlayerEyePosition()
+        eyeVec = tes3.getPlayerEyeVector()
+    end
     local result = tes3.rayTest{
         position = eyePos,
         direction = eyeVec,
@@ -162,7 +170,6 @@ function this.callRayTest()
     createActivatorIndicator()
 end
 
-
 local isBlocked
 local function blockScriptedActivate(e)
     isBlocked = e.doBlock
@@ -176,7 +183,7 @@ event.register("loaded", function() isBlocked = false end)
     at an activator static then fire an event
 ]]--
 local function doTriggerActivate()
-    if doActivate() and not isBlocked then
+    if (not tes3ui.menuMode()) and doActivate() and not isBlocked then
 
         local eventData = {
             activator = this.list[this.current],
