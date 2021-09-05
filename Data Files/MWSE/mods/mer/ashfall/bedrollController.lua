@@ -1,14 +1,14 @@
 local common = require("mer.ashfall.common.common")
-local config = require("mer.ashfall.config.config")
+local config = require("mer.ashfall.config.config").config
 local animCtrl = require("mer.ashfall.effects.animationController")
 local skipActivate
 
 local function canRest()
-    if not tes3.canRest() then return false end
-    if tes3.player.cell.restingIsIllegal then
-        return config.canCampInSettlements
+    local allowResting = tes3.canRest() and not tes3.player.cell.restingIsIllegal
+    if tes3.player.cell.restingIsIllegal and config.canCampInSettlements then
+        allowResting = true
     end
-    return true
+    return allowResting
 end
 
 local function doRestMenu(isCoveredBedroll)
@@ -17,7 +17,7 @@ local function doRestMenu(isCoveredBedroll)
         common.data.insideCoveredBedroll = true
         event.trigger("Ashfall:SetBedTemp", { isUsingBed = true})
     end
-    tes3.showRestMenu()
+    tes3.showRestMenu{ checkSleepingIllegal = false, resting = canRest(), waiting = not canRest() }
     event.trigger("Ashfall:CheckForShelter")
     event.trigger("Ashfall:UpdateHud")
     timer.delayOneFrame(function()
