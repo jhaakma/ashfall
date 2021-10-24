@@ -128,6 +128,9 @@ function this.callRayTest()
     local eyePos
     local eyeVec
     local maxDist = tes3.findGMST(tes3.gmst.iMaxActivateDist).value
+    if tes3.player.mobile.telekinesis then
+        maxDist = maxDist + tes3.player.mobile.telekinesis
+    end
 
     if tes3ui.menuMode() then
         local cursor = tes3.getCursorPosition()
@@ -137,6 +140,9 @@ function this.callRayTest()
         eyePos = tes3.getPlayerEyePosition()
         eyeVec = tes3.getPlayerEyeVector()
     end
+
+    if not (eyePos or eyeVec) then return end
+
     local result = tes3.rayTest{
         position = eyePos,
         direction = eyeVec,
@@ -147,11 +153,11 @@ function this.callRayTest()
     if result and result.reference then
         --Look for activators from list
         local targetRef = result.reference
+        this.currentRef = targetRef
+        this.parentNode = result.object.parent
         for activatorId, activator in pairs(this.list) do
             if activator:isActivator(targetRef.object.id) then
                 this.current = activatorId
-                this.currentRef = targetRef
-                this.parentNode = result.object.parent
                 break
             end
         end
