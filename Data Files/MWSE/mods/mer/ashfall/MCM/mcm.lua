@@ -47,6 +47,10 @@ local function registerModConfig()
             text = "Nexus",
             url = "https://www.nexusmods.com/morrowind/mods/49057"
         }
+        linksCategory:createHyperLink{
+            text = "Buy me a coffee",
+            url = "https://ko-fi.com/merlord"
+        }
 
 
         local creditsCategory = component.sidebar:createCategory("Credits")
