@@ -4,6 +4,7 @@ require("mer.ashfall.camping.campfire.campfireTooltip")
 require("mer.ashfall.camping.campfire.campfireVisuals")
 require("mer.ashfall.camping.campfire.campfireMenu")
 require("mer.ashfall.camping.campfire.vanillaCampfireReplacer")
+require("mer.ashfall.camping.campfire.dropAttach")
 
 require("mer.ashfall.camping.stewerController")
 require("mer.ashfall.camping.brewerController")

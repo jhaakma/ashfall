@@ -1,14 +1,14 @@
 local common = require ("mer.ashfall.common.common")
 
 local function addUtensil(item, campfire, itemData)
-    tes3.removeItem{ reference = tes3.player, item = item, itemData = itemData }
+    tes3.removeItem{ reference = tes3.player, item = item, itemData = itemData, playSound = false }
     local utensilData = common.staticConfigs.utensils[item.id:lower()]
 
-    tes3.playSound{ reference = tes3.player, sound = "Item Misc Down"  }
+    --tes3.playSound{ reference = tes3.player, sound = "Item Misc Down"  }
 
     if utensilData.type == "cookingPot" then
         if mwscript.getItemCount{ reference = tes3.player, item = "misc_com_iron_ladle"} > 0 then
-            mwscript.removeItem{ reference = tes3.player, item = "misc_com_iron_ladle" }
+            tes3.removeItem{ reference = tes3.player, item = "misc_com_iron_ladle", playSound = false }
             campfire.data.ladle = true
         end
     end

@@ -13,7 +13,6 @@ local coldMulti = 4.0
 local foodPoisonMulti = 5.0
 local HUNGER_EFFECT_LOW = 1.3
 local HUNGER_EFFECT_HIGH = 1.0
-local restMultiplier = 1.0
 
 
 local hunger = common.staticConfigs.conditionConfig.hunger
@@ -153,7 +152,7 @@ function this.calculate(scriptInterval, forceUpdate)
         tes3.menuMode()
     )
     if resting then
-        newHunger = newHunger + ( scriptInterval * hungerRate * coldEffect * foodPoisonEffect * restMultiplier )
+        newHunger = newHunger + ( scriptInterval * hungerRate * coldEffect * foodPoisonEffect * config.restingNeedsMultiplier )
     else
         newHunger = newHunger + ( scriptInterval * hungerRate * coldEffect * foodPoisonEffect )
     end
@@ -257,7 +256,7 @@ local function onShiftActivateFood(e)
             }
             local response = event.trigger("equip", eventData, { filter = tes3.player })
             if response.block ~= true then
-                common.log:debug("Equipping %s", e.target)
+                common.log:debug("Equipping %s!!!!!!!!!!!", e.target)
                 tes3.player.mobile:equip{
                     item = e.target.object,
                     itemData = e.target.itemData

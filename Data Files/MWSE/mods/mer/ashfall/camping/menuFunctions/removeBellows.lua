@@ -6,7 +6,7 @@ return  {
         return not not campfire.data.bellowsId
     end,
     callback = function(campfire)
-        mwscript.addItem{ reference = tes3.player, item = campfire.data.bellowsId}
+        tes3.addItem{ reference = tes3.player, item = campfire.data.bellowsId, playSound = false}
         campfire.data.bellowsId = nil
         tes3.playSound{ reference = tes3.player, sound = "Item Misc Up"  }
         event.trigger("Ashfall:UpdateAttachNodes", {campfire = campfire})

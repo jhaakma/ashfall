@@ -1,4 +1,10 @@
 
+local activatorController = require "mer.ashfall.activators.activatorController"
+
+local LiquidContainer = require "mer.ashfall.objects.LiquidContainer"
+
+local CampfireUtil = require "mer.ashfall.camping.campfire.CampfireUtil"
+
 --[[
     When the player looks at a water source (fresh water, wells, etc),
     a tooltip will display, and pressing the activate button will bring up
@@ -88,13 +94,11 @@ local function callWaterMenu(e)
                     text = "You have no containers to fill."
                 },
                 callback = function()
+                    local source = LiquidContainer.createInfiniteWaterSource({
+                        waterType = e.waterType
+                    })
                     thirstController.fillContainer{
-                        source = {
-                            data = {
-                                waterType = e.waterType,
-                                waterAmount = 1000
-                            }
-                        }
+                        source = source
                     }
                 end
             },
@@ -294,8 +298,9 @@ local function drinkFromContainer(e)
                             text = "You have no containers to fill."
                         },
                         callback = function()
+                            local source = LiquidContainer.createFromInventory(e.item, e.itemData)
                             thirstController.fillContainer{
-                                source = e.itemData
+                                source = source
                             }
                         end
                     },
@@ -360,8 +365,9 @@ local function drinkFromContainer(e)
                             text = "You have no containers to fill."
                         },
                         callback = function()
+                            local source = LiquidContainer.createFromInventory(e.item, e.itemData)
                             thirstController.fillContainer{
-                                source = e.itemData
+                                source = source
                             }
                         end
                     },
@@ -392,6 +398,7 @@ event.register("equip", drinkFromContainer, { filter = tes3.player, priority = -
 
 local skipActivate
 local function onShiftActivateWater(e)
+    if tes3ui.menuMode() then return end
     if not (e.activator == tes3.player) then return end
     if skipActivate then
         skipActivate = false
@@ -399,9 +406,8 @@ local function onShiftActivateWater(e)
     end
     if e.target.data and e.target.data.waterAmount and e.target.data.waterAmount > 0 then
         local inputController = tes3.worldController.inputController
-        local isModifierKeyPressed = (
-            inputController:isKeyDown(config.modifierHotKey.keyCode)
-        )
+        local isModifierKeyPressed = inputController:isKeyDown(config.modifierHotKey.keyCode)
+
         if isModifierKeyPressed then
             local message = "Water"
             if e.target.data.stewLevels then
@@ -454,8 +460,9 @@ local function onShiftActivateWater(e)
                         text = "You have no containers to fill."
                     },
                     callback = function()
+                        local source = LiquidContainer.createFromReference(e.target)
                         thirstController.fillContainer{
-                            source = e.target
+                            source = source
                         }
                     end
                 },
@@ -484,6 +491,22 @@ local function onShiftActivateWater(e)
     end
 end
 event.register("activate", onShiftActivateWater, { filter = tes3.player })
+
+local function dropWaterOnUtensil(e)
+    local target = CampfireUtil.getPlacedOnContainer()
+    if not target then return end
+    local from = LiquidContainer.createFromReference(e.reference)
+    local to = LiquidContainer.createFromReference(target)
+    if from and to then
+        local waterAdded = from:transferLiquid(to)
+        if waterAdded <= 0 then
+            tes3.messageBox("Unable to transfer liquid.")
+        end
+        common.helper.pickUp(e.reference)
+    end
+end
+event.register("itemDropped", dropWaterOnUtensil)
+
 
 
 --First time entering a cell, add water to random bottles/containers

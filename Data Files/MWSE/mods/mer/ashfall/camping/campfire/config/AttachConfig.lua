@@ -1,6 +1,7 @@
 local common = require ("mer.ashfall.common.common")
 local foodConfig = require("mer.ashfall.config.foodConfig")
 local teaConfig   = require("mer.ashfall.config.teaConfig")
+local LiquidContainer = require("mer.ashfall.objects.LiquidContainer")
 local function centerText(element)
     element.autoHeight = true
     element.autoWidth = true
@@ -12,25 +13,27 @@ local AttachConfig = {
     CAMPFIRE = {
         name = "Campfire",
         commands = {
-        --actions
-        "lightFire",
-        --attach
-        "addFirewood",
-        "addSupports",
-        "placeUtensil",
-        --destroy
-        "extinguish",
-        "destroy",
-       },
-       tooltipExtra = function(campfire, tooltip)
-            local fuelLevel = campfire.data.fuelLevel or 0
-            if fuelLevel > 0 then
-                local fuelLabel = tooltip:createLabel{
-                    text = string.format("Fuel: %.1f hours", fuelLevel )
-                }
-                centerText(fuelLabel)
-            end
-       end
+            -- --actions
+            "lightFire",
+            -- --attach
+             "addFirewood",
+             "addSupports",
+             "placeUtensil",
+            -- --destroy
+            -- "extinguish",
+            "destroy",
+        },
+        shiftCommand = "destroy",
+        tooltipExtra = function(campfire, tooltip)
+                local fuelLevel = campfire.data.fuelLevel or 0
+                if fuelLevel > 0 then
+                    local fuelLabel = tooltip:createLabel{
+                        text = string.format("Fuel: %.1f hours", fuelLevel )
+                    }
+                    centerText(fuelLabel)
+                end
+        end,
+
     },
     HANG_UTENSIL = {
         idPath = "utensilId",
@@ -39,18 +42,18 @@ local AttachConfig = {
             "drink",
             "eatStew",
             "companionEatStew",
-            "brewTea",
+            --"brewTea",
             "fillContainer",
-            "addIngredient",
             "addWater",
             "emptyPot",
             "emptyKettle",
             --attach
             "addLadle",
             --remove
-            "removeLadle",
             "removeUtensil",
         },
+        shiftCommand = "removeUtensil",
+
         tooltipExtra = function(campfire, tooltip)
             local waterAmount = campfire.data.waterAmount or 0
             if waterAmount then
@@ -105,10 +108,11 @@ local AttachConfig = {
                     local progress = ( campfire.data.stewProgress or 0 )
                     local progressText
 
-                    if campfire.data.waterHeat < common.staticConfigs.hotWaterHeatValue then
-                        progressText = string.format("%s (Cold)", stewName)
-                    elseif progress < 100 then
+
+                    if progress < 100 then
                         progressText = string.format("%s (%d%% Cooked)", stewName, progress )
+                    elseif campfire.data.waterHeat < common.staticConfigs.hotWaterHeatValue then
+                        progressText = string.format("%s (Cold)", stewName)
                     else
                         progressText = string.format("%s (Cooked)", stewName)
                     end
@@ -171,17 +175,26 @@ local AttachConfig = {
             end
         end,
     },
+    SWITCH_LADLE = {
+        name = "Ladle",
+        commands = {
+            "removeLadle",
+        },
+        shiftCommand = "removeLadle"
+    },
     ATTACH_GRILL = {
         idPath = "grillId",
         commands = {
             "removeGrill",
-        }
+        },
+        shiftCommand = "removeGrill"
     },
     ATTACH_BELLOWS = {
         idPath = "bellowsId",
         commands = {
             "removeBellows",
         },
+        shiftCommand = "removeBellows",
         tooltipExtra = function(campfire, tooltip)
             if campfire.data.bellowsId then
                 local bellowsId = campfire.data.bellowsId
@@ -203,7 +216,8 @@ local AttachConfig = {
             --remove
             "removeUtensil",
             "removeSupports",
-        }
+        },
+        shiftCommand = "removeSupports"
     },
 }
 

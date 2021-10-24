@@ -1,4 +1,6 @@
 
+local LiquidContainer = require "mer.ashfall.objects.LiquidContainer"
+
 local CampfireUtil = require "mer.ashfall.camping.campfire.CampfireUtil"
 local this = {}
 local common = require("mer.ashfall.common.common")
@@ -14,7 +16,6 @@ local heatMulti = 4.0
 local dysentryMulti = 5.0
 local THIRST_EFFECT_LOW = 1.3
 local THIRST_EFFECT_HIGH = 1.0
-local restMultiplier = 1.0
 
 local conditionConfig = common.staticConfigs.conditionConfig
 local thirst = conditionConfig.thirst
@@ -59,7 +60,7 @@ function this.calculate(scriptInterval, forceUpdate)
     --Calculate thirst
     local isResting = (tes3.mobilePlayer.sleeping or tes3.menuMode())
     if isResting then
-        currentThirst = currentThirst + ( scriptInterval * thirstRate * heatEffect * dysentryEffect * restMultiplier )
+        currentThirst = currentThirst + ( scriptInterval * thirstRate * heatEffect * dysentryEffect * config.restingNeedsMultiplier )
     else
         currentThirst = currentThirst + ( scriptInterval * thirstRate * heatEffect * dysentryEffect )
     end
@@ -212,218 +213,39 @@ function this.callWaterMenuAction(callback)
 end
 
 
---[[
-    Transfers water, stew or tea
-]]
-function this.transferLiquid(e)
-    --initialise itemData
-    local item = e.item
-    ---@type any
-    local target = e.itemData
-    local cost = e.cost
-    local source = e.source
-    local callback = e.callback
-    local amount = e.amount
-
-    if item and not target then
-        target = tes3.addItemData{
-            to = tes3.player,
-            item = item,
-            updateGUI = true
-        }
-    end
-
-    --dirty container if drinking from raw water
-    if common.data.drinkingWaterType then
-        common.log:debug("Fill water DIRTY")
-        target.data.waterType = common.data.drinkingWaterType
-        common.data.drinkingWaterType = nil
-    end
-    local fillAmount
-    local bottleData = this.getBottleData(item and item.id)
-    local utensilData = target.object and CampfireUtil.getUtensilData(target)
-    local capacity = (bottleData and bottleData.capacity) or ( utensilData and utensilData.capacity )
-
-
-    target.data.waterAmount = target.data.waterAmount or 0
-
-    local waterBefore = target.data.waterAmount
-    if source then
-        --add tea or stew
-        if source.data.waterType then
-            target.data.waterType = source.data.waterType
-        elseif source.data.stewLevels then
-            target.data.stewProgress = source.data.stewProgress
-            target.data.stewLevels = table.copy(source.data.stewLevels, {} )
-        end
-
-        fillAmount = math.min(
-            capacity - target.data.waterAmount,
-            source.data.waterAmount
-        )
-        if amount then
-            fillAmount = math.min(amount, fillAmount)
-        end
-
-        --Set new waterHeat based on heat and amount of incoming and existing water
-        local fillHeat = source.data.waterHeat or 0
-        local existingHeat = target.data.waterHeat or 0
-        local existingAmount = target.data.waterAmount or 0
-
-        local newHeat =
-             (fillHeat * fillAmount + existingHeat * existingAmount)
-            / (fillAmount + existingAmount)
-        CampfireUtil.setHeat(target.data, newHeat, target)
-        common.helper.transferQuantity(source.data, target.data, "waterAmount", "waterAmount", fillAmount)
-
-        target.data.lastWaterUpdated = nil
-
-        local waterAfter = target.data.waterAmount
-        --reduce ingredient levels
-        if (not source.data.stewLevels) and target.data.stewLevels then
-            local ratio = waterBefore / waterAfter
-            for name, stewLevel in pairs( target.data.stewLevels) do
-                target.data.stewLevels[name] = stewLevel * ratio
-            end
-        end
-
-        common.log:debug("fillHeat: %s", fillHeat)
-        common.log:debug("fillAmount: %s", fillAmount)
-        common.log:debug("existingHeat: %s", existingHeat)
-        common.log:debug("existingAmount: %s", existingAmount)
-        common.log:debug("New water heat: %s", target.data.waterHeat)
-
-        --clean source if empty
-        if source.data.waterAmount < 1 then
-            this.handleEmpties(source.data)
-        end
-        if source.object then
-            event.trigger("Ashfall:UpdateAttachNodes", {campfire = source})
-        end
-    else
-        target.data.waterAmount = capacity
-    end
-
-
-
-    tes3ui.updateInventoryTiles()
-    tes3.playSound({reference = tes3.player, sound = "Swim Left"})
-    local contents = "water"
-    if target.data.waterType == "dirty" then
-        contents = "dirty water"
-    elseif teaConfig.teaTypes[target.data.waterType] then
-        contents = teaConfig.teaTypes[target.data.waterType].teaName
-    elseif target.data.stewLevels then
-        contents = foodConfig.isStewNotSoup(target.data.stewLevels) and "stew" or "soup"
-    end
-    if item then
-        tes3.messageBox(
-            "%s filled with %s.",
-            item.name,
-            contents
-        )
-    end
-
-    if callback then callback() end
-
-    if cost then
-        mwscript.removeItem({ reference = tes3.player, item = "Gold_001", count = cost})
-        local message = string.format(tes3.findGMST(tes3.gmst.sNotifyMessage63).value, cost, "Gold")
-        tes3.messageBox(message)
-        tes3.playSound{ reference = tes3.player, sound = "Item Gold Down"}
-    end
-end
-
-
---[[
-    For inventorySelectMenu, filters containers that can be filled
-]]
-function this.filterWaterContainer(e)
-    --Filter out the source item
-    if e.source and (e.source and e.source.data) == (e.itemData and e.itemData.data) then return false end
-
-    local sourceStewLevels = e.source and e.source.data and e.source.data.stewLevels
-    local targetStewLevels = e.itemData and e.itemData.data.stewLevels
-    local sourceWaterType = e.source and e.source.data and e.source.data.waterType
-    local targetWaterType = e.itemData and e.itemData.data.waterType
-    local sourceIsTea = sourceWaterType and sourceWaterType ~= "dirty"
-    local targetHasWater = (
-        e.itemData and
-        e.itemData.data.waterAmount and
-        e.itemData.data.waterAmount > 0
-    )
-
-    --Can't mix water types
-    if e.source then
-        if targetHasWater then
-            if targetWaterType ~= sourceWaterType then
-                return false
-            end
-        end
-        if targetHasWater then
-            if targetStewLevels ~= sourceStewLevels then
-                return false
-            end
-        end
-    else
-        if targetWaterType or targetStewLevels then
-            return false
-        end
-    end
-
-    --Check if we have a valid bottle
-    local bottleData = this.getBottleData(e.item.id)
-    if bottleData then
-        local capacity = bottleData.capacity
-        local currentAmount = e.itemData and e.itemData.data.waterAmount or 0
-
-        --If adding a stew, check it's a valid pot
-        if sourceStewLevels and not bottleData.holdsStew then
-            return false
-        end
-        --Likewise, can't add tea to pots
-        if sourceIsTea and bottleData.holdsStew then
-            return false
-        end
-        return currentAmount < capacity
-    else
-        return false
-    end
-end
-
-
 --Fill a bottle to max water capacity
 function this.fillContainer(params)
     params = params or {}
     local cost = params.cost
-    local source = params.source
-    local fillContainerCallback = params.callback
+    ---@type AshfallLiquidContainer
+    local source = params.source or LiquidContainer.createInfiniteWaterSource()
+    local callback = params.callback
     timer.delayOneFrame(function()
         local noResultsText =  "You have no containers to fill."
-        if source and source.data and source.data.waterType then
-            --because tea can only be placed in empty containers
-            noResultsText = "You have no empty containers to fill."
-        end
         tes3ui.showInventorySelectMenu{
             title = "Select Water Container",
             noResultsText = noResultsText,
             filter = function(e)
-                return this.filterWaterContainer{
-                    item = e.item,
-                    itemData = e.itemData,
-                    source = source
-                }
+                local to = LiquidContainer.createFromInventory(e.item, e.itemData)
+                return to and source:canTransfer(to) or false
             end,
             callback = function(e)
                 if e.item then
                     this.callWaterMenuAction(function()
-                        this.transferLiquid({
-                            cost = cost,
-                            source = source,
-                            callback = fillContainerCallback,
-                            item = e.item,
-                            itemData = e.itemData,
-                        })
+                        if not e.itemData then
+                            e.itemData = tes3.addItemData{ item = e.item, to = tes3.player, updateGUI = true}
+                        end
+                        local to = LiquidContainer.createFromInventory(e.item, e.itemData)
+                        source:transferLiquid(to)
+                        --add callback
+                        if callback then callback() end
+                        --add cost
+                        if cost then
+                            mwscript.removeItem({ reference = tes3.player, item = "Gold_001", count = cost})
+                            local message = string.format(tes3.findGMST(tes3.gmst.sNotifyMessage63).value, cost, "Gold")
+                            tes3.messageBox(message)
+                            tes3.playSound{ reference = tes3.player, sound = "Item Gold Down"}
+                        end
                     end )
                 end
             end

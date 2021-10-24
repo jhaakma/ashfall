@@ -1,4 +1,5 @@
 local common = require ("mer.ashfall.common.common")
+local config = require("mer.ashfall.config.config").config
 local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 
 --[[
@@ -19,6 +20,26 @@ local function onActivateCampfire(e)
     local node = e.node
     local attachmentConfig = CampfireUtil.getAttachmentConfig(node)
 
+    local inputController = tes3.worldController.inputController
+    local isModifierKeyPressed = inputController:isKeyDown(config.modifierHotKey.keyCode)
+
+    if isModifierKeyPressed and attachmentConfig.shiftCommand then
+        local buttonData = require(string.format("mer.ashfall.camping.menuFunctions.%s", attachmentConfig.shiftCommand))
+        local canShow = true
+        if buttonData.showRequirements then
+            canShow = buttonData.showRequirements(campfire)
+        end
+        local canEnable = true
+        if buttonData.enableRequirements then
+            canEnable = buttonData.enableRequirements(campfire)
+        end
+        if (canShow and canEnable) then
+            buttonData.callback(campfire)
+        elseif buttonData.tooltipDisabled and canShow then
+            tes3.messageBox(buttonData.tooltipDisabled.text)
+        end
+        return
+    end
     local function addButton(tbl, buttonData)
         local showButton = (
             buttonData.showRequirements == nil or

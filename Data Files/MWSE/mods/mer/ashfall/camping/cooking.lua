@@ -23,21 +23,33 @@ end
 --Checks if the ingredient has been placed on a campfire
 local function findGriller(ingredient)
 
-    local campfire
-    local function checkDistance(ref)
-        local maxHeight = ref.data.grillMaxHeight or 0
-        local distance = ref.data.grillDistance or 0
 
-            if common.helper.getCloseEnough{
-                ref1 = ref, ref2 = ingredient,
-                distVertical = maxHeight,
-                distHorizontal = distance
-            } then
-                campfire = ref
+    local result = common.helper.getGroundBelowRef{ ref = ingredient}
+    if result and result.reference then
+        --Find cooking pot attached to campfire
+        local node = result.object
+
+        local onGrill
+        local grillNodes = {
+            SWITCH_BASE = true,
+            ATTACH_GRILL = true,
+            ATTACH_FIREWOOD = true
+        }
+        while node and node.parent do
+            if grillNodes[node.name:upper()] then
+                onGrill = true
+                break
+            else
+                node = node.parent
             end
+        end
+        --Node below ingredient is a cooking pot node
+        if onGrill then
+            return result.reference
+        end
+    else
+        common.log:debug("ray return nothing")
     end
-    common.helper.iterateRefType("campfire", checkDistance)
-    return campfire
 end
 
 
@@ -184,18 +196,76 @@ event.register("simulate", grillFoodSimulate)
 
 
 
---Reset grill time when item is placed
-local function foodPlaced(e)
-    if e.reference and e.reference.object then
-        if foodConfig.getGrillValues(e.reference.object) then
-            local timestamp = tes3.getSimulationTimestamp()
-            local ingredient = e.reference
-                --Reset grill time for meat and veges
-            timer.frame.delayOneFrame(function()
-                resetCookingTime(ingredient)
-                grillFoodItem(ingredient, timestamp)
-            end)
+
+local function doAddingredToStew(campfire, reference)
+    if not foodConfig.getStewBuffForId(reference.object) then
+        tes3.messageBox("%s can not be added to a stew.", reference.object.name)
+        common.helper.pickUp(reference)
+        return
+    end
+
+    if not campfire.data.waterCapacity then
+        tes3.messageBox("Cooking pot must be attached to a campfire.")
+        common.helper.pickUp(reference)
+        return
+    end
+
+    local amount = common.helper.getStackCount(reference)
+    local amountAdded = CampfireUtil.addIngredToStew{
+        campfire = campfire,
+        count = amount,
+        item = reference.object
+    }
+
+    common.log:debug("amountAdded: %s", amountAdded)
+    if amountAdded < amount then
+        reference.attachments.variables.count = reference.attachments.variables.count - amountAdded
+
+        if amountAdded >= 1 then
+            tes3.messageBox("Added %s %s to stew.", amountAdded, reference.object.name)
+        else
+            tes3.messageBox("You cannot add any more %s.", foodConfig.getFoodTypeResolveMeat(reference.object):lower())
         end
+        common.helper.pickUp(reference)
+    else
+        tes3.messageBox("Added %s %s to stew.", amountAdded, reference.object.name)
+        common.helper.yeet(reference)
+    end
+    return
+
+end
+
+--Place food on a grill or into a pot
+local function foodPlaced(e)
+
+    if e.reference and e.reference.object then
+        local isIngredient = e.reference.object.objectType == tes3.objectType.ingredient
+        if not isIngredient then return end
+
+        timer.frame.delayOneFrame(function()
+            --place in pot
+            local campfire = CampfireUtil.getPlacedOnContainer()
+            if campfire then
+                local utensilData = CampfireUtil.getDataFromUtensilOrCampfire{
+                    dataHolder = campfire,
+                    object = campfire.object
+                }
+                local hasWater = campfire.data.waterAmount and campfire.data.waterAmount > 0
+                local hasLadle = campfire.data.ladle == true
+                --ingredient placed on a cooking pot with water in it
+                if hasWater and hasLadle and utensilData and utensilData.holdsStew then
+                    doAddingredToStew(campfire, e.reference)
+                end
+            elseif foodConfig.getGrillValues(e.reference.object) then
+                local timestamp = tes3.getSimulationTimestamp()
+                local ingredient = e.reference
+                    --Reset grill time for meat and veges
+                timer.frame.delayOneFrame(function()
+                    resetCookingTime(ingredient)
+                    grillFoodItem(ingredient, timestamp)
+                end)
+            end
+        end)
     end
 end
 event.register("referenceSceneNodeCreated" , foodPlaced)
@@ -223,13 +293,6 @@ local function clearUtensilData(e)
         campfire.data.utensilId = nil
         campfire.data.utensilData = nil
         campfire.data.utensilPatinaAmount = nil
-    end
-    if not e.isContainer then
-        tes3.removeSound{
-            reference = campfire,
-            sound = "ashfall_boil"
-        }
-        --event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})
     end
     event.trigger("Ashfall:UpdateAttachNodes", {campfire = campfire})
 end

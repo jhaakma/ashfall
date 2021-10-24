@@ -255,7 +255,7 @@ function this.calculate(scriptInterval, forceUpdate)
             end
         end
     --TODO: traveling isn't working for some reason
-    elseif tes3.mobilePlayer.travelling then
+    elseif tes3.mobilePlayer.traveling then
         --Traveling: getting some rest but can't get below "Rested"
         if currentTiredness > tiredness.states.rested.min then
             currentTiredness = currentTiredness - ( scriptInterval * gainSleepRate )

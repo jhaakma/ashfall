@@ -205,7 +205,10 @@ local function updateCollision(campfire)
 end
 
 local function updateSounds(campfire)
-    if campfire.data and campfire.data.waterHeat and campfire.data.waterHeat >= common.staticConfigs.hotWaterHeatValue then
+    if not campfire.data then return end
+    local hasWater = campfire.data.waterAmount and campfire.data.waterAmount > 0
+    local hasBoilingHeat = campfire.data.waterHeat and campfire.data.waterHeat >= common.staticConfigs.hotWaterHeatValue
+    if hasWater and hasBoilingHeat  then
         tes3.removeSound{
             reference = campfire,
             sound = "ashfall_boil"
@@ -216,6 +219,7 @@ local function updateSounds(campfire)
             loop = true
         }
     else
+        common.log:debug("campfireVisuals: removing boil sound")
         tes3.removeSound{
             reference = campfire,
             sound = "ashfall_boil"
@@ -379,6 +383,7 @@ local function updateAttachNodes(e)
     local campfire = e.campfire
     local sceneNode = campfire.sceneNode
 
+    if not campfire.data then return end
     for _, attachData in ipairs(attachNodes) do
         common.log:trace("++++ATTACH NODE: %s+++++++", attachData.attachNodeName)
         local attachNode = sceneNode:getObjectByName(attachData.attachNodeName)

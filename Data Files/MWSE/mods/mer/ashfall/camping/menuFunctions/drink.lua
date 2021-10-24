@@ -11,11 +11,12 @@ local function hasJustWater(campfire)
 end
 
 local function hasBrewedTea(campfire)
-    return campfire.data.teaProgress and campfire.data.teaProgress >= 100
+    return campfire.data.teaProgress
+        and campfire.data.teaProgress >= 100
 end
 
 local function hasStew(campfire)
-    return not not campfire.data.stewProgress
+    return campfire.data.stewProgress and campfire.data.stewProgress > 0
 end
 
 local function isBoiling(campfire)

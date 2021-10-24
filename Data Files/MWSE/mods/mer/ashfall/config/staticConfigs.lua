@@ -124,6 +124,9 @@ this.capacities = {
 }
 
 this.bottleConfig = {
+
+
+
     cup = { capacity = 25, weight = 2 },
     glass = { capacity = 25, weight = 2 },
     goblet = { capacity = 25, weight = 2 },
@@ -213,8 +216,19 @@ this.bottleConfig = {
     }, --waterPerDollar = 5.5, waterPerWeight = 30
 }
 
+---@class AshfallBottleData
+---@field capacity number
+---@field holdsStew boolean
+---@field type string
 
+---@type table<string, AshfallBottleData>
 this.bottleList = {
+    _infinite_water_source = {
+        capacity = math.huge,
+        holdsStew = false
+    },
+
+
     --ashfall stuff
     ashfall_waterskin = {
         capacity = 80
@@ -712,6 +726,11 @@ this.supports = {
     ashfall_supports_01 = { type = "supports", materials = { ashfall_firewood = 3 } }, --wooden teepee
     ashfall_supports_02 = { type = "supports", materials = {  ashfall_firewood = 3 } }, --wooden MR
     ashfall_supports_03 = { type = "supports" }, -- Iron
+}
+
+this.firestarters = {
+    ab_misc_flintandsteel = true,
+    ashfall_flintsteel = true,
 }
 
 return this

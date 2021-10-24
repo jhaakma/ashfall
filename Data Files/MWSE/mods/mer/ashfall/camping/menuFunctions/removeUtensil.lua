@@ -1,5 +1,5 @@
 local common = require ("mer.ashfall.common.common")
-local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
+local teaConfig = require("mer.ashfall.config.teaConfig")
 
 local function isStaticCampfire(campfire)
     return campfire.data.dynamicConfig and campfire.data.dynamicConfig[campfire.data.utensil] == "static"
@@ -11,7 +11,7 @@ return  {
         if utensilId then
             common.log:debug("utensilId: %s", utensilId)
             local utensil = tes3.getObject(utensilId)
-            return string.format("Remove %s", CampfireUtil.getGenericUtensilName(utensil) or "Utensil")
+            return string.format("Remove %s", common.helper.getGenericUtensilName(utensil) or "Utensil")
         end
     end,
     showRequirements = function(campfire)
@@ -23,27 +23,22 @@ return  {
                 campfire.data.stewProgress and
                 campfire.data.stewProgress >= 100
             )
-        elseif campfire.data.teaProgress then
+        elseif campfire.data.teaProgress and teaConfig.teaTypes[campfire.data.waterType] then
             return campfire.data.teaProgress >= 100
         else
             return  campfire.data.utensilId ~= nil
         end
     end,
-    -- enableRequirements = function(campfire)
-
-    --     else
-    --         return true
-    --     end
-    -- end,
-    -- tooltipDisabled = {
-    --     text = "Wait until stew/tea has finished cooking/brewing."
-    -- },
+    tooltipDisabled = {
+        text = "Cannot remove while stew or tea is in progress."
+    },
     callback = function(campfire)
         --add utensil
         tes3.addItem{
             reference = tes3.player,
             item = campfire.data.utensilId,
-            count = 1
+            count = 1,
+            playSound = false
         }
         --add patina data
         local itemData
@@ -72,12 +67,13 @@ return  {
 
         --add ladle
         if campfire.data.ladle == true then
-            mwscript.addItem{ reference = tes3.player, item = "misc_com_iron_ladle" }
+            tes3.addItem{ reference = tes3.player, item = "misc_com_iron_ladle", playSound = false }
         end
         --clear data and trigger updates
         event.trigger("Ashfall:Campfire_clear_utensils", { campfire = campfire, removeUtensil = true})
-        event.trigger("Ashfall:UpdateAttachNodes", {campfire = campfire,})
-        tes3.playSound{ reference = tes3.player, sound = "Item Misc Up"  }
-        --event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})
+
+
+        tes3.playSound{ reference = tes3.player, sound = "Item Misc Up" }
+
     end
 }

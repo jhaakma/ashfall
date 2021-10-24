@@ -66,9 +66,7 @@ function this.calculateWetTemp(interval)
     -- does not care about coverage
     local cell = tes3.getPlayerCell()
     if cell.hasWater then
-        local waterLevel = cell.waterLevel or 0
-        local playerHeight = tes3.player.position.z
-        local heightBelowWater = waterLevel - playerHeight
+        local heightBelowWater = common.helper.getDepthUnderwater(tes3.player)
         local minWetness = math.remap(heightBelowWater, 0, soakedHeight, 0, 100)
         minWetness = math.clamp(minWetness, 0, 100)
         currentWetness = math.max(minWetness, currentWetness)

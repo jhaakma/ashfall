@@ -39,10 +39,6 @@ local function initialiseCampfireSoundAndFlame()
                 }
             end
             if campfire.data.waterHeat and campfire.data.waterHeat >= common.staticConfigs.hotWaterHeatValue then
-                tes3.removeSound{
-                    reference = campfire,
-                    sound = "ashfall_boil"
-                }
                 tes3.playSound{
                     sound = "ashfall_boil",
                     reference = campfire
@@ -95,7 +91,7 @@ local function extinguish(e)
 
     --Start and stop the torchout sound if necessary
     if playSound and campfire.data.isLit then
-        timer.delayOneFrame(function()
+        timer.frame.delayOneFrame(function()
             tes3.playSound{ reference = campfire, sound = "Torch Out", loop = false }
             timer.start{
                 type = timer.real,
@@ -109,9 +105,22 @@ local function extinguish(e)
     end
     campfire.data.isLit = false
     campfire.data.burned = true
+    event.trigger("Ashfall:UpdateAttachNodes", {campfire = campfire})
     --event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})
 end
 event.register("Ashfall:fuelConsumer_Extinguish", extinguish)
+
+local function lightFire(e)
+    local campfire = e.fuelConsumer
+    tes3.playSound{ reference = tes3.player, sound = "ashfall_light_fire"  }
+    common.log:debug("Lighting Fire %s", campfire.object.id)
+    tes3.playSound{ sound = "Fire", reference = campfire, loop = true }
+    event.trigger("Ashfall:Campfire_Enablelight", { campfire = campfire})
+    common.skills.survival:progressSkill( 5)
+    campfire.data.isLit = true
+    event.trigger("Ashfall:UpdateAttachNodes", {campfire = campfire})
+end
+event.register("Ashfall:fuelConsumer_Alight", lightFire)
 
 
 local function createLightFromRef(ref)

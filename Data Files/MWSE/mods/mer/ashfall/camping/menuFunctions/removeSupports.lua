@@ -20,17 +20,16 @@ return {
         if data.materials then
             for id, count in pairs(data.materials ) do
                 local item = tes3.getObject(id)
-                tes3.addItem{ reference = tes3.player, item = item, count = count}
+                tes3.addItem{ reference = tes3.player, item = item, count = count, playSound = false}
                 tes3.messageBox(tes3.findGMST(tes3.gmst.sNotifyMessage61).value, 3, item.name)
             end
         else
-            tes3.addItem{ reference = tes3.player, item = campfire.data.supportsId, count = 1}
+            tes3.addItem{ reference = tes3.player, item = campfire.data.supportsId, count = 1, playSound = false}
             tes3.messageBox(tes3.findGMST(tes3.gmst.sNotifyMessage61).value, 3, tes3.getObject(campfire.data.supportsId).name)
         end
         campfire.data.supportsId = nil
         tes3.playSound{ reference = tes3.player, sound = "Item Misc Up"  }
 
-        --event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})
         event.trigger("Ashfall:UpdateAttachNodes", { campfire = campfire})
     end
 }

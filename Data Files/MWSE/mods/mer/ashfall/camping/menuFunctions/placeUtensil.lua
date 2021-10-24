@@ -10,8 +10,7 @@ local function addUtensil(item, campfire, itemData)
         campfire.data.bellowsId = item.id:lower()
     end
 
-    tes3.playSound{ reference = tes3.player, sound = "Item Misc Down"  }
-    tes3.removeItem{ reference = tes3.player, item = item, itemData = itemData }
+    tes3.removeItem{ reference = tes3.player, item = item, itemData = itemData, playSound = false }
     event.trigger("Ashfall:UpdateAttachNodes", {campfire = campfire})
     --event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})
 end
@@ -65,5 +64,6 @@ return {
     tooltipDisabled = {
         text = "You don't have any suitable utensils."
     },
-    callback = utensilSelect
+    callback = utensilSelect,
+
 }

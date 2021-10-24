@@ -16,16 +16,15 @@ local function addSupports(item, campfire, itemData)
 
     local supportsData = common.staticConfigs.supports[item.id:lower()]
 
-    tes3.playSound{ reference = tes3.player, sound = "Item Misc Down"  }
-
-    if supportsData.materials then
-        for item, count in pairs(supportsData.materials) do
-            if tes3.getItemCount{ reference = tes3.player, item = item} >= count then
-                tes3.removeItem{ reference = tes3.player, item = item, count = count}
+    local hasInInventory = tes3.getItemCount{ item = item, reference = tes3.player } > 1
+    if supportsData.materials and not hasInInventory then
+        for material, count in pairs(supportsData.materials) do
+            if tes3.getItemCount{ reference = tes3.player, item = material} >= count then
+                tes3.removeItem{ reference = tes3.player, item = material, count = count, playSound = false}
             end
         end
     else
-        tes3.removeItem{ reference = tes3.player, item = item, itemData = itemData }
+        tes3.removeItem{ reference = tes3.player, item = item, itemData = itemData, playSound = false }
     end
     campfire.data.supportsId = item.id:lower()
     event.trigger("Ashfall:UpdateAttachNodes", {campfire = campfire})
@@ -38,7 +37,7 @@ local function supportsSelect(campfire)
     for supportId, data in pairs(common.staticConfigs.supports) do
         if playerHasMaterials(data.materials) then
             table.insert(addedItems, supportId)
-            tes3.addItem{ reference = tes3.player, item = supportId, count = 1 }
+            tes3.addItem{ reference = tes3.player, item = supportId, count = 1, playSound = false }
         end
     end
 
@@ -57,7 +56,7 @@ local function supportsSelect(campfire)
         }
         timer.delayOneFrame(function()
             for _, id in ipairs(addedItems) do
-                tes3.removeItem{ reference = tes3.player, item = id, count = 1}
+                tes3.removeItem{ reference = tes3.player, item = id, count = 1, playSound = false}
             end
         end)
     end)
@@ -78,11 +77,10 @@ return {
             if data.materials then
                 common.log:debug("Has materials")
                 if playerHasMaterials(data.materials) then return true end
-            else
-                common.log:debug("Checking if has item")
-                if tes3.getItemCount{ reference = tes3.player, item = item } > 0 then
-                    return true
-                end
+            end
+            common.log:debug("Checking if has item")
+            if tes3.getItemCount{ reference = tes3.player, item = item } > 0 then
+                return true
             end
         end
 

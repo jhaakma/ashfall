@@ -263,6 +263,12 @@ this.list.wood = Activator:new{
         ["vurt_neentree"] = true,
         ["vurt_palm"] = true,
         ["vurt_unicy"] = true,
+        ["flora_trama_shrub_01"] = true,
+        ["flora_trama_shrub_02"] = true,
+        ["flora_trama_shrub_03"] = true,
+        ["flora_trama_shrub_04"] = true,
+        ["flora_trama_shrub_05"] = true,
+        ["flora_trama_shrub_06"] = true,
         --["furn_log"] = true
     }
 }

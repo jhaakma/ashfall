@@ -1,5 +1,4 @@
 local common = require ("mer.ashfall.common.common")
-local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 local this = {}
 local metalPatterns = {
     "iron", "steel", "metal", "pewter", "copper"
@@ -99,7 +98,7 @@ local function doPatinaDrop(e)
     if e.reference and e.reference.sceneNode and e.reference.data then
         local data = e.reference.data
         local patinaAmount = data.patinaAmount
-        if e.reference.cell.waterLevel and e.reference.position.z < e.reference.cell.waterLevel then
+        if common.helper.getRefUnderwater(e.reference) then
             local showMessage = false
 
             if patinaAmount and patinaAmount > 0 then
@@ -135,7 +134,7 @@ local function doPatinaDrop(e)
             end
 
             if showMessage then
-                tes3.messageBox("You wash your %s.", CampfireUtil.getGenericUtensilName(e.reference.object))
+                tes3.messageBox("You wash your %s.", common.helper.getGenericUtensilName(e.reference.object))
             end
         end
         if patinaAmount and patinaAmount > 0 then

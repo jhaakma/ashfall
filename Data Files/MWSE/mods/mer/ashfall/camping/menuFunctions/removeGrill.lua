@@ -1,10 +1,9 @@
 local common = require ("mer.ashfall.common.common")
-local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 return {
     text = function(campfire)
         local grillId = campfire.data.grillId
         local grill = tes3.getObject(grillId)
-        return string.format("Remove %s", CampfireUtil.getGenericUtensilName(grill) or "Utensil")
+        return string.format("Remove %s", common.helper.getGenericUtensilName(grill) or "Utensil")
     end,
     showRequirements = function(campfire)
         return (
@@ -19,6 +18,7 @@ return {
             reference = tes3.player,
             item = campfire.data.grillId,
             count = 1,
+            playSound = false
         }
         --add patina data
         if campfire.data.grillPatinaAmount then
@@ -35,7 +35,6 @@ return {
         event.trigger("Ashfall:UpdateAttachNodes", {campfire = campfire,})
         tes3.playSound{ reference = tes3.player, sound = "Item Misc Up"  }
         --event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})
-
         --drop any cooking ingredients
         common.log:debug("Finding ingredients to drop")
         for _, cell in pairs( tes3.getActiveCells() ) do

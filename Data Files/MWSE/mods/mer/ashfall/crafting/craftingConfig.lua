@@ -118,6 +118,23 @@ this.recipes = {
             { material = this.materials.wood, count = 6 },
             { material = this.materials.rope, count = 8 },
         }
+    },
+
+
+    {
+        id = "ashfall_supports_01",
+        description = "Wooden supports in a tripod shape. Attach to a campfire so you can attach kettles and cooking pots.",
+        materials = {
+            { material = this.materials.wood, count = 3}
+        }
+    },
+
+    {
+        id = "ashfall_supports_02",
+        description = "Wooden supports in a square shape. Attach to a campfire so you can attach kettles and cooking pots.",
+        materials = {
+            { material = this.materials.wood, count = 3}
+        }
     }
 }
 

@@ -55,6 +55,19 @@ function this.getInTent()
     return (tes3.player.data.Ashfall.insideTent or tes3.player.data.Ashfall.insideCoveredBedroll)
 end
 
+---@param stack tes3reference
+---@return number Returns the number remaining in the stack, if any.
+---If it removes all from the stack, the reference is deleted, so make sure to check
+function this.reduceReferenceStack(stack, count)
+    local stackCount = this.getStackCount(stack)
+    if stackCount <= count then
+        this.yeet(stack)
+        return 0
+    else
+        stack.attachments.variables.count = stack.attachments.variables.count - count
+        return stack.attachments.variables.count
+    end
+end
 
 function this.checkRefSheltered(reference)
 
@@ -156,6 +169,13 @@ function this.isStack(reference)
     )
 end
 
+function this.getStackCount(reference)
+    return reference
+        and reference.attachments
+        and reference.attachments.variables
+        and reference.attachments.variables.count or 1
+end
+
 local function populateButtons(e)
     local buttons = e.buttons ---@type AshfallMessageBoxButton[]
     local buttonsBlock = e.buttonsBlock
@@ -214,7 +234,13 @@ local function populateButtons(e)
 end
 local messageBoxId = tes3ui.registerID("CustomMessageBox")
 
-
+function this.getGenericUtensilName(obj)
+    local name = obj and obj.name
+    if name then
+        local colonIndex = string.find(obj.name, ":") or 0
+        return string.sub(obj.name, 0, colonIndex - 1 )
+    end
+end
 
 
 --- @param params AshfallMessageBoxData
@@ -737,6 +763,7 @@ function this.getGroundBelowRef(e)
     local ref = e.ref
     local ignoreList = e.ignoreList
     if not ref then return end
+    if not ref.object.boundingBox then return end
     local height = -ref.object.boundingBox.min.z + 5
     local result = tes3.rayTest{
         position = {ref.position.x, ref.position.y, ref.position.z + height},
@@ -913,6 +940,23 @@ function this.calculateTeaBuffDuration(amount, maxDuration)
     return duration * skillMulti
 end
 
+function this.pickUp(reference)
+    local function stealActivateEvent(e)
+        event.unregister("activate", stealActivateEvent)
+        e.claim = true
+    end
+
+    local function blockSound(e)
+        event.unregister("addSound", blockSound)
+        return false
+    end
+
+    timer.frame.delayOneFrame(function()
+        event.register("activate", stealActivateEvent)
+        event.register("addSound", blockSound)
+        tes3.player:activate(reference)
+    end)
+end
 
 
 return this

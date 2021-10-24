@@ -4,7 +4,7 @@ local animCtrl = require("mer.ashfall.effects.animationController")
 local skipActivate
 
 local function canRest()
-    local allowResting = tes3.canRest() and not tes3.player.cell.restingIsIllegal
+    local allowResting = tes3.canRest{ checkForSolidGround = false } and not tes3.player.cell.restingIsIllegal
     if tes3.player.cell.restingIsIllegal and config.canCampInSettlements then
         allowResting = true
     end
@@ -38,7 +38,7 @@ local function bedrollMenu(ref)
             end,
             requirements = canRest,
             tooltipDisabled = {
-                text = tes3.canRest() and "It is illegal to rest here." or "You can't rest here; enemies are nearby."
+                text = tes3.canRest{ checkForSolidGround = false } and "It is illegal to rest here." or "You can't rest here; enemies are nearby."
             },
         },
         {

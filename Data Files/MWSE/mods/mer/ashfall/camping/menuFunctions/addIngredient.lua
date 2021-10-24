@@ -1,4 +1,5 @@
 local common = require ("mer.ashfall.common.common")
+local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 local foodConfig = common.staticConfigs.foodConfig
 local skillSurvivalStewIngredIncrement  = 5
 local stewIngredientCooldownAmount = 20
@@ -29,24 +30,12 @@ end
 
 
 local function addIngredient(e)
-    local campfire = e.campfire
-    --Cool down stew
-    campfire.data.stewProgress = campfire.data.stewProgress or 0
-    campfire.data.stewProgress = math.max(( campfire.data.stewProgress - stewIngredientCooldownAmount ), 0)
-
-    --initialise stew levels
-    campfire.data.stewLevels = campfire.data.stewLevels or {}
-    campfire.data.stewLevels[e.foodType] = campfire.data.stewLevels[e.foodType] or 0
-    --Add ingredient to stew
-    common.log:trace("old stewLevel: %s", campfire.data.stewLevels[e.foodType])
-    local waterRatio = campfire.data.waterAmount / campfire.data.waterCapacity
-    common.log:trace("waterRatio: %s", waterRatio)
-    local ingredAmountToAdd = e.amount * common.staticConfigs.stewIngredAddAmount / waterRatio
-    common.log:trace("ingredAmountToAdd: %s", ingredAmountToAdd)
-    campfire.data.stewLevels[e.foodType] = math.min(campfire.data.stewLevels[e.foodType] + ingredAmountToAdd, 100)
-    common.log:trace("new stewLevel: %s", campfire.data.stewLevels[e.foodType])
-
-    common.skills.survival:progressSkill(skillSurvivalStewIngredIncrement*e.amount)
+    CampfireUtil.addIngredToStew{
+        campfire = e.campfire,
+        item = e.item,
+        itemData = e.itemData,
+        count = e.amount,
+    }
     tes3.player.object.inventory:removeItem{
         mobile = tes3.mobilePlayer,
         item = e.item,
@@ -54,8 +43,6 @@ local function addIngredient(e)
         count = e.amount
     }
     tes3ui.forcePlayerInventoryUpdate()
-    tes3.playSound{ reference = tes3.player, sound = "Swim Right" }
-    --event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})
 end
 
 
@@ -77,14 +64,9 @@ local function ingredientSelect(campfire, foodType)
                 common.data.inventorySelectStew = nil
                 if e.item then
                     common.log:debug("Selecting ingredient amount for stew")
-                    local waterRatio = campfire.data.waterAmount / campfire.data.waterCapacity
-                    local stewLevel = (campfire.data.stewLevels and campfire.data.stewLevels[foodType] or 0)
-                    local adjustedIngredAmount = common.staticConfigs.stewIngredAddAmount / waterRatio
-                    common.log:debug("adjustedIngredAmount: %s", adjustedIngredAmount)
-                    local rawCapacity = 100 - stewLevel
-                    common.log:debug("rawCapacity: %s", rawCapacity)
-                    local capacity = math.ceil(rawCapacity / adjustedIngredAmount)
-                    common.log:debug("capacity: %s", capacity)
+                    local capacity = CampfireUtil.getStewCapacity{
+                        campfire = campfire, foodType = foodType
+                    }
                     local max = math.min(
                         mwscript.getItemCount{ reference = tes3.player, item = e.item },
                         capacity
