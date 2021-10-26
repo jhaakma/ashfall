@@ -176,6 +176,9 @@ local function grillFoodItem(ingredient, timestamp)
                 --reset grill time if campfire is unlit
                 resetCookingTime(ingredient)
             end
+        else
+            --reset grill time if not placed on a campfire
+            resetCookingTime(ingredient)
         end
     end
 end
