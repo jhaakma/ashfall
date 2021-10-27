@@ -6,7 +6,7 @@
 
 ]]
 local common = require ("mer.ashfall.common.common")
-
+local skillSurvivalLightFireIncrement = 5
 
 local function initialiseCampfireSoundAndFlame()
     local function doUpdate(campfire)
@@ -110,13 +110,22 @@ local function extinguish(e)
 end
 event.register("Ashfall:fuelConsumer_Extinguish", extinguish)
 
+local function reduceLightTime(itemData)
+    if itemData and itemData.timeLeft then
+        itemData.timeLeft = math.max(0, itemData.timeLeft - 10)
+    end
+end
+
 local function lightFire(e)
     local campfire = e.fuelConsumer
+    local lighterData = e.lighterData
+    reduceLightTime(lighterData)
     tes3.playSound{ reference = tes3.player, sound = "ashfall_light_fire"  }
     common.log:debug("Lighting Fire %s", campfire.object.id)
     tes3.playSound{ sound = "Fire", reference = campfire, loop = true }
     event.trigger("Ashfall:Campfire_Enablelight", { campfire = campfire})
-    common.skills.survival:progressSkill( 5)
+    common.skills.survival:progressSkill(skillSurvivalLightFireIncrement)
+    campfire.data.fuelLevel = math.max(0, campfire.data.fuelLevel - 0.5)
     campfire.data.isLit = true
     event.trigger("Ashfall:UpdateAttachNodes", {campfire = campfire})
 end

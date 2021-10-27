@@ -12,18 +12,19 @@ local function playerHasMaterials(materials)
     return hasMaterials
 end
 
-local function addSupports(item, campfire, itemData)
+local function addSupports(item, campfire, addedItems, itemData)
 
     local supportsData = common.staticConfigs.supports[item.id:lower()]
 
-    local hasInInventory = tes3.getItemCount{ item = item, reference = tes3.player } > 1
-    if supportsData.materials and not hasInInventory then
+    if addedItems[item.id:lower()] then
+        common.log:debug("Removing materials for %s", item.id)
         for material, count in pairs(supportsData.materials) do
             if tes3.getItemCount{ reference = tes3.player, item = material} >= count then
                 tes3.removeItem{ reference = tes3.player, item = material, count = count, playSound = false}
             end
         end
     else
+        common.log:debug("Removing supports: %s", item.id)
         tes3.removeItem{ reference = tes3.player, item = item, itemData = itemData, playSound = false }
     end
     campfire.data.supportsId = item.id:lower()
@@ -35,8 +36,10 @@ local function supportsSelect(campfire)
     --Add constructed supports to inventory so they appear in select menu
     local addedItems = {}
     for supportId, data in pairs(common.staticConfigs.supports) do
-        if playerHasMaterials(data.materials) then
-            table.insert(addedItems, supportId)
+        local hasInInventory = tes3.getItemCount{ item = supportId, reference = tes3.player } > 0
+        if playerHasMaterials(data.materials) and not hasInInventory then
+            common.log:debug("Adding support to inventory: %s", supportId)
+            addedItems[supportId:lower()] = true
             tes3.addItem{ reference = tes3.player, item = supportId, count = 1, playSound = false }
         end
     end
@@ -50,12 +53,12 @@ local function supportsSelect(campfire)
             end,
             callback = function(e)
                 if e.item then
-                    addSupports(e.item, campfire, e.itemData)
+                    addSupports(e.item, campfire, addedItems, e.itemData)
                 end
             end
         }
         timer.delayOneFrame(function()
-            for _, id in ipairs(addedItems) do
+            for id in pairs(addedItems) do
                 tes3.removeItem{ reference = tes3.player, item = id, count = 1, playSound = false}
             end
         end)
