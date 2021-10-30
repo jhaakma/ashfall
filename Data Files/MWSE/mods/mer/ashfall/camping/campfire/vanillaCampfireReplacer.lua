@@ -63,6 +63,7 @@ local kitBashObjects = {
     a_log_04 = true,
     a_cooking_ladle = true,
     a_fire_coals = true,
+    furn_hook_01 = true,
 }
 
 local cauldrons = {
@@ -445,12 +446,13 @@ local function replaceCampfire(e)
             attachRandomStuff(campfire, vanillaConfig)
             event.trigger("Ashfall:UpdateAttachNodes", { campfire = campfire })
 
+            campfire.scale = e.reference.scale
+            if vanillaConfig.scale then
+                campfire.scale = campfire.scale * vanillaConfig.scale
+            end
 
             if not vanillaConfig.exactPosition then
-                campfire.scale = e.reference.scale
-                if vanillaConfig.scale then
-                    campfire.scale = campfire.scale * vanillaConfig.scale
-                end
+
                 --For stuff inside platforms, let the scale get smaller
                 local minScale = data.hasPlatform and 0.6 or 0.75
                 campfire.scale = math.clamp(campfire.scale, minScale, 1.3)
