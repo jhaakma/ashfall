@@ -16,15 +16,17 @@ local function addUtensil(item, campfire, itemData)
 end
 
 local function utensilSelect(campfire)
+    local canAttachGrill = campfire.sceneNode:getObjectByName("ATTACH_GRILL") ~= nil
+    local canAttachBellows = campfire.sceneNode:getObjectByName("ATTACH_BELLOWS") ~= nil
     timer.delayOneFrame(function()
         tes3ui.showInventorySelectMenu{
             title = "Select Utensil",
             noResultsText = "You do not have any utensils.",
                 filter = function(e)
-                    if not campfire.data.grillId then
+                    if canAttachGrill and not campfire.data.grillId then
                         if common.staticConfigs.grills[e.item.id:lower()] ~= nil then return true end
                     end
-                    if not campfire.data.bellowsId then
+                    if canAttachBellows and not campfire.data.bellowsId then
                         if common.staticConfigs.bellows[e.item.id:lower()] ~= nil then return true end
                     end
                     return false
@@ -45,14 +47,14 @@ return {
             or (not campfire.data.bellowsId) and campfire.sceneNode:getObjectByName("ATTACH_BELLOWS")
     end,
     enableRequirements = function(campfire)
-        if not campfire.data.grillId then
+        if campfire.sceneNode:getObjectByName("ATTACH_GRILL") and not campfire.data.grillId then
             for id, _ in pairs(common.staticConfigs.grills) do
                 if  mwscript.getItemCount{ reference = tes3.player, item = id} > 0 then
                     return true
                 end
             end
         end
-        if not campfire.data.bellowsId then
+        if campfire.sceneNode:getObjectByName("ATTACH_BELLOWS") and not campfire.data.bellowsId then
             for id, _ in pairs(common.staticConfigs.bellows) do
                 if  mwscript.getItemCount{ reference = tes3.player, item = id} > 0 then
                     return true

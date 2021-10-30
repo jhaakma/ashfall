@@ -16,7 +16,11 @@ local switchNodeValues = {
     end,
     SWITCH_WOOD = function(campfire)
         local state = { OFF = 0, UNBURNED = 1, BURNED = 2 }
-        return campfire.data.burned and state.BURNED or state.UNBURNED
+        if campfire.data.fuelLevel and campfire.data.fuelLevel > 0 then
+            return campfire.data.burned and state.BURNED or state.UNBURNED
+        else
+            return state.OFF
+        end
     end,
     SWITCH_SUPPORTS = function(campfire)
         local state = { OFF = 0, ON = 1 }
@@ -228,7 +232,6 @@ local function updateSounds(campfire)
 end
 
 local function updateCampfireVisuals(campfire)
-    common.log:trace("updateCampfireVisuals: %s", campfire.object.id)
     updateSwitchNodes(campfire)
     updateLightingRadius(campfire)
     updateFireScale(campfire)
@@ -258,6 +261,16 @@ local function moveOriginToAttachPoint(node)
 end
 
 local attachNodes = {
+    {
+        attachNodeName = "ATTACH_FLAME",
+        getDoAttach = function(campfire)
+            return campfire.data.isLit == true
+        end,
+        getAttachMesh = function(campfire)
+            --TODO - different flame colors?
+            return common.loadMesh("ashfall\\cf\\flame_01.nif")
+        end,
+    },
     {
         attachNodeName = "ATTACH_FIREWOOD",
         getDoAttach = function(campfire)

@@ -1,13 +1,15 @@
 local common = require ("mer.ashfall.common.common")
 return {
     canDrop = function(campfire, item, itemData)
+        local canAttachGrill = campfire.sceneNode:getObjectByName("ATTACH_GRILL") ~= nil
+        local canAttachBellows = campfire.sceneNode:getObjectByName("ATTACH_BELLOWS") ~= nil
         local id = item.id:lower()
-        if not campfire.data.grillId then
+        if canAttachGrill and not campfire.data.grillId then
             if common.staticConfigs.grills[id] then
                 return true
             end
         end
-        if not campfire.data.bellowsId then
+        if canAttachBellows and not campfire.data.bellowsId then
             if common.staticConfigs.bellows[id] then
                 return true
             end

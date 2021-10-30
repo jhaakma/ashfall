@@ -19,7 +19,7 @@ local function onActivateCampfire(e)
     local campfire = e.ref
     local node = e.node
     local attachmentConfig = CampfireUtil.getAttachmentConfig(node)
-
+    if not attachmentConfig then return end
     local inputController = tes3.worldController.inputController
     local isModifierKeyPressed = inputController:isKeyDown(config.modifierHotKey.keyCode)
 
@@ -77,17 +77,21 @@ local function onActivateCampfire(e)
     local buttons = {}
     --Add contextual buttons
     local buttonList = attachmentConfig.commands
-    local text = CampfireUtil.getAttachmentName(campfire, attachmentConfig)
-    for _, buttonType in ipairs(buttonList) do
-        local buttonData = require(string.format("mer.ashfall.camping.menuFunctions.%s", buttonType))
-        addButton(buttons, buttonData)
-    end
 
-    common.helper.messageBox({
-        message = text,
-        buttons = buttons,
-        doesCancel = true
-    })
+    local text = CampfireUtil.getAttachmentName(campfire, attachmentConfig) or e.activator.name
+
+    if buttonList then
+        for _, buttonType in ipairs(buttonList) do
+            local buttonData = require(string.format("mer.ashfall.camping.menuFunctions.%s", buttonType))
+            addButton(buttons, buttonData)
+        end
+
+        common.helper.messageBox({
+            message = text,
+            buttons = buttons,
+            doesCancel = true
+        })
+    end
 end
 
 event.register(

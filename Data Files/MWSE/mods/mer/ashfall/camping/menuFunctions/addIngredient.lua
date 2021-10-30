@@ -43,6 +43,7 @@ local function addIngredient(e)
         count = e.amount
     }
     tes3ui.forcePlayerInventoryUpdate()
+    event.trigger("Ashfall:UpdateAttachNodes", { campfire = campfire})
 end
 
 

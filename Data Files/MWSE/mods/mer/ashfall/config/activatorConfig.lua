@@ -12,6 +12,7 @@ this.types = {
     branch = "branch",
     cauldron = "cauldron",
     cushion = "cushion",
+    hearth = "hearth"
 }
 
 this.list = {}
@@ -141,6 +142,7 @@ this.list.well = Activator:new{
         ["nomni_ex_hlaalu_well"] = true,
         ["nomni_ex_redoran_well"] = true,
         ["nomni_ex_t_wellpod"] = true,
+        ["rp_wellpod"] = true,
         ["nomni_well_common_strong1"] = true,
 
         -- tr
@@ -300,6 +302,29 @@ this.list.campfire = Activator:new{
     grillMinHeight = 21,
     grillMaxHeight = 50,
     grillDistance = 40
+}
+
+this.list.hearth = Activator:new{
+    name = "Hearth",
+    type = this.types.campfire,
+    mcmSetting = nil,
+    ids = {
+        ["ab_in_velhearthsmall"] = true,
+        ["ashfall_redhearth_01"] = true,
+        ["ashfall_redhearth_02"] = true,
+
+    }
+}
+
+this.list.fireplace = Activator:new{
+    name = "Fireplace",
+    type = this.types.campfire,
+    mcmSetting = nil,
+    ids = {
+        ["ashfall_fireplace10"] = true,
+        ["ashfall_nordfireplace_01"] = true,
+        ["ashfall_impfireplace_01"] = true
+    }
 }
 
 this.list.cushion = Activator:new{

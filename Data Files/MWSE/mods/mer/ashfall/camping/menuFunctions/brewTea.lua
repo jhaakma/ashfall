@@ -32,7 +32,6 @@ return {
 
                         common.skills.survival:progressSkill(skillSurvivalTeaBrewIncrement)
 
-
                         tes3.player.object.inventory:removeItem{
                             mobile = tes3.mobilePlayer,
                             item = e.item,
@@ -40,6 +39,7 @@ return {
                         }
                         tes3ui.forcePlayerInventoryUpdate()
                         tes3.playSound{ reference = tes3.player, sound = "Swim Left" }
+                        event.trigger("Ashfall:UpdateAttachNodes", { campfire = campfire})
                     end
                 end
             }

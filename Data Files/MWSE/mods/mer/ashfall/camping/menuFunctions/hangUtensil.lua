@@ -57,13 +57,9 @@ end
 return {
     text = "Hang Utensil",
     showRequirements = function(campfire)
-        return (
-            campfire.sceneNode:getObjectByName("HANG_UTENSIL") and
-            not campfire.data.utensil and
-            campfire.data.dynamicConfig and
-            (campfire.data.dynamicConfig.kettle == "dynamic"
-            or campfire.data.dynamicConfig.cookingPot == "dynamic")
-        )
+        return
+            campfire.sceneNode:getObjectByName("HANG_UTENSIL")
+            and not campfire.data.utensil
     end,
     enableRequirements = function()
         for id, _ in pairs(common.staticConfigs.utensils) do

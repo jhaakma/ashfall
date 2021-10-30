@@ -3,7 +3,9 @@ return {
     canDrop = function(campfire, item, itemData)
         local id = item.id:lower()
         local isFirewood = id == common.staticConfigs.objectIds.firewood
-        local hasRoom = campfire.data.fuelLevel < common.staticConfigs.maxWoodInFire
+
+        local hasRoom = (not campfire.data.fuelLevel)
+        or ( campfire.data.fuelLevel < common.staticConfigs.maxWoodInFire )
         if isFirewood and hasRoom then return true end
     end,
     dropText = function(campfire, item, itemData)
@@ -17,7 +19,7 @@ return {
         end
         local stackCount = common.helper.getStackCount(reference)
 
-
+        campfire.data.fuelLevel = campfire.data.fuelLevel or 0
         campfire.data.fuelLevel = campfire.data.fuelLevel + getWoodFuel()
         if stackCount == 1 then
             tes3.messageBox("Added firewood.")

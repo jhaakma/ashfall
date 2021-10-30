@@ -29,7 +29,9 @@ this.controllers = {
             return (
                 ref.object and
                 ref.object.id and
-                activatorConfig.list.campfire:isActivator(ref.object.id)
+                ( activatorConfig.list.campfire:isActivator(ref.object.id)
+                    or activatorConfig.list.hearth:isActivator(ref.object.id)
+                )
             )
         end
     },

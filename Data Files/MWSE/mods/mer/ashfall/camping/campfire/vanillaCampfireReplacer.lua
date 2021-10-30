@@ -10,34 +10,40 @@ local randomStuffChances = {
 }
 
 local vanillaCampfires = {
-    mr_light_pitfire = { supports = true, rootHeight = 5, squareSupports = true },
+    mr_light_pitfire = { replacement = "ashfall_campfire", supports = true, rootHeight = 5, squareSupports = true, infinite = true},
     --Ugly ones
-    light_pitfire00 =  { supports = false, scale = 0.9, rootHeight = 0 },
-    light_pitfire01 =  { supports = false, scale = 0.9, rootHeight = 0 },
-    _ser_pitfire =  { supports = false, scale = 0.9, rootHeight = 0 },
-    abtv_light_suryanfirepit = { supports = false, scale = 0.9, rootHeight = 0 },
+    light_pitfire00 =  { replacement = "ashfall_campfire", supports = false, scale = 0.9, rootHeight = 0, infinite = true},
+    light_pitfire01 =  { replacement = "ashfall_campfire", supports = false, scale = 0.9, rootHeight = 0, infinite = true},
+    _ser_pitfire =  { replacement = "ashfall_campfire", supports = false, scale = 0.9, rootHeight = 0, infinite = true},
+    abtv_light_suryanfirepit = { replacement = "ashfall_campfire", supports = false, scale = 0.9, rootHeight = 0, infinite = true},
 
     --unlit supports
-    furn_de_firepit =  { supports = true, rootHeight = 68 },
+    furn_de_firepit =  { replacement = "ashfall_campfire", supports = true, rootHeight = 68, infinite = true},
     --unlit
-    furn_de_firepit_01 =  { supports = false, rootHeight = 0 },
+    furn_de_firepit_01 =  { replacement = "ashfall_campfire", supports = false, rootHeight = 0, infinite = true},
 
     --Supports
-    furn_de_firepit_f =  { supports = true, rootHeight = 68 },
-    furn_de_firepit_f_128 = { supports = true, rootHeight = 68 },
-    furn_de_firepit_f_200 = { supports = true, rootHeight = 68 },
-    furn_de_firepit_f_323 = { supports = true, rootHeight = 68 },
-    furn_de_firepit_f_400 = { supports = true, rootHeight = 68 },
+    furn_de_firepit_f =  { replacement = "ashfall_campfire", supports = true, rootHeight = 68, infinite = true},
+    furn_de_firepit_f_128 = { replacement = "ashfall_campfire", supports = true, rootHeight = 68, infinite = true},
+    furn_de_firepit_f_200 = { replacement = "ashfall_campfire", supports = true, rootHeight = 68, infinite = true},
+    furn_de_firepit_f_323 = { replacement = "ashfall_campfire", supports = true, rootHeight = 68, infinite = true},
+    furn_de_firepit_f_400 = { replacement = "ashfall_campfire", supports = true, rootHeight = 68, infinite = true},
     --yurt
-    a_fire_big  = { supports = true, rootHeight = 68 },
-    a_fire_cooking  = { supports = true, rootHeight = 68 },
-    a_fire_doused  = { supports = true, rootHeight = 68 },
+    a_fire_big  = { replacement = "ashfall_campfire", supports = true, rootHeight = 68, infinite = true},
+    a_fire_cooking  = { replacement = "ashfall_campfire", supports = true, rootHeight = 68, infinite = true},
+    a_fire_doused  = { replacement = "ashfall_campfire", supports = true, rootHeight = 68, infinite = true},
 
     --No Supports
-    furn_de_firepit_f_01 = { supports = false, rootHeight = 0 },
-    furn_de_firepit_f_01_400 = { supports = false, rootHeight = 0 },
+    furn_de_firepit_f_01 = { replacement = "ashfall_campfire", supports = false, rootHeight = 0, infinite = true},
+    furn_de_firepit_f_01_400 = { replacement = "ashfall_campfire", supports = false, rootHeight = 0, infinite = true},
 
-    furn_de_minercave_grill_01 = { supports = false, rootHeight = 0, hasGrill = true, rotation = 90 }
+    furn_de_minercave_grill_01 = { replacement = "ashfall_campfire", supports = false, rootHeight = 0, hasGrill = true, rotation = 90, infinite = true},
+
+    furn_redoran_hearth_01 = { replacement = "ashfall_redhearth_01", supports = false, rootHeight = 0, exactPosition = true },
+    furn_redoran_hearth_02 = { replacement = "ashfall_redhearth_02", supports = false, rootHeight = 0, exactPosition = true },
+    furn_fireplace10 = { replacement = "ashfall_fireplace10", supports = false, rootHeight = 0, exactPosition = true },
+    in_nord_fireplace_01 = { replacement = "ashfall_nordfireplace_01", supports = false, rootHeight = 0, exactPosition = true },
+    in_imp_fireplace_grand = { replacement = "ashfall_impfireplace_01", supports = false, rootHeight = 0, exactPosition = true },
 }
 
 --A list of shit that campfires can be composed of
@@ -271,13 +277,13 @@ local function checkKitBashObjects(vanillaRef)
             common.log:debug("%s is disabled, adding to ignore list", ref.object.id)
             table.insert(ignoreList, ref)
         else
-        if ref.baseObject.objectType ~= tes3.objectType.static then
+        if (ref.baseObject.objectType ~= tes3.objectType.static) and (ref.baseObject.objectType ~= tes3.objectType.light) then
             common.log:debug("Ignore all non statics: %s", ref)
             table.insert(ignoreList, ref)
         end
             local id = ref.object.id:lower()
 
-            if common.helper.getCloseEnough({ref1 = ref, ref2 = vanillaRef, distHorizontal = 75, distVertical = 200}) then
+            if common.helper.getCloseEnough({ref1 = ref, ref2 = vanillaRef, distHorizontal = 75, distVertical = 300}) then
 
 
                 if ref ~= vanillaRef then
@@ -341,7 +347,7 @@ local function checkKitBashObjects(vanillaRef)
 
                         for _, pattern in ipairs(lightPatterns) do
                             if string.startswith(id, pattern)then
-                                common.log:debug("Found a fire")
+                                common.log:debug("Found a fire: %s", id)
                                 isLit = true
                                 table.insert(ignoreList, ref)
                                 common.helper.yeet(ref)
@@ -397,23 +403,11 @@ local function replaceCampfire(e)
             --decide which campfire to replace with
             local data = checkKitBashObjects(e.reference)
             if not data then return end
-            local replacement = "ashfall_campfire"
-            -- if data.hasGrill then
-            --     common.log:debug("Has Grill")
-            --     replacement = "ashfall_campfire_grill"
-            -- elseif vanillaConfig.squareSupports then
-            --     replacement = "ashfall_campfire_mr"
-            -- elseif vanillaConfig.supports == true then
-            --     replacement = "ashfall_campfire_static"
-            -- elseif data.hasCookingPot then
-            --     common.log:debug("Has Pot, no supports")
-            --     replacement = "ashfall_campfire_sup"
-            -- else
-            --     replacement = "ashfall_campfire_static"
-            -- end
+            local replacement = vanillaConfig.replacement or "ashfall_campfire"
 
             common.log:debug("\n\nREPLACING %s with %s", e.reference.object.id, replacement)
             common.log:debug("position %s", e.reference.position)
+            common.log:debug("orientation %s", e.reference.orientation)
             common.log:debug("hasPlatform %s", data.hasPlatform)
 
             local campfire = tes3.createReference{
@@ -426,56 +420,69 @@ local function replaceCampfire(e)
                 orientation = {
                     e.reference.orientation.x,
                     e.reference.orientation.y,
-                    tes3.player.orientation.z + math.rad(vanillaConfig.rotation or 0)
+                    e.reference.orientation.z + math.rad(vanillaConfig.rotation or 0)
                 },
                 cell = e.reference.cell
             }
+            --make sure the position is correct
+            campfire.position = {
+                e.reference.position.x,
+                e.reference.position.y,
+                e.reference.position.z + (vanillaConfig.rootHeight * e.reference.scale)
+            }
+            campfire.orientation = {
+                e.reference.orientation.x,
+                e.reference.orientation.y,
+                e.reference.orientation.z + math.rad(vanillaConfig.rotation or 0)
+            }
 
+            common.log:debug("new orientation %s", campfire.orientation)
             campfire.data.dynamicConfig = campfireConfig.getConfig(campfire.object.id)
             campfire.data.dynamicConfig.campfire = "static"
+            campfire.data.infinite = vanillaConfig.infinite
 
             setInitialState(campfire, e.reference, data, vanillaConfig)
             attachRandomStuff(campfire, vanillaConfig)
             event.trigger("Ashfall:UpdateAttachNodes", { campfire = campfire })
 
-            campfire.scale = e.reference.scale
-            if vanillaConfig.scale then
-                campfire.scale = campfire.scale * vanillaConfig.scale
-            end
-            --For stuff inside platforms, let the scale get smaller
-            local minScale = data.hasPlatform and 0.6 or 0.75
-            campfire.scale = math.clamp(campfire.scale, minScale, 1.3)
-            common.log:debug("setting scale to %s", campfire.scale)
 
-            table.insert(data.ignoreList, campfire)
+            if not vanillaConfig.exactPosition then
+                campfire.scale = e.reference.scale
+                if vanillaConfig.scale then
+                    campfire.scale = campfire.scale * vanillaConfig.scale
+                end
+                --For stuff inside platforms, let the scale get smaller
+                local minScale = data.hasPlatform and 0.6 or 0.75
+                campfire.scale = math.clamp(campfire.scale, minScale, 1.3)
+                common.log:debug("setting scale to %s", campfire.scale)
 
-            local rootHeight = 0 -- vanillaConfig.rootHeight * campfire.scale
-
-            local orientedCorrectly = common.helper.orientRefToGround{
-                ref = campfire,
-                maxSteepness = (data.hasPlatform and 0.0 or 0.2),
-                ignoreList = data.ignoreList,
-                rootHeight = rootHeight+5,
-                ignoreNonStatics = true,
-                ignoreBB = true,
-                --skipPosition = true
-                maxZ = 10
-            }
-            if not orientedCorrectly then
-                common.helper.removeCollision(e.reference.sceneNode)
-                common.helper.removeLight(e.reference.sceneNode)
-                local vanillaBB = e.reference.sceneNode:createBoundingBox(e.reference.scale)
-                local vanillaHeight = vanillaBB.min.z
-                local campfireHeight = campfire.position.z - rootHeight
-                local heightDiff = campfireHeight - vanillaHeight
-                common.log:debug("Failed to orient, setting height based on bounding box")
-                campfire.position = {
-                    campfire.position.x,
-                    campfire.position.y,
-                    campfire.position.z - heightDiff
+                table.insert(data.ignoreList, campfire)
+                local rootHeight = 0 -- vanillaConfig.rootHeight * campfire.scale
+                local orientedCorrectly = common.helper.orientRefToGround{
+                    ref = campfire,
+                    maxSteepness = (data.hasPlatform and 0.0 or 0.2),
+                    ignoreList = data.ignoreList,
+                    rootHeight = rootHeight+5,
+                    ignoreNonStatics = true,
+                    ignoreBB = true,
+                    --skipPosition = true
+                    maxZ = 10
                 }
+                if not orientedCorrectly then
+                    common.helper.removeCollision(e.reference.sceneNode)
+                    common.helper.removeLight(e.reference.sceneNode)
+                    local vanillaBB = e.reference.sceneNode:createBoundingBox(e.reference.scale)
+                    local vanillaHeight = vanillaBB.min.z
+                    local campfireHeight = campfire.position.z - rootHeight
+                    local heightDiff = campfireHeight - vanillaHeight
+                    common.log:debug("Failed to orient, setting height based on bounding box")
+                    campfire.position = {
+                        campfire.position.x,
+                        campfire.position.y,
+                        campfire.position.z - heightDiff
+                    }
+                end
             end
-
 
             common.helper.yeet(e.reference)
 

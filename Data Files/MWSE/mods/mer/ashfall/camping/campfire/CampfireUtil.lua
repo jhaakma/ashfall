@@ -30,7 +30,7 @@ end
 
 function CampfireUtil.getAttachmentConfig(node)
     --default campfire
-    local attachmentConfig = AttachConfig.CAMPFIRE
+    local attachmentConfig
     while node.parent do
         if AttachConfig[node.name] then
             attachmentConfig = AttachConfig[node.name]
@@ -63,7 +63,7 @@ function CampfireUtil.getAttachmentName(campfire, attachConfig)
         return common.helper.getGenericUtensilName(obj)
     end
     --fallback
-    return AttachConfig.CAMPFIRE.name
+    return nil
 end
 
 
@@ -118,6 +118,7 @@ function CampfireUtil.setHeat(refData, newHeat, reference)
                 reference = reference,
                 sound = "ashfall_boil"
             }
+            event.trigger("Ashfall:UpdateAttachNodes", {campfire = reference})
         end
         --remove boiling sound
         if heatBefore > common.staticConfigs.hotWaterHeatValue and heatAfter < common.staticConfigs.hotWaterHeatValue then

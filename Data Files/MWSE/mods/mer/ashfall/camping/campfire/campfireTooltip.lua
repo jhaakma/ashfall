@@ -19,9 +19,10 @@ local function updateTooltip(e)
     local campfire = e.reference
     local parentNode = e.parentNode
     local attachmentConfig = CampfireUtil.getAttachmentConfig(parentNode)
-    CampfireUtil.addExtraTooltip(attachmentConfig, campfire, labelBorder)
-
-    label.text = CampfireUtil.getAttachmentName(campfire, attachmentConfig)
+    if attachmentConfig then
+        CampfireUtil.addExtraTooltip(attachmentConfig, campfire, labelBorder)
+        label.text = CampfireUtil.getAttachmentName(campfire, attachmentConfig) or label.text
+    end
 
     local cursor = tes3ui.findHelpLayerMenu("CursorIcon")
     if cursor then
@@ -42,4 +43,4 @@ local function updateTooltip(e)
     end
 end
 
-event.register("Ashfall:Activator_tooltip", updateTooltip, { filter = "campfire" })
+event.register("Ashfall:Activator_tooltip", updateTooltip)

@@ -58,7 +58,6 @@ return {
             if campfire.data.waterAmount < 1 then
                 event.trigger("Ashfall:Campfire_clear_utensils", { campfire = campfire})
             end
-            --event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})
         end
 
         local utensilNames = {

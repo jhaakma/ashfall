@@ -3,13 +3,6 @@ local attachType = {
     static = "static", --Can not remove
     none = "none" --Can not add
 }
-
-local fireType = {
-    lit = "lit",
-    unlit = "unlit",
-    random = "random"
-}
-
 local config =  {
     ["ashfall_campfire"] = {
         campfire = attachType.dynamic,
@@ -60,6 +53,13 @@ local this = {}
 function this.getConfig(id)
     local thisConfig = config[id:lower()]
     if thisConfig then return table.copy(thisConfig) end
+    return {
+        campfire = attachType.static,
+        supports = attachType.dynamic,
+        cookingPot = attachType.dynamic,
+        kettle = attachType.dynamic,
+        grill = attachType.dynamic,
+    }
 end
 
 return this

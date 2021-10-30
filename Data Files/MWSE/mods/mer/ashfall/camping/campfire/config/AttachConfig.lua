@@ -10,18 +10,17 @@ local function centerText(element)
 end
 
 local AttachConfig = {
-    CAMPFIRE = {
-        name = "Campfire",
+    ASHFALL_FIREBASE = {
         commands = {
             -- --actions
             "lightFire",
             -- --attach
              "addFirewood",
              "addSupports",
-             "placeUtensil",
             -- --destroy
-            -- "extinguish",
+            "extinguish",
             "destroy",
+            "placeUtensil"
         },
         shiftCommand = "destroy",
         tooltipExtra = function(campfire, tooltip)
@@ -33,7 +32,32 @@ local AttachConfig = {
                     centerText(fuelLabel)
                 end
         end,
-
+    },
+    ASHFALL_GRILLER = {
+        name = "Grill",
+    },
+    DROP_GROUND_UTENSIL = {
+        commands = {
+            -- --actions
+            "lightFire",
+            -- --attach
+             "addFirewood",
+             "addSupports",
+            -- --destroy
+            -- "extinguish",
+            "destroy",
+            "placeUtensil"
+        },
+        shiftCommand = "destroy",
+        tooltipExtra = function(campfire, tooltip)
+                local fuelLevel = campfire.data.fuelLevel or 0
+                if fuelLevel > 0 then
+                    local fuelLabel = tooltip:createLabel{
+                        text = string.format("Fuel: %.1f hours", fuelLevel )
+                    }
+                    centerText(fuelLabel)
+                end
+        end,
     },
     HANG_UTENSIL = {
         idPath = "utensilId",
@@ -208,7 +232,7 @@ local AttachConfig = {
             end
         end,
     },
-    ATTACH_SUPPORTS = {
+    DROP_HANG_UTENSIL = {
         name = "Supports",
         idPath = "supportsId",
         commands = {

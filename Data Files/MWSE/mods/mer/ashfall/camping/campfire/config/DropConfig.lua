@@ -1,10 +1,14 @@
 local DropConfig = {
     DROP_GROUND_UTENSIL = {
         "groundUtensil",
-        "firewood",
         "supports",
+    },
+    ASHFALL_FIREBASE = {
+        "firewood",
         "douse",
         "lightFire",
+        "groundUtensil",
+        "supports",
     },
     DROP_HANG_UTENSIL = {
         "hangUtensil"

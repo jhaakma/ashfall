@@ -95,8 +95,6 @@ local function createActivatorIndicator()
             label.color = tes3ui.getPalette("header_color")
             centerText(label)
 
-
-
             local eventData = {
                 label = label,
                 parentNode = this.parentNode,
@@ -104,8 +102,6 @@ local function createActivatorIndicator()
                 reference = this.currentRef
             }
             event.trigger("Ashfall:Activator_tooltip", eventData, {filter = this.current })
-
-
         else
             if mainBlock then
                 mainBlock.visible = false

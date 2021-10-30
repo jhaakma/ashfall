@@ -11,8 +11,9 @@ local function getFirewoodCount()
 end
 
 local function canAddFireWoodToCampfire(campfire)
+    local fuelLevel = campfire.data.fuelLevel or 0
     return (
-        campfire.data.fuelLevel < common.staticConfigs.maxWoodInFire or
+        fuelLevel < common.staticConfigs.maxWoodInFire or
         campfire.data.burned == true
     )
 end
@@ -26,16 +27,15 @@ end
 return {
     text = "Add Firewood",
     showRequirements = function(campfire)
-        return campfire.data.dynamicConfig ~= nil
+        return true
     end,
     enableRequirements = function(campfire)
         return getFirewoodCount() > 0 and canAddFireWoodToCampfire(campfire)
-
     end,
     tooltipDisabled = getDisabledText,
     callback = function(campfire)
         tes3.playSound{ reference = tes3.player, sound = "ashfall_add_wood"  }
-        campfire.data.fuelLevel = campfire.data.fuelLevel + getWoodFuel()
+        campfire.data.fuelLevel = (campfire.data.fuelLevel or 0) + getWoodFuel()
         campfire.data.burned = false
         mwscript.removeItem{ reference = tes3.player, item = common.staticConfigs.objectIds.firewood }
         event.trigger("Ashfall:UpdateAttachNodes", { campfire = campfire})

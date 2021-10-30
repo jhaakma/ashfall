@@ -7,8 +7,8 @@ return {
     end,
     showRequirements = function(campfire)
         return (
-            campfire.data.grillId and
-            campfire.data.dynamicConfig and
+            campfire.data.grillId
+            and (not campfire.data.dynamicConfig) or
             campfire.data.dynamicConfig.grill == "dynamic"
         )
     end,

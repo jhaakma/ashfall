@@ -17,6 +17,6 @@ return {
     callback = function(campfire)
         tes3.removeItem{ reference = tes3.player, item = "misc_com_iron_ladle" }
         campfire.data.ladle = true
-        --event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})
+        event.trigger("Ashfall:UpdateAttachNodes", { campfire = campfire})
     end
 }

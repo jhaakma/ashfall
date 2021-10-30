@@ -33,7 +33,8 @@ local function findGriller(ingredient)
         local grillNodes = {
             SWITCH_BASE = true,
             ATTACH_GRILL = true,
-            ATTACH_FIREWOOD = true
+            ATTACH_FIREWOOD = true,
+            ASHFALL_GRILLER = true
         }
         while node and node.parent do
             if grillNodes[node.name:upper()] then
