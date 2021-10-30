@@ -315,7 +315,7 @@ local function checkKitBashObjects(vanillaRef)
                         end
 
                         --if you find an existing campfire, get rid of it
-                        if campfireConfig.getConfig(id) then
+                        if vanillaCampfires[id] then
                             common.log:debug("removing existing replaced campfire %s", ref.object.id)
                             table.insert(ignoreList, ref)
                             common.helper.yeet(ref)
