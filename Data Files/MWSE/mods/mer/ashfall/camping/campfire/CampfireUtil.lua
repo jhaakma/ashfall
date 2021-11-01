@@ -233,7 +233,7 @@ end
 function CampfireUtil.getPlacedOnContainer()
     local reference = activatorController.currentRef
     if reference then
-        --Or else look for just a standalone cooking pot or container
+        --look for just a standalone cooking pot or container
         return common.staticConfigs.bottleList[reference.object.id:lower()] and reference or false
     else
         common.log:debug("ray return nothing")

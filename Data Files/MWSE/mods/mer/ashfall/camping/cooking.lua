@@ -55,9 +55,9 @@ end
 
 
 
-local function resetCookingTime(ingredient)
-    if not common.helper.isStack(ingredient) and ingredient.data then
-        ingredient.data.lastCookUpdated = nil
+local function resetCookingTime(ingredRef)
+    if not common.helper.isStack(ingredRef) and ingredRef.data then
+        ingredRef.data.lastCookUpdated = nil
     end
 end
 
@@ -105,49 +105,49 @@ local function addGrillPatina(campfire,interval)
     end
 end
 
-local function grillFoodItem(ingredient, timestamp)
+local function grillFoodItem(ingredReference, timestamp)
     --Can only grill certain types of food
-    if foodConfig.getGrillValues(ingredient.object) then
-        local campfire = findGriller(ingredient)
+    if foodConfig.getGrillValues(ingredReference.object) then
+        local campfire = findGriller(ingredReference)
         if campfire then
             if campfire.data.isLit then
-                if common.helper.isStack(ingredient) or ingredient.data.lastCookUpdated == nil then
-                    startCookingIngredient(ingredient, timestamp)
+                if common.helper.isStack(ingredReference) or ingredReference.data.lastCookUpdated == nil then
+                    startCookingIngredient(ingredReference, timestamp)
                     return
                 end
 
-                ingredient.data.lastCookUpdated = ingredient.data.lastCookUpdated or timestamp
-                ingredient.data.cookedAmount = ingredient.data.cookedAmount or 0
+                ingredReference.data.lastCookUpdated = ingredReference.data.lastCookUpdated or timestamp
+                ingredReference.data.cookedAmount = ingredReference.data.cookedAmount or 0
 
-                local difference = timestamp - ingredient.data.lastCookUpdated
+                local difference = timestamp - ingredReference.data.lastCookUpdated
                 if difference > 0.008 then
 
                     addGrillPatina(campfire, difference)
-                    ingredient.data.lastCookUpdated = timestamp
+                    ingredReference.data.lastCookUpdated = timestamp
 
                     local thisCookMulti = calculateCookMultiplier(CampfireUtil.getHeat(campfire.data))
-                    local weightMulti = calculateCookWeightModifier(ingredient.object)
-                    ingredient.data.cookedAmount = ingredient.data.cookedAmount + ( difference * thisCookMulti * weightMulti)
-                    local cookedAmount = ingredient.data.cookedAmount
+                    local weightMulti = calculateCookWeightModifier(ingredReference.object)
+                    ingredReference.data.cookedAmount = ingredReference.data.cookedAmount + ( difference * thisCookMulti * weightMulti)
+                    local cookedAmount = ingredReference.data.cookedAmount
 
                     local burnLimit = hungerController.getBurnLimit()
                     --Cooked your food
                     local justCooked = cookedAmount > 100
                         and cookedAmount < burnLimit
-                        and ingredient.data.grillState ~= "cooked"
-                        and ingredient.data.grillState ~= "burnt"
+                        and ingredReference.data.grillState ~= "cooked"
+                        and ingredReference.data.grillState ~= "burnt"
 
                     --burned your food
                     local justBurnt = cookedAmount > burnLimit
-                        and ingredient.data.grillState ~= "burnt"
+                        and ingredReference.data.grillState ~= "burnt"
 
                     if justCooked then
                         --You need a grill to properly cook food
                         if campfire.data.hasGrill then
-                            ingredient.data.grillState = "cooked"
-                            tes3.playSound{ sound = "potion fail", pitch = 0.7, reference = ingredient }
+                            ingredReference.data.grillState = "cooked"
+                            tes3.playSound{ sound = "potion fail", pitch = 0.7, reference = ingredReference }
                             common.skills.survival:progressSkill(skillSurvivalGrillingIncrement)
-                            event.trigger("Ashfall:ingredCooked", { reference = ingredient})
+                            event.trigger("Ashfall:ingredCooked", { reference = ingredReference})
                         else
                             --if no grill attached, then the food always burns
                             justBurnt = true
@@ -155,9 +155,9 @@ local function grillFoodItem(ingredient, timestamp)
                     end
 
                     if justBurnt then
-                        ingredient.data.grillState = "burnt"
-                        tes3.playSound{ sound = "potion fail", pitch = 0.9, reference = ingredient }
-                        event.trigger("Ashfall:ingredCooked", { reference = ingredient})
+                        ingredReference.data.grillState = "burnt"
+                        tes3.playSound{ sound = "potion fail", pitch = 0.9, reference = ingredReference }
+                        event.trigger("Ashfall:ingredCooked", { reference = ingredReference})
                     end
 
                     --Only play sounds/messages if not transitioning from cell
@@ -165,9 +165,9 @@ local function grillFoodItem(ingredient, timestamp)
                     local justChangedCell = difference > 0.01
                     if not justChangedCell then
                         if justBurnt then
-                            tes3.messageBox("%s has become burnt.", ingredient.object.name)
+                            tes3.messageBox("%s has become burnt.", ingredReference.object.name)
                         elseif justCooked then
-                            tes3.messageBox("%s is fully cooked.", ingredient.object.name)
+                            tes3.messageBox("%s is fully cooked.", ingredReference.object.name)
                         end
                     end
 
@@ -175,11 +175,11 @@ local function grillFoodItem(ingredient, timestamp)
                 end
             else
                 --reset grill time if campfire is unlit
-                resetCookingTime(ingredient)
+                resetCookingTime(ingredReference)
             end
         else
             --reset grill time if not placed on a campfire
-            resetCookingTime(ingredient)
+            resetCookingTime(ingredReference)
         end
     end
 end
@@ -262,21 +262,15 @@ local function foodPlaced(e)
                 end
             elseif foodConfig.getGrillValues(e.reference.object) then
                 local timestamp = tes3.getSimulationTimestamp()
-                local ingredient = e.reference
-                    --Reset grill time for meat and veges
-                timer.frame.delayOneFrame(function()
-                    resetCookingTime(ingredient)
-                    grillFoodItem(ingredient, timestamp)
-                end)
+                local ingredReference = e.reference
+                --Reset grill time for meat and veges
+                resetCookingTime(ingredReference)
+                grillFoodItem(ingredReference, timestamp)
             end
         end)
     end
 end
 event.register("referenceSceneNodeCreated" , foodPlaced)
-
-
-
-
 
 --Empty a cooking pot or kettle, reseting all data
 local function clearUtensilData(e)
