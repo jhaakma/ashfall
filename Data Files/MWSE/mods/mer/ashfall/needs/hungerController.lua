@@ -14,7 +14,6 @@ local foodPoisonMulti = 5.0
 local HUNGER_EFFECT_LOW = 1.3
 local HUNGER_EFFECT_HIGH = 1.0
 
-
 local hunger = common.staticConfigs.conditionConfig.hunger
 local foodConfig = common.staticConfigs.foodConfig
 
@@ -146,13 +145,11 @@ function this.calculate(scriptInterval, forceUpdate)
      --if you have food poisoning you get hungry more quickly
     local foodPoisonEffect = common.staticConfigs.conditionConfig.foodPoison:isAffected() and foodPoisonMulti or 1.0
 
-    --calculate newHunger
-    local resting = (
-        tes3.mobilePlayer.sleeping or
-        tes3.menuMode()
-    )
-    if resting then
+    if common.helper.getIsSleeping() then
         newHunger = newHunger + ( scriptInterval * hungerRate * coldEffect * foodPoisonEffect * config.restingNeedsMultiplier )
+    elseif common.helper.getIsTraveling() then
+        common.log:debug("Travelling, adding travel multiplier to hunger")
+        newHunger = newHunger + ( scriptInterval * hungerRate * coldEffect * foodPoisonEffect * config.travelingNeedsMultiplier )
     else
         newHunger = newHunger + ( scriptInterval * hungerRate * coldEffect * foodPoisonEffect )
     end

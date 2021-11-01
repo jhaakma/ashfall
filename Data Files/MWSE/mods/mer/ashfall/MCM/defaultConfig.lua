@@ -92,6 +92,7 @@ return {
     gainSleepRate = 30,
     gainSleepBed = 60,
     restingNeedsMultiplier = 0.5,
+    travelingNeedsMultiplier = 0.5,
 
     warmthValues = {
         armor = {},

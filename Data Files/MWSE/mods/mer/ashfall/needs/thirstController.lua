@@ -1,12 +1,9 @@
 
 local LiquidContainer = require "mer.ashfall.objects.LiquidContainer"
 
-local CampfireUtil = require "mer.ashfall.camping.campfire.CampfireUtil"
 local this = {}
 local common = require("mer.ashfall.common.common")
 local config = require("mer.ashfall.config.config").config
-local foodConfig = common.staticConfigs.foodConfig
-local teaConfig = common.staticConfigs.teaConfig
 local conditionsCommon = require("mer.ashfall.conditionController")
 local statsEffect = require("mer.ashfall.needs.statsEffect")
 local temperatureController = require("mer.ashfall.temperatureController")
@@ -58,12 +55,16 @@ function this.calculate(scriptInterval, forceUpdate)
      --if you have dysentry you get thirsty more quickly
      local dysentryEffect = common.staticConfigs.conditionConfig.dysentery:isAffected() and dysentryMulti or 1.0
     --Calculate thirst
-    local isResting = (tes3.mobilePlayer.sleeping or tes3.menuMode())
-    if isResting then
+
+    if common.helper.getIsSleeping() then
         currentThirst = currentThirst + ( scriptInterval * thirstRate * heatEffect * dysentryEffect * config.restingNeedsMultiplier )
+    elseif common.helper.getIsTraveling() then
+        common.log:debug("Traveling, adding travelling multiplier to thirst")
+        currentThirst = currentThirst + ( scriptInterval * thirstRate * heatEffect * dysentryEffect * config.travelingNeedsMultiplier)
     else
         currentThirst = currentThirst + ( scriptInterval * thirstRate * heatEffect * dysentryEffect )
     end
+
     currentThirst = math.clamp(currentThirst, 0, 100)
     thirst:setValue(currentThirst)
     --The thirstier you are, the more extreme heat temps are

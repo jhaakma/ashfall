@@ -222,15 +222,19 @@ function this.calculate(scriptInterval, forceUpdate)
 
     if scriptInterval == 0 and not forceUpdate then return end
     if not tiredness:isActive() then
+        common.log:trace("tiredness is not active")
         tiredness:setValue(0)
         return
     end
     if common.data.blockNeeds == true then
+        common.log:trace("blockNeeds is true")
         return
     end
     if common.data.blockSleepLoss == true then
+        common.log:trace("blockSleepLoss is true")
         return
     end
+
 
     local currentTiredness = tiredness:getValue()
     local loseSleepRate = config.loseSleepRate / 10
@@ -243,7 +247,16 @@ function this.calculate(scriptInterval, forceUpdate)
     --speeds up tiredness recovery while sleeping
     local tramaRootTeaEffect = common.data.tramaRootTeaEffect or 1
 
+    --If player is traveling, return if tiredness is below rested
+    if common.helper.getIsTraveling() then
+        if currentTiredness < tiredness.states.rested.min then
+            common.log:trace("Player is traveling, returning")
+            return
+        end
+    end
+
     if common.helper.getIsSleeping() then
+        common.log:trace("Sleeping")
         local usingBed = common.data.usingBed or common.data.isSleeping or false
         if usingBed then
             currentTiredness = currentTiredness - ( scriptInterval * gainSleepBed * tramaRootTeaEffect )
@@ -255,7 +268,8 @@ function this.calculate(scriptInterval, forceUpdate)
             end
         end
     --TODO: traveling isn't working for some reason
-    elseif tes3.mobilePlayer.traveling then
+    elseif common.data.playerIsTraveling  then
+        common.log:trace("Player is traveling, getting some rest but can't get below 'Rested'")
         --Traveling: getting some rest but can't get below "Rested"
         if currentTiredness > tiredness.states.rested.min then
             currentTiredness = currentTiredness - ( scriptInterval * gainSleepRate )
@@ -274,5 +288,21 @@ function this.calculate(scriptInterval, forceUpdate)
     currentTiredness = math.clamp(currentTiredness, 0, 100)
     tiredness:setValue(currentTiredness)
 end
+
+--[[
+    Detect when the player is traveling and set a custom flag
+]]
+local function travelingLength(e)
+    timer.delayOneFrame(function()
+        common.log:debug("Travel is ending, setting playerIsTraveling to false")
+        common.data.playerIsTraveling = false
+    end)
+    common.log:debug("Calculating travel price, setting playerIsTraveling to true")
+    common.data.playerIsTraveling = true
+end
+
+event.register("calcTravelPrice", travelingLength)
+
+
 
 return this

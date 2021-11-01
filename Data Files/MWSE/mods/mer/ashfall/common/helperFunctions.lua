@@ -3,6 +3,7 @@ local staticConfigs = require("mer.ashfall.config.staticConfigs")
 local skillModule = include("OtherSkills.skillModule")
 local refController = require("mer.ashfall.referenceController")
 local tentConfig = require("mer.ashfall.camping.tents.tentConfig")
+
 --[[
     Returns a human readable timestamp of the given time (or else the current time)
 ]]
@@ -41,6 +42,10 @@ function this.getHoursPassed()
     return ( tes3.worldController.daysPassed.value * 24 ) + tes3.worldController.hour.value
 end
 
+function this.getIsTraveling()
+    mwse.log("Ashfall: getIsTraveling: %s", tes3.player.data.Ashfall.playerIsTraveling)
+    return tes3.player.data.Ashfall.playerIsTraveling
+end
 
 --[[
     Transfers an amount from the field of one object to that of another
