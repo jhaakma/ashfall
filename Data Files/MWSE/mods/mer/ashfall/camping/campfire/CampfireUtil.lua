@@ -236,7 +236,7 @@ function CampfireUtil.getPlacedOnContainer()
         --look for just a standalone cooking pot or container
         return common.staticConfigs.bottleList[reference.object.id:lower()] and reference or false
     else
-        common.log:debug("ray return nothing")
+        common.log:trace("ray return nothing")
     end
     return false
 end

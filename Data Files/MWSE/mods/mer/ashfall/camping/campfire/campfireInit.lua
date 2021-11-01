@@ -17,10 +17,6 @@ local activatorConfig = common.staticConfigs.activatorConfig
 local function registerDataValues(campfire)
     common.log:debug("registerDataValues %s", campfire.object.id)
     campfire.data.fuelLevel = campfire.data.fuelLevel or 1
-    campfire.data.grillMinHeight = campfire.data.grillMinHeight or 21
-    campfire.data.grillMaxHeight = campfire.data.grillMaxHeight or 70
-    campfire.data.grillDistance = campfire.data.grillDistance or 40
-
     event.trigger("Ashfall:registerReference", { reference = campfire})
 end
 

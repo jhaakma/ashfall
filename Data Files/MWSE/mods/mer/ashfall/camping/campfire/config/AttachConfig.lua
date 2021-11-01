@@ -17,10 +17,11 @@ local AttachConfig = {
             -- --attach
              "addFirewood",
              "addSupports",
+             "placeUtensil",
             -- --destroy
             "extinguish",
             "destroy",
-            "placeUtensil"
+
         },
         shiftCommand = "destroy",
         tooltipExtra = function(campfire, tooltip)
@@ -43,10 +44,11 @@ local AttachConfig = {
             -- --attach
              "addFirewood",
              "addSupports",
+             "placeUtensil",
             -- --destroy
             -- "extinguish",
             "destroy",
-            "placeUtensil"
+
         },
         shiftCommand = "destroy",
         tooltipExtra = function(campfire, tooltip)

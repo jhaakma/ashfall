@@ -22,8 +22,6 @@ end
 
 --Checks if the ingredient has been placed on a campfire
 local function findGriller(ingredient)
-
-
     local result = common.helper.getGroundBelowRef{ ref = ingredient}
     if result and result.reference then
         --Find cooking pot attached to campfire
@@ -36,7 +34,7 @@ local function findGriller(ingredient)
             ATTACH_FIREWOOD = true,
             ASHFALL_GRILLER = true
         }
-        while node and node.parent do
+        while node and node.parent and node.name do
             if grillNodes[node.name:upper()] then
                 onGrill = true
                 break
@@ -49,7 +47,7 @@ local function findGriller(ingredient)
             return result.reference
         end
     else
-        common.log:debug("ray return nothing")
+        common.log:trace("ray return nothing")
     end
 end
 

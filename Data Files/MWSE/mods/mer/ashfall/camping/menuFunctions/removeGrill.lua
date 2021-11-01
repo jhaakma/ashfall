@@ -18,7 +18,6 @@ return {
             reference = tes3.player,
             item = campfire.data.grillId,
             count = 1,
-            playSound = false
         }
         --add patina data
         if campfire.data.grillPatinaAmount then
@@ -33,21 +32,16 @@ return {
         campfire.data.hasGrill = nil
         campfire.data.grillPatinaAmount = nil
         event.trigger("Ashfall:UpdateAttachNodes", {campfire = campfire,})
-        tes3.playSound{ reference = tes3.player, sound = "Item Misc Up"  }
-        --event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})
         --drop any cooking ingredients
         common.log:debug("Finding ingredients to drop")
         for _, cell in pairs( tes3.getActiveCells() ) do
             for ingredient in cell:iterateReferences(tes3.objectType.ingredient) do
                 common.log:debug("ingredient: %s", ingredient.object.id)
-                local maxHeight = campfire.data.grillMaxHeight or 0
-                local distance = campfire.data.grillDistance or 0
-                common.log:debug("maxHeight: %s", maxHeight)
-                common.log:debug("distance: %s", distance)
                 if common.helper.getCloseEnough{
+                    --TODO: Implement using grill position
                     ref1 = campfire, ref2 = ingredient,
-                    distVertical = maxHeight,
-                    distHorizontal = distance
+                    distVertical = 300,
+                    distHorizontal = 50
                 } then
                     common.log:debug("Dropping %s to ground", ingredient.object.id)
                     common.helper.orientRefToGround{ ref = ingredient}

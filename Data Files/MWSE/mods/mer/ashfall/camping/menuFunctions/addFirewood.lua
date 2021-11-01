@@ -36,7 +36,7 @@ return {
     callback = function(campfire)
         tes3.playSound{ reference = tes3.player, sound = "ashfall_add_wood"  }
         campfire.data.fuelLevel = (campfire.data.fuelLevel or 0) + getWoodFuel()
-        campfire.data.burned = false
+        campfire.data.burned = campfire.data.isLit == true
         mwscript.removeItem{ reference = tes3.player, item = common.staticConfigs.objectIds.firewood }
         event.trigger("Ashfall:UpdateAttachNodes", { campfire = campfire})
     end,

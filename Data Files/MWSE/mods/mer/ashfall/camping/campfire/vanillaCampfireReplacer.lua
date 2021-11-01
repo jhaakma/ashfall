@@ -180,9 +180,6 @@ end
 local function addGrill(campfire)
     campfire.data.hasGrill = true
     campfire.data.grillId = "ashfall_grill_miner"
-    campfire.data.grillMinHeight =  0
-    campfire.data.grillMaxHeight = 70
-    campfire.data.grillDistance = 40
 end
 
 local function attachRandomStuff(campfire, vanillaConfig)

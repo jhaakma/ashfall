@@ -298,10 +298,6 @@ this.list.campfire = Activator:new{
         ["ashfall_campfire_sup"] = true,
         ["ashfall_campfire_grill"] = true,
     },
-    hasMenu = true,
-    grillMinHeight = 21,
-    grillMaxHeight = 50,
-    grillDistance = 40
 }
 
 this.list.hearth = Activator:new{
