@@ -243,7 +243,7 @@ local function updateCampfireVisuals(campfire)
     campfire.sceneNode:updateNodeEffects()
 end
 local function updateVisuals(e)
-    common.helper.iterateRefType("campfire", updateCampfireVisuals)
+    common.helper.iterateRefType("fuelConsumer", updateCampfireVisuals)
 end
 
 event.register("simulate", updateVisuals)
@@ -437,10 +437,7 @@ end
 event.register("Ashfall:UpdateAttachNodes", updateAttachNodes)
 
 local function initialiseAttachNodes()
-    common.helper.iterateRefType("campfire", function(campfire)
-        updateAttachNodes{ campfire = campfire }
-    end)
-    common.helper.iterateRefType("boiler", function(campfire)
+    common.helper.iterateRefType("fuelConsumer", function(campfire)
         updateAttachNodes{ campfire = campfire }
     end)
 end

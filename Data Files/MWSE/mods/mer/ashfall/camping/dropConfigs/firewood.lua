@@ -32,7 +32,7 @@ return {
             tes3.playSound{ reference = tes3.player, sound = "ashfall_add_wood"  }
         end
 
-        campfire.data.burned = false
+        campfire.data.burned = campfire.data.isLit == true
         event.trigger("Ashfall:UpdateAttachNodes", { campfire = campfire})
     end
 }

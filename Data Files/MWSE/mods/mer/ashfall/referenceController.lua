@@ -24,14 +24,14 @@ local ReferenceController = {
 }
 
 this.controllers = {
+
+
     campfire = ReferenceController:new{
         requirements = function(_, ref)
             return (
                 ref.object and
                 ref.object.id and
-                ( activatorConfig.list.campfire:isActivator(ref.object.id)
-                    or activatorConfig.list.hearth:isActivator(ref.object.id)
-                )
+                activatorConfig.list.campfire:isActivator(ref.object.id)
             )
         end
     },
@@ -41,12 +41,6 @@ this.controllers = {
             return ref.data and ref.data.fuelLevel
         end
     },
-
-    -- griller = ReferenceController:new{
-    --     requirements = function(_, ref)
-    --         return  ref.data and ref.data.fuelLevel
-    --     end
-    -- },
 
     boiler = ReferenceController:new{
         requirements = function(_, ref)

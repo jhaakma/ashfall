@@ -128,7 +128,7 @@ function this.calculateFireEffect()
             closeEnough = true
         end
     end
-    common.helper.iterateRefType("campfire", doCampfireHeat)
+    common.helper.iterateRefType("fuelConsumer", doCampfireHeat)
 
     local function doFlameHeat(ref)
         local distance = getDistance(ref)

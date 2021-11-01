@@ -47,7 +47,7 @@ local function initialiseCampfireSoundAndFlame()
         end)
     end
 
-    common.helper.iterateRefType("campfire", doUpdate)
+    common.helper.iterateRefType("fuelConsumer", doUpdate)
 end
 
 --[[
@@ -127,6 +127,7 @@ local function lightFire(e)
     common.skills.survival:progressSkill(skillSurvivalLightFireIncrement)
     campfire.data.fuelLevel = math.max(0, campfire.data.fuelLevel - 0.5)
     campfire.data.isLit = true
+    campfire.data.burned = true
     event.trigger("Ashfall:UpdateAttachNodes", {campfire = campfire})
 end
 event.register("Ashfall:fuelConsumer_Alight", lightFire)
