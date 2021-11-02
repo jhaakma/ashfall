@@ -72,10 +72,21 @@ local function startCookingIngredient(ingredient, timestamp)
             common.log:trace("Already burnt")
             return
         end
+        if ingredient.data.preventBurning then
+            common.log:trace("Prevent burning")
+            return
+        end
     end
     timestamp = timestamp or tes3.getSimulationTimestamp()
     ingredient.data.lastCookUpdated = timestamp
-    tes3.messageBox("%s begins to cook.", ingredient.object.name)
+
+    local difference = timestamp - ingredient.data.lastCookUpdated
+    --only show message if enough time has passed
+    local justChangedCell = difference > 0.01
+    if not justChangedCell then
+        local message = string.format("%s begins to cook.", ingredient.object.name)
+        tes3.messageBox{ message = message }
+    end
     tes3.playSound{ sound = "potion fail", pitch = 0.8, reference = ingredient }
 
     -- local smoke = tes3.loadMesh("ashfall\\cookingSmoke.nif"):clone()
@@ -96,9 +107,9 @@ local function addGrillPatina(campfire,interval)
         local didAddPatina = patinaController.addPatina(grillNode, newAmount)
         if didAddPatina then
             campfire.data.grillPatinaAmount = newAmount
-            common.log:debug("Added patina to %s node, new amount: %s",grillNode, campfire.data.grillPatinaAmount)
+            common.log:trace("Added patina to %s node, new amount: %s",grillNode, campfire.data.grillPatinaAmount)
         else
-            common.log:debug("Mesh incompatible with patina mechanic, did not apply")
+            common.log:trace("Mesh incompatible with patina mechanic, did not apply")
         end
     end
 end
@@ -262,6 +273,7 @@ local function foodPlaced(e)
                 local timestamp = tes3.getSimulationTimestamp()
                 local ingredReference = e.reference
                 --Reset grill time for meat and veges
+                ingredReference.data.preventBurning = nil
                 resetCookingTime(ingredReference)
                 grillFoodItem(ingredReference, timestamp)
             end

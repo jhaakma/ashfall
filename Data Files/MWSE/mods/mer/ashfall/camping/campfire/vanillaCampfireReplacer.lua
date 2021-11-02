@@ -46,6 +46,14 @@ local vanillaCampfires = {
     in_imp_fireplace_grand = { replacement = "ashfall_impfireplace_01", supports = false, rootHeight = 0, exactPosition = true },
 }
 
+local legacyReplacedCampfires = {
+    ashfall_campfire = true,
+    ashfall_campfire_static = true,
+    ashfall_campfire_mr = true,
+    ashfall_campfire_sup = true,
+    ashfall_campfire_grill = true,
+}
+
 --A list of shit that campfires can be composed of
 --When replacing a vanilla mesh, get rid of these
 local kitBashObjects = {
@@ -366,30 +374,69 @@ local function checkKitBashObjects(vanillaRef)
     return { foodList = foodList, ignoreList = ignoreList, hasGrill = hasGrill, hasCookingPot = hasCookingPot, hasPlatform = hasPlatform, isLit = isLit}
 end
 
+--[[
+    For each ingredient, check if food was placed on a grill
+    If it was, then set the ingredient position to the returned intersection
+]]
 local function moveFood(campfire, foodList)
-    for _, ingred in ipairs(foodList) do
-        local ingredBottomDiff = ingred.sceneNode:createBoundingBox().min.z
-        common.log:debug("ingredBottomDiff: %s", ingredBottomDiff)
-        local grillTop = campfire.sceneNode:getObjectByName("GRILL_TOP")
-        local grillHeight = grillTop.worldTransform.translation.z
+    for _, ref in ipairs(foodList) do
+        common.log:trace("Checking if %s is on a grill", ref.object.id)
+        local grillNode = CampfireUtil.getFoodPlacedOnGrill(ref, campfire)
+        if grillNode then
+            common.log:debug("%s is on a grill, moving it", ref.object.id)
+            local campfireHeight = campfire.position.z
+            local grillHeight = grillNode.translation.z * campfire.scale
+            local ingredBottomDiff = ref.sceneNode:createBoundingBox().min.z
+            common.log:trace("campfireHeight: %s", campfireHeight)
+            common.log:trace("grillHeight: %s", grillHeight)
+            common.log:trace("ingredient bottom diff: %s", ingredBottomDiff)
+            common.log:trace("Old position: %s", ref.position)
+            ref.position = {
+                ref.position.x,
+                ref.position.y,
+                campfireHeight + grillHeight - ingredBottomDiff
+            }
+            common.log:debug("New position: %s", ref.position)
 
-        grillHeight = 24 * campfire.scale
-        common.log:debug("Grill height: %s", grillHeight)
-        local newHeight = campfire.position.z + grillHeight - ingredBottomDiff
-        common.log:debug("moving %s to top of grill at z: %s", ingred.object.name, newHeight)
-        ingred.position = {
-            ingred.position.x,
-            ingred.position.y,
-            newHeight
-        }
+            --Set cooked amount and prevent from getting burnt
+            if foodConfig.getGrillValues(ref.object) then
+                ref.data.cookedAmount = 100
+                ref.data.grillState = "cooked"
+                ref.data.preventBurning = true
+                event.trigger("Ashfall:ingredCooked", { reference = ref})
+            end
+        end
     end
+    -- for _, ingred in ipairs(foodList) do
+    --     local ingredBottomDiff = ingred.sceneNode:createBoundingBox().min.z
+    --     common.log:debug("ingredBottomDiff: %s", ingredBottomDiff)
+    --     local grillTop = campfire.sceneNode:getObjectByName("GRILL_TOP")
+    --     local grillHeight = grillTop.worldTransform.translation.z
+
+    --     grillHeight = 24 * campfire.scale
+    --     common.log:debug("Grill height: %s", grillHeight)
+    --     local newHeight = campfire.position.z + grillHeight - ingredBottomDiff
+    --     common.log:debug("moving %s to top of grill at z: %s", ingred.object.name, newHeight)
+    --     ingred.position = {
+    --         ingred.position.x,
+    --         ingred.position.y,
+    --         newHeight
+    --     }
+    -- end
 end
 
 local function replaceCampfire(e)
 
-        local vanillaConfig = vanillaCampfires[e.reference.object.id:lower()]
-        local campfireReplaced = e.reference.data and e.reference.data.campfireReplaced
-        if vanillaConfig and not campfireReplaced then
+    local isLegacy  = legacyReplacedCampfires[e.reference.object.id:lower()]
+    if isLegacy and e.reference.data.dynamicConfig then
+        --For older replaced campfires, we need to set the infinite flag
+        e.reference.data.infinite = true
+    end
+
+    local vanillaConfig = vanillaCampfires[e.reference.object.id:lower()]
+    local campfireReplaced = e.reference.data and e.reference.data.campfireReplaced
+    if vanillaConfig then
+        if not campfireReplaced then
             common.log:debug("replaceCampfire() %s", e.reference.object.id)
 
             if e.reference.disabled or e.reference.deleted then
@@ -485,11 +532,13 @@ local function replaceCampfire(e)
 
             common.helper.yeet(e.reference)
 
-            if data.hasGrill then
-                moveFood(campfire, data.foodList)
-            end
+
+            common.log:debug("------------------moving food")
+            moveFood(campfire, data.foodList)
+
             common.log:debug("Campfire final supports: %s\n\n", campfire.data.dynamicConfig.supports)
         end
+    end
 end
 
 local function replaceCampfires(e)

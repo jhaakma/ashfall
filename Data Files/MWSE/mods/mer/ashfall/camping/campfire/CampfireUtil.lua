@@ -218,15 +218,28 @@ function CampfireUtil.getStewCapacity(e)
     return capacity
 end
 
-function CampfireUtil.findNamedNode(node, name)
+function CampfireUtil.findNamedParentNode(node, name)
     while node and node.parent do
-        if (node.name == name) then
+        if node.name and node.name == name then
             return true
         else
             node = node.parent
         end
     end
 end
+
+---@return niNode NiNode
+function CampfireUtil.findNamedChildNode(node, name)
+    if node.name and node.name == name then
+        return node
+    end
+    for _, child in pairs(node.children) do
+        local result = CampfireUtil.findNamedChildNode(child, name)
+        if result then return result end
+    end
+end
+
+
 
 --Check if you've placed an item on top of a stew
 --@param reference tes3reference | tes3itemStack
@@ -241,6 +254,24 @@ function CampfireUtil.getPlacedOnContainer()
     return false
 end
 
+--[[
+    When an ingredient is placed when loading a cell,
+    perform a ray test to get the object below it and check
+    if it has a grill node in its parent list
+]]
+---@param ingredReference tes3reference
+function CampfireUtil.getFoodPlacedOnGrill(ingredReference, campfire)
+    local grillNodes = {
+        "ATTACH_GRILL",
+        "SWITCH_GRILL",
+    }
+    for _, nodeName in ipairs(grillNodes) do
+        local node = campfire.sceneNode:getObjectByName(nodeName)
+        if node then
+            return node
+        end
+    end
+end
 
 function CampfireUtil.getDropText(node, campfire, item, itemData)
     local dropConfig = CampfireUtil.getDropConfig(node)
