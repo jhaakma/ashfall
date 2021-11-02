@@ -43,7 +43,6 @@ function this.getHoursPassed()
 end
 
 function this.getIsTraveling()
-    mwse.log("Ashfall: getIsTraveling: %s", tes3.player.data.Ashfall.playerIsTraveling)
     return tes3.player.data.Ashfall.playerIsTraveling
 end
 
@@ -764,6 +763,7 @@ function this.rotationDifference(vec1, vec2)
     return m:toEulerXYZ()
 end
 
+---@return niPickRecord
 function this.getGroundBelowRef(e)
     local ref = e.ref
     local ignoreList = e.ignoreList
