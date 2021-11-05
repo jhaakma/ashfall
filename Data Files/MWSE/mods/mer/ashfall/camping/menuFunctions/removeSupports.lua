@@ -2,9 +2,12 @@ local common = require ("mer.ashfall.common.common")
 return {
     text = "Remove Supports",
     showRequirements = function(campfire)
-        return campfire.data.dynamicConfig
-            and campfire.data.dynamicConfig.supports == "dynamic"
+        return (
+            campfire.sceneNode:getObjectByName("ATTACH_SUPPORTS")
             and campfire.data.supportsId
+            and campfire.data.dynamicConfig
+            and campfire.data.dynamicConfig.supports == "dynamic"
+        )
     end,
     enableRequirements = function(campfire)
         return campfire.data.utensil == nil

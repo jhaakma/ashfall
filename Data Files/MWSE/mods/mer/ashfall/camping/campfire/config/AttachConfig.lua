@@ -10,6 +10,11 @@ local function centerText(element)
 end
 
 local AttachConfig = {
+    ASHFALL_STOVE = {
+        commands = {
+            "pickup"
+        }
+    },
     ASHFALL_FIREBASE = {
         commands = {
             -- --actions
@@ -36,6 +41,9 @@ local AttachConfig = {
     },
     ASHFALL_GRILLER = {
         name = "Grill",
+        commands = {
+            "pickup"
+        }
     },
     DROP_GROUND_UTENSIL = {
         commands = {

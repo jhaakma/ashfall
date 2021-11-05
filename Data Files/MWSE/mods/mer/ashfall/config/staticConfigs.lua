@@ -41,7 +41,7 @@ this.hotWaterHeatValue = 80
 this.stewWaterCooldownAmount = 100
 this.stewIngredientCooldownAmount = 20
 this.stewIngredAddAmount = 25 -- out of pot capacity, not 100
-this.firewoodFuelMulti = 2
+this.firewoodFuelMulti = 1.5
 this.maxWoodInFire = 15
 
 
@@ -694,19 +694,28 @@ this.grills = {
     },
     ashfall_fry_pan = {
         type = "grill",
+        fryingPan = true,
         meshOverride = "ashfall\\fry_pan_01_attach.nif"
     },
-
     --RM's mod
     dwrv_frying_pan = {
         type = "grill",
+        fryingPan = true,
         meshOverride = "ashfall\\dwrv_fry_pan_attach.nif"
     },
     --Morrowind Crafting
     mc_skillet = {
         type = "grill",
+        fryingPan = true,
         meshOverride = "ashfall\\fry_pan_01_attach.nif"
-    }
+    },
+
+    t_com_frypan_01 = {
+        type = "grill",
+        fryingPan = true,
+        meshOverride = "ashfall\\fry_pan_tr_attach.nif"
+    },
+
 }
 
 this.bellows = {

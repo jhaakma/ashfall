@@ -262,8 +262,9 @@ end
 ---@param ingredReference tes3reference
 function CampfireUtil.getFoodPlacedOnGrill(ingredReference, campfire)
     local grillNodes = {
-        "ATTACH_GRILL",
+        "ASHFALL_GRILLER",
         "SWITCH_GRILL",
+        "ATTACH_GRILL"
     }
     for _, nodeName in ipairs(grillNodes) do
         local node = campfire.sceneNode:getObjectByName(nodeName)

@@ -174,7 +174,7 @@ event.register("magicCasted", onMagicCasted)
 --TODO find a way to do this with ranged fire
 ---@param e projectileExpireEventData
 local function onSpellHit(e)
-    if e.mobile.reference then
+    if e.mobile.reference and e.mobile.spellInstance then
         local isFireSpell
         local isFrostSpell
         for _, effect in ipairs(e.mobile.spellInstance.source.effects) do

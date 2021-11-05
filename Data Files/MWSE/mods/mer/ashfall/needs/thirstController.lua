@@ -19,13 +19,8 @@ local thirst = conditionConfig.thirst
 
 function this.handleEmpties(data)
     if data.waterAmount and data.waterAmount < 1 then
-        data.waterType = nil
-        data.waterAmount = nil
-        data.stewLevels = nil
-        data.stewBuffs = nil
-        data.waterHeat = nil
+        event.register("Ashfall:Campfire_clear_water_data", data)
         --restack / remove sound
-
         tes3ui.updateInventoryTiles()
     end
 end

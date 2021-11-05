@@ -22,11 +22,23 @@ end
 
 --Checks if the ingredient has been placed on a campfire
 local function findGriller(ingredient)
-    local result = common.helper.getGroundBelowRef{ ref = ingredient}
+
+    local ignoreList = {ingredient}
+    --For each active cell, iterate over all misc items and add frying pans to ignoreList
+    for _, cell in ipairs(tes3.getActiveCells()) do
+        for ref in cell:iterateReferences(tes3.objectType.miscItem) do
+            local grillConfig = common.staticConfigs.grills[ref.object.id:lower()]
+            if grillConfig and grillConfig.fryingPan then
+                common.log:debug("Found a frying pan, adding to ignore list")
+                table.insert(ignoreList, ref)
+            end
+        end
+    end
+    local result = common.helper.getGroundBelowRef{ ref = ingredient, ignoreList = ignoreList}
+
     if result and result.reference then
         --Find cooking pot attached to campfire
         local node = result.object
-
         local onGrill
         local grillNodes = {
             SWITCH_BASE = true,
@@ -101,7 +113,6 @@ local function addGrillPatina(campfire,interval)
 
         local grillNode = campfire.sceneNode:getObjectByName("ATTACH_STAND")
             or campfire.sceneNode:getObjectByName("ATTACH_GRILL")
-            or campfire.sceneNode:getObjectByName("SWITCH_GRILL")
         local patinaAmount = campfire.data.grillPatinaAmount or 0
         local newAmount = math.clamp(patinaAmount+ interval * 100, 0, 100)
         local didAddPatina = patinaController.addPatina(grillNode, newAmount)
@@ -282,26 +293,38 @@ local function foodPlaced(e)
 end
 event.register("referenceSceneNodeCreated" , foodPlaced)
 
---Empty a cooking pot or kettle, reseting all data
+
+local function clearWaterData(e)
+    e.waterType = nil
+    e.waterAmount = nil
+    e.stewLevels = nil
+    e.stewProgress = nil
+    e.teaProgress = nil
+    e.stewBuffs = nil
+    e.waterHeat = nil
+end
+event.register("Ashfall:Campfire_clear_water_data", clearWaterData)
+
 local function clearUtensilData(e)
+    e.utensil = nil
+    e.ladle = nil
+    e.utensilId = nil
+    e.utensilData = nil
+    e.utensilPatinaAmount = nil
+end
+
+
+--Empty a cooking pot or kettle, reseting all data
+local function clearCampfireUtensilData(e)
 
     common.log:debug("Clearing Utensil Data")
     local campfire = e.campfire
-    campfire.data.stewProgress = nil
-    campfire.data.stewLevels = nil
-    campfire.data.waterAmount = nil
-    campfire.data.waterHeat = nil
-    campfire.data.waterType = nil
-    campfire.data.teaProgress = nil
+    clearWaterData(campfire.data)
 
 
     if e.removeUtensil then
-        campfire.data.utensil = nil
-        campfire.data.ladle = nil
-        campfire.data.utensilId = nil
-        campfire.data.utensilData = nil
-        campfire.data.utensilPatinaAmount = nil
+        clearUtensilData(campfire.data)
     end
     event.trigger("Ashfall:UpdateAttachNodes", {campfire = campfire})
 end
-event.register("Ashfall:Campfire_clear_utensils", clearUtensilData)
+event.register("Ashfall:Campfire_clear_utensils", clearCampfireUtensilData)

@@ -93,7 +93,12 @@ this.controllers = {
             return ref.sceneNode and ref.sceneNode:getObjectByName("SWITCH_KETTLE_STEAM")
         end
     },
-
+    fryingPan = ReferenceController:new{
+        requirements = function(_, ref)
+            local grillConfig = staticConfigs.grills[ref.object.id:lower()]
+            return grillConfig and grillConfig.fryingPan
+        end
+    }
 }
 
 local function onRefPlaced(e)

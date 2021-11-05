@@ -24,9 +24,15 @@ return {
                 filter = filterWaterContainer,
                 callback = function(e)
                     if e.item then
-                        common.log:debug("showInventorySelectMenu Callback")
-                        event.trigger("Ashfall:fuelConsumer_Extinguish", {fuelConsumer = campfire, playSound = true})
+                        local liquidContainer = LiquidContainer.createFromInventory(e.item, e.itemData)
+                        if liquidContainer then
+                            common.log:debug("showInventorySelectMenu Callback")
+                            event.trigger("Ashfall:fuelConsumer_Extinguish", {fuelConsumer = campfire, playSound = true})
+                            liquidContainer:transferLiquid(LiquidContainer.createInfiniteWaterSource(), 10)
+                            tes3.playSound{ reference = tes3.player, sound = "Swim Left" }
+                        end
                     end
+
                 end,
             }
         end)

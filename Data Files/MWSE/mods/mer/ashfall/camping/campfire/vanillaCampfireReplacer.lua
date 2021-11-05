@@ -44,6 +44,8 @@ local vanillaCampfires = {
     furn_fireplace10 = { replacement = "ashfall_fireplace10", supports = false, rootHeight = 0, exactPosition = true },
     in_nord_fireplace_01 = { replacement = "ashfall_nordfireplace_01", supports = false, rootHeight = 0, exactPosition = true },
     in_imp_fireplace_grand = { replacement = "ashfall_impfireplace_01", supports = false, rootHeight = 0, exactPosition = true },
+    --stove
+    furn_dwrv_stove00 = { replacement = "ashfall_stove_01", supports = false, rootHeight = 0, exactPosition = true, hasGrill = true },
 }
 
 local legacyReplacedCampfires = {
@@ -72,6 +74,9 @@ local kitBashObjects = {
     a_cooking_ladle = true,
     a_fire_coals = true,
     furn_hook_01 = true,
+    t_com_var_ropestraight_01 = true,
+    t_com_var_ropeknot_01 = true,
+    furn_dwrv_stove10 = true,
 }
 
 local cauldrons = {
@@ -84,6 +89,14 @@ local cauldrons = {
 local grills = {
     furn_de_minercave_grill_01 = true,
     a_cooking_grille = true
+}
+
+local fryingPans = {
+    t_com_frypan_01 = true,
+    ashfall_fry_pan = true,
+    mc_skillet = true,
+    dwrv_frying_pan = true,
+
 }
 
 
@@ -190,6 +203,11 @@ local function addGrill(campfire)
     campfire.data.grillId = "ashfall_grill_miner"
 end
 
+local function addFryingPan(campfire)
+    campfire.data.hasGrill = true
+    campfire.data.grillId = "ashfall_fry_pan"
+end
+
 local function attachRandomStuff(campfire, vanillaConfig)
     if string.find(campfire.cell.id:lower(), "tomb") then return end
     if campfire.data.staticCampfireInitialised then return end
@@ -219,11 +237,13 @@ local function attachRandomStuff(campfire, vanillaConfig)
     campfire.data.fuelLevel = 2 + math.random(3)
 end
 
---If vanilla mesh was a light, then it should be lit by default
 local function setInitialState(campfire, vanillaRef, data, vanillaConfig)
 
     if data.hasGrill or vanillaConfig.hasGrill then
         campfire.data.dynamicConfig.grill = "static"
+    end
+    if data.hasFryingPan then
+        addFryingPan(campfire)
     end
 
     if vanillaConfig.supports == true then
@@ -263,8 +283,6 @@ local function setInitialState(campfire, vanillaRef, data, vanillaConfig)
 
 end
 
-
-
 --[[
     Finds nearby objects that might make up a campfire,
     disables them and determines the replacement campfire
@@ -272,26 +290,30 @@ end
 ]]
 local function checkKitBashObjects(vanillaRef)
     common.log:debug("Checking kit bash objects for %s", vanillaRef.object.id)
-    local hasGrill = false
-    local hasCookingPot = false
-    local hasPlatform = false
-    local isLit = false
-    local ignoreList = {}
-    local foodList = {}
+    local result = {
+        hasGrill = false,
+        hasFryingPan = false,
+        hasCookingPot = false,
+        hasPlatform = false,
+        isLit = false,
+        ignoreList = {},
+        foodList = {},
+    }
     for ref in vanillaRef.cell:iterateReferences() do
         if ref.disabled then
             common.log:debug("%s is disabled, adding to ignore list", ref.object.id)
-            table.insert(ignoreList, ref)
+            table.insert(result.ignoreList, ref)
         else
-        if (ref.baseObject.objectType ~= tes3.objectType.static) and (ref.baseObject.objectType ~= tes3.objectType.light) then
-            common.log:debug("Ignore all non statics: %s", ref)
-            table.insert(ignoreList, ref)
-        end
+            if (ref.baseObject.objectType ~= tes3.objectType.static) then
+                common.log:debug("Raytest ignores all non statics: %s", ref)
+                table.insert(result.ignoreList, ref)
+            elseif common.helper.compareReferenceSize(vanillaRef, ref) then
+                common.log:debug("Ignoring reference %s because it is too small", ref.object.id)
+                table.insert(result.ignoreList, ref)
+            end
             local id = ref.object.id:lower()
 
             if common.helper.getCloseEnough({ref1 = ref, ref2 = vanillaRef, distHorizontal = 75, distVertical = 300}) then
-
-
                 if ref ~= vanillaRef then
                     common.log:debug("Nearby ref: %s", ref.object.id)
 
@@ -317,52 +339,58 @@ local function checkKitBashObjects(vanillaRef)
 
                         if platforms[id] then
                             common.log:debug("Has platform")
-                            hasPlatform = true
+                            result.hasPlatform = true
                         end
 
                         --if you find an existing campfire, get rid of it
                         if vanillaCampfires[id] then
                             common.log:debug("removing existing replaced campfire %s", ref.object.id)
-                            table.insert(ignoreList, ref)
+                            table.insert(result.ignoreList, ref)
                             common.helper.yeet(ref)
                         end
 
                         if vanillaCampfires[id] then
                             common.log:debug("Found another campfire that wants to be replaced, yeeting now: %s", ref.object.id)
-                            table.insert(ignoreList, ref)
+                            table.insert(result.ignoreList, ref)
                             common.helper.yeet(ref)
                         end
 
                         if cauldrons[id] then
                             common.log:debug("Found existing cooking pot")
-                            table.insert(ignoreList, ref)
-                            hasCookingPot = true
+                            table.insert(result.ignoreList, ref)
+                            result.hasCookingPot = true
                             common.helper.yeet(ref)
                         end
                         if grills[id] then
                             common.log:debug("Found existing grill")
-                            table.insert(ignoreList, ref)
-                            hasGrill = true
+                            table.insert(result.ignoreList, ref)
+                            result.hasGrill = true
+                            common.helper.yeet(ref)
+                        end
+                        if fryingPans[id] then
+                            common.log:debug("Found existing frying pan")
+                            table.insert(result.ignoreList, ref)
+                            result.hasFryingPan = true
                             common.helper.yeet(ref)
                         end
                         if kitBashObjects[id] then
                             common.log:debug("Found existing kitbash %s", id)
                             common.helper.yeet(ref)
-                            table.insert(ignoreList, ref)
+                            table.insert(result.ignoreList, ref)
                         end
 
                         for _, pattern in ipairs(lightPatterns) do
                             if string.startswith(id, pattern)then
                                 common.log:debug("Found a fire: %s", id)
-                                isLit = true
-                                table.insert(ignoreList, ref)
+                                result.isLit = true
+                                table.insert(result.ignoreList, ref)
                                 common.helper.yeet(ref)
                             end
                         end
 
                         if ref.object.objectType == tes3.objectType.ingredient then
                             if common.helper.getCloseEnough({ref1 = ref, ref2 = vanillaRef, distHorizontal = 50, distVertical = 100}) then
-                                table.insert(foodList, ref)
+                                table.insert(result.foodList, ref)
                             end
                         end
 
@@ -371,7 +399,7 @@ local function checkKitBashObjects(vanillaRef)
             end
         end
     end
-    return { foodList = foodList, ignoreList = ignoreList, hasGrill = hasGrill, hasCookingPot = hasCookingPot, hasPlatform = hasPlatform, isLit = isLit}
+    return result
 end
 
 --[[
@@ -407,22 +435,7 @@ local function moveFood(campfire, foodList)
             end
         end
     end
-    -- for _, ingred in ipairs(foodList) do
-    --     local ingredBottomDiff = ingred.sceneNode:createBoundingBox().min.z
-    --     common.log:debug("ingredBottomDiff: %s", ingredBottomDiff)
-    --     local grillTop = campfire.sceneNode:getObjectByName("GRILL_TOP")
-    --     local grillHeight = grillTop.worldTransform.translation.z
 
-    --     grillHeight = 24 * campfire.scale
-    --     common.log:debug("Grill height: %s", grillHeight)
-    --     local newHeight = campfire.position.z + grillHeight - ingredBottomDiff
-    --     common.log:debug("moving %s to top of grill at z: %s", ingred.object.name, newHeight)
-    --     ingred.position = {
-    --         ingred.position.x,
-    --         ingred.position.y,
-    --         newHeight
-    --     }
-    -- end
 end
 
 local function replaceCampfire(e)

@@ -105,6 +105,11 @@ local function extinguish(e)
     end
     campfire.data.isLit = false
     campfire.data.burned = true
+    if campfire.data.fuelLevel then
+        --Reduce fuel level by 0.5, min of 0
+        campfire.data.fuelLevel = math.max(0, campfire.data.fuelLevel - 0.5)
+    end
+
     event.trigger("Ashfall:UpdateAttachNodes", {campfire = campfire})
     --event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})
 end

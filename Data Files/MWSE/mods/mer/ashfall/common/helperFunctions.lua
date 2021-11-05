@@ -766,7 +766,9 @@ end
 ---@return niPickRecord
 function this.getGroundBelowRef(e)
     local ref = e.ref
-    local ignoreList = e.ignoreList
+    local ignoreList = e.ignoreList or {}
+    table.insert(ignoreList, ref)
+    table.insert(ignoreList, tes3.player)
     if not ref then return end
     if not ref.object.boundingBox then return end
     local height = -ref.object.boundingBox.min.z + 5
@@ -795,6 +797,24 @@ local function doIgnoreMesh(ref)
         return false
     end
     return true
+end
+
+---@param ref1 tes3reference
+---@param ref2 tes3reference
+--[[
+    Returns true if the first reference is larger in the X and Y coordinates than the second.
+]]
+function this.compareReferenceSize(ref1, ref2)
+    --initialise bounding boxes from sceneNode
+    local bb1 = ref1.object.boundingBox
+    local bb2 = ref2.object.boundingBox
+    if bb1 and bb2 then
+        local ref1Size = bb1.max - bb1.min
+        local ref2Size = bb2.max - bb2.min
+        return ref1Size.x > ref2Size.x and ref1Size.y > ref2Size.y
+    else
+        return false
+    end
 end
 
 

@@ -12,7 +12,8 @@ this.types = {
     branch = "branch",
     cauldron = "cauldron",
     cushion = "cushion",
-    hearth = "hearth"
+    hearth = "hearth",
+    stove = "stove",
 }
 
 this.list = {}
@@ -66,6 +67,7 @@ this.list.waterDirty = Activator:new{
         ["t_de_sethla_x_waternarsis_01"] = true,
         ["t_de_sethla_x_waternarsis_0"] = true,
         ["t_de_sethla_x_waternarsis_03"] = true,
+        ["t_com_furn_bath_01"] = true,
         --Wolli
         ["terrwater_circle"] = true,
     }
@@ -320,6 +322,15 @@ this.list.fireplace = Activator:new{
         ["ashfall_fireplace10"] = true,
         ["ashfall_nordfireplace_01"] = true,
         ["ashfall_impfireplace_01"] = true
+    }
+}
+--Stove
+this.list.stove = Activator:new{
+    name = "Stove",
+    type = this.types.campfire,
+    mcmSetting = nil,
+    ids = {
+        ["ashfall_stove_01"] = true,
     }
 }
 
