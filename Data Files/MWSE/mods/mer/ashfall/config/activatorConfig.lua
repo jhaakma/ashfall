@@ -310,7 +310,9 @@ this.list.hearth = Activator:new{
         ["ab_in_velhearthsmall"] = true,
         ["ashfall_redhearth_01"] = true,
         ["ashfall_redhearth_02"] = true,
-
+        ["ashfall_ab_hearth_sml"] = true,
+        ["ashfall_ab_hearth_lh"] = true,
+        ["ashfall_ab_hearth_rh"] = true,
     }
 }
 

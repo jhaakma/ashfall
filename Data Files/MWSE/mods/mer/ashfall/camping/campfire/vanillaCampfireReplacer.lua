@@ -44,6 +44,11 @@ local vanillaCampfires = {
     furn_fireplace10 = { replacement = "ashfall_fireplace10", supports = false, rootHeight = 0, exactPosition = true },
     in_nord_fireplace_01 = { replacement = "ashfall_nordfireplace_01", supports = false, rootHeight = 0, exactPosition = true },
     in_imp_fireplace_grand = { replacement = "ashfall_impfireplace_01", supports = false, rootHeight = 0, exactPosition = true },
+
+    --OAAB
+    ab_in_velhearthsmall = { replacement = "ashfall_ab_hearth_sml", supports = false, rootHeight = 0, exactPosition = true, hasGrill = true },
+    ab_in_velHearthLargeLH = { replacement = "ashfall_ab_hearth_lh", supports = false, rootHeight = 0, exactPosition = true, hasGrill = true },
+    ab_in_velHearthLargeRH = { replacement = "ashfall_ab_hearth_rh", supports = false, rootHeight = 0, exactPosition = true, hasGrill = true },
     --stove
     furn_dwrv_stove00 = { replacement = "ashfall_stove_01", supports = false, rootHeight = 0, exactPosition = true, hasGrill = true },
 }
