@@ -20,6 +20,14 @@ local function onActivateCampfire(e)
     local node = e.node
     local attachmentConfig = CampfireUtil.getAttachmentConfig(node)
     if not attachmentConfig then return end
+
+    if attachmentConfig.command then
+        --Execute command
+        attachmentConfig.command(campfire)
+        return
+    end
+
+
     local inputController = tes3.worldController.inputController
     local isModifierKeyPressed = inputController:isKeyDown(config.modifierHotKey.keyCode)
 
@@ -96,6 +104,5 @@ end
 
 event.register(
     "Ashfall:ActivatorActivated",
-    onActivateCampfire,
-    { filter = common.staticConfigs.activatorConfig.types.campfire }
+    onActivateCampfire
 )

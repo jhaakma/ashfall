@@ -10,6 +10,18 @@ local function centerText(element)
 end
 
 local AttachConfig = {
+    ASHFALL_WATER_CLEAN = {
+        name = "Water (Clean)",
+        command = function()
+            event.trigger("Ashfall:WaterMenu")
+        end
+    },
+    ASHFALL_WATER_DIRTY = {
+        name = "Water (Dirty)",
+        command = function()
+            event.trigger("Ashfall:WaterMenu", { waterType = "dirty" })
+        end
+    },
     ASHFALL_STOVE = {
         commands = {
             "pickup"

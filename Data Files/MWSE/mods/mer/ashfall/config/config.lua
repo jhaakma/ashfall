@@ -1,8 +1,9 @@
-local inMemConfig
+
 
 local this = {}
 this.configPath = "ashfall"
 this.defaultConfig = require ("mer.ashfall.MCM.defaultConfig")
+local inMemConfig = mwse.loadConfig(this.configPath, this.defaultConfig)
 
 this.config = setmetatable({
     save = function()
@@ -11,11 +12,9 @@ this.config = setmetatable({
     end
 }, {
     __index = function(_, key)
-        inMemConfig = inMemConfig or mwse.loadConfig(this.configPath, this.defaultConfig)
         return inMemConfig[key]
     end,
     __newindex = function(_, key, value)
-        inMemConfig = inMemConfig or mwse.loadConfig(this.configPath, this.defaultConfig)
         inMemConfig[key] = value
     end,
 })

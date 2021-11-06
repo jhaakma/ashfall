@@ -90,7 +90,7 @@ local function createActivatorIndicator()
             labelBorder.paddingAllSides = 10
             labelBorder.flowDirection = "top_to_bottom"
 
-            local text = this.list[this.current].name
+            local text = this.list[this.current].name or ""
             local label = labelBorder:createLabel{ id=id_label, text = text}
             label.color = tes3ui.getPalette("header_color")
             centerText(label)
@@ -102,6 +102,9 @@ local function createActivatorIndicator()
                 reference = this.currentRef
             }
             event.trigger("Ashfall:Activator_tooltip", eventData, {filter = this.current })
+            if label.text == "" then
+                mainBlock.visible = false
+            end
         else
             if mainBlock then
                 mainBlock.visible = false
@@ -192,7 +195,7 @@ local function doTriggerActivate()
             ref = this.currentRef,
             node = this.parentNode
         }
-        common.log:trace("triggering activator filtering on %s", eventData.activator.type)
+        common.log:debug("triggering activator filtering on %s", eventData.activator.type)
         event.trigger("Ashfall:ActivatorActivated", eventData, { filter = eventData.activator.type })
     end
 end

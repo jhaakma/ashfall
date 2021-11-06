@@ -14,13 +14,28 @@ this.types = {
     cushion = "cushion",
     hearth = "hearth",
     stove = "stove",
+    partial = "partial" --
 }
 
 this.list = {}
+
+--[[
+    The partial activator is any activator that
+    only shows a tooltip and has functionality
+    when looking at specific NiNodes.
+]]
+this.list.partial = Activator:new({
+    name = nil,
+    type = this.types.partial,
+    ids = {
+
+    }
+})
+
 this.list.waterDirty = Activator:new{
     name = "Water (Dirty)",
     type = this.types.dirtyWaterSource,
-    mcmSetting = "enableThirst",
+    mcmSetting = nil,
     ids = {
         ["ex_vivec_waterfall_01"] = true,
         ["ex_vivec_waterfall_03"] = true,
@@ -74,7 +89,7 @@ this.list.waterDirty = Activator:new{
 }
 this.list.water = this.list.waterDirty
 this.list.waterClean = Activator:new{
-    name = "Water",
+    name = "Water (Clean)",
     type = this.types.waterSource,
     mcmSetting = nil,
     ids = {

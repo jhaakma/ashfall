@@ -143,6 +143,8 @@ local function checkIfBurned(campfire)
     end
 end
 
+---@param ingredReference tes3reference
+---@param timestamp number
 local function grillFoodItem(ingredReference, timestamp)
     --Can only grill certain types of food
     if foodConfig.getGrillValues(ingredReference.object) then

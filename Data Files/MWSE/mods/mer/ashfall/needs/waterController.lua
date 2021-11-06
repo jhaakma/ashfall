@@ -59,9 +59,9 @@ local function callWaterMenu(e)
     common.data.drinkingWaterType = e.waterType
     common.data.drinkingRain = e.rain
 
-    local message = "Clean Water"
+    local message = "Water (Clean)"
     if e.waterType == "dirty" then
-        message = "Dirty Water"
+        message = "Water (Dirty)"
     elseif e.waterType ~= nil then
         local tea = teaConfig.teaTypes[e.waterType]
         if tea and tea.name then
@@ -244,13 +244,13 @@ local function drinkFromContainer(e)
             if e.itemData.data.stewLevels then
                 waterName = "Stew"
             elseif e.itemData.data.waterType == "dirty" then
-                waterName = "Dirty Water"
+                waterName = "Water (Dirty)"
             elseif teaConfig.teaTypes[e.itemData.data.waterType] then
                 waterName = teaConfig.teaTypes[e.itemData.data.waterType].teaName
             elseif e.itemData.data.stewLevels then
                 waterName = foodConfig.isStewNotSoup(e.itemData.data.stewLevels) and "Stew" or "Soup"
             else
-                waterName = "Water"
+                waterName = "Water (Dirty)"
             end
 
             local currentAmount = e.itemData.data.waterAmount
@@ -409,11 +409,11 @@ local function onShiftActivateWater(e)
         local isModifierKeyPressed = inputController:isKeyDown(config.modifierHotKey.keyCode)
 
         if isModifierKeyPressed then
-            local message = "Water"
+            local message = "Water (Clean)"
             if e.target.data.stewLevels then
                 message = "Stew"
             elseif e.target.data.waterType == "dirty" then
-                message = "Dirty Water"
+                message = "Water (Dirty)"
             elseif teaConfig.teaTypes[e.target.data.waterType] then
                 message = teaConfig.teaTypes[e.target.data.waterType].teaName
             end
