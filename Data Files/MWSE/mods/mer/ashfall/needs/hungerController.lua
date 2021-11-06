@@ -3,7 +3,6 @@ local common = require("mer.ashfall.common.common")
 local config = require("mer.ashfall.config.config").config
 local conditionsCommon = require("mer.ashfall.conditionController")
 
-local meals = require("mer.ashfall.cooking.meals")
 local statsEffect = require("mer.ashfall.needs.statsEffect")
 
 local temperatureController = require("mer.ashfall.temperatureController")
@@ -167,15 +166,6 @@ function this.update()
     this.calculate(0, true)
 end
 
-local function applyFoodBuff(foodId)
-    for _, meal in pairs(meals) do
-        if meal.id == foodId then
-            meal:applyBuff()
-            event.trigger("Ashfall:updateTemperature", { source = "applyFoodBuff" } )
-        end
-    end
-end
-
 local function addFoodPoisoning(e)
     --Check for food poisoning
     if foodConfig.getFoodType(e.item) == foodConfig.type.meat then
@@ -227,7 +217,6 @@ local function onEquipFood(e)
     if nutrition then
         common.log:debug("Is ingredient")
         this.eatAmount(nutrition)
-        applyFoodBuff(e.item.id)
         addFoodPoisoning(e)
         addDisease(e)
     end

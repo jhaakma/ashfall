@@ -124,6 +124,24 @@ local function addGrillPatina(campfire,interval)
         end
     end
 end
+--Check whether the player burns the food based on survival skill and whether campfire has grill
+local function checkIfBurned(campfire)
+    local survivalSkill = common.skills.survival.value
+    --Lower survival skill increases burn chance
+    local survivalEffect = math.remap(survivalSkill, 0, 100, 0.5, 0.0)
+    --Chance to burn doubles if campfire has a grill
+    local grillEffect = campfire.data.grillId and 0.0 or 0.25
+    --Roll for burn chance
+    local roll = math.random()
+    local burnChance = survivalEffect + grillEffect
+    if roll < burnChance then
+        common.log:trace("Burned")
+        return true
+    else
+        common.log:trace("Did not burn")
+        return false
+    end
+end
 
 local function grillFoodItem(ingredReference, timestamp)
     --Can only grill certain types of food
@@ -151,47 +169,50 @@ local function grillFoodItem(ingredReference, timestamp)
                     local cookedAmount = ingredReference.data.cookedAmount
 
                     local burnLimit = hungerController.getBurnLimit()
-                    --Cooked your food
+                    --- Just cooked - reached 100 cooked but still doesn't have a cooked grill state
                     local justCooked = cookedAmount > 100
                         and cookedAmount < burnLimit
                         and ingredReference.data.grillState ~= "cooked"
                         and ingredReference.data.grillState ~= "burnt"
 
-                    --burned your food
-                    local justBurnt = cookedAmount > burnLimit
+                    local justBurnt = cookedAmount >= burnLimit
                         and ingredReference.data.grillState ~= "burnt"
 
-                    if justCooked then
-                        --You need a grill to properly cook food
-                        if campfire.data.hasGrill then
-                            ingredReference.data.grillState = "cooked"
-                            tes3.playSound{ sound = "potion fail", pitch = 0.7, reference = ingredReference }
-                            common.skills.survival:progressSkill(skillSurvivalGrillingIncrement)
-                            event.trigger("Ashfall:ingredCooked", { reference = ingredReference})
-                        else
-                            --if no grill attached, then the food always burns
-                            justBurnt = true
+
+                    local function doCook()
+                        ingredReference.data.grillState = "cooked"
+                        tes3.playSound{ sound = "potion fail", pitch = 0.7, reference = ingredReference }
+                        common.skills.survival:progressSkill(skillSurvivalGrillingIncrement)
+                        event.trigger("Ashfall:ingredCooked", { reference = ingredReference})
+                        local justChangedCell = difference > 0.01
+                        if not justChangedCell then
+                            tes3.messageBox("%s is fully cooked.", ingredReference.object.name)
                         end
+                        tes3ui.refreshTooltip()
                     end
 
-                    if justBurnt then
+                    local function doBurn()
                         ingredReference.data.grillState = "burnt"
                         tes3.playSound{ sound = "potion fail", pitch = 0.9, reference = ingredReference }
                         event.trigger("Ashfall:ingredCooked", { reference = ingredReference})
-                    end
-
-                    --Only play sounds/messages if not transitioning from cell
-                    --Check how long has passed as a bit of a hack
-                    local justChangedCell = difference > 0.01
-                    if not justChangedCell then
-                        if justBurnt then
+                        local justChangedCell = difference > 0.01
+                        if not justChangedCell then
                             tes3.messageBox("%s has become burnt.", ingredReference.object.name)
-                        elseif justCooked then
-                            tes3.messageBox("%s is fully cooked.", ingredReference.object.name)
                         end
+                        tes3ui.refreshTooltip()
                     end
 
-                    tes3ui.refreshTooltip()
+                    if justCooked then
+                        --Check if food burned immediately
+                        if checkIfBurned(campfire) then
+                            doBurn()
+                            return
+                        else
+                            doCook()
+                        end
+                    elseif justBurnt then
+                        doBurn()
+                    end
                 end
             else
                 --reset grill time if campfire is unlit
