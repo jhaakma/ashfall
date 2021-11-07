@@ -18,8 +18,10 @@ local conditionConfig = common.staticConfigs.conditionConfig
 local thirst = conditionConfig.thirst
 
 function this.handleEmpties(data)
+    common.log:trace("handleEmpties")
     if data.waterAmount and data.waterAmount < 1 then
-        event.register("Ashfall:Campfire_clear_water_data", data)
+        common.log:debug("handleEmpties: waterAmount < 1, clearing water data")
+        event.trigger("Ashfall:Campfire_clear_water_data", data)
         --restack / remove sound
         tes3ui.updateInventoryTiles()
     end

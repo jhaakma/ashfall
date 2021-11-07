@@ -120,6 +120,9 @@ local function eatStew(e)
     if highestAmount >= 1 then
         tes3.playSound{ reference = tes3.player, sound = "Swallow" }
         e.data.waterAmount = math.max( (e.data.waterAmount - highestAmount), 0)
+        if e.data.waterAmount < 1 then
+            event.trigger("Ashfall:Campfire_clear_water_data", e.data)
+        end
         if amountAte >= 1 then
             if e.data.waterHeat and e.data.waterHeat >= common.staticConfigs.hotWaterHeatValue then
                 common.data.stewWarmEffect = common.helper.calculateStewWarmthBuff(e.data.waterHeat)
