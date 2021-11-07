@@ -3,6 +3,8 @@ local config = require("mer.ashfall.config.config").config
 local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 
 --[[
+    No longer just for campfires!
+
     Mapping of which buttons can appear for each part of the campfire selected
 ]]
 

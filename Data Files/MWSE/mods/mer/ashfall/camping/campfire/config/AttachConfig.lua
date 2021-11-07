@@ -10,6 +10,42 @@ local function centerText(element)
 end
 
 local AttachConfig = {
+    ACTIVATE_DOOR = {
+        name = "Door",
+        command = function(ref)
+            common.log:debug("Activating Door")
+            local isOpen = ref.data and ref.data.ashfallDoorIsOpen
+            if isOpen then
+                common.log:trace("Door is open, closing")
+                tes3.playSound{
+                    sound = "ashfall_door_open",
+                    reference = tes3.player,
+                    loop = false,
+                }
+                tes3.playAnimation {
+                    reference = ref,
+                    group = tes3.animationGroup.idle9,
+                    startFlag = tes3.animationStartFlag.normal,
+                    loopCount = 0,
+                }
+                ref.data.ashfallDoorIsOpen = false
+            else
+                common.log:trace("Door is closed, opening")
+                tes3.playSound{
+                    sound = "ashfall_door_open",
+                    reference = tes3.player,
+                    loop = false,
+                }
+                tes3.playAnimation {
+                    reference = ref,
+                    group = tes3.animationGroup.idle8,
+                    startFlag = tes3.animationStartFlag.normal,
+                    loopCount = 0,
+                }
+                ref.data.ashfallDoorIsOpen = true
+            end
+        end
+    },
     ASHFALL_WATER_CLEAN = {
         name = "Water (Clean)",
         command = function()

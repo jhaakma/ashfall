@@ -29,7 +29,6 @@ local function findGriller(ingredient)
         for ref in cell:iterateReferences(tes3.objectType.miscItem) do
             local grillConfig = common.staticConfigs.grills[ref.object.id:lower()]
             if grillConfig and grillConfig.fryingPan then
-                common.log:debug("Found a frying pan, adding to ignore list")
                 table.insert(ignoreList, ref)
             end
         end
@@ -126,19 +125,24 @@ local function addGrillPatina(campfire,interval)
 end
 --Check whether the player burns the food based on survival skill and whether campfire has grill
 local function checkIfBurned(campfire)
+    local burnChance = 1
     local survivalSkill = common.skills.survival.value
     --Lower survival skill increases burn chance
-    local survivalEffect = math.remap(survivalSkill, 0, 100, 0.5, 0.0)
+    local survivalEffect = math.remap(survivalSkill, 0, 100, 1.0, 0.5)
     --Chance to burn doubles if campfire has a grill
-    local grillEffect = campfire.data.grillId and 0.0 or 0.25
+    local grillEffect = campfire.data.hasGrill and 0.25 or 1.0
     --Roll for burn chance
     local roll = math.random()
-    local burnChance = survivalEffect + grillEffect
+    local burnChance = burnChance * survivalEffect * grillEffect
+    common.log:trace("survivalEffect: %s", survivalEffect)
+    common.log:trace("grillEffect: %s", grillEffect)
+    common.log:debug("Burn chance: %s", burnChance)
+    common.log:debug("Roll: %s", roll)
     if roll < burnChance then
-        common.log:trace("Burned")
+        common.log:debug("Burned")
         return true
     else
-        common.log:trace("Did not burn")
+        common.log:debug("Did not burn")
         return false
     end
 end
