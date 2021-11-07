@@ -9,6 +9,7 @@ local ratingsConfig = require('mer.ashfall.tempEffects.ratings.ratingsConfig')
 local climateConfig = require('mer.ashfall.config.weatherRegionConfig')
 local teaConfig = require('mer.ashfall.config.teaConfig')
 local Activator = require("mer.ashfall.objects.Activator")
+local overrides = require("mer.ashfall.config.overrides")
 
 local function listValidActivatorTypes()
     local message = '\n'
@@ -399,7 +400,7 @@ local Interop = {
         return registerWoodAxes(data)
     end,
 
-    registerTreeBranches = branchInterop.registerTreeBranches
+    registerTreeBranches = branchInterop.registerTreeBranches,
 
     --ratings, WIP, need to add support for ids
 
@@ -409,6 +410,21 @@ local Interop = {
     -- registerArmorWarmth = function(data)
     --     return registerArmors({ data = data })
     -- end,
+
+    registerOverrides = function(data)
+        for id, override in pairs(data) do
+            if type(override) == 'table' then
+                --check override has a weight or value field
+                assert(override.weight or override.value, "Override must have a weight or value field")
+                common.log:debug("Registering override for %s", id)
+                overrides[id] = override
+                return true
+            else
+                mwse.log("Invalid override data. Must be a table.")
+                return false
+            end
+        end
+    end
 }
 
 
