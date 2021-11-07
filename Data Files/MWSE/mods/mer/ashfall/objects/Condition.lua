@@ -131,13 +131,13 @@ function Condition:updateConditionEffects(currentState)
             local hasCondition = self:isAffected(stateData)
             if isCurrentState and self:isActive() then
                 self:scaleSpellValues()
-                if not hasCondition then
+                --if not hasCondition then
                     mwscript.addSpell({ reference = tes3.player, spell = spell })
-                end
+                --end
             else
-                if hasCondition then
+                --if hasCondition then
                     mwscript.removeSpell({ reference = tes3.player, spell = spell })
-                end
+                --end
             end
         end
     end
