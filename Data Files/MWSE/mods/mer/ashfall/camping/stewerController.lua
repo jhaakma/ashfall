@@ -120,14 +120,11 @@ local function eatStew(e)
     if highestAmount >= 1 then
         tes3.playSound{ reference = tes3.player, sound = "Swallow" }
         e.data.waterAmount = math.max( (e.data.waterAmount - highestAmount), 0)
-        if e.data.waterAmount < 1 then
-            event.trigger("Ashfall:Campfire_clear_water_data", e.data)
-        end
+
         if amountAte >= 1 then
             if e.data.waterHeat and e.data.waterHeat >= common.staticConfigs.hotWaterHeatValue then
                 common.data.stewWarmEffect = common.helper.calculateStewWarmthBuff(e.data.waterHeat)
             end
-
             --Add buffs and set duration
             for foodType, ingredLevel in pairs(e.data.stewLevels) do
                 --add spell
@@ -139,12 +136,16 @@ local function eatStew(e)
                     effect.min = effectStrength
                     effect.max = effectStrength
                     mwscript.addSpell{ reference = tes3.player, spell = spell }
-                    local ateAmountMulti = math.min(highestAmount, 10) / 100
+                    local ateAmountMulti = math.min(highestAmount, 10) / 10
+                    common.log:debug("ateAmountMulti %s", ateAmountMulti)
                     tes3.player.data.stewBuffTimeLeft = common.helper.calculateStewBuffDuration() * ateAmountMulti
                     common.log:debug("Set stew duration to %s", tes3.player.data.stewBuffTimeLeft)
                     event.trigger("Ashfall:registerReference", { reference = tes3.player})
                 end)
             end
+        end
+        if e.data.waterAmount < 1 then
+            event.trigger("Ashfall:Campfire_clear_water_data", e.data)
         end
     else
         tes3.messageBox("You are full.")
