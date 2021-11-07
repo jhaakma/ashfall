@@ -210,7 +210,6 @@ local function grillFoodItem(ingredReference, timestamp)
                         --Check if food burned immediately
                         if checkIfBurned(campfire) then
                             doBurn()
-                            return
                         else
                             doCook()
                         end
