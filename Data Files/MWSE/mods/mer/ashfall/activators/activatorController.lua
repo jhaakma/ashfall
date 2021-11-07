@@ -64,6 +64,7 @@ end
 local function createActivatorIndicator()
     local menu = tes3ui.findMenu(tes3ui.registerID("MenuMulti"))
     if menu then
+        ---@type tes3uiElement
         local mainBlock = menu:findChild(id_indicator)
 
         if doActivate() then

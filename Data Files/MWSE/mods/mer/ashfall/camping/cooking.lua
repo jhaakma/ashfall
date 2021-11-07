@@ -194,7 +194,6 @@ local function grillFoodItem(ingredReference, timestamp)
                         if not justChangedCell then
                             tes3.messageBox("%s is fully cooked.", ingredReference.object.name)
                         end
-                        tes3ui.refreshTooltip()
                     end
 
                     local function doBurn()
@@ -205,7 +204,6 @@ local function grillFoodItem(ingredReference, timestamp)
                         if not justChangedCell then
                             tes3.messageBox("%s has become burnt.", ingredReference.object.name)
                         end
-                        tes3ui.refreshTooltip()
                     end
 
                     if justCooked then
@@ -219,6 +217,7 @@ local function grillFoodItem(ingredReference, timestamp)
                     elseif justBurnt then
                         doBurn()
                     end
+                    tes3ui.refreshTooltip()
                 end
             else
                 --reset grill time if campfire is unlit
