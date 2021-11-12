@@ -1,8 +1,12 @@
 local animCtrl = require("mer.ashfall.effects.animationController")
+local config = require("mer.ashfall.config.config").config
 return {
     text = "Sit Down",
     enableRequirements = function()
         return tes3.canRest()
+    end,
+    showRequirements = function()
+        return config.devFeatures
     end,
     tooltipDisabled = {
         header = "Sit Down",

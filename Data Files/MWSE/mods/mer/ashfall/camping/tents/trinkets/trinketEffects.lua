@@ -1,5 +1,4 @@
 local common = require("mer.ashfall.common.common")
-local config = require("mer.ashfall.config.config").config
 local tentConfig = require("mer.ashfall.camping.tents.tentConfig")
 
 event.trigger("Ashfall:RegisterReferenceController", {

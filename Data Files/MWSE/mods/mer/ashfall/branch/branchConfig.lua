@@ -1,6 +1,12 @@
 local this = {}
 
-
+local daysToRefresh = 3
+this.hoursToRefresh = 24 * daysToRefresh
+this.minBranchesPerTree = 0
+this.maxBranchesPerTree = 2
+this.minDistanceFromTree = 100
+this.maxDistanceFromTree = 350
+this.maxSteepness = 0.7
 --sort branches into general groups
 this.branchGroups = {
     azurasCoast = {

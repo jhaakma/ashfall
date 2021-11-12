@@ -1,7 +1,6 @@
 local common = require ("mer.ashfall.common.common")
 local foodConfig = require("mer.ashfall.config.foodConfig")
 local teaConfig   = require("mer.ashfall.config.teaConfig")
-local LiquidContainer = require("mer.ashfall.objects.LiquidContainer")
 local function centerText(element)
     element.autoHeight = true
     element.autoWidth = true

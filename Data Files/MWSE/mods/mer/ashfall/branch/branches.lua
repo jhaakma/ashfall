@@ -2,12 +2,7 @@ local common = require("mer.ashfall.common.common")
 local config = require("mer.ashfall.config.config").config
 local branchConfig = require("mer.ashfall.branch.branchConfig")
 --Branch placement configs
-local hoursToRefresh = 24 * 3--3 days
-local MIN_BRANCHES_PER_TREE = 0
-local MAX_BRANCHES_PER_TREE = 3
-local MIN_DISTANCE_FROM_TREE = 100
-local MAX_DISTANCE_FROM_TREE = 350
-local maxSteepness = 0.7
+
 --[[
     Dynamically adds wooden branches around the base of trees.
 
@@ -92,14 +87,14 @@ end
 local cell_list
 --local ignore_list
 local function addBranchesToTree(tree)
-    local numBranchesToPlace = math.random(MIN_BRANCHES_PER_TREE, MAX_BRANCHES_PER_TREE)
+    local numBranchesToPlace = math.random(branchConfig.minBranchesPerTree, branchConfig.maxBranchesPerTree)
     if numBranchesToPlace == 0 then return end
     for _ = 1, numBranchesToPlace do
 
         --initial position is randomly near the tree, 500 units higher than the tree's origin
         local position = {
-            tree.position.x + ( math.random(MIN_DISTANCE_FROM_TREE, MAX_DISTANCE_FROM_TREE) * (math.random() < 0.5 and 1 or -1) ),
-            tree.position.y + ( math.random(MIN_DISTANCE_FROM_TREE, MAX_DISTANCE_FROM_TREE) * (math.random() < 0.5 and 1 or -1) ),
+            tree.position.x + ( math.random(branchConfig.minDistanceFromTree, branchConfig.maxDistanceFromTree) * (math.random() < 0.5 and 1 or -1) ),
+            tree.position.y + ( math.random(branchConfig.minDistanceFromTree, branchConfig.maxDistanceFromTree) * (math.random() < 0.5 and 1 or -1) ),
             tree.position.z + 500
         }
         --Branches are all of slightly different sizes
@@ -128,7 +123,7 @@ local function addBranchesToTree(tree)
             mwscript.setDelete{ reference = branch}
         end
         --Too steep means it landed on a wall or something
-        local tooSteep = math.abs(branch.orientation.x) > maxSteepness or math.abs(branch.orientation.y) > maxSteepness
+        local tooSteep = math.abs(branch.orientation.x) > branchConfig.maxSteepness or math.abs(branch.orientation.y) > branchConfig.maxSteepness
         if tooSteep then
             branch:disable()
             mwscript.setDelete{ reference = branch}
@@ -152,8 +147,8 @@ local function checkAndRestoreBranch(branch)
         common.log:debug("Now: %s", now)
         common.log:debug("branch was last picked up %s", branch.data.lastPickedUp )
         common.log:debug("now - lastPickedup = %s", (now - branch.data.lastPickedUp))
-        common.log:debug("Seconds to refresh: %s", hoursToRefresh)
-        if branch.data.lastPickedUp < now - hoursToRefresh then
+        common.log:debug("Seconds to refresh: %s", branchConfig.hoursToRefresh)
+        if branch.data.lastPickedUp < now - branchConfig.hoursToRefresh then
             common.log:debug("Re-enabling branch")
             branch:enable()
         end

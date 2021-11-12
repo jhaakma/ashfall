@@ -17,14 +17,7 @@ local logLevels = {
     ERROR = 5,
     NONE = 6
 }
--- Logger.logLevel = {
---     TRACE = "TRACE",
---     DEBUG = "DEBUG",
---     INFO = "INFO",
---     WARN = "WARN",
---     ERROR = "ERROR",
---     NONE ="NONE",
--- }
+
 --Check log level to determine if log should be written out
 function Logger:doLog(logLevel)
     local currentLogLevel = self.logLevel or defaultLogLevel
@@ -119,6 +112,10 @@ end
 --Setup log functions, logger:info, logger:error() etc
 for logLevel, _ in pairs(logLevels) do
     Logger[string.lower(logLevel)] = function(self, message, ...)
+        if type(self) == "string" then
+            mwse.log(debug.traceback("ERROR: Called logger method with a . instead of a :"))
+            return
+        end
         if self:doLog(logLevel) then
             self:write(logLevel, message, ...)
         end
