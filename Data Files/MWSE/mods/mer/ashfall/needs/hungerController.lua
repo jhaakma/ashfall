@@ -240,14 +240,10 @@ local function onShiftActivateFood(e)
                 itemData = e.target.itemData,
                 reference = tes3.player
             }
-            local response = event.trigger("equip", eventData, { filter = tes3.player })
-            if response.block ~= true then
-                common.log:debug("Equipping %s!!!!!!!!!!!", e.target)
-                tes3.player.mobile:equip{
-                    item = e.target.object,
-                    itemData = e.target.itemData
-                }
-            end
+            tes3.playSound{ reference = tes3.player, sound = "Swallow" }
+            common.helper.yeet(e.target)
+            onEquipFood(eventData)
+            e.block = true
         end
     end
 end
