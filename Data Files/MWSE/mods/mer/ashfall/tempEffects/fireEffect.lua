@@ -45,12 +45,15 @@ local function getHeatSourceValue(ref)
     end
 end
 
+local function isLight(ref)
+    return ref.baseObject.objectType == tes3.objectType.light
+end
+
 refController.registerReferenceController{
     id = "heatSource",
     requirements = function(_, ref)
         if ref.disabled then return false end
-        local isLight = ref.baseObject.objectType == tes3.objectType.light
-        if isLight then
+        if isLight(ref) then
             return getHeatSourceValue(ref) ~= nil
                 and not activatorConfig.list.fire:isActivator(ref.object.id)
                 and not activatorConfig.list.campfire:isActivator(ref.object.id)
@@ -100,6 +103,17 @@ local function getHeatAtDistance(maxHeat, distance)
     return math.remap( distance, maxDistance, 0,  0, maxHeat )
 end
 
+--[[
+    If a heat source is a light object and it has
+    no light attachment, block the heat
+]]
+local function isUnlit(ref)
+    if ref.baseObject.objectType == tes3.objectType.light then
+        return ref:getAttachedDynamicLight() == nil
+    end
+    return false
+end
+
 function this.calculateFireEffect()
     if not staticConfigs.conditionConfig.temp:isActive() then return end
     local totalHeat = 0
@@ -112,6 +126,7 @@ function this.calculateFireEffect()
         local isValid = distance < maxDistance
             and (not ref.disabled)
             and ref.data.isLit
+            and (not isUnlit(ref))
 
         if isValid then
             --For survival skill
@@ -132,7 +147,10 @@ function this.calculateFireEffect()
 
     local function doFlameHeat(ref)
         local distance = getDistance(ref)
-        if (distance < maxDistance) and not ref.disabled then
+        local isValid = distance < maxDistance
+            and (not ref.disabled)
+            and (not isUnlit(ref))
+        if isValid then
             local heatAtMaxDistance = maxFirepitHeat
             checkWarmHands()
             if warmingHands then
@@ -147,7 +165,10 @@ function this.calculateFireEffect()
 
     local function doOtherHeat(ref)
         local distance = getDistance(ref)
-        if (distance < maxDistance) and not ref.disabled then
+        local isValid = distance < maxDistance
+            and (not ref.disabled)
+            and (not isUnlit(ref))
+        if isValid then
             local heatAtMaxDistance = getHeatSourceValue(ref)
             local heatAtThisDistance = getHeatAtDistance(heatAtMaxDistance, distance)
             totalHeat = totalHeat + heatAtThisDistance
