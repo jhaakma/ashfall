@@ -17,7 +17,7 @@ local AttachConfig = {
             if isOpen then
                 common.log:trace("Door is open, closing")
                 tes3.playSound{
-                    sound = "ashfall_door_open",
+                    sound = "ashfall_door_close",
                     reference = tes3.player,
                     loop = false,
                 }
