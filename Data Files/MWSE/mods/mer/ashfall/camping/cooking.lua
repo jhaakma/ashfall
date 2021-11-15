@@ -23,16 +23,12 @@ end
 --Checks if the ingredient has been placed on a campfire
 local function findGriller(ingredient)
 
+
     local ignoreList = {ingredient}
-    --For each active cell, iterate over all misc items and add frying pans to ignoreList
-    for _, cell in ipairs(tes3.getActiveCells()) do
-        for ref in cell:iterateReferences(tes3.objectType.miscItem) do
-            local grillConfig = common.staticConfigs.grills[ref.object.id:lower()]
-            if grillConfig and grillConfig.fryingPan then
-                table.insert(ignoreList, ref)
-            end
-        end
-    end
+    --Ignore frying pans
+    common.helper.iterateRefType("fryingPan", function(fryingPan)
+        table.insert(ignoreList, fryingPan)
+    end)
     local result = common.helper.getGroundBelowRef{ ref = ingredient, ignoreList = ignoreList}
 
     if result and result.reference then
