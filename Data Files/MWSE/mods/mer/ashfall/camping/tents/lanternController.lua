@@ -174,8 +174,10 @@ function this.removeLantern(tentRef)
                     item = lantern.id,
                     updateGUI = true
                 }
-                itemData.data = tentRef.data.lantern.data.data
-                itemData.timeLeft = tentRef.data.lantern.data.timeLeft
+                if itemData then
+                    itemData.data = tentRef.data.lantern.data.data
+                    itemData.timeLeft = tentRef.data.lantern.data.timeLeft
+                end
             end
             tentRef.data.lantern = nil
         else
