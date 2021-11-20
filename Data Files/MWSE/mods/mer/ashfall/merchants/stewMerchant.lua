@@ -1,10 +1,7 @@
 local common = require("mer.ashfall.common.common")
 local config = require("mer.ashfall.config.config").config
+local merchantMenu = require("mer.ashfall.merchants.merchantMenu")
 local foodConfig = common.staticConfigs.foodConfig
-local GUID_MenuDialog = tes3ui.registerID("MenuDialog")
-local GUID_MenuDialog_TopicList = tes3ui.registerID("MenuDialog_topics_pane")
-local GUID_MenuDialog_Divider = tes3ui.registerID("MenuDialog_divider")
-local GUID_MenuDialog_StewService = tes3ui.registerID("MenuDialog_service_StewService")
 
 local dispMulti = 3.0
 local personalityMulti = 2.0
@@ -25,7 +22,7 @@ end
 
 
 local function stewSelectMenu()
-    local menuDialog = tes3ui.findMenu(GUID_MenuDialog)
+    local menuDialog = merchantMenu.getDialogMenu()
     local merchant = menuDialog:getPropertyObject("PartHyperText_actor")
 
     local menuMessage = "Select a Meal"
@@ -49,10 +46,10 @@ local function stewSelectMenu()
                 mwscript.removeItem({ reference = tes3.player, item = "Gold_001", count = cost})
                 --tes3.playSound{ reference = tes3.player, sound = "Item Gold Down"}
 
-                if menuDialog then
-                    tes3ui.leaveMenuMode()
-                    menuDialog:destroy()
-                end
+                -- if menuDialog then
+                --     tes3ui.leaveMenuMode()
+                --     menuDialog:destroy()
+                -- end
             end,
             tooltip = {
                 header = string.format("%s %s", spell.name, stewName),
@@ -88,7 +85,7 @@ local function getDisabled(cost)
 end
 
 local function makeTooltip()
-    local menuDialog = tes3ui.findMenu(GUID_MenuDialog)
+    local menuDialog = merchantMenu.getDialogMenu()
     if not menuDialog then return end
     local merchant = menuDialog:getPropertyObject("PartHyperText_actor")
     local cost = getStewCost(merchant.object)
@@ -109,15 +106,10 @@ end
 
 local function updateStewServiceButton(e)
     timer.frame.delayOneFrame(function()
-
-        local menuDialog = tes3ui.findMenu(GUID_MenuDialog)
+        local menuDialog = merchantMenu.getDialogMenu()
         if not menuDialog then return end
 
-        local topicsScrollPane = menuDialog:findChild(GUID_MenuDialog_TopicList)
-        local stewServiceButton = topicsScrollPane:findChild(GUID_MenuDialog_StewService)
-        if not ( topicsScrollPane and stewServiceButton ) then
-            return
-        end
+        local stewServiceButton = menuDialog:findChild(merchantMenu.guids.MenuDialog_StewService)
 
         local merchant = menuDialog:getPropertyObject("PartHyperText_actor")
         local cost = getStewCost(merchant.object)
@@ -127,22 +119,29 @@ local function updateStewServiceButton(e)
         else
             stewServiceButton.disabled = false
         end
-
         stewServiceButton.text = getStewMenuText(merchant.object)
-
-        -- Reshow the button.
-        stewServiceButton.visible = true
-        topicsScrollPane.widget:contentsChanged()
     end)
 end
 
+local function createStewButton(menuDialog)
+    local parent = merchantMenu.getButtonBlock()
+    local merchant = merchantMenu.getMerchantObject()
+    local button = parent:createTextSelect{
+        id = merchantMenu.guids.MenuDialog_StewService,
+        text = getStewMenuText(merchant)
+    }
+    button.widthProportional = 1.0
+    button:register("mouseClick", onStewServiceClick)
+    button:register("help", makeTooltip)
+    menuDialog:registerAfter("update", updateStewServiceButton)
+end
 
 
 local function onMenuDialogActivated()
     if config.enableThirst ~= true then return end
 
     common.log:debug("Dialog menu entered")
-    local menuDialog = tes3ui.findMenu(GUID_MenuDialog)
+    local menuDialog = merchantMenu.getDialogMenu()
     -- Get the actor that we're talking with.
 	local mobileActor = menuDialog:getPropertyObject("PartHyperText_actor")
     local ref = mobileActor.reference
@@ -152,15 +151,7 @@ local function onMenuDialogActivated()
     if common.isInnkeeper(ref) then
         common.log:debug("Actor is an innkeeper, adding Fill Stew Service")
         -- Create our new button.
-        local topicsScrollPane = menuDialog:findChild(GUID_MenuDialog_TopicList)
-        local divider = topicsScrollPane:findChild(GUID_MenuDialog_Divider)
-        local topicsList = divider.parent
-        local stewServiceButton = topicsList:createTextSelect({ id = GUID_MenuDialog_StewService, text = "" })
-
-        topicsList:reorderChildren(divider, stewServiceButton, 1)
-        stewServiceButton:register("mouseClick", onStewServiceClick)
-        menuDialog:registerAfter("update", updateStewServiceButton)
-        stewServiceButton:register("help", makeTooltip)
+        createStewButton(menuDialog)
     end
 end
 event.register("uiActivated", onMenuDialogActivated, { filter = "MenuDialog", priority = -100 } )

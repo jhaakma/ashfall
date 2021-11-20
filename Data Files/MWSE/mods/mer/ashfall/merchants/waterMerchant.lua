@@ -1,10 +1,8 @@
 local common = require("mer.ashfall.common.common")
+local merchantMenu = require('mer.ashfall.merchants.merchantMenu')
 local config = require("mer.ashfall.config.config").config
 local thirstController = require("mer.ashfall.needs.thirstController")
-local GUID_MenuDialog = tes3ui.registerID("MenuDialog")
-local GUID_MenuDialog_TopicList = tes3ui.registerID("MenuDialog_topics_pane")
-local GUID_MenuDialog_Divider = tes3ui.registerID("MenuDialog_divider")
-local GUID_MenuDialog_WaterService = tes3ui.registerID("MenuDialog_service_WaterService")
+
 
 local dispMulti = 3.0
 local personalityMulti = 2.0
@@ -19,13 +17,13 @@ end
 
 local function getWaterText(merchantObj)
     local cost = getWaterCost(merchantObj)
-    return string.format("Refill (%d gold)", cost)
+    return string.format("Water Refill (%d gold)", cost)
 end
 
 
 local function onWaterServiceClick()
     common.log:debug("Activating water menu")
-    local menuDialog = tes3ui.findMenu(GUID_MenuDialog)
+    local menuDialog = merchantMenu.getDialogMenu()
     local merchant = menuDialog:getPropertyObject("PartHyperText_actor")
     local cost = getWaterCost(merchant.object)
 
@@ -41,7 +39,7 @@ local function getDisabled(cost)
 end
 
 local function makeTooltip()
-    local menuDialog = tes3ui.findMenu(GUID_MenuDialog)
+    local menuDialog = merchantMenu.getDialogMenu()
     if not menuDialog then return end
     local merchant = menuDialog:getPropertyObject("PartHyperText_actor")
     local cost = getWaterCost(merchant.object)
@@ -62,40 +60,40 @@ end
 
 local function updateWaterServiceButton(e)
     timer.frame.delayOneFrame(function()
-        local menuDialog = tes3ui.findMenu(GUID_MenuDialog)
+        local menuDialog = merchantMenu.getDialogMenu()
         if not menuDialog then return end
-
-        local topicsScrollPane = menuDialog:findChild(GUID_MenuDialog_TopicList)
-        local waterServiceButton = topicsScrollPane:findChild(GUID_MenuDialog_WaterService)
-        if not ( topicsScrollPane and waterServiceButton ) then
-            return
-        end
-
-        local merchant = menuDialog:getPropertyObject("PartHyperText_actor")
-        local cost = getWaterCost(merchant.object)
+        local waterServiceButton = menuDialog:findChild(merchantMenu.guids.MenuDialog_WaterService)
+        local merchant = merchantMenu.getMerchantObject()
+        local cost = getWaterCost(merchant)
         if getDisabled(cost) then
-            waterServiceButton.widget.state = 2
             waterServiceButton.disabled = true
+            waterServiceButton.widget.state = 2
         else
             waterServiceButton.disabled = false
         end
-
-        common.log:trace("Updating Water Service Button")
-        waterServiceButton.text = getWaterText(merchant.object)
-
-        -- Reshow the button.
-        waterServiceButton.visible = true
-        topicsScrollPane.widget:contentsChanged()
+        waterServiceButton.text = getWaterText(merchant)
     end)
 end
 
 
+local function createWaterButton(menuDialog)
+    local parent = merchantMenu.getButtonBlock()
+    local merchant = merchantMenu.getMerchantObject()
+    local button = parent:createTextSelect{
+        id = merchantMenu.guids.MenuDialog_WaterService,
+        text = getWaterText(merchant)
+    }
+    button.widthProportional = 1.0
+    button:register("mouseClick", onWaterServiceClick)
+    button:register("help", makeTooltip)
+    menuDialog:registerAfter("update", updateWaterServiceButton)
+end
 
 local function onMenuDialogActivated()
     if config.enableThirst ~= true then return end
 
     common.log:debug("Dialog menu entered")
-    local menuDialog = tes3ui.findMenu(GUID_MenuDialog)
+    local menuDialog = merchantMenu.getDialogMenu()
     -- Get the actor that we're talking with.
 	local mobileActor = menuDialog:getPropertyObject("PartHyperText_actor")
     local ref = mobileActor.reference
@@ -105,15 +103,7 @@ local function onMenuDialogActivated()
     if common.isInnkeeper(ref) then
         common.log:debug("Actor is an innkeeper, adding Fill Water Service")
         -- Create our new button.
-        local topicsScrollPane = menuDialog:findChild(GUID_MenuDialog_TopicList)
-        local divider = topicsScrollPane:findChild(GUID_MenuDialog_Divider)
-        local topicsList = divider.parent
-        local waterServiceButton = topicsList:createTextSelect({ id = GUID_MenuDialog_WaterService, text = "" })
-
-        topicsList:reorderChildren(divider, waterServiceButton, 1)
-        waterServiceButton:register("mouseClick", onWaterServiceClick)
-        menuDialog:registerAfter("update", updateWaterServiceButton)
-        waterServiceButton:register("help", makeTooltip)
+        createWaterButton(menuDialog)
     end
 end
-event.register("uiActivated", onMenuDialogActivated, { filter = "MenuDialog", priority = -100 } )
+event.register("uiActivated", onMenuDialogActivated, { filter = "MenuDialog", priority = -99 } )
