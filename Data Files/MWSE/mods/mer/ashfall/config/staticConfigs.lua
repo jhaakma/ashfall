@@ -1,6 +1,6 @@
 local this = {}
 
-this.activatorConfig = require("mer.Ashfall.config.activatorConfig")
+this.activatorConfig = require("mer.Ashfall.activators.activatorConfig")
 this.conditionConfig = require("mer.Ashfall.config.conditionConfig")
 this.foodConfig = require("mer.Ashfall.config.foodConfig")
 this.teaConfig = require("mer.Ashfall.config.teaConfig")
