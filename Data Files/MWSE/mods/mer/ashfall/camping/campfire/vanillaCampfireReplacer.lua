@@ -144,6 +144,11 @@ local function getRandomItem(list)
     return item
 end
 
+local function addLadle(campfire)
+    campfire.data.ladle = true
+    campfire.data.dynamicConfig.ladle = "static"
+end
+
 local function addWater(campfire)
     if math.random() < randomStuffChances.water then
         campfire.data.waterAmount = 10 + math.random(50)
@@ -160,7 +165,8 @@ local function addWater(campfire)
         --add random stew to cooking pots
         elseif campfire.data.utensil == "cookingPot" then
             if math.random() < randomStuffChances.stew then
-                campfire.data.ladle = true
+                addLadle(campfire)
+
                 campfire.data.stewLevels = {}
                 local stewTypes = {}
                 for stewType, _ in pairs(foodConfig.getStewBuffList()) do
@@ -191,6 +197,8 @@ local function addKettle(campfire)
     campfire.data.waterCapacity = common.staticConfigs.utensils[campfire.data.utensilId].capacity
     addWater(campfire)
 end
+
+
 
 local function addSupports(campfire, vanillaConfig)
     common.log:debug("Setting supports")

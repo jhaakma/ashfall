@@ -1,12 +1,16 @@
 return {
     text = "Add Ladle",
     showRequirements = function(campfire)
-        return (
-            campfire.sceneNode:getObjectByName("SWITCH_LADLE") and
-            not campfire.data.ladle and
-            campfire.data.dynamicConfig and
-            campfire.data.dynamicConfig.cookingPot == "dynamic"
-        )
+        local hasLadleNode = campfire.sceneNode:getObjectByName("SWITCH_LADLE")
+        local hasLadle =  campfire.data.ladle
+        local hasStaticLadle = campfire.data.dynamicConfig and campfire.data.dynamicConfig.ladle == "static"
+        mwse.log("hasLadle: %s", hasLadle)
+        mwse.log("hasStaticLadle: %s", hasStaticLadle)
+        mwse.log("hasLadleNode: %s", hasLadleNode)
+
+        return hasLadleNode
+            and not hasLadle
+            and not hasStaticLadle
     end,
     enableRequirements = function()
         return mwscript.getItemCount{ reference = tes3.player, item = "misc_com_iron_ladle"} > 0

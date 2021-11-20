@@ -4,9 +4,11 @@ return  {
     text = "Remove Ladle",
     showRequirements = function(campfire)
         return (
-            campfire.data.dynamicConfig and
-            campfire.data.dynamicConfig.cookingPot == "dynamic" and
-            campfire.data.ladle == true
+            (
+                (not campfire.data.dynamicConfig) or
+                (campfire.data.dynamicConfig.ladle ~= "static")
+            )
+            and campfire.data.ladle == true
         )
     end,
     enableRequirements = function(campfire)
