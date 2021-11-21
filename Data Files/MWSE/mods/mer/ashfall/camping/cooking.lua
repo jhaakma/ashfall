@@ -301,7 +301,7 @@ local function foodPlaced(e)
                 if hasWater and hasLadle and utensilData and utensilData.holdsStew then
                     doAddingredToStew(campfire, e.reference)
                 end
-            elseif foodConfig.getGrillValues(e.reference.object) then
+            elseif foodConfig.getGrillValues(e.reference.object) and not common.helper.isStack(e.reference) then
                 local timestamp = tes3.getSimulationTimestamp()
                 local ingredReference = e.reference
                 --Reset grill time for meat and veges
