@@ -8,6 +8,7 @@ this.types = {
     fire = "fire",
     campfire = "campfire",
     woodSource = "woodSource",
+    resinSource = "resinSource",
     vegetation = "vegetation",
     branch = "branch",
     cauldron = "cauldron",
@@ -218,18 +219,10 @@ this.list.vegetation = Activator:new{
 }
 this.list.tree = Activator:new{
     name = "Tree",
-    type = this.types.woodSource,
+    type = this.types.resinSource,
     mcmSetting = nil,
     patterns = {
-        ["flora_ash_log"] = true,
-        ["flora_ashtree"] = true,
-        ["flora_bc_knee"] = true,
-        ["flora_bc_log"] = true,
         ["flora_bc_tree"] = true,
-        ["flora_bm_log"] = true,
-        ["flora_bm_snow_log"] = true,
-        ["flora_bm_snowstump"] = true,
-        ["flora_bm_treestump"] = true,
         ["flora_emp_parasol"] = true,
         ["flora_root_wg"] = true,
         ["flora_tree"] = true,
@@ -255,7 +248,6 @@ this.list.tree = Activator:new{
         ['florakstr_tree'] = true, --TR
         ['floravm_tree'] = true, --TR
         ['floraww_tree'] = true, --TR
-
     },
 }
 this.list.wood = Activator:new{
