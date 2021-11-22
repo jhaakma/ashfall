@@ -57,35 +57,35 @@ this.recipes = {
         id = "ashfall_sack_01",
         description = "A sack made of animal hides that can be placed on the ground and used as storage.",
         materials = {
-            { material = this.materials.leather, count = 3 }
+            { material = this.materials.leather, count = 2 }
         }
     },
     {
         id = "ashfall_chest_01_m",
         description = "A large wooden chest that can be placed on the ground and used as storage.",
         materials = {
-            { material = this.materials.wood, count = 10 }
+            { material = this.materials.wood, count = 8 }
         }
     },
     {
         id = "ashfall_strawbed",
         description = "Bedding made of dried plant fibres.",
         materials = {
-            { material = this.materials.fibre, count = 10 }
+            { material = this.materials.fibre, count = 5 }
         }
     },
     {
         id = "ashfall_strawhat",
         description = "A straw hat the offers mild protection from the rain.",
         materials = {
-            { material = this.materials.fibre, count = 5 }
+            { material = this.materials.fibre, count = 4 }
         }
     },
     {
         id = "ashfall_waterskin",
         description = "A waterskin made of sewn animal hide, made waterproof with a resin coating.",
         materials = {
-            { material = this.materials.leather, count = 2 },
+            { material = this.materials.leather, count = 1 },
             { material = this.materials.resin, count = 1 }
         }
     },
@@ -107,16 +107,16 @@ this.recipes = {
         materials = {
             { material = this.materials.wood, count = 4 },
             { material = this.materials.rope, count = 1 },
-            { material = this.materials.leather, count = 4 },
+            { material = this.materials.leather, count = 2 },
         }
     },
     {
         id = "ashfall_tent_leather_m",
         description = "A heavy tent stitched together from various animal hides",
         materials = {
-            { material = this.materials.leather, count = 10 },
+            { material = this.materials.leather, count = 4 },
             { material = this.materials.wood, count = 6 },
-            { material = this.materials.rope, count = 8 },
+            { material = this.materials.rope, count = 4 },
         }
     },
 
