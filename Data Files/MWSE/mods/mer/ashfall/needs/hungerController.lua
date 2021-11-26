@@ -208,14 +208,14 @@ local function addDisease(e)
 end
 
 local function onEquipFood(e)
-    common.log:debug("EQUIP")
+    common.log:trace("onEquipFood")
     if common.getIsBlocked(e.item) then
-        common.log:debug("Is Blocked")
+        common.log:debug("onEquipFood: Is Blocked")
         return
     end
     local nutrition = this.getNutrition(e.item, e.itemData)
     if nutrition then
-        common.log:debug("Is ingredient")
+        common.log:debug("onEquipFood: Is ingredient")
         this.eatAmount(nutrition)
         addFoodPoisoning(e)
         addDisease(e)

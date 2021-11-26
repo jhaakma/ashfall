@@ -141,11 +141,11 @@ end
 
 
 local function blockMagickaAtronach()
-    common.log:debug("Checking atronach settings")
+    common.log:trace("Checking atronach settings")
     if tes3.isAffectedBy{ reference = tes3.player, effect = tes3.effect.stuntedMagicka} then
         common.log:debug("Is an atronach")
         if config.atronachRecoverMagickaDrinking ~= true then
-            common.log:debug("Atronachs not allowed to recover magicka from drinking")
+            common.log:debug("blockMagickaAtronach: Blocking atronach from gaining magicka")
             return true
         end
     end

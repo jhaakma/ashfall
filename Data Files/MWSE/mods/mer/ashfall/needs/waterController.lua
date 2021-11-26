@@ -186,6 +186,19 @@ end
 event.register("Ashfall:ActivateButtonPressed", checkDrinkRain )
 
 
+local function getWaterName(data)
+    local waterName = "Water"
+    if data.stewLevels then
+        waterName = "Stew"
+    elseif data.waterType == "dirty" then
+        waterName = "Water (Dirty)"
+    elseif teaConfig.teaTypes[data.waterType] then
+        waterName = teaConfig.teaTypes[data.waterType].teaName
+    elseif data.stewLevels then
+        waterName = foodConfig.isStewNotSoup(data.stewLevels) and "Stew" or "Soup"
+    end
+    return waterName
+end
 
 --Player activates a bottle with water in it
 local function doDrinkWater(bottleData)
@@ -241,18 +254,7 @@ local function drinkFromContainer(e)
         end
 
         if doPrompt then
-            local waterName = ""
-            if e.itemData.data.stewLevels then
-                waterName = "Stew"
-            elseif e.itemData.data.waterType == "dirty" then
-                waterName = "Water (Dirty)"
-            elseif teaConfig.teaTypes[e.itemData.data.waterType] then
-                waterName = teaConfig.teaTypes[e.itemData.data.waterType].teaName
-            elseif e.itemData.data.stewLevels then
-                waterName = foodConfig.isStewNotSoup(e.itemData.data.stewLevels) and "Stew" or "Soup"
-            else
-                waterName = "Water (Dirty)"
-            end
+            local waterName = getWaterName(e.itemData.data)
 
             local currentAmount = e.itemData.data.waterAmount
             local maxAmount = thirstController.getBottleData(e.item.id).capacity
@@ -410,14 +412,7 @@ local function onShiftActivateWater(e)
         local isModifierKeyPressed = inputController:isKeyDown(config.modifierHotKey.keyCode)
 
         if isModifierKeyPressed then
-            local message = "Water (Clean)"
-            if e.target.data.stewLevels then
-                message = "Stew"
-            elseif e.target.data.waterType == "dirty" then
-                message = "Water (Dirty)"
-            elseif teaConfig.teaTypes[e.target.data.waterType] then
-                message = teaConfig.teaTypes[e.target.data.waterType].teaName
-            end
+            local message = getWaterName(e.target.data)
             local bottleType = common.staticConfigs.bottleList[e.target.object.id:lower()]
             message = string.format("%s (%d/%d)", message, math.ceil(e.target.data.waterAmount), bottleType.capacity)
             local buttons = {
