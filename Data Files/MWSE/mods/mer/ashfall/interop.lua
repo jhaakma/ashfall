@@ -412,18 +412,20 @@ local Interop = {
     -- end,
 
     registerOverrides = function(data)
+        local success = true
         for id, override in pairs(data) do
             if type(override) == 'table' then
                 --check override has a weight or value field
                 assert(override.weight or override.value, "Override must have a weight or value field")
                 common.log:debug("Registering override for %s", id)
                 overrides[id] = override
-                return true
+
             else
                 mwse.log("Invalid override data. Must be a table.")
-                return false
+                success = false
             end
         end
+        return success
     end
 }
 
