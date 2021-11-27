@@ -98,7 +98,12 @@ this.controllers = {
             local grillConfig = staticConfigs.grills[ref.object.id:lower()]
             return grillConfig and grillConfig.fryingPan
         end
-    }
+    },
+    grillableFood = ReferenceController:new{
+        requirements = function(_, ref)
+            return staticConfigs.foodConfig.getGrillValues(ref.object)
+        end
+    },
 }
 
 local function onRefPlaced(e)

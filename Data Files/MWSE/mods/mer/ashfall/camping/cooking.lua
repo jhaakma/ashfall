@@ -147,99 +147,90 @@ end
 ---@param timestamp number
 local function grillFoodItem(ingredReference, timestamp)
     --Can only grill certain types of food
-    if foodConfig.getGrillValues(ingredReference.object) then
-        local campfire = findGriller(ingredReference)
-        if campfire then
-            if campfire.data.isLit then
-                if common.helper.isStack(ingredReference) or ingredReference.data.lastCookUpdated == nil then
-                    startCookingIngredient(ingredReference, timestamp)
-                    return
+    local campfire = findGriller(ingredReference)
+    if campfire then
+        if campfire.data.isLit then
+            if common.helper.isStack(ingredReference) or ingredReference.data.lastCookUpdated == nil then
+                startCookingIngredient(ingredReference, timestamp)
+                return
+            end
+
+            ingredReference.data.lastCookUpdated = ingredReference.data.lastCookUpdated or timestamp
+            ingredReference.data.cookedAmount = ingredReference.data.cookedAmount or 0
+
+            local difference = timestamp - ingredReference.data.lastCookUpdated
+            if difference > 0.008 then
+
+                addGrillPatina(campfire, difference)
+                ingredReference.data.lastCookUpdated = timestamp
+
+                local thisCookMulti = calculateCookMultiplier(CampfireUtil.getHeat(campfire.data))
+                local weightMulti = calculateCookWeightModifier(ingredReference.object)
+                ingredReference.data.cookedAmount = ingredReference.data.cookedAmount + ( difference * thisCookMulti * weightMulti)
+                local cookedAmount = ingredReference.data.cookedAmount
+
+                local burnLimit = hungerController.getBurnLimit()
+                --- Just cooked - reached 100 cooked but still doesn't have a cooked grill state
+                local justCooked = cookedAmount > 100
+                    and cookedAmount < burnLimit
+                    and ingredReference.data.grillState ~= "cooked"
+                    and ingredReference.data.grillState ~= "burnt"
+
+                local justBurnt = cookedAmount >= burnLimit
+                    and ingredReference.data.grillState ~= "burnt"
+
+
+                local function doCook()
+                    ingredReference.data.grillState = "cooked"
+                    tes3.playSound{ sound = "potion fail", pitch = 0.7, reference = ingredReference }
+                    common.skills.survival:progressSkill(skillSurvivalGrillingIncrement)
+                    event.trigger("Ashfall:ingredCooked", { reference = ingredReference})
+                    local justChangedCell = difference > 0.01
+                    if not justChangedCell then
+                        tes3.messageBox("%s is fully cooked.", ingredReference.object.name)
+                    end
                 end
 
-                ingredReference.data.lastCookUpdated = ingredReference.data.lastCookUpdated or timestamp
-                ingredReference.data.cookedAmount = ingredReference.data.cookedAmount or 0
-
-                local difference = timestamp - ingredReference.data.lastCookUpdated
-                if difference > 0.008 then
-
-                    addGrillPatina(campfire, difference)
-                    ingredReference.data.lastCookUpdated = timestamp
-
-                    local thisCookMulti = calculateCookMultiplier(CampfireUtil.getHeat(campfire.data))
-                    local weightMulti = calculateCookWeightModifier(ingredReference.object)
-                    ingredReference.data.cookedAmount = ingredReference.data.cookedAmount + ( difference * thisCookMulti * weightMulti)
-                    local cookedAmount = ingredReference.data.cookedAmount
-
-                    local burnLimit = hungerController.getBurnLimit()
-                    --- Just cooked - reached 100 cooked but still doesn't have a cooked grill state
-                    local justCooked = cookedAmount > 100
-                        and cookedAmount < burnLimit
-                        and ingredReference.data.grillState ~= "cooked"
-                        and ingredReference.data.grillState ~= "burnt"
-
-                    local justBurnt = cookedAmount >= burnLimit
-                        and ingredReference.data.grillState ~= "burnt"
-
-
-                    local function doCook()
-                        ingredReference.data.grillState = "cooked"
-                        tes3.playSound{ sound = "potion fail", pitch = 0.7, reference = ingredReference }
-                        common.skills.survival:progressSkill(skillSurvivalGrillingIncrement)
-                        event.trigger("Ashfall:ingredCooked", { reference = ingredReference})
-                        local justChangedCell = difference > 0.01
-                        if not justChangedCell then
-                            tes3.messageBox("%s is fully cooked.", ingredReference.object.name)
-                        end
+                local function doBurn()
+                    ingredReference.data.grillState = "burnt"
+                    tes3.playSound{ sound = "potion fail", pitch = 0.9, reference = ingredReference }
+                    event.trigger("Ashfall:ingredCooked", { reference = ingredReference})
+                    local justChangedCell = difference > 0.01
+                    if not justChangedCell then
+                        tes3.messageBox("%s has become burnt.", ingredReference.object.name)
                     end
+                end
 
-                    local function doBurn()
-                        ingredReference.data.grillState = "burnt"
-                        tes3.playSound{ sound = "potion fail", pitch = 0.9, reference = ingredReference }
-                        event.trigger("Ashfall:ingredCooked", { reference = ingredReference})
-                        local justChangedCell = difference > 0.01
-                        if not justChangedCell then
-                            tes3.messageBox("%s has become burnt.", ingredReference.object.name)
-                        end
-                    end
-
-                    if justCooked then
-                        --Check if food burned immediately
-                        if checkIfBurned(campfire) then
-                            doBurn()
-                        else
-                            doCook()
-                        end
-                    elseif justBurnt then
+                if justCooked then
+                    --Check if food burned immediately
+                    if checkIfBurned(campfire) then
                         doBurn()
+                    else
+                        doCook()
                     end
-                    tes3ui.refreshTooltip()
+                elseif justBurnt then
+                    doBurn()
                 end
-            else
-                --reset grill time if campfire is unlit
-                resetCookingTime(ingredReference)
+                tes3ui.refreshTooltip()
             end
         else
-            --reset grill time if not placed on a campfire
+            --reset grill time if campfire is unlit
             resetCookingTime(ingredReference)
         end
+    else
+        --reset grill time if not placed on a campfire
+        resetCookingTime(ingredReference)
     end
 end
 
 
 --update any food that is currently grilling
 local function grillFoodSimulate(e)
-    for _, cell in pairs( tes3.getActiveCells() ) do
-        for ingredient in cell:iterateReferences(tes3.objectType.ingredient) do
-            grillFoodItem(ingredient, e.timestamp)
-        end
-        for ingredient in cell:iterateReferences(tes3.objectType.alchemy) do
-            grillFoodItem(ingredient, e.timestamp)
-        end
-    end
+    common.helper.iterateRefType("grillableFood", function(ref)
+        grillFoodItem(ref, e.timestamp)
+    end)
 end
 event.register("simulate", grillFoodSimulate)
-
-
 
 
 local function doAddingredToStew(campfire, reference)
@@ -276,8 +267,6 @@ local function doAddingredToStew(campfire, reference)
         tes3.messageBox("Added %s %s to stew.", amountAdded, reference.object.name)
         common.helper.yeet(reference)
     end
-    return
-
 end
 
 --Place food on a grill or into a pot
