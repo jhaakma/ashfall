@@ -136,9 +136,9 @@ local maxFuelWaterHeat = 10--max fuel multiplier on water heating
 function CampfireUtil.updateWaterHeat(refData, capacity, reference)
     if not refData.waterAmount then return end
     local now = tes3.getSimulationTimestamp()
-    refData.lastWaterUpdated = refData.lastWaterUpdated or now
-    local timeSinceLastUpdate = now - refData.lastWaterUpdated
-    refData.lastWaterUpdated = now
+    refData.lastWaterHeatUpdated = refData.lastWaterHeatUpdated or now
+    local timeSinceLastUpdate = now - refData.lastWaterHeatUpdated
+    refData.lastWaterHeatUpdated = now
     refData.waterHeat = refData.waterHeat or 0
     --Heats up or cools down depending on fuel/is lit
     local heatEffect = -1--negative if cooling down

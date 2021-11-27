@@ -6,7 +6,7 @@ local thirstController = require "mer.ashfall.needs.thirstController"
 local common = require ("mer.ashfall.common.common")
 local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 local patinaController = require("mer.ashfall.camping.patinaController")
-local updateInterval = 0.001
+local BOILER_UPDATE_INTERVAL = 0.001
 
 
 local function addUtensilPatina(campfire,interval)
@@ -42,7 +42,8 @@ local function updateBoilers(e)
             boilerRef.data.lastWaterUpdated = e.timestamp
         end
 
-        if timeSinceLastUpdate > updateInterval then
+        if timeSinceLastUpdate > BOILER_UPDATE_INTERVAL then
+            boilerRef.data.lastWaterUpdated = e.timestamp
             local hasFilledPot = (
                 boilerRef.data.waterAmount and
                 boilerRef.data.waterAmount > 0

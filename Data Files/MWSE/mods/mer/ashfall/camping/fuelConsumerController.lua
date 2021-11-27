@@ -7,7 +7,7 @@ local common = require ("mer.ashfall.common.common")
 local fuelDecay = 1.0
 local fuelDecayRainEffect = 1.4
 local fuelDecayThunderEffect = 1.6
-local updateInterval = 0.001
+local FUEL_UPDATE_INTERVAL = 0.001
 
 local function updateFuelConsumers(e)
     local function doUpdate(fuelConsumer)
@@ -21,11 +21,9 @@ local function updateFuelConsumers(e)
             fuelConsumer.data.lastFuelUpdated = e.timestamp
         end
 
-
-        if difference > updateInterval then
+        if difference > FUEL_UPDATE_INTERVAL then
+            fuelConsumer.data.lastFuelUpdated = e.timestamp
             if fuelConsumer.data.isLit then
-                fuelConsumer.data.lastFuelUpdated = e.timestamp
-
                 local bellowsEffect = 1.0
                 local bellowsId = fuelConsumer.data.bellowsId and fuelConsumer.data.bellowsId:lower()
                 local bellowsData = common.staticConfigs.bellows[bellowsId]

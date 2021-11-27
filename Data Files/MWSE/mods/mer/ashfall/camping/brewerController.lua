@@ -8,7 +8,7 @@ local temperatureController = require("mer.ashfall.temperatureController")
 temperatureController.registerBaseTempMultiplier({ id = "firePetalTeaEffect", coldOnly = true })
 temperatureController.registerBaseTempMultiplier({ id = "hollyTeaEffect", coldOnly = true })
 local brewRate = 160
-local updateInterval = 0.001
+local BREWER_UPDATE_INTERVAL = 0.001
 
 
 local function removeTeaEffect(teaData)
@@ -105,7 +105,6 @@ local function updateBrewers(e)
         brewerRef.data.lastBrewUpdated = brewerRef.data.lastBrewUpdated or e.timestamp
         local difference = e.timestamp - brewerRef.data.lastBrewUpdated
 
-
         if difference < 0 then
             common.log:error("BREWER brewerRef.data.lastBrewUpdated(%.4f) is ahead of e.timestamp(%.4f).",
                 brewerRef.data.lastBrewUpdated, e.timestamp)
@@ -113,13 +112,14 @@ local function updateBrewers(e)
             brewerRef.data.lastBrewUpdated = e.timestamp
         end
 
-        if difference > updateInterval then
+        if difference > BREWER_UPDATE_INTERVAL then
+            brewerRef.data.lastBrewUpdated = e.timestamp
             brewerRef.data.waterHeat =  brewerRef.data.waterHeat  or 0
             local hasWater = brewerRef.data.waterAmount and brewerRef.data.waterAmount > 0
             local waterIsBoiling = brewerRef.data.waterHeat >= common.staticConfigs.hotWaterHeatValue
             local hasTea = teaConfig.teaTypes[brewerRef.data.waterType]
             if hasWater and waterIsBoiling and hasTea then
-                brewerRef.data.lastBrewUpdated = e.timestamp
+
                 --Brew the Tea
                 brewerRef.data.teaProgress = brewerRef.data.teaProgress or 0
                 local waterHeatEffect = common.helper.calculateWaterHeatEffect(brewerRef.data.waterHeat)

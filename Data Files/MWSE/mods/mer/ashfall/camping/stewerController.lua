@@ -7,7 +7,7 @@ local foodConfig = common.staticConfigs.foodConfig
 local hungerController = require("mer.ashfall.needs.hungerController")
 local thirstController = require("mer.ashfall.needs.thirstController")
 local stewCookRate = 40
-local updateInterval = 0.001
+local STEWER_UPDATE_INTERVAL = 0.001
 
 
 --Warmth from Stew
@@ -65,14 +65,14 @@ local function updateStewers(e)
             stewerRef.data.lastStewUpdated = e.timestamp
         end
 
-        if difference > updateInterval then
-
+        if difference > STEWER_UPDATE_INTERVAL then
+            stewerRef.data.lastStewUpdated = e.timestamp
             stewerRef.data.waterHeat = stewerRef.data.waterHeat or 0
             local hasWater = stewerRef.data.waterAmount and stewerRef.data.waterAmount > 0
             local waterIsBoiling = stewerRef.data.waterHeat and stewerRef.data.waterHeat >= common.staticConfigs.hotWaterHeatValue
             local hasStew = stewerRef.data.stewLevels
             if hasWater and waterIsBoiling and hasStew then
-                stewerRef.data.lastStewUpdated = e.timestamp
+
                 --Cook the stew
                 stewerRef.data.stewProgress = stewerRef.data.stewProgress or 0
                 local waterHeatEffect = common.helper.calculateWaterHeatEffect(stewerRef.data.waterHeat)
