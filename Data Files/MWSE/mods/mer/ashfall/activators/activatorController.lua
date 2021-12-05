@@ -127,11 +127,10 @@ function this.callRayTest()
 
     local eyePos
     local eyeVec
-    local maxDist = tes3.findGMST(tes3.gmst.iMaxActivateDist).value
-    if tes3.player.mobile.telekinesis then
-        maxDist = maxDist + tes3.player.mobile.telekinesis
-    end
 
+
+    --While in the menu, the target is based on cursor position
+    --Outside of the menu, the target is based on the player's viewpoint
     if tes3ui.menuMode() then
         local cursor = tes3.getCursorPosition()
         local camera = tes3.worldController.worldCamera.camera
@@ -147,7 +146,7 @@ function this.callRayTest()
         position = eyePos,
         direction = eyeVec,
         ignore = { tes3.player },
-        maxDistance = maxDist,
+        maxDistance = tes3.getMaxActivatorDistance(),
     }
 
     if result and result.reference then
