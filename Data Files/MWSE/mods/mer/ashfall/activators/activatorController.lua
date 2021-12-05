@@ -146,7 +146,7 @@ function this.callRayTest()
         position = eyePos,
         direction = eyeVec,
         ignore = { tes3.player },
-        maxDistance = tes3.getMaxActivatorDistance(),
+        maxDistance = tes3.getPlayerActivationDistance(),
     }
 
     if result and result.reference then
