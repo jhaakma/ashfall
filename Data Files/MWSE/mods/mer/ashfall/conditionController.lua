@@ -82,6 +82,7 @@ local function startRefreshConditionTimer()
     }
 end
 event.register("loaded", startRefreshConditionTimer)
+event.register("menuExit", restoreConditionEffects)
 
 
 local function removeConditionEffects()
