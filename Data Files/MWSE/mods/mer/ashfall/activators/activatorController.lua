@@ -142,11 +142,13 @@ function this.callRayTest()
 
     if not (eyePos or eyeVec) then return end
 
+    local activationDistance = tes3.getPlayerActivationDistance()
+
     local result = tes3.rayTest{
         position = eyePos,
         direction = eyeVec,
         ignore = { tes3.player },
-        maxDistance = tes3.getPlayerActivationDistance(),
+        maxDistance = activationDistance,
     }
 
     if result and result.reference then
@@ -165,7 +167,7 @@ function this.callRayTest()
         local cell =  tes3.player.cell
         local waterLevel = cell.hasWater and cell.waterLevel
         if waterLevel and eyePos.z > waterLevel then
-            local intersection = (result and result.intersection) or (eyePos + eyeVec * maxDist)
+            local intersection = (result and result.intersection) or (eyePos + eyeVec * activationDistance)
             if waterLevel >= intersection.z then
                 this.current = "water"
             end
