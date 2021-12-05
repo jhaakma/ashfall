@@ -19,7 +19,7 @@ local function updateTooltip(e)
     local campfire = e.reference
     local parentNode = e.parentNode
     local attachmentConfig = CampfireUtil.getAttachmentConfig(parentNode)
-    if attachmentConfig then
+    if attachmentConfig and e.reference then
         CampfireUtil.addExtraTooltip(attachmentConfig, campfire, labelBorder)
         label.text = CampfireUtil.getAttachmentName(campfire, attachmentConfig) or label.text
     end
