@@ -2,6 +2,7 @@ local activatorConfig = require("mer.ashfall.config.staticConfigs").activatorCon
 local staticConfigs = require('mer.ashfall.config.staticConfigs')
 local this = {}
 
+
 local ReferenceController = {
     new = function(self, o)
         o = o or {}   -- create object if user does not provide one
@@ -107,7 +108,7 @@ this.controllers = {
 }
 
 local function onRefPlaced(e)
-    for id, controller in pairs(this.controllers) do
+    for _, controller in pairs(this.controllers) do
         if controller:requirements(e.reference) then
             controller:addReference(e.reference)
         end
@@ -119,7 +120,7 @@ event.register("Ashfall:registerReference", onRefPlaced)
 
 local function onObjectInvalidated(e)
     local ref = e.object
-    for controllerName, controller in pairs(this.controllers) do
+    for _, controller in pairs(this.controllers) do
         if controller.references[ref] == true then
             controller:removeReference(ref)
         end
