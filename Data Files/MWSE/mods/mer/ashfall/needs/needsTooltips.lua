@@ -295,7 +295,7 @@ local function createNeedsTooltip(e)
             and e.itemData.data
             and e.itemData.data.waterAmount
             and e.itemData.data.waterHeat
-            and e.itemData.data.waterHeat > 0
+            and e.itemData.data.waterHeat >= 1
 
         if hasWaterAndHeat then
             if not e.reference then
