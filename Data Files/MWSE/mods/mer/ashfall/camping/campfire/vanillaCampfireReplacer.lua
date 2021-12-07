@@ -39,16 +39,28 @@ local vanillaCampfires = {
 
     furn_de_minercave_grill_01 = { replacement = "ashfall_campfire", supports = false, rootHeight = 0, hasGrill = true, rotation = 90, infinite = true},
 
+    --Hearths and fireplaces
     furn_redoran_hearth_01 = { replacement = "ashfall_redhearth_01", supports = false, rootHeight = 0, exactPosition = true },
     furn_redoran_hearth_02 = { replacement = "ashfall_redhearth_02", supports = false, rootHeight = 0, exactPosition = true },
     furn_fireplace10 = { replacement = "ashfall_fireplace10", supports = false, rootHeight = 0, exactPosition = true },
     in_nord_fireplace_01 = { replacement = "ashfall_nordfireplace_01", supports = false, rootHeight = 0, exactPosition = true },
     in_imp_fireplace_grand = { replacement = "ashfall_impfireplace_01", supports = false, rootHeight = 0, exactPosition = true },
 
+    --TR
+    t_imp_setsky_i_fireplace_01 = { replacement = "ashfall_skyfp_01", supports = false, rootHeight = 0, exactPosition = true },
+    t_imp_setsky_i_fireplace_02 = { replacement = "ashfall_skyfp_02", supports = false, rootHeight = 0, exactPosition = true },
+    t_nor_furn_fireplace_01 = { replacement = "ashfall_skyfp_03", supports = false, rootHeight = 0, exactPosition = true },
+    t_nor_furn_fireplace_02 = { replacement = "ashfall_skyfp_hf1", supports = false, rootHeight = 0, exactPosition = true },
+    t_nor_furn_fireplace_03 = { replacement = "ashfall_skyfp_hf2", supports = false, rootHeight = 0, exactPosition = true },
+    t_nor_furn_fireplace_04 = { replacement = "ashfall_skyfp_hfb", supports = false, rootHeight = 0, exactPosition = true },
+    t_imp_setstr_i_fireplace_01 = { replacement = "ashfall_pc_fp_01", supports = false, rootHeight = 0, exactPosition = true },
+    t_imp_setgcpoor_i_fireplace_01 = { replacement = "ashfall_pc_fp_02", supports = false, rootHeight = 0, exactPosition = true },
+    t_imp_setgc_i_fireplace_01 = { replacement = "ashfall_pc_fp_03", supports = false, rootHeight = 0, exactPosition = true },
+
     --OAAB
     ab_in_velhearthsmall = { replacement = "ashfall_ab_hearth_sml", supports = false, rootHeight = 0, exactPosition = true, hasGrill = true },
-    ab_in_velHearthLargeLH = { replacement = "ashfall_ab_hearth_lh", supports = false, rootHeight = 0, exactPosition = true, hasGrill = true },
-    ab_in_velHearthLargeRH = { replacement = "ashfall_ab_hearth_rh", supports = false, rootHeight = 0, exactPosition = true, hasGrill = true },
+    ab_in_velhearthlargelh = { replacement = "ashfall_ab_hearth_lh", supports = false, rootHeight = 0, exactPosition = true, hasGrill = true },
+    ab_in_velhearthlargerh = { replacement = "ashfall_ab_hearth_rh", supports = false, rootHeight = 0, exactPosition = true, hasGrill = true },
     --stove
     furn_dwrv_stove00 = { replacement = "ashfall_stove_01", supports = false, rootHeight = 0, exactPosition = true, hasGrill = true },
 }
@@ -82,6 +94,13 @@ local kitBashObjects = {
     t_com_var_ropestraight_01 = true,
     t_com_var_ropeknot_01 = true,
     furn_dwrv_stove10 = true,
+
+    --tr
+    t_nor_var_logssmall_01 = true,
+    t_nor_var_logssmallbirch_01 = true,
+    t_nor_var_logssmallbirch_02 = true,
+    t_nor_var_logssmalllarch_01 = true,
+    t_nor_var_logssmalllarch_02 = true,
 }
 
 local cauldrons = {

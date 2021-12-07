@@ -95,6 +95,7 @@ this.list.waterClean = Activator:new{
     mcmSetting = nil,
     ids = {
         ["t_com_var_barrelwater_01"] = true,
+        ["t_glb_terrwater_waterjet_01"] = true
     }
 }
 this.list.basin = Activator:new{
@@ -330,7 +331,16 @@ this.list.fireplace = Activator:new{
     ids = {
         ["ashfall_fireplace10"] = true,
         ["ashfall_nordfireplace_01"] = true,
-        ["ashfall_impfireplace_01"] = true
+        ["ashfall_impfireplace_01"] = true,
+        ["ashfall_skyfp_01"] = true,
+        ["ashfall_skyfp_02"] = true,
+        ["ashfall_skyfp_03"] = true,
+        ["ashfall_skyfp_hf1"] = true,
+        ["ashfall_skyfp_hf2"] = true,
+        ["ashfall_skyfp_hfb"] = true,
+        ["ashfall_pc_fp_01"] = true,
+        ["ashfall_pc_fp_02"] = true,
+        ["ashfall_pc_fp_03"] = true,
     }
 }
 --Stove

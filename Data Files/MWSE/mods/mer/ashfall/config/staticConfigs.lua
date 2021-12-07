@@ -424,7 +424,12 @@ this.bottleList = {
     t_nor_woodenpot_03a = this.bottleConfig.noValPot,
     t_nor_woodenpot_03b = this.bottleConfig.noValPot,
 
-    t_de_telvannitankard_01 = this.bottleConfig.tankard
+    t_de_telvannitankard_01 = this.bottleConfig.tankard,
+    t_com_tankard_01 = this.bottleConfig.tankard,
+    t_de_bluewaretankard01 = this.bottleConfig.tankard,
+    t_de_yellowglasscup01 = this.bottleConfig.cup,
+    t_de_yellowglassflask01 = this.bottleConfig.flask,
+    t_de_yellowglasspot01 = this.bottleConfig.noValPot,
 }
 
 
