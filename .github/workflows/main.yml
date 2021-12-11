@@ -6,18 +6,54 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      ARCHIVE_NAME: Ashfall
     steps:
-    
       - name: Checkout Code
         uses: actions/checkout@v2
         with:
           fetch-depth: 50
 
+      - name: Install dependencies
+        run: |
+          pip install pyyaml
+      - name: Reset Timestamp of ESP file
+        run: |
+          from datetime import datetime
+          import yaml
+          import time
+          import os
+          from pathlib import Path
+          def openConfigFile(configPath):
+              with open(configPath, 'r') as stream:
+                  try:
+                      config = yaml.safe_load(stream)
+                  except:
+                      return None
+                  return config
+          def setTimeStamp(filepath, timestamp):
+              os.utime(filepath, (timestamp, timestamp))
+          def resetTimestamps(overrides):
+              if not overrides:
+                  return
+              for fileData in overrides:
+                  filepath = fileData.get("path")
+                  timestamp = fileData.get("timestamp")
+                  if not filepath or not timestamp:
+                      continue
+                  fullpath = Path(os.path.join("Data Files", filepath))
+                  print(f"Resetting timestamp for {fullpath} to {timestamp}")
+                  setTimeStamp(fullpath, timestamp)
+          timestampOverrides = openConfigFile("timestampOverrides.yaml")
+          if timestampOverrides:
+              resetTimestamps(timestampOverrides)
+        shell: python
+
       - name: Build Project
         uses: edgarrc/action-7z@v1
         with:
-          args: 7z a Ashfall.7z "Data Files"
-   
+          args: 7z a  ${{env.ARCHIVE_NAME}}.7z "Data Files"
+
       - name: Create Release
         uses: notlmn/release-with-changelog@v2
         with:
@@ -25,10 +61,10 @@ jobs:
           include-hash: true
           include-range: true
           token: ${{ secrets.GITHUB_TOKEN }}
-          
+
       - name: Upload to Github
         uses: softprops/action-gh-release@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          files: Ashfall.7z
+          files: ${{env.ARCHIVE_NAME}}.7z
