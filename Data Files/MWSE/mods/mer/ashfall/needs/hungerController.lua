@@ -111,10 +111,19 @@ function this.processMealBuffs(scriptInterval)
 end
 
 
-local function checkWerewolfKill()
-    --TODO: recover hunger after making a kill as a werewolf
-    return
+--[[
+checkWerewolfKill(e)
+    callback for the damaged event. feeds the player if they land the killing blow against an NPC in werewolf form.
+    excludes creatures to fit with the in game theming, your bloodlust is only sated by humanoid blood
+]]--
+local werewolfKillNutrition = 15
+---@param e damagedEventData
+local function checkWerewolfKill(e)
+    if (e.attacker == tes3.mobilePlayer and tes3.mobilePlayer.werewolf and e.killingBlow and e.mobile.actorType == tes3.actorType.npc) then
+        this.eatAmount(werewolfKillNutrition)
+    end
 end
+event.register("damaged", checkWerewolfKill)
 
 function this.calculate(scriptInterval, forceUpdate)
     if scriptInterval == 0 and not forceUpdate then return end
@@ -153,10 +162,6 @@ function this.calculate(scriptInterval, forceUpdate)
         newHunger = newHunger + ( scriptInterval * hungerRate * coldEffect * foodPoisonEffect )
     end
     hunger:setValue(newHunger)
-
-    checkWerewolfKill()
-
-
     --The hungrier you are, the more extreme cold temps are
     local hungerEffect = math.remap( newHunger, 0, 100, HUNGER_EFFECT_HIGH, HUNGER_EFFECT_LOW )
     common.data.hungerEffect = hungerEffect
