@@ -4,10 +4,6 @@ return {
         local hasLadleNode = campfire.sceneNode:getObjectByName("SWITCH_LADLE")
         local hasLadle =  campfire.data.ladle
         local hasStaticLadle = campfire.data.dynamicConfig and campfire.data.dynamicConfig.ladle == "static"
-        mwse.log("hasLadle: %s", hasLadle)
-        mwse.log("hasStaticLadle: %s", hasStaticLadle)
-        mwse.log("hasLadleNode: %s", hasLadleNode)
-
         return hasLadleNode
             and not hasLadle
             and not hasStaticLadle
