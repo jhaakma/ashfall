@@ -8,13 +8,15 @@ local config = require("mer.ashfall.config.config").config
 --set up logger
 local logLevel = config.logLevel
 
----@type table
-this.log = require("mer.ashfall.common.logger").new{
+
+local logger = require("logging.logger")
+---@type MWSELogger
+this.log = logger.new{
     name = "Ashfall",
     --outputFile = "Ashfall.log",
-    logLevel = logLevel
+    logLevel = logLevel,
 }
-
+this.log:error("This is an error message")
 function this.loadMesh(mesh)
     local useCache = not config.debugMode
     return tes3.loadMesh(mesh, useCache):clone()
