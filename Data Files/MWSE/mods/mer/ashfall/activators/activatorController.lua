@@ -56,8 +56,9 @@ end
 
 local function doActivate()
     return (
-        this.current and
-        config[this.getCurrentActivator().mcmSetting] ~= false
+        (not tes3.mobilePlayer.werewolf)
+        and this.current
+        and config[this.getCurrentActivator().mcmSetting] ~= false
     )
 end
 
