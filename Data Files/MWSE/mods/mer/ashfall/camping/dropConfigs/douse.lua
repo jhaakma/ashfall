@@ -1,11 +1,10 @@
 local common = require ("mer.ashfall.common.common")
 local LiquidContainer = require("mer.ashfall.objects.LiquidContainer")
 return {
-    dropText = function(campfire, item, itemData)
+    dropText = function()
         return string.format("Extinguish")
     end,
     canDrop = function(campfire, item, itemData)
-        local id = item.id:lower()
         local liquidContainer = LiquidContainer.createFromInventory(item, itemData)
         if liquidContainer then
             local fireLit = campfire.data.isLit
@@ -16,7 +15,6 @@ return {
         return false
     end,
     onDrop = function(campfire, reference)
-        local id = reference.object.id:lower()
         local liquidContainer = LiquidContainer.createFromReference(reference)
         if liquidContainer then
             event.trigger("Ashfall:fuelConsumer_Extinguish", {fuelConsumer = campfire, playSound = true})

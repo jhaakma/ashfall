@@ -1,6 +1,6 @@
 local common = require ("mer.ashfall.common.common")
 return {
-    canDrop = function(campfire, item, itemData)
+    canDrop = function(campfire, item, _itemData)
         local id = item.id:lower()
         local isFirewood = id == common.staticConfigs.objectIds.firewood
 
@@ -8,7 +8,7 @@ return {
         or ( campfire.data.fuelLevel < common.staticConfigs.maxWoodInFire )
         if isFirewood and hasRoom then return true end
     end,
-    dropText = function(campfire, item, itemData)
+    dropText = function(_campfire, _item, _itemData)
         return "Add firewood"
     end,
     onDrop = function(campfire, reference)

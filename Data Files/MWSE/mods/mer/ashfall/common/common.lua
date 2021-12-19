@@ -16,7 +16,7 @@ this.log = logger.new{
     --outputFile = "Ashfall.log",
     logLevel = logLevel,
 }
-this.log:error("This is an error message")
+
 function this.loadMesh(mesh)
     local useCache = not config.debugMode
     return tes3.loadMesh(mesh, useCache):clone()

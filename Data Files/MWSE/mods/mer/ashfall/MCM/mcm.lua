@@ -1,26 +1,68 @@
 local common = require("mer.ashfall.common.common")
 local versionController = require("mer.ashfall.versionController")
-
 local config = require("mer.ashfall.config.config").config
 
-
-local function createTableVar(id)
-    return mwse.mcm.createTableVariable{ id = id, table = config }
-end
-
-local sideBarDefault =
+local LINKS_LIST = {
+    {
+        text = "Release history",
+        url = "https://github.com/jhaakma/ashfall/releases"
+    },
+    {
+        text = "Wiki",
+        url = "https://github.com/jhaakma/ashfall/wiki"
+    },
+    {
+        text = "Nexus",
+        url = "https://www.nexusmods.com/morrowind/mods/49057"
+    },
+    {
+        text = "Buy me a coffee",
+        url = "https://ko-fi.com/merlord"
+    },
+}
+local CREDITS_LIST = {
+    {
+        text = "Made by Merlord",
+        url = "https://www.nexusmods.com/users/3040468?tab=user+files",
+    },
+    {
+        text = "Graphic Design by XeroFoxx",
+        url = "https://www.youtube.com/channel/UCcx5oYt3NtLtadZTSjI3KEw",
+    },
+    {
+        text = "Tent Covers by Draconik",
+        url = "https://www.nexusmods.com/morrowind/users/86600168",
+    },
+    {
+        text = "Dream Catcher mesh by Remiros",
+        url = "https://www.nexusmods.com/morrowind/users/899234",
+    },
+    {
+        text = "Sitting/sleeping animations by Vidi Aquam",
+        url = "https://www.nexusmods.com/morrowind/mods/48782",
+    },
+}
+local SIDE_BAR_DEFAULT =
 [[Use the configuration menu to turn various mechanics, features and udpate messages on or off.
 
 Hover over individual settings to see more information.]]
 
-local function postFormat(self)
-    self.elements.outerContainer.borderAllSides = self.indent
-    self.elements.outerContainer.alignY = 1.0
-    --self.elements.outerContainer.layoutHeightFraction = 1.0
-    if self.elements.info then
-        self.elements.info.layoutOriginFractionX = 0.5
+
+local function addSideBar(component)
+    local versionText = string.format("Ashfall Version %s", versionController.getVersion())
+    component.sidebar:createCategory(versionText)
+    component.sidebar:createInfo{ text = SIDE_BAR_DEFAULT}
+
+    local linksCategory = component.sidebar:createCategory("Links")
+    for _, link in ipairs(LINKS_LIST) do
+        linksCategory:createHyperLink{ text = link.text, url = link.url }
+    end
+    local creditsCategory = component.sidebar:createCategory("Credits")
+    for _, credit in ipairs(CREDITS_LIST) do
+        creditsCategory:createHyperLink{ text = credit.text, url = credit.url }
     end
 end
+
 
 local function registerModConfig()
     local template = mwse.mcm.createTemplate{ name = "Ashfall", headerImagePath = "textures/ashfall/MCMHeader.tga" }
@@ -29,63 +71,7 @@ local function registerModConfig()
     end
     template:register()
 
-    local function addSideBar(component)
-        local versionText = string.format("Ashfall Version %s", versionController.getVersion())
-        local summaryCategory = component.sidebar:createCategory(versionText)
-        component.sidebar:createInfo{ text = sideBarDefault}
 
-        local linksCategory = component.sidebar:createCategory("Links")
-        linksCategory:createHyperLink{
-            text = "Release history",
-            url = "https://github.com/jhaakma/ashfall/releases"
-        }
-        linksCategory:createHyperLink{
-            text = "Wiki",
-            url = "https://github.com/jhaakma/ashfall/wiki"
-        }
-        linksCategory:createHyperLink{
-            text = "Nexus",
-            url = "https://www.nexusmods.com/morrowind/mods/49057"
-        }
-        linksCategory:createHyperLink{
-            text = "Buy me a coffee",
-            url = "https://ko-fi.com/merlord"
-        }
-
-
-        local creditsCategory = component.sidebar:createCategory("Credits")
-
-
-        creditsCategory:createHyperLink{
-            text = "Made by Merlord",
-            url = "https://www.nexusmods.com/users/3040468?tab=user+files",
-            --postCreate = postFormat,
-        }
-
-        creditsCategory:createHyperLink{
-            text = "Graphic Design by XeroFoxx",
-            url = "https://www.youtube.com/channel/UCcx5oYt3NtLtadZTSjI3KEw",
-            --postCreate = postFormat,
-        }
-
-        creditsCategory:createHyperLink{
-            text = "Tent Covers by Draconik",
-            url = "https://www.nexusmods.com/morrowind/users/86600168",
-            --postCreate = postFormat,
-        }
-
-        creditsCategory:createHyperLink{
-            text = "Dream Catcher mesh by Remiros",
-            url = "https://www.nexusmods.com/morrowind/users/899234",
-            --postCreate = postFormat,
-        }
-
-        creditsCategory:createHyperLink{
-            text = "Sitting/sleeping animations by Vidi Aquam",
-            url = "https://www.nexusmods.com/morrowind/mods/48782",
-            --postCreate = postFormat,
-        }
-    end
 
     do --General Settings Page
         local pageGeneral = template:createSideBarPage({
@@ -119,7 +105,7 @@ local function registerModConfig()
                     "This will adjust the timescale on each new game. To adjust the timescale of the "..
                     "current game, toggle this to true and adjust on the slider below."
                 ),
-                variable = createTableVar("overrideTimeScale"),
+                variable = mwse.mcm.createTableVariable{ id = "overrideTimeScale", table = config },
                 callback = function(self)
                     if tes3.player then
                         if self.variable.value == true then
@@ -141,7 +127,7 @@ local function registerModConfig()
                 max = 50,
                 step = 1,
                 jump = 5,
-                variable = createTableVar("manualTimeScale"),
+                variable = mwse.mcm.createTableVariable{ id = "manualTimeScale", table = config },
                 callback = function(self)
                     if tes3.player then
                         if config.overrideTimeScale == true then
@@ -166,7 +152,7 @@ local function registerModConfig()
                     "In hotter climates, make sure you remain hydrated, wear clothing with low warmth ratings and avoid sources of heat like fire, lava or steam. \n\n" ..
                     "Getting wet will cool you down significantly, as well as increase your fire resistance and lower your shock resistance.\n\n"
                 ),
-                variable = createTableVar("enableTemperatureEffects"),
+                variable = mwse.mcm.createTableVariable{ id = "enableTemperatureEffects", table = config },
             }
             categorySurvival:createYesNoButton{
                 label = "Enable Hunger",
@@ -174,7 +160,7 @@ local function registerModConfig()
                     "When enabled, you must eat food regularly in order to survive. " ..
                     "Ingredients provide a small amount of nutritional value, but you can also cook meals at campfires, cooking pots and stoves. "
                 ),
-                variable = createTableVar("enableHunger"),
+                variable = mwse.mcm.createTableVariable{ id = "enableHunger", table = config },
             }
             categorySurvival:createYesNoButton{
                 label = "Enable Thirst",
@@ -182,7 +168,7 @@ local function registerModConfig()
                     "When enabled, you must drink water regularly in order to survive " ..
                     "Fill bottles with water at any nearby stream, well or keg. You can also drink directly from water sources."
                 ),
-                variable = createTableVar("enableThirst"),
+                variable = mwse.mcm.createTableVariable{ id = "enableThirst", table = config },
                 callback = tes3ui.updateInventoryTiles --to clear water bottle icons
             }
             categorySurvival:createYesNoButton{
@@ -191,12 +177,12 @@ local function registerModConfig()
                     "When enabled, you must sleep regularly or face debuffs from tiredness deprivation. " ..
                     "Sleeping in a bed or bedroll will allow you to become \"Well Rested\", while sleeping out in the open will not fully recover your tiredness."
                 ),
-                variable = createTableVar("enableTiredness"),
+                variable = mwse.mcm.createTableVariable{ id = "enableTiredness", table = config },
             }
             categorySurvival:createYesNoButton{
                 label = "Enable Blight",
                 description = "When enabled, you can catch the blight from blight storms. Disable this for compatibility with other blight mods.",
-                variable = createTableVar("enableBlight"),
+                variable = mwse.mcm.createTableVariable{ id = "enableBlight", table = config },
             }
 
         end --\Survival Mechanics Category
@@ -210,27 +196,27 @@ local function registerModConfig()
             categoryConditions:createOnOffButton{
                 label = "Temperature updates",
                 description = "Show update messages when temperature condition changes.",
-                variable = createTableVar("showTemp"),
+                variable = mwse.mcm.createTableVariable{ id = "showTemp", table = config },
             }
             categoryConditions:createOnOffButton{
                 label = "Hunger updates",
                 description = "Show update messages when hunger condition changes.",
-                variable = createTableVar("showHunger"),
+                variable = mwse.mcm.createTableVariable{ id = "showHunger", table = config },
             }
             categoryConditions:createOnOffButton{
                 label = "Thirst updates",
                 description = "Show update messages when thirst condition changes.",
-                variable = createTableVar("showThirst"),
+                variable = mwse.mcm.createTableVariable{ id = "showThirst", table = config },
             }
             categoryConditions:createOnOffButton{
                 label = "Sleep updates",
                 description = "Show update messages when tiredness condition changes.",
-                variable = createTableVar("showTiredness"),
+                variable = mwse.mcm.createTableVariable{ id = "showTiredness", table = config },
             }
             categoryConditions:createOnOffButton{
                 label = "Wetness updates",
                 description = "Show update messages when wetness condition changes.",
-                variable = createTableVar("showWetness"),
+                variable = mwse.mcm.createTableVariable{ id = "showWetness", table = config },
             }
         end --\Condition Updates Category
 
@@ -245,13 +231,13 @@ local function registerModConfig()
                 label = "Assign Modifier Hotkey",
                 description = "Key Modifier for accessing special options. For example, hold down this key while activating a water bottle to open the water menu (to empty or drink from the bottle directly). Default: Left Shift.",
                 allowCombinations = false,
-                variable = createTableVar("modifierHotKey"),
+                variable = mwse.mcm.createTableVariable{ id = "modifierHotKey", table = config },
             }
 
             categoryMisc:createYesNoButton{
                 label = "Start New Games with Survival Gear",
                 description = "Start new games with a wood axe, bedroll and cooking pot.",
-                variable = createTableVar("startingEquipment")
+                variable = mwse.mcm.createTableVariable{ id = "startingEquipment", table = config }
             }
 
             categoryMisc:createYesNoButton{
@@ -259,13 +245,13 @@ local function registerModConfig()
                 description = (
                     "When enabled, you can die of hunger or thirst. Otherwise you will drop to 1 health."
                 ),
-                variable = createTableVar("needsCanKill"),
+                variable = mwse.mcm.createTableVariable{ id = "needsCanKill", table = config },
             }
 
             categoryMisc:createYesNoButton{
                 label = "Enable Dynamic Branch Placement",
                 description = "Loose branches will spawn near trees, which can be picked up for firewood. May cause a slight delay on cell change on lower end systemss. Disable this if you experience performance issues.",
-                variable = createTableVar("enableBranchPlacement")
+                variable = mwse.mcm.createTableVariable{ id = "enableBranchPlacement", table = config }
             }
 
             categoryMisc:createYesNoButton{
@@ -274,31 +260,31 @@ local function registerModConfig()
                     "Adds a frost breath effect to NPCs and the player in cold temperatures. \n\n" ..
                     "Does not require weather survival mechanics to be active. "
                 ),
-                variable = createTableVar("showFrostBreath"),
+                variable = mwse.mcm.createTableVariable{ id = "showFrostBreath", table = config },
             }
 
             categoryMisc:createYesNoButton{
                 label = "Display Backpacks",
                 description = "Disable this to prevent backpacks from being displayed on your back.",
-                variable = createTableVar("showBackpacks"),
+                variable = mwse.mcm.createTableVariable{ id = "showBackpacks", table = config },
             }
 
             categoryMisc:createYesNoButton{
                 label = "See-Through Tents",
                 description = "When enabled, the outside of your tent will become transparent when you enter it.",
-                variable = createTableVar("seeThroughTents")
+                variable = mwse.mcm.createTableVariable{ id = "seeThroughTents", table = config }
             }
 
             categoryMisc:createYesNoButton{
                 label = "Atronachs Regain Magicka from Drinking",
                 description = "When you get thirsty, your maximum magicka (and, therefore, your current magicka) decreases. By default, recovering from thirst recovers the same amount of current magicka as what was lost from being thirsty, even if you have the Atronach sign. Disable this setting to prevent this magicka gain. Be warned, this means as an Atronach you will need to find ways to recover your magicka after drinking.",
-                variable = createTableVar("atronachRecoverMagickaDrinking")
+                variable = mwse.mcm.createTableVariable{ id = "atronachRecoverMagickaDrinking", table = config }
             }
 
             categoryMisc:createYesNoButton{
                 label = "Potions Hydrate",
                 description = "When enabled, drinking a potion will provide a small amount of hydration.",
-                variable = createTableVar("potionsHydrate")
+                variable = mwse.mcm.createTableVariable{ id = "potionsHydrate", table = config }
             }
 
             categoryMisc:createYesNoButton{
@@ -306,7 +292,7 @@ local function registerModConfig()
                 description = (
                     "If this is enabled, you can not harvest wood with an axe while in town."
                 ),
-                variable = createTableVar("illegalHarvest"),
+                variable = mwse.mcm.createTableVariable{ id = "illegalHarvest", table = config },
             }
 
             categoryMisc:createYesNoButton{
@@ -314,7 +300,7 @@ local function registerModConfig()
                 description = (
                     "If this is enabled, you can make campfires and pitch tents within settlement exteriors."
                 ),
-                variable = createTableVar("canCampInSettlements"),
+                variable = mwse.mcm.createTableVariable{ id = "canCampInSettlements", table = config },
             }
 
             categoryMisc:createYesNoButton{
@@ -322,7 +308,7 @@ local function registerModConfig()
                 description = (
                     "If this is enabled, meat harvested from diseased or blighted animals can make you sick if you eat it."
                 ),
-                variable = createTableVar("enableDiseasedMeat"),
+                variable = mwse.mcm.createTableVariable{ id = "enableDiseasedMeat", table = config },
             }
 
 
@@ -375,7 +361,7 @@ local function registerModConfig()
                 max = 100,
                 step = 1,
                 jump = 10,
-                variable = createTableVar("hungerRate"),
+                variable = mwse.mcm.createTableVariable{ id = "hungerRate", table = config },
             }
         end --\Hunger category
 
@@ -397,7 +383,7 @@ local function registerModConfig()
                 max = 100,
                 step = 1,
                 jump = 10,
-                variable = createTableVar("thirstRate"),
+                variable = mwse.mcm.createTableVariable{ id = "thirstRate", table = config },
             }
         end--\Thirst Category
 
@@ -418,7 +404,7 @@ local function registerModConfig()
                 max = 200,
                 step = 1,
                 jump = 10,
-                variable = createTableVar("loseSleepRate"),
+                variable = mwse.mcm.createTableVariable{ id = "loseSleepRate", table = config },
             }
             categorySleep:createSlider{
                 label =  "Tiredness Rate (Waiting)",
@@ -431,7 +417,7 @@ local function registerModConfig()
                 max = 200,
                 step = 1,
                 jump = 10,
-                variable = createTableVar("loseSleepWaiting"),
+                variable = mwse.mcm.createTableVariable{ id = "loseSleepWaiting", table = config },
             }
 
             categorySleep:createSlider{
@@ -446,7 +432,7 @@ local function registerModConfig()
                 max = 200,
                 step = 1,
                 jump = 10,
-                variable = createTableVar("gainSleepRate"),
+                variable = mwse.mcm.createTableVariable{ id = "gainSleepRate", table = config },
             }
             categorySleep:createSlider{
                 label = "Sleep Rate (Bed)",
@@ -460,7 +446,7 @@ local function registerModConfig()
                 max = 200,
                 step = 1,
                 jump = 10,
-                variable = createTableVar("gainSleepBed"),
+                variable = mwse.mcm.createTableVariable{ id = "gainSleepBed", table = config },
             }
         end --\Sleep Category
 
@@ -472,7 +458,7 @@ local function registerModConfig()
             description = (
                 "Select which food and drinks will not be counted in thirst/hunger in Ashfall. You can also blacklist entire plugins so all the items they add will not be counted."
             ),
-            variable = createTableVar("blocked"),
+            variable = mwse.mcm.createTableVariable{ id = "blocked", table = config },
             filters = {
                 {
                     label = "Plugins",
@@ -695,26 +681,26 @@ local function registerModConfig()
         pageDevOptions:createOnOffButton{
             label = "Check For Updates",
             description = "When enabled, you will be notified when a new version of Ashfall is available.",
-            variable = createTableVar("checkForUpdates"),
+            variable = mwse.mcm.createTableVariable{ id = "checkForUpdates", table = config },
             restartRequired = true,
         }
 
         pageDevOptions:createOnOffButton{
             label = "Enable Bushcrafting (in development)",
             description = "Get a sneak peak at the upcoming bushcrafting mechanics. Equip any item that has 'Crafting Material' in the tooltip to activate the bushcrafting menu.",
-            variable = createTableVar("enableBushcrafting")
+            variable = mwse.mcm.createTableVariable{ id = "enableBushcrafting", table = config }
         }
 
         pageDevOptions:createYesNoButton{
             label = "Show Config Menu on Startup",
             description = "The next time you load a new or existing game, show the startup config menu. This is mostly for testing, use the General Settings MCM page to adjsut startup settings.",
-            variable = createTableVar("doIntro")
+            variable = mwse.mcm.createTableVariable{ id = "doIntro", table = config }
         }
 
         pageDevOptions:createOnOffButton{
             label = "Debug Mode",
             description = "Enable hot-reload of meshes. For debugging only.",
-            variable = createTableVar("debugMode")
+            variable = mwse.mcm.createTableVariable{ id = "debugMode", table = config }
         }
 
         pageDevOptions:createDropdown{
@@ -727,7 +713,7 @@ local function registerModConfig()
                 { label = "ERROR", value = "ERROR"},
                 { label = "NONE", value = "NONE"},
             },
-            variable = createTableVar("logLevel"),
+            variable = mwse.mcm.createTableVariable{ id = "logLevel", table = config },
             callback = function(self)
                 common.log:setLogLevel(self.variable.value)
             end
@@ -736,7 +722,7 @@ local function registerModConfig()
         -- pageDevOptions:createOnOffButton{
         --     label = "Enable Development Features",
         --     description = "Enable unfinished features currently in development. Not recommended unless you know what you're doing.",
-        --     variable = createTableVar("devFeatures")
+        --     variable = mwse.mcm.createTableVariable{ id = "devFeatures", table = config }
         -- }
 
         pageDevOptions:createButton{

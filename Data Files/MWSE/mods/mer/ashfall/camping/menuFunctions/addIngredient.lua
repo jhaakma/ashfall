@@ -1,8 +1,6 @@
 local common = require ("mer.ashfall.common.common")
 local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 local foodConfig = common.staticConfigs.foodConfig
-local skillSurvivalStewIngredIncrement  = 5
-local stewIngredientCooldownAmount = 20
 
 local foodTypes = {
     foodConfig.type.meat,
@@ -43,7 +41,7 @@ local function addIngredient(e)
         count = e.amount
     }
     tes3ui.forcePlayerInventoryUpdate()
-    event.trigger("Ashfall:UpdateAttachNodes", { campfire = campfire})
+    event.trigger("Ashfall:UpdateAttachNodes", { campfire = e.campfire})
 end
 
 

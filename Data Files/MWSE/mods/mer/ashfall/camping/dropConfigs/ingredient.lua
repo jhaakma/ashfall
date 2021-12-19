@@ -1,6 +1,4 @@
 local common = require ("mer.ashfall.common.common")
-local LiquidContainer = require("mer.ashfall.objects.LiquidContainer")
-local teaConfig       = require("mer.ashfall.config.teaConfig")
 local foodConfig      = require("mer.ashfall.config.foodConfig")
 local CampfireUtil    = require("mer.ashfall.camping.campfire.CampfireUtil")
 

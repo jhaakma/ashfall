@@ -1,7 +1,5 @@
 local common = require ("mer.ashfall.common.common")
 local LiquidContainer = require("mer.ashfall.objects.LiquidContainer")
-local teaConfig       = require("mer.ashfall.config.teaConfig")
-
 return {
     dropText = function(campfire, item, itemData)
         --Liquids

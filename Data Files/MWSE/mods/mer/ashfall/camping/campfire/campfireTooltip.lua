@@ -9,8 +9,6 @@ function CampfireUtil.addExtraTooltip(attachmentConfig, campfire, tooltip)
     end
 end
 
-
-local previousParentNode
 local function updateTooltip(e)
     common.log:trace("Campfire tooltip")
 
