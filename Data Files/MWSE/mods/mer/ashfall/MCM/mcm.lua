@@ -9,7 +9,7 @@ local function createTableVar(id)
 end
 
 local sideBarDefault =
-[[Use the configuration menu to turn various mechanics, features and udpate messages on or off.
+[[Use the configuration menu to turn various mechanics, features and update messages on or off.
 
 Hover over individual settings to see more information.]]
 
