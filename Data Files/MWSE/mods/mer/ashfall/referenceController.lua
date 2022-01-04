@@ -1,4 +1,4 @@
-local activatorConfig = require("mer.ashfall.config.staticConfigs").activatorConfig
+
 local staticConfigs = require('mer.ashfall.config.staticConfigs')
 local this = {}
 
@@ -32,7 +32,7 @@ this.controllers = {
             return (
                 ref.object and
                 ref.object.id and
-                activatorConfig.list.campfire:isActivator(ref.object.id)
+                staticConfigs.activatorConfig.list.campfire:isActivator(ref.object.id)
             )
         end
     },
@@ -55,13 +55,17 @@ this.controllers = {
 
     stewer = ReferenceController:new{
         requirements = function(_, ref)
-            return ref.data and ref.data.utensil == "cookingPot"
+            return ref.data
+                and ref.data.utensil == "cookingPot"
+                or staticConfigs.cookingPots[ref.object.id:lower()]
         end
     },
 
     brewer = ReferenceController:new{
         requirements = function(_, ref)
-           return ref.data and ref.data.utensil == "kettle"
+           return ref.data
+            and ref.data.utensil == "kettle"
+            or staticConfigs.kettles[ref.object.id:lower()]
         end
     },
 

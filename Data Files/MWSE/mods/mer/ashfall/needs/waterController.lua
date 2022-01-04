@@ -1,10 +1,4 @@
 
-local activatorController = require "mer.ashfall.activators.activatorController"
-
-local LiquidContainer = require "mer.ashfall.objects.LiquidContainer"
-
-local CampfireUtil = require "mer.ashfall.camping.campfire.CampfireUtil"
-
 --[[
     When the player looks at a water source (fresh water, wells, etc),
     a tooltip will display, and pressing the activate button will bring up
@@ -12,9 +6,14 @@ local CampfireUtil = require "mer.ashfall.camping.campfire.CampfireUtil"
 ]]--
 
 
+local activatorController = require "mer.ashfall.activators.activatorController"
+local LiquidContainer = require "mer.ashfall.objects.LiquidContainer"
+local CampfireUtil = require "mer.ashfall.camping.campfire.CampfireUtil"
 local thirstController = require("mer.ashfall.needs.thirstController")
 local common = require("mer.ashfall.common.common")
 local config = require("mer.ashfall.config.config").config
+local brewTea = require("mer.ashfall.camping.menuFunctions.brewTea")
+local addIngredient = require("mer.ashfall.camping.menuFunctions.addIngredient")
 local foodConfig = common.staticConfigs.foodConfig
 local teaConfig = common.staticConfigs.teaConfig
 local activatorConfig = common.staticConfigs.activatorConfig
@@ -188,9 +187,7 @@ event.register("Ashfall:ActivateButtonPressed", checkDrinkRain )
 
 local function getWaterName(data)
     local waterName = "Water"
-    if data.stewLevels then
-        waterName = "Stew"
-    elseif data.waterType == "dirty" then
+    if data.waterType == "dirty" then
         waterName = "Water (Dirty)"
     elseif teaConfig.teaTypes[data.waterType] then
         waterName = teaConfig.teaTypes[data.waterType].teaName
@@ -211,8 +208,11 @@ local function doDrinkWater(bottleData)
 
     local amountDrank = thirstController.drinkAmount{amount = thisSipSize, waterType = bottleData.waterType}
     --Tea and stew effects if you drank enough
-    if hydrationNeeded > 0.1 and teaConfig.teaTypes[bottleData.waterType] then
-        event.trigger("Ashfall:DrinkTea", { teaType = bottleData.waterType, amountDrank = amountDrank})
+    local isThirsty = hydrationNeeded > 0.1
+    local isTea = teaConfig.teaTypes[bottleData.waterType]
+    local teaIsBrewed = bottleData.teaProgress and bottleData.teaProgress >= 100
+    if isThirsty and isTea and teaIsBrewed then
+        event.trigger("Ashfall:DrinkTea", { teaType = bottleData.waterType, amountDrank = amountDrank, heat = bottleData.waterHeat})
     end
     --Reduce liquid in bottleData
     bottleData.waterAmount = bottleData.waterAmount - thisSipSize
@@ -278,6 +278,12 @@ local function drinkFromContainer(e)
                         showRequirements = function()
                             return e.itemData.data.stewLevels ~= nil
                         end,
+                        requirements = function()
+                            return e.itemData.data.stewProgress >= 100
+                        end,
+                        tooltipDisabled = {
+                            text = "You must finish cooking the stew."
+                        },
                         callback = function()
                             event.trigger("Ashfall:eatStew", { data = e.itemData.data})
                         end
@@ -345,6 +351,12 @@ local function drinkFromContainer(e)
                         showRequirements = function()
                             return e.itemData.data.stewLevels ~= nil
                         end,
+                        requirements = function()
+                            return e.itemData.data.stewProgress >= 100
+                        end,
+                        tooltipDisabled = {
+                            text = "You must finish cooking the stew."
+                        },
                         callback = function()
                             event.trigger("Ashfall:eatStew", { data = e.itemData.data})
                         end
@@ -393,7 +405,6 @@ local function drinkFromContainer(e)
                 doDrinkWater(e.itemData.data)
             end
         end
-
     end
 end
 event.register("equip", drinkFromContainer, { filter = tes3.player, priority = -100 } )
@@ -403,19 +414,45 @@ local skipActivate
 local function onShiftActivateWater(e)
     if tes3ui.menuMode() then return end
     if not (e.activator == tes3.player) then return end
+    if common.staticConfigs.utensils[e.target.object.id:lower()] then
+        --Utensils handled elsewhere
+        return
+    end
     if skipActivate then
         skipActivate = false
         return
     end
     if e.target.data and e.target.data.waterAmount and e.target.data.waterAmount > 0 then
         local inputController = tes3.worldController.inputController
-        local isModifierKeyPressed = inputController:isKeyDown(config.modifierHotKey.keyCode)
+        local isModifierKeyPressed = common.helper.isModifierKeyPressed()
 
         if isModifierKeyPressed then
             local message = getWaterName(e.target.data)
             local bottleType = common.staticConfigs.bottleList[e.target.object.id:lower()]
             message = string.format("%s (%d/%d)", message, math.ceil(e.target.data.waterAmount), bottleType.capacity)
             local buttons = {
+                {
+                    text = brewTea.text,
+                    showRequirements = function()
+                        return brewTea.showRequirements(e.target)
+                    end,
+                    callback = function()
+                        brewTea.callback(e.target)
+                    end
+                },
+                {
+                    text = addIngredient.text,
+                    showRequirements = function()
+                        return addIngredient.showRequirements(e.target)
+                    end,
+                    requirements = function()
+                        return addIngredient.enableRequirements(e.target)
+                    end,
+                    tooltipDisabled = addIngredient.tooltipDisabled,
+                    callback = function()
+                        addIngredient.callback(e.target)
+                    end
+                },
                 {
                     text = "Drink",
                     showRequirements = function()
@@ -431,6 +468,12 @@ local function onShiftActivateWater(e)
                     showRequirements = function()
                         return e.target.data.stewLevels ~= nil
                     end,
+                    requirements = function()
+                        return e.target.data.stewProgress >= 100
+                    end,
+                    tooltipDisabled = {
+                        text = "You must finish cooking the stew."
+                    },
                     callback = function()
                         event.trigger("Ashfall:eatStew", { data = e.target.data})
                         event.trigger("Ashfall:UpdateAttachNodes", {campfire = e.target})
@@ -487,21 +530,6 @@ local function onShiftActivateWater(e)
     end
 end
 event.register("activate", onShiftActivateWater, { filter = tes3.player })
-
-local function dropWaterOnUtensil(e)
-    local target = CampfireUtil.getPlacedOnContainer()
-    if not target then return end
-    local from = LiquidContainer.createFromReference(e.reference)
-    local to = LiquidContainer.createFromReference(target)
-    if from and to then
-        local waterAdded = from:transferLiquid(to)
-        if waterAdded <= 0 then
-            tes3.messageBox("Unable to transfer liquid.")
-        end
-        common.helper.pickUp(e.reference)
-    end
-end
-event.register("itemDropped", dropWaterOnUtensil)
 
 
 

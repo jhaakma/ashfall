@@ -55,17 +55,21 @@ local function onDrinkTea(e)
     local teaData = teaConfig.teaTypes[teaType]
     local amount = e.amountDrank
     tes3.messageBox("Drank %s.", teaData.teaName)
-    --remove previous tea
-    if common.data.teaDrank then
-
+    --remove previous tea, but not if same tea
+    if common.data.teaDrank  and common.data.teaDrank ~= teaType then
         local previousTeaData = teaConfig.teaTypes[common.data.teaDrank]
         removeTeaEffect(previousTeaData)
     end
 
     if teaData.duration then
-        common.data.teaBuffTimeLeft = common.helper.calculateTeaBuffDuration(amount,teaData.duration)
+        local durationEffect = common.helper.calculateTeaBuffDuration(teaData.duration,  e.heat)
+        --Effect maxes out at 10 units, then divide remaining 10 by 10 to get normalised effect
+        local amountEffect = math.min(10, amount/10)
+        --give at least half an hour when drinking a small amount
+        local timeLeft = math.max(0.5, amountEffect * durationEffect)
+        common.data.teaBuffTimeLeft = timeLeft
         common.data.teaDrank = teaType
-        common.log:debug("onDrinkTea: setting duration")
+        common.log:debug("onDrinkTea: setting duration to %s", timeLeft)
     end
 
     if teaData.spell then
@@ -90,6 +94,8 @@ local function onDrinkTea(e)
         end
 
         common.log:debug("onDrinkTea: has spell: adding %s", teaData.spell.id)
+
+        --delay 3 frames to let the previous tea spell wear off
         mwscript.addSpell{ reference = tes3.player, spell = teaSpell }
     elseif teaData.onCallback then
         common.log:debug("onDrinkTea: callback")

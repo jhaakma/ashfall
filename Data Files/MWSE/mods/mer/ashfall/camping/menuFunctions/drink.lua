@@ -1,4 +1,5 @@
 local common = require ("mer.ashfall.common.common")
+local campfireUtil = require ("mer.ashfall.camping.campfire.CampfireUtil")
 local thirstController = require("mer.ashfall.needs.thirstController")
 local teaConfig = common.staticConfigs.teaConfig
 
@@ -46,13 +47,13 @@ return {
     callback = function(campfire)
         local function doDrink()
             --tes3.playSound{ reference = tes3.player, sound = "Swallow" }
-
-            local amountToDrink = math.min(campfire.data.waterCapacity, campfire.data.waterAmount)
+            local maxCapacity = campfireUtil.getWaterCapacityFromReference(campfire)
+            local amountToDrink = math.min(maxCapacity, campfire.data.waterAmount)
             local amountDrank = thirstController.drinkAmount{ amount = amountToDrink, waterType = campfire.data.waterType,}
             campfire.data.waterAmount = campfire.data.waterAmount - amountDrank
             if campfire.data.teaProgress and campfire.data.teaProgress >= 100 then
                 if amountDrank > 0 then
-                    event.trigger("Ashfall:DrinkTea", { teaType = campfire.data.waterType, amountDrank = amountDrank})
+                    event.trigger("Ashfall:DrinkTea", { teaType = campfire.data.waterType, amountDrank = amountDrank, heat = campfire.data.waterHeat })
                 end
             end
             if campfire.data.waterAmount < 1 then

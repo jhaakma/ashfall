@@ -6,17 +6,19 @@ local function addUtensil(item, campfire, itemData)
 
     --tes3.playSound{ reference = tes3.player, sound = "Item Misc Down"  }
 
-    if utensilData.type == "cookingPot" then
+
+    campfire.data.utensil = utensilData.type
+    campfire.data.utensilId = item.id:lower()
+    campfire.data.utensilPatinaAmount = itemData and itemData.data.patinaAmount
+    campfire.data.waterCapacity = utensilData.capacity or 100
+    campfire.data.ladle = itemData and itemData.data.ladle
+
+    if utensilData.type == "cookingPot" and not campfire.data.ladle then
         if mwscript.getItemCount{ reference = tes3.player, item = "misc_com_iron_ladle"} > 0 then
             tes3.removeItem{ reference = tes3.player, item = "misc_com_iron_ladle", playSound = false }
             campfire.data.ladle = true
         end
     end
-    campfire.data.utensil = utensilData.type
-    campfire.data.utensilId = item.id:lower()
-    campfire.data.utensilPatinaAmount = itemData and itemData.data.patinaAmount
-    campfire.data.waterCapacity = utensilData.capacity or 100
-
 
     --If utensil has water, initialise the campfire with it
     if itemData and itemData.data.waterAmount then

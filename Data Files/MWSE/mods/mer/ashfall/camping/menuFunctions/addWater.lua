@@ -1,13 +1,19 @@
 local common = require ("mer.ashfall.common.common")
 local thirstController = require("mer.ashfall.needs.thirstController")
 local LiquidContainer   = require("mer.ashfall.objects.LiquidContainer")
+local campfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 local teaConfig = common.staticConfigs.teaConfig
 return {
     text = "Add Water",
     showRequirements = function(campfire)
+
+        local maxCapacity = campfireUtil.getUtensilCapacity{
+            dataHolder = campfire,
+            object = campfire.object
+        }
         local needsWater = (
             not campfire.data.waterAmount or
-            campfire.data.waterAmount < campfire.data.waterCapacity
+            campfire.data.waterAmount < maxCapacity
         )
         local hasUtensil = (
             campfire.data.utensil == "kettle" or

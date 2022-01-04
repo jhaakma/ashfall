@@ -19,10 +19,10 @@ local function playerHasFood(foodType)
     return false
 end
 
-local function hasCapacityForIngred(campfire, foodType)
-    return not campfire.data.stewLevels or
-    not campfire.data.stewLevels[foodType] or
-    campfire.data.stewLevels[foodType] < 100
+local function hasCapacityForIngred(reference, foodType)
+    return not reference.data.stewLevels or
+    not reference.data.stewLevels[foodType] or
+    reference.data.stewLevels[foodType] < 100
 end
 
 
@@ -98,28 +98,29 @@ end
 
 return {
     text = "Add Ingredient",
-    showRequirements = function(campfire)
-        return campfire.data.utensil == "cookingPot"
-            and campfire.data.waterAmount
-            and campfire.data.waterAmount > 0
+    showRequirements = function(ref)
+        local isCookingPot = ref.data.utensil == "cookingPot"
+            or common.staticConfigs.cookingPots[ref.object.id:lower()]
+        local hasWater = ref.data.waterAmount
+            and ref.data.waterAmount > 0
+        return isCookingPot and hasWater
     end,
-    enableRequirements = function(campfire)
-        return  campfire.data.ladle == true
+    enableRequirements = function(ref)
+        return  ref.data.ladle == true
     end,
     tooltipDisabled = {
         text = "An Iron Ladle is required to make Stew."
     },
-    callback = function(campfire)
-
+    callback = function(reference)
         --add buttons for ingredients that can be added
         local buttons = {}
         for _, foodType in ipairs(foodTypes) do
             local hasFood =  playerHasFood(foodType)
-            local hasCapacity  =  hasCapacityForIngred(campfire, foodType)
+            local hasCapacity  =  hasCapacityForIngred(reference, foodType)
 
             table.insert(buttons, {
                 text = foodType,
-                callback = function() ingredientSelect(campfire, foodType) end,
+                callback = function() ingredientSelect(reference, foodType) end,
                 requirements = function()
                     return hasFood and hasCapacity
                 end,

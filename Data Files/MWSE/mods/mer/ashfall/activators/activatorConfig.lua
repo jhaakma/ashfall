@@ -15,7 +15,10 @@ this.types = {
     cushion = "cushion",
     hearth = "hearth",
     stove = "stove",
-    partial = "partial" --
+    partial = "partial",
+    teaWarmer = "teaWarmer",
+    kettle = "kettle",
+    cookingPot = "cookingPot",
 }
 
 this.list = {}
@@ -395,6 +398,30 @@ this.list.cauldron = Activator:new{
         ["furn_com_cauldron_02"] = true
     },
     isStewer = true
+}
+
+this.list.teaWarmer = Activator:new{
+    type = this.types.teaWarmer,
+    mcmSetting = nil,
+    ids = {
+        ["ashfall_teawarmer_01"] = true,
+    },
+}
+
+this.list.kettle = Activator:new{
+    type = this.types.kettle,
+    mcmSetting = nil,
+    ids = {
+        --added in staticConfigs
+    },
+}
+
+this.list.cookingPot = Activator:new{
+    type = this.types.cookingPot,
+    mcmSetting = nil,
+    ids = {
+        --Added in staticConfigs
+    }
 }
 
 -- this.list.branch = Activator:new{

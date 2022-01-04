@@ -1,4 +1,5 @@
 local common = require ("mer.ashfall.common.common")
+local LiquidContainer = require("mer.ashfall.objects.LiquidContainer")
 local this = {}
 local metalPatterns = {
     "iron", "steel", "metal", "pewter", "copper"
@@ -99,42 +100,56 @@ local function doPatinaDrop(e)
         local data = e.reference.data
         local patinaAmount = data.patinaAmount
         if common.helper.getRefUnderwater(e.reference) then
-            local showMessage = false
-
-            if patinaAmount and patinaAmount > 0 then
-                common.log:debug("doPatinaDrop amount: %s", patinaAmount)
-                data.patinaAmount = nil
-
-                showMessage = true
-
-                local cleanSeconds = 2
-                --Play some splashy sounds
-                tes3.playSound {sound = 'Swim Left'}
-                timer.start {
-                    type = timer.real,
-                    duration = cleanSeconds / 3,
-                    callback = function()
-                        tes3.playSound {sound = 'Swim Left'}
+            if common.helper.isModifierKeyPressed() then
+                local liquidContainer = LiquidContainer.createFromReference(e.reference)
+                if liquidContainer then
+                    local infinite = LiquidContainer.createInfiniteWaterSource({
+                        waterType = "dirty"
+                    })
+                    local amount, errorMsg = infinite:transferLiquid(liquidContainer)
+                    if errorMsg then
+                        tes3.messageBox(errorMsg)
                     end
-                }
-                timer.start {
-                    type = timer.real,
-                    duration = cleanSeconds / 2,
-                    callback = function()
-                        tes3.playSound {sound = 'Swim Right'}
-                    end
-                }
+                    common.helper.pickUp(e.reference)
+                end
+            else
+                local showMessage = false
 
-            end
+                if patinaAmount and patinaAmount > 0 then
+                    common.log:debug("doPatinaDrop amount: %s", patinaAmount)
+                    data.patinaAmount = nil
 
-            if data.waterAmount then
-                showMessage = true
-                event.trigger("Ashfall:Campfire_clear_utensils", { campfire = e.reference})
+                    showMessage = true
 
-            end
+                    local cleanSeconds = 2
+                    --Play some splashy sounds
+                    tes3.playSound {sound = 'Swim Left'}
+                    timer.start {
+                        type = timer.real,
+                        duration = cleanSeconds / 3,
+                        callback = function()
+                            tes3.playSound {sound = 'Swim Left'}
+                        end
+                    }
+                    timer.start {
+                        type = timer.real,
+                        duration = cleanSeconds / 2,
+                        callback = function()
+                            tes3.playSound {sound = 'Swim Right'}
+                        end
+                    }
 
-            if showMessage then
-                tes3.messageBox("You wash your %s.", common.helper.getGenericUtensilName(e.reference.object))
+                end
+
+                if data.waterAmount then
+                    showMessage = true
+                    event.trigger("Ashfall:Campfire_clear_utensils", { campfire = e.reference})
+
+                end
+
+                if showMessage then
+                    tes3.messageBox("You wash your %s.", common.helper.getGenericUtensilName(e.reference.object))
+                end
             end
         end
         if patinaAmount and patinaAmount > 0 then

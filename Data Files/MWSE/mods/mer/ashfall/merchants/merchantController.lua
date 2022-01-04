@@ -1,6 +1,6 @@
 local gearId = 'ashfall_crate_rnd'
 local hasGearId = "ashfallGearAdded_v"
-local gearVersion = 20211104 --set to the date you added new gear
+local gearVersion = 20220102 --set to the date you added new gear
 local function hasGearAdded(reference)
     return reference.data[hasGearId .. gearVersion] == true
 end

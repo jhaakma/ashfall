@@ -11,24 +11,29 @@ local common = require ("mer.ashfall.common.common")
 --[[
     Get heat based on fuel level and modifiers
 ]]
-function CampfireUtil.getHeat(data)
+function CampfireUtil.getHeat(reference)
+    local data = reference.data
     local bellowsEffect = 1.0
     local bellowsId = data.bellowsId and data.bellowsId:lower()
     local bellowsData = common.staticConfigs.bellows[bellowsId]
     if bellowsData then
         bellowsEffect = bellowsData.heatEffect
     end
-
     local isLit = data.isLit
     local fuelLevel = data.fuelLevel or 0
+    local isWeak = common.staticConfigs.activatorConfig.list.teaWarmer:isActivator(reference.object.id:lower())
+    local weakEffect = isWeak and 0.1 or 1.0
+
     if (not isLit) or (fuelLevel <= 0) then
         return 0
     else
-        return fuelLevel * bellowsEffect
+        local finalHeat = (fuelLevel * bellowsEffect * weakEffect)
+        return finalHeat
     end
 end
 
 function CampfireUtil.getAttachmentConfig(node)
+    if not node then return end
     --default campfire
     local attachmentConfig
     while node.parent do
@@ -59,8 +64,10 @@ function CampfireUtil.getAttachmentName(campfire, attachConfig)
         return attachConfig.name
     elseif attachConfig.idPath then
         local objId = campfire.data[attachConfig.idPath]
-        local obj = tes3.getObject(objId)
-        return common.helper.getGenericUtensilName(obj)
+        if objId then
+            local obj = tes3.getObject(objId)
+            return common.helper.getGenericUtensilName(obj)
+        end
     end
     --fallback
     return nil
@@ -79,15 +86,25 @@ function CampfireUtil.getUtensilData(dataHolder)
 end
 
 function CampfireUtil.getUtensilCapacity(e)
+    common.log:debug("getting utensil capacity for %s", e.object.id)
     local ref = e.dataHolder
     local obj = e.object
 
     local bottleData = obj and common.staticConfigs.bottleList[obj.id:lower()]
     local utensilData = ref and ref.object and CampfireUtil.getUtensilData(ref)
-    local capacity = (bottleData and bottleData.capacity) or ( utensilData and utensilData.capacity )
+    local capacity = (bottleData and bottleData.capacity)
+        or ( utensilData and utensilData.capacity )
 
     return capacity
 end
+
+function CampfireUtil.getWaterCapacityFromReference(reference)
+    return CampfireUtil.getUtensilCapacity{
+        dataHolder = reference,
+        object = reference.object,
+    }
+end
+
 
 function CampfireUtil.getDataFromUtensilOrCampfire(e)
     local ref = e.dataHolder
@@ -110,14 +127,6 @@ function CampfireUtil.setHeat(refData, newHeat, reference)
     --add sound if crossing the boiling barrior
     if reference and not reference.disabled then
         if heatBefore < common.staticConfigs.hotWaterHeatValue and heatAfter > common.staticConfigs.hotWaterHeatValue then
-            tes3.removeSound{
-                reference = reference,
-                sound = "ashfall_boil"
-            }
-            tes3.playSound{
-                reference = reference,
-                sound = "ashfall_boil"
-            }
             event.trigger("Ashfall:UpdateAttachNodes", {campfire = reference})
         end
         --remove boiling sound
@@ -128,9 +137,10 @@ function CampfireUtil.setHeat(refData, newHeat, reference)
     end
 end
 
-local heatLossAtMinCapacity = 3.0
+
+local heatLossAtMinCapacity = 2.5
 local heatLossAtMaxCapacity = 1.0
-local waterHeatRate = 40--base water heat/cooling speed
+local waterHeatRate = 20--base water heat/cooling speed
 local minFuelWaterHeat = 5--min fuel multiplier on water heating
 local maxFuelWaterHeat = 10--max fuel multiplier on water heating
 function CampfireUtil.updateWaterHeat(refData, capacity, reference)
@@ -140,24 +150,45 @@ function CampfireUtil.updateWaterHeat(refData, capacity, reference)
     local timeSinceLastUpdate = now - refData.lastWaterHeatUpdated
     refData.lastWaterHeatUpdated = now
     refData.waterHeat = refData.waterHeat or 0
+    local oldHeat = refData.waterHeat
     --Heats up or cools down depending on fuel/is lit
     local heatEffect = -1--negative if cooling down
-    if refData.isLit then--based on fuel if heating up
-        heatEffect = math.remap(CampfireUtil.getHeat(refData), 0, common.staticConfigs.maxWoodInFire, minFuelWaterHeat, maxFuelWaterHeat)
+        --TODO: Implement heatLossMultiplier based on waterContainer data
+    --
+
+    common.log:trace("Water heat: %s", oldHeat)
+
+    if refData.isLit and reference then--based on fuel if heating up
+        heatEffect = math.remap(CampfireUtil.getHeat(reference), 0, common.staticConfigs.maxWoodInFire, minFuelWaterHeat, maxFuelWaterHeat)
         common.log:trace("BOILER heatEffect: %s", heatEffect)
+    else
+        common.log:trace("Looking for heat source underneath. only works for utensils")
+        local heater, heatType = common.helper.getHeatFromBelow(reference)
+        local isUtensil = reference and common.staticConfigs.utensils[reference.object.id:lower()]
+        if isUtensil and heater and heater.data.isLit then
+            local isCookingPot = reference and common.staticConfigs.cookingPots[reference.object.id:lower()]
+            if heatType == "strong" then
+                heatEffect = math.remap(CampfireUtil.getHeat(heater), 0, common.staticConfigs.maxWoodInFire, minFuelWaterHeat, maxFuelWaterHeat)
+            elseif heatType == "weak" and not isCookingPot then
+                --Weak flames greatly reduce the rate of heat loss
+                --but not for cooking pots
+                heatEffect = -0.01
+            end
+        end
     end
 
     --Amount of water determines how quickly it boils
 
-    local filledAmount = refData.waterAmount / capacity
+    --We use a hardcoded value instead of capacity because it doesn't make sense to heat up slower when the container is smaller
+    local filledAmount = math.min(refData.waterAmount / 100, 1)
     common.log:trace("BOILER filledAmount: %s", filledAmount)
     local filledAmountEffect = math.remap(filledAmount, 0.0, 1.0, heatLossAtMinCapacity, heatLossAtMaxCapacity)
     common.log:trace("BOILER filledAmountEffect: %s", filledAmountEffect)
 
     --Calculate change
     local heatChange = timeSinceLastUpdate * heatEffect * filledAmountEffect * waterHeatRate
-
-    CampfireUtil.setHeat(refData, refData.waterHeat + heatChange, reference)
+    local newHeat = oldHeat + heatChange
+    CampfireUtil.setHeat(refData, newHeat, reference)
 end
 
 ---@class AshfallAddIngredToStewType
@@ -184,7 +215,13 @@ function CampfireUtil.addIngredToStew(e)
     campfire.data.stewLevels[foodType] = campfire.data.stewLevels[foodType] or 0
     --Add ingredient to stew
     common.log:debug("old stewLevel: %s", campfire.data.stewLevels[foodType])
-    local waterRatio = campfire.data.waterAmount / campfire.data.waterCapacity
+
+    common.log:debug("getting capacity for %s", campfire.object.id)
+    local maxCapacity = CampfireUtil.getUtensilCapacity{
+        dataHolder = campfire,
+        object = campfire.object
+    }
+    local waterRatio = campfire.data.waterAmount / maxCapacity
     common.log:debug("waterRatio: %s", waterRatio)
     local ingredAmountToAdd = amountToAdd * common.staticConfigs.stewIngredAddAmount / waterRatio
     common.log:debug("ingredAmountToAdd: %s", ingredAmountToAdd)
@@ -204,7 +241,12 @@ function CampfireUtil.getStewCapacity(e)
     local foodType = e.foodType
     common.log:debug("foodType", foodType)
     common.log:debug("Water amount: %s", campfire.data.waterAmount)
-    local waterRatio = campfire.data.waterAmount / campfire.data.waterCapacity
+
+    local maxCapacity = CampfireUtil.getUtensilCapacity{
+        dataHolder = campfire,
+        object = campfire.object
+    }
+    local waterRatio = campfire.data.waterAmount / maxCapacity
     common.log:debug("waterRatio: %s", waterRatio)
     local stewLevel = (campfire.data.stewLevels and campfire.data.stewLevels[foodType] or 0)
     common.log:debug("stewLevel: %s", stewLevel)

@@ -46,7 +46,7 @@ local function getHeatSourceValue(ref)
 end
 
 local function isLight(ref)
-    return ref.baseObject.objectType == tes3.objectType.light
+    return ref.baseObject and ref.baseObject.objectType == tes3.objectType.light
 end
 
 refController.registerReferenceController{
@@ -131,8 +131,8 @@ function this.calculateFireEffect()
         if isValid then
             --For survival skill
             common.data.nearCampfire = true
-            local fuel = CampfireUtil.getHeat(ref.data)
-            local heatAtMaxDistance = math.clamp(math.remap(fuel, 0, 10, 20, 60), 0, 60)
+            local fuel = CampfireUtil.getHeat(ref)
+            local heatAtMaxDistance = math.clamp(math.remap(fuel, 0, 10, 0, 60), 0, 60)
             checkWarmHands()
             if warmingHands then
                 heatAtMaxDistance = heatAtMaxDistance * warmHandsBonus

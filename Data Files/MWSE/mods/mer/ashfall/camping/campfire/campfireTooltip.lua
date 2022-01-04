@@ -17,7 +17,7 @@ local function updateTooltip(e)
     local campfire = e.reference
     local parentNode = e.parentNode
     local attachmentConfig = CampfireUtil.getAttachmentConfig(parentNode)
-    if attachmentConfig and e.reference then
+    if attachmentConfig and e.reference and label then
         CampfireUtil.addExtraTooltip(attachmentConfig, campfire, labelBorder)
         label.text = CampfireUtil.getAttachmentName(campfire, attachmentConfig) or label.text
     end
@@ -25,7 +25,7 @@ local function updateTooltip(e)
     local cursor = tes3ui.findHelpLayerMenu("CursorIcon")
     if cursor then
         local tile = cursor and cursor:getPropertyObject("MenuInventory_Thing", "tes3inventoryTile")
-        if tile then
+        if tile and campfire then
             -- local dropConfig = CampfireUtil.getDropConfig(parentNode)
             -- if not dropConfig then return end
             local dropText =  CampfireUtil.getDropText(parentNode, campfire, tile.item, tile.itemData)
@@ -40,5 +40,4 @@ local function updateTooltip(e)
         end
     end
 end
-
 event.register("Ashfall:Activator_tooltip", updateTooltip)

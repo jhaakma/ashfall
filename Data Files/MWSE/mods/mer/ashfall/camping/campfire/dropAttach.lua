@@ -4,18 +4,60 @@
 ]]
 local CampfireUtil = require "mer.ashfall.camping.campfire.CampfireUtil"
 local activatorController = require "mer.ashfall.activators.activatorController"
+local LiquidContainer = require "mer.ashfall.objects.LiquidContainer"
+local dropTea = require("mer.ashfall.camping.dropConfigs.tea")
+local dropIngredient = require("mer.ashfall.camping.dropConfigs.ingredient")
+local dropLadle = require("mer.ashfall.camping.dropConfigs.ladle")
+local common = require("mer.ashfall.common.common")
+
 local function onDrop(e)
-    local campfire = activatorController.currentRef
-    if campfire then
+    local target = activatorController.currentRef
+    local droppedRef = e.reference
+    if target then
+        common.log:trace("CurrentRef: %s", target.object.id)
         local node = activatorController.parentNode
         local dropConfig = CampfireUtil.getDropConfig(node)
-        if not dropConfig then return end
+        if not dropConfig then
+            common.log:trace("No drop config for %s", target.object.id)
+            return
+        end
+        common.log:trace("Drop config found")
         for _, optionId in ipairs(dropConfig) do
+            common.log:trace("optionId: %s", optionId)
             local option = require('mer.ashfall.camping.dropConfigs.' .. optionId)
-            if option.canDrop(campfire, e.reference.object, e.reference.itemData) then
-                option.onDrop(campfire,e.reference)
+            if option.canDrop(target, droppedRef.object, droppedRef.itemData) then
+                common.log:trace("Can drop")
+                if option.onDrop then
+                    option.onDrop(target, droppedRef)
+                end
+            else
+                common.log:trace("Can't drop")
             end
         end
     end
 end
 event.register("itemDropped", onDrop)
+
+local function dropWaterOnUtensil(e)
+    local target = CampfireUtil.getPlacedOnContainer()
+    if not target then return end
+    local targetisUtensil = common.staticConfigs.utensils[target.object.id:lower()]
+    if targetisUtensil then return end --Handled by dropConfig
+    local from = LiquidContainer.createFromReference(e.reference)
+    local to = LiquidContainer.createFromReference(target)
+    if from and to then
+        local waterAdded
+        local errorMsg
+        if common.helper.isModifierKeyPressed() then
+            --Move water the other direction if shift is pressed
+            waterAdded, errorMsg = to:transferLiquid(from)
+        else
+            waterAdded, errorMsg = from:transferLiquid(to)
+        end
+        if waterAdded <= 0 then
+            tes3.messageBox(errorMsg or "Unable to transfer liquid.")
+        end
+        common.helper.pickUp(e.reference)
+    end
+end
+event.register("itemDropped", dropWaterOnUtensil)

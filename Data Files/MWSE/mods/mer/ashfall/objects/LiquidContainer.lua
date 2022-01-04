@@ -137,50 +137,55 @@ function LiquidContainer.canTransfer(from, to)
     --If to is a reference stack, then can't transfer
     if to.reference and to.reference.attachments.variables.count > 1 then
         common.log:debug("tried transfering to ref stack")
-        return false
+        return false, "Can not transfer to a stack."
     end
 
     --If both have a waterType, can't mix
     if from.waterType and to.waterType then
-        if from.waterType ~= to.waterType then return false end
+        if from.waterType ~= to.waterType then
+            return false, "Can not mix different liquid types."
+        end
     end
-    -- --For now, can't mix stews
-    -- if from.stewLevels and to.stewLevels then
-    --     return false
-    -- end
+
+    -- Target of stew must have a ladle
+    local requiresLadle = common.staticConfigs.cookingPots[to.itemId:lower()]
+    local hasLadle = to.data.ladle
+    if from.stewLevels and requiresLadle and not hasLadle then
+        return false, "Target must have a ladle."
+    end
     -- Target must have some room to add water
     if to.capacity - to.waterAmount < 1 then
-        return false
+        return false, "Target is full."
     end
     -- Source must have some water to transfer
     if from.waterAmount < 1 then
-        return false
+        return false, "Source is empty."
     end
     --If transfering stew, target must have holdsStew flag
     if from.stewLevels and not to.holdsStew then
-        return false
+        return false, "Target can not hold stew."
     end
 
-    --If mixing stew with water, must be attached to campfire
-    if from.stewLevels or to.stewLevels then
-        if (not from.stewLevels) or (not to.stewLevels) then
-            if to.data.waterCapacity == nil and to.waterAmount and to.waterAmount > 0 then
-                return false
-            end
-        end
-    end
+    -- --If mixing stew with water, must be attached to campfire
+    -- if from.stewLevels or to.stewLevels then
+    --     if (not from.stewLevels) or (not to.stewLevels) then
+    --         if to.data.waterCapacity == nil and to.waterAmount and to.waterAmount > 0 then
+    --             return false
+    --         end
+    --     end
+    -- end
 
     --If transferring tea, target must NOT have holdsStew flag
     local fromIsTea = teaConfig.teaTypes[from.waterType]
     local toIsTea = teaConfig.teaTypes[to.waterType]
     if fromIsTea and to.holdsStew then
-        return false
+        return false, "Target can not hold tea."
     end
     --if one is a tea, both must be same tea
     if fromIsTea or toIsTea then
         if to.waterAmount and to.waterAmount > 1 then
             if from.waterType ~= to.waterType then
-                return false
+                return false, "Can not mix different tea types."
             end
         end
     end
@@ -193,9 +198,11 @@ end
 ---@param amount number
 function LiquidContainer.transferLiquid(from, to, amount)
     common.log:debug("Transferring %s from %s to %s", amount, from, to)
-    if not from:canTransfer(to) then
-        common.log:debug("Failed to transfer")
-        return 0
+
+    local canTransfer, errorMsg = from:canTransfer(to)
+    if not canTransfer then
+        common.log:debug("Failed to transfer: %s", errorMsg)
+        return 0, errorMsg
     end
     amount = amount or math.huge
     ---Fill amount is limited by how much space there is in the target, and how much liquid the source has
@@ -219,10 +226,10 @@ function LiquidContainer.transferLiquid(from, to, amount)
     --tea progress
     to.teaProgress = (from.teaProgress*fillAmount + to.teaProgress*to.waterAmount)
         / (fillAmount + to.waterAmount)
-    common.log:debug("from.teaProgress: %s", from.teaProgress)
-    common.log:debug("fillAmount: %s", fillAmount)
-    common.log:debug("to.teaProgress: %s", to.teaProgress)
-    common.log:debug("to.waterAmount: %s", to.waterAmount)
+    common.log:trace("from.teaProgress: %s", from.teaProgress)
+    common.log:trace("fillAmount: %s", fillAmount)
+    common.log:trace("to.teaProgress: %s", to.teaProgress)
+    common.log:trace("to.waterAmount: %s", to.waterAmount)
 
     -- waterAmount
     local targetWaterBefore = to.waterAmount
@@ -255,6 +262,9 @@ function LiquidContainer.transferLiquid(from, to, amount)
 
     -- lastWaterUpdated
     to.lastWaterUpdated = nil
+    to.lastBrewUpdated = nil
+    to.lastStewUpdated = nil
+    to.lastWaterHeatUpdated = nil
     --Clear empty from
     if from.waterAmount < 1 then
         for key, _ in pairs(dataValues) do

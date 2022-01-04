@@ -11,6 +11,7 @@ return {
     canDrop = function(campfire, item, itemData)
         local hasWater = campfire.data.waterAmount and campfire.data.waterAmount > 0
         local hasKettle = campfire.data.utensil == "kettle"
+            or common.staticConfigs.kettles[campfire.object.id:lower()]
         local waterClean = not campfire.data.waterType
         local isTeaLeaf = teaConfig.teaTypes[item.id:lower()]
         return hasWater and hasKettle and waterClean and isTeaLeaf

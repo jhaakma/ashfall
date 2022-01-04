@@ -17,10 +17,16 @@ local function getDisabledText(disabledText, campfire)
 end
 
 local function onActivateCampfire(e)
-
     local campfire = e.ref
     local node = e.node
-    local attachmentConfig = CampfireUtil.getAttachmentConfig(node)
+
+    local attachmentConfig
+    if node then
+        attachmentConfig = CampfireUtil.getAttachmentConfig(node)
+    elseif e.attachmentConfig then
+        attachmentConfig = e.attachmentConfig
+    end
+
     if not attachmentConfig then return end
 
     if attachmentConfig.command then
@@ -31,7 +37,7 @@ local function onActivateCampfire(e)
 
 
     local inputController = tes3.worldController.inputController
-    local isModifierKeyPressed = inputController:isKeyDown(config.modifierHotKey.keyCode)
+    local isModifierKeyPressed = common.helper.isModifierKeyPressed()
 
     if isModifierKeyPressed and attachmentConfig.shiftCommand then
         local buttonData = require(string.format("mer.ashfall.camping.menuFunctions.%s", attachmentConfig.shiftCommand))
@@ -88,7 +94,9 @@ local function onActivateCampfire(e)
     --Add contextual buttons
     local buttonList = attachmentConfig.commands
 
-    local text = CampfireUtil.getAttachmentName(campfire, attachmentConfig) or e.activator.name
+    local attachmentName = CampfireUtil.getAttachmentName(campfire, attachmentConfig)
+    local text = attachmentName
+        or campfire.object.name
 
     if buttonList then
         for _, buttonType in ipairs(buttonList) do

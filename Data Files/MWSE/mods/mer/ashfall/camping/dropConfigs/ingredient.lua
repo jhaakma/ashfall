@@ -9,14 +9,12 @@ return {
     --onDrop for Stew handled separately, this only does tea
     canDrop = function(campfire, item, itemData)
         local hasPot = campfire.data.utensil == "cookingPot"
+            or common.staticConfigs.cookingPots[item.id:lower()]
         local hasWater = campfire.data.waterAmount
             and campfire.data.waterAmount > 0
         local isStewIngred = foodConfig.getStewBuffForId(item)
-
-        local attachedToCampfire = campfire.data.waterCapacity ~= nil
         local hasLadle = campfire.data.ladle == true
         return hasPot
-            and attachedToCampfire
             and hasWater
             and hasLadle
             and isStewIngred

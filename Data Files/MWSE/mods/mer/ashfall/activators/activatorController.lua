@@ -51,7 +51,6 @@ local function centerText(element)
     element.autoHeight = true
     element.autoWidth = true
     element.wrapText = true
-    element.justifyText = "center"
 end
 
 local function doActivate()
@@ -89,6 +88,7 @@ local function createActivatorIndicator()
             local labelBorder = labelBackground:createThinBorder({})
             labelBorder.autoHeight = true
             labelBorder.autoWidth = true
+            labelBorder.childAlignX = 0.5
             labelBorder.paddingAllSides = 10
             labelBorder.flowDirection = "top_to_bottom"
 

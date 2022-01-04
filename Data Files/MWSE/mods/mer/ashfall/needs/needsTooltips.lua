@@ -5,7 +5,7 @@ local teaConfig = common.staticConfigs.teaConfig
 local hungerController = require('mer.ashfall.needs.hungerController')
 local thirstController = require('mer.ashfall.needs.thirstController')
 local foodConfig = common.staticConfigs.foodConfig
-
+local cookingTooltips = require("mer.ashfall.ui.cookingTooltips")
 
 
 
@@ -114,7 +114,6 @@ local function onMenuInventorySelectMenu(e)
         local textID = tes3ui.registerID("MenuInventorySelect_item_brick")
         local textBlock = block:findChild(textID)
 
-
         updateFoodAndWaterTile{ item = obj, itemData = itemData, element = iconBlock}
 
         -- if common.data.inventorySelectTeaBrew then
@@ -139,188 +138,33 @@ local function createNeedsTooltip(e)
         return
     end
 
-    --Food tooltips
-    local labelText
-    local thisFoodType = foodConfig.getFoodType(e.object)
-    if thisFoodType then
-        if config.enableHunger  then
-            --hunger value
-            local nutrition = hungerController.getNutrition(e.object, e.itemData)
-            if nutrition and nutrition ~= 0 then
-                labelText = string.format("Nutrition: %d", nutrition)
-                common.helper.addLabelToTooltip(tooltip, labelText)
-            end
-
-            local cookedLabel = ""
-            if foodConfig.getGrillValues(e.object) then
-
-                --Remove cook state from the ingredient name for TR foods
-                local cookStrings = {
-                    "raw ",
-                    "cooked ",
-                    "grilled ",
-                    "roasted "
-                }
-                local nameLabel = e.tooltip:findChild(tes3ui.registerID("HelpMenu_name"))
-                for _, pattern in ipairs(cookStrings) do
-                    if string.startswith(nameLabel.text:lower(), pattern) then
-                        nameLabel.text = nameLabel.text:sub(string.len(pattern) + 1, -1)
-                    end
-                end
-
-                --Add Food type and Cook state label to Tooltip
-                local cookedAmount = e.itemData and e.itemData.data.cookedAmount
-                if cookedAmount and e.itemData.data.grillState == nil then
-                    cookedLabel = string.format(" (%d%% Cooked)", cookedAmount)
-                elseif e.itemData and e.itemData.data.grillState == "cooked"  then
-                    cookedLabel = " (Cooked)"
-                elseif  e.itemData and e.itemData.data.grillState == "burnt" then
-                    cookedLabel = " (Burnt)"
-                else
-                    cookedLabel = " (Raw)"
-                end
-            end
-
-            local foodTypeLabel = string.format("%s%s", thisFoodType, cookedLabel)
-            common.helper.addLabelToTooltip(tooltip, foodTypeLabel)
-
-        end
-
-        --Meat disease/blight
-        if config.enableDiseasedMeat then
-            if e.itemData and e.itemData.data.mer_disease then
-                local diseaseLabel
-                local diseaseType = e.itemData.data.mer_disease.spellType
-                if diseaseType == tes3.spellType.disease then
-                    diseaseLabel = "Diseased"
-                elseif diseaseType == tes3.spellType.blight then
-                    diseaseLabel = "Blighted"
-                end
-                if diseaseLabel then
-                    common.helper.addLabelToTooltip(tooltip, diseaseLabel, tes3ui.getPalette("negative_color"))
-                end
-            end
-        end
-    end
-
-    --Water tooltips
+    --recalculate heat whenever you interact with it
     local bottleData = thirstController.getBottleData(e.object.id)
     if bottleData then
-        local liquidLevel = e.itemData and e.itemData.data.waterAmount or 0
-
-        --Dirty Water
-        if e.itemData and e.itemData.data.waterType == "dirty" then
-            labelText = string.format('Water: %d/%d (Dirty)', math.ceil(liquidLevel), bottleData.capacity)
-        --Tea
-        elseif e.itemData and teaConfig.teaTypes[e.itemData.data.waterType] then
-            local teaName = teaConfig.teaTypes[e.itemData.data.waterType].teaName
-            labelText = string.format('%s: %d/%d', teaName, math.ceil(liquidLevel), bottleData.capacity)
-
-            --Tea description
-            local effectBlock = common.helper.addLabelToTooltip(tooltip)
-            effectBlock.borderAllSides = 6
-            effectBlock.childAlignX = 0.5
-            effectBlock.autoHeight = true
-            effectBlock.widthProportional = 1.0
-            effectBlock.flowDirection = "left_to_right"
-
-            local icon = effectBlock:createImage{ path = "Icons/ashfall/spell/teaBuff.dds" }
-            icon.height = 16
-            icon.width = 16
-            icon.scaleMode = true
-
-            local effectText = teaConfig.teaTypes[e.itemData.data.waterType].effectDescription
-            local effectLabel = effectBlock:createLabel{ text = effectText }
-            effectLabel.borderLeft = 5
-
-        --Stew
-        elseif e.itemData and e.itemData.data.stewLevels then
-            local stewName = foodConfig.isStewNotSoup(e.itemData.data.stewLevels) and "Stew" or "Soup"
-            labelText = string.format('%s: %d/%d', stewName, math.ceil(liquidLevel), bottleData.capacity)
-            for foodType, ingredLevel in pairs(e.itemData.data.stewLevels) do
-                local value = math.min(ingredLevel, 100)
-                local stewBuff = foodConfig.getStewBuffForFoodType(foodType)
-                local spell = tes3.getObject(stewBuff.id)
-                local effect = spell.effects[1]
-
-
-
-                local outerBlock = common.helper.addLabelToTooltip(tooltip)
-                local block = outerBlock:createBlock{}
-                block.autoHeight = true
-                block.autoWidth = true
-                block.childAlignX = 0.5
-
-
-                local image = block:createImage{path=("icons\\" .. effect.object.icon)}
-                image.wrapText = false
-                image.borderLeft = 4
-
-                --"Fortify Health"
-                local statName
-                if effect.attribute ~= -1 then
-                    local stat = effect.attribute
-                    statName = tes3.findGMST(888 + stat).value
-                elseif effect.skill ~= -1 then
-                    local stat = effect.skill
-                    statName = tes3.findGMST(896 + stat).value
-                end
-                local effectNameText
-                local effectName = tes3.findGMST(1283 + effect.id).value
-                if statName then
-                    effectNameText = effectName:match("%S+") .. " " .. statName
-                else
-                    effectNameText = effectName
-                end
-                --points " 25 points "
-                local pointsText = string.format("%d pts", common.helper.calculateStewBuffStrength(value, stewBuff.min, stewBuff.max) )
-                --for X hours
-                local duration = common.helper.calculateStewBuffDuration() * (math.ceil(liquidLevel)/100)
-                local hoursText = string.format("for %d hour%s", duration, (duration >= 2 and "s" or "") )
-
-                local ingredLabel = block:createLabel{text = string.format("%s %s %s", effectNameText, pointsText, hoursText) }
-                ingredLabel.wrapText = false
-                ingredLabel.borderLeft = 4
-
-            end
-        --Regular Water
-        else
-            labelText = string.format('Water: %d/%d', math.ceil(liquidLevel), bottleData.capacity)
-        end
-
-        common.helper.addLabelToTooltip(tooltip, labelText)
-
-        --recalculate heat whenever you interact with it
         local hasWaterAndHeat = e.itemData
             and e.itemData.data
             and e.itemData.data.waterAmount
             and e.itemData.data.waterHeat
             and e.itemData.data.waterHeat >= 1
-
         if hasWaterAndHeat then
             if not e.reference then
                 --only update heat on tooltip when in inventory, otherwise it messes with the boilerController update
                 CampfireUtil.updateWaterHeat(e.itemData.data, bottleData.capacity)
             end
-            common.helper.addLabelToTooltip(tooltip, string.format("Heat: %d/100", e.itemData.data.waterHeat))
-        end
-
-        local icon = e.tooltip:findChild(tes3ui.registerID("HelpMenu_icon"))
-        if icon then
-            updateFoodAndWaterTile{
-                itemData = e.itemData,
-                element = icon,
-                item = e.object
-            }
         end
     end
 
-    --Patina
-    if e.itemData and e.itemData.data and e.itemData.data.patinaAmount then
-        common.helper.addLabelToTooltip(tooltip, string.format("Patina: %d/100", e.itemData.data.patinaAmount))
+    --used for item and campfire tooltips
+    cookingTooltips(e.object, e.itemData, tooltip)
+
+    local icon = e.tooltip:findChild(tes3ui.registerID("HelpMenu_icon"))
+    if icon then
+        updateFoodAndWaterTile{
+            itemData = e.itemData,
+            element = icon,
+            item = e.object
+        }
     end
-
-
     --Bellows
     local bellowsData = common.staticConfigs.bellows[e.object.id:lower()]
     if bellowsData then
@@ -328,7 +172,11 @@ local function createNeedsTooltip(e)
             string.format("%sx Fuel burn", bellowsData.burnRateEffect) )
         common.helper.addLabelToTooltip(tooltip,
             string.format("%sx Heat", bellowsData.heatEffect) )
-
+    end
+    --Fuel Consumers
+    if e.itemData and e.itemData.data.fuelLevel then
+        common.helper.addLabelToTooltip(tooltip,
+            string.format("Fuel: %.1f hours", e.itemData.data.fuelLevel) )
     end
 end
 

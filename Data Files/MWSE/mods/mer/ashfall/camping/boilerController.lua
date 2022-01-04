@@ -15,7 +15,7 @@ local function addUtensilPatina(campfire,interval)
         local utensilId = campfire.sceneNode:getObjectByName("ATTACH_HANGER")
             or campfire.sceneNode:getObjectByName("HANG_UTENSIL")
         local patinaAmount = campfire.data.utensilPatinaAmount or 0
-        local newAmount = math.clamp(patinaAmount+ interval * 100, 0, 100)
+        local newAmount = math.clamp(patinaAmount + interval * 1, 0, 100)
         local didAddPatina = patinaController.addPatina(utensilId, newAmount)
         if didAddPatina then
             campfire.data.utensilPatinaAmount = newAmount

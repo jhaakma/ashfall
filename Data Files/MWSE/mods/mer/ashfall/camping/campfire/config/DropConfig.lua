@@ -9,6 +9,7 @@ local DropConfig = {
         "lightFire",
         "groundUtensil",
         "supports",
+        "heatWater",
     },
     DROP_HANG_UTENSIL = {
         "hangUtensil"
@@ -18,7 +19,27 @@ local DropConfig = {
         "tea",
         "ladle",
         "ingredient",
-    }
+    },
+    COOKING_POT = {
+        "liquid",
+        "ladle",
+        "ingredient",
+    },
+    KETTLE = {
+        "liquid",
+        "tea",
+    },
+    ATTACH_GRILL = {
+        "heatWater",
+        "grillFood",
+    },
+    ASHFALL_GRILLER = {
+        "heatWater",
+        "grillFood",
+    },
+    TEA_WARMER = {
+        "warmWater",
+    },
 }
 
 return DropConfig

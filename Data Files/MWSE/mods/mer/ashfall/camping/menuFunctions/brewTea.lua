@@ -4,13 +4,11 @@ local teaConfig = common.staticConfigs.teaConfig
 local skillSurvivalTeaBrewIncrement = 5
 return {
     text = "Brew Tea",
-    showRequirements = function(campfire)
-        return (
-            campfire.data.utensil == "kettle" and
-            campfire.data.waterAmount and
-            campfire.data.waterAmount > 0 and
-            campfire.data.waterType == nil
-        )
+    showRequirements = function(ref)
+        local isKettle = ref.data.utensil == "kettle"
+            or common.staticConfigs.kettles[ref.object.id:lower()]
+        local hasWater = ref.data.waterAmount and ref.data.waterAmount > 0
+        return isKettle and hasWater and ref.data.waterType == nil
     end,
     callback = function(campfire)
         timer.delayOneFrame(function()

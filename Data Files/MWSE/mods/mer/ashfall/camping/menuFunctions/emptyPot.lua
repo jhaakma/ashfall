@@ -2,11 +2,11 @@ local common = require ("mer.ashfall.common.common")
 return {
     text = "Empty Pot",
     showRequirements = function(campfire)
-        return (
-            campfire.data.utensil == "cookingPot" and
-            ( campfire.data.waterAmount and
-            campfire.data.waterAmount > 0 )
-        )
+        local isCookingPot = common.staticConfigs.cookingPots[campfire.object.id:lower()]
+            or campfire.data.utensil == "cookingPot"
+        return isCookingPot
+            and campfire.data.waterAmount
+            and campfire.data.waterAmount > 0
     end,
     callback = function(campfire)
         common.helper.messageBox{

@@ -75,7 +75,7 @@ local function onActivateFirewood(e)
         end
 
         local inputController = tes3.worldController.inputController
-        local isModifierKeyPressed = inputController:isKeyDown(config.modifierHotKey.keyCode)
+        local isModifierKeyPressed = common.helper.isModifierKeyPressed()
 
         if isModifierKeyPressed then
             placeCampfire(e)

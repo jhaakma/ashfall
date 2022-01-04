@@ -114,6 +114,18 @@ this.placementConfig = {
     ashfall_cooking_pot = { maxSteepness = 0.05 },
     ashfall_cooking_pot_iron = { maxSteepness = 0.05 },
     ashfall_cooking_pot_steel = { maxSteepness = 0.05 },
+
+    ashfall_teawarmer_01_a = { maxSteepness = 0.05 },
+
+    ashfall_kettle_01 = { maxSteepness = 0.05 },
+    ashfall_kettle_02 = { maxSteepness = 0.05 },
+    ashfall_kettle_03 = { maxSteepness = 0.05 },
+    ashfall_kettle_04 = { maxSteepness = 0.05 },
+    ashfall_kettle_05 = { maxSteepness = 0.05 },
+    ashfall_kettle_06 = { maxSteepness = 0.05 },
+    ashfall_kettle_07 = { maxSteepness = 0.05 },
+
+    ashfall_misc_stove_01 = { maxSteepness = 0.05 },
 }
 
 this.capacities = {
@@ -592,37 +604,42 @@ this.utensils = {
     --iron
     ashfall_kettle = {
         type = "kettle",
-        capacity = 140
+        capacity = 140,
     },
     --steel
     ashfall_kettle_01 = {
         type = "kettle",
-        capacity = 140
+        capacity = 140,
     },
     --ceramic
     ashfall_kettle_02 = {
         type = "kettle",
-        capacity = 120
+        capacity = 120,
     },
     --ashl blue
     ashfall_kettle_03 = {
         type = "kettle",
-        capacity = 130
+        capacity = 130,
     },
     --ashl red
     ashfall_kettle_04 = {
         type = "kettle",
-        capacity = 130
+        capacity = 130,
     },
     --Ancient 6th house
     ashfall_kettle_05 = {
         type = "kettle",
-        capacity = 150
+        capacity = 150,
     },
     --Pewter / Small
     ashfall_kettle_06 = {
         type = "kettle",
-        capacity = 100
+        capacity = 100,
+    },
+    --Limeware
+    ashfall_kettle_07 = {
+        type = "kettle",
+        capacity = 130,
     },
     -- misc_com_bucket_metal = {
     --     type = "cookingPot",
@@ -645,21 +662,21 @@ this.utensils = {
         capacity = 200,
         waterMaxScale = 1.3,
         waterMaxHeight = 28,
-        holdsStew = true
+        holdsStew = true,
     },
     ashfall_cooking_pot_iron = {
         type = "cookingPot",
         capacity = 230,
         waterMaxScale = 1.3,
         waterMaxHeight = 18,
-        holdsStew = true
+        holdsStew = true,
     },
     ashfall_cooking_pot_steel = {
         type = "cookingPot",
         capacity = 200,
         waterMaxScale = 1.3,
         waterMaxHeight = 28,
-        holdsStew = true
+        holdsStew = true,
     },
 
     --RM's mod
@@ -669,7 +686,7 @@ this.utensils = {
         waterMaxScale = 1.3,
         waterMaxHeight = 18,
         meshOverride = "ashfall\\cooking_pot_iron.nif",
-        holdsStew = true
+        holdsStew = true,
     },
 }
 table.copy(this.utensils, this.bottleList)
@@ -679,8 +696,10 @@ this.cookingPots = {}
 for id, data in pairs(this.utensils) do
     if data.type == "kettle" then
         this.kettles[id] = data
+        this.activatorConfig.list.kettle:addId(id)
     elseif data.type == "cookingPot" then
         this.cookingPots[id] = data
+        this.activatorConfig.list.cookingPot:addId(id)
     end
 end
 

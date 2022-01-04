@@ -20,6 +20,7 @@ local tooltipData = {
     { id = "ashfall_kettle_04", description = "A red kettle with Ashlander markings. Use at a campfire to brew tea." },
     { id = "ashfall_kettle_05", description = "A rare kettle of unknown make and origin. Use at a campfire to brew tea." },
     { id = "ashfall_kettle_06", description = "A small kettle of simple construction. Use at a campfire to brew tea." },
+    { id = "ashfall_kettle_07", description = "An kettle made of limeware. Use at a campfire to brew tea." },
 
     --grills
     { id = "ashfall_grill", description = "A cheap but heavy iron grill. Use at a campfire to cook meat and vegetables." },

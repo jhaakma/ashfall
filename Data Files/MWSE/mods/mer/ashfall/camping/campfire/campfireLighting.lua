@@ -122,18 +122,18 @@ local function reduceLightTime(itemData)
 end
 
 local function lightFire(e)
-    local campfire = e.fuelConsumer
+    local fuelConsumer = e.fuelConsumer
     local lighterData = e.lighterData
     reduceLightTime(lighterData)
     tes3.playSound{ reference = tes3.player, sound = "ashfall_light_fire"  }
-    common.log:debug("Lighting Fire %s", campfire.object.id)
-    tes3.playSound{ sound = "Fire", reference = campfire, loop = true }
-    event.trigger("Ashfall:Campfire_Enablelight", { campfire = campfire})
+    common.log:debug("Lighting Fire %s", fuelConsumer.object.id)
+    tes3.playSound{ sound = "Fire", reference = fuelConsumer, loop = true }
+    event.trigger("Ashfall:Campfire_Enablelight", { campfire = fuelConsumer})
     common.skills.survival:progressSkill(skillSurvivalLightFireIncrement)
-    campfire.data.fuelLevel = math.max(0, campfire.data.fuelLevel - 0.5)
-    campfire.data.isLit = true
-    campfire.data.burned = true
-    event.trigger("Ashfall:UpdateAttachNodes", {campfire = campfire})
+    fuelConsumer.data.fuelLevel = math.max(0, fuelConsumer.data.fuelLevel - 0.5)
+    fuelConsumer.data.isLit = true
+    fuelConsumer.data.burned = true
+    event.trigger("Ashfall:UpdateAttachNodes", {campfire = fuelConsumer})
 end
 event.register("Ashfall:fuelConsumer_Alight", lightFire)
 

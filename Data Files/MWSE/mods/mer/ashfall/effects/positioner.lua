@@ -40,8 +40,3 @@ local function align_vectors(vec1, vec2)
 
     return matrixFromAxisAngle(angle, axis)
 end
-
--- example
---local up = tes3vector3.new(0, 0, 1)
---local rayhit = tes3.rayTest{position=eyepos, direction=eyevec}
---target.orientation = align_vectors(up, rayhit.normal)

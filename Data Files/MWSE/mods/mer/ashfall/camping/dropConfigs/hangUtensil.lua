@@ -5,12 +5,13 @@ return {
         return string.format("Attach %s", common.helper.getGenericUtensilName(item))
     end,
     canDrop = function(campfire, item, itemData)
-        common.log:debug("item: %s", item)
+        --This one is basically to stop being able to attach to misc supports
+        --(TODO: allow this and handle all the jazz that goes with it)
+        local canAttachSupports = campfire.sceneNode:getObjectByName("DROP_HANG_UTENSIL")
+
         local isUtensil = common.staticConfigs.utensils[item.id:lower()]
         local campfireHasRoom = not campfire.data.utensilId
-        common.log:debug("isUtensil: %s", isUtensil)
-        common.log:debug("campfireHasRoom: %s", campfireHasRoom)
-        return isUtensil and campfireHasRoom
+        return isUtensil and campfireHasRoom and canAttachSupports
     end,
     onDrop = function(campfire, reference)
         local utensilData = common.staticConfigs.utensils[reference.object.id:lower()]
@@ -34,7 +35,11 @@ return {
             campfire.data.teaProgress = reference.data.teaProgress
             campfire.data.waterType =  reference.data.waterType
             campfire.data.waterHeat = reference.data.waterHeat or 0
+            campfire.data.ladle = reference.data.ladle
             campfire.data.lastWaterUpdated = nil
+            campfire.data.lastBrewUpdated = nil
+            campfire.data.lastStewUpdated = nil
+            campfire.data.lastWaterHeatUpdated = nil
         end
 
         local remaining = common.helper.reduceReferenceStack(reference, 1)

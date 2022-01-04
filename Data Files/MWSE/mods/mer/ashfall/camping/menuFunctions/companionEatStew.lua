@@ -47,7 +47,7 @@ return {
                     effect.min = effectStrength
                     effect.max = effectStrength
                     mwscript.addSpell{ reference = companion, spell = spell }
-                    companion.reference.data.stewBuffTimeLeft = common.helper.calculateStewBuffDuration()
+                    companion.reference.data.stewBuffTimeLeft = common.helper.calculateStewBuffDuration(campfire.data.waterHeat)
                     event.trigger("Ashfall:registerReference", { reference = companion})
                 end)
             end

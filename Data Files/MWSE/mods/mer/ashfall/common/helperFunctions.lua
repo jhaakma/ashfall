@@ -1,5 +1,6 @@
 local this = {}
 local staticConfigs = require("mer.ashfall.config.staticConfigs")
+local config = require("mer.ashfall.config.config").config
 local skillModule = include("OtherSkills.skillModule")
 local refController = require("mer.ashfall.referenceController")
 local tentConfig = require("mer.ashfall.camping.tents.tentConfig")
@@ -226,7 +227,9 @@ function this.addLabelToTooltip(tooltip, labelText, color)
     end
     --Get main block inside tooltip
     local partmenuID = tes3ui.registerID('PartHelpMenu_main')
-    local mainBlock = tooltip:findChild(partmenuID):findChild(partmenuID):findChild(partmenuID)
+    local mainBlock = tooltip:findChild(partmenuID)
+        and tooltip:findChild(partmenuID):findChild(partmenuID):findChild(partmenuID)
+        or tooltip
 
     local outerBlock = mainBlock:createBlock()
     setupOuterBlock(outerBlock)
@@ -237,6 +240,7 @@ function this.addLabelToTooltip(tooltip, labelText, color)
         local label = outerBlock:createLabel({text = labelText})
         label.autoHeight = true
         label.autoWidth = true
+        label.widthProportional = 1.0
         if color then label.color = color end
         return label
     end
@@ -754,8 +758,14 @@ function this.calculateStewWarmthBuff(waterHeat)
 end
 
 --Use survival skill to determine how long a buff should last
-function this.calculateStewBuffDuration()
-    return math.remap(skillModule.getSkill("Ashfall:Survival").value, 0, 100, 12, 20)
+function this.calculateStewBuffDuration(waterHeat)
+    local waterHeat = waterHeat or 0
+    local isCold = waterHeat < staticConfigs.hotWaterHeatValue
+    local baseAmount = 8
+    local skill = skillModule.getSkill("Ashfall:Survival").value
+    local skillEffect = math.remap(skill, 0, 100, 1.0, 2.0)
+    local heatEffect = isCold and 0.5 or 1.0
+    return baseAmount * skillEffect * heatEffect
 end
 
 --Use survival skill to determine how strong a buff should be
@@ -766,17 +776,16 @@ function this.calculateStewBuffStrength(value, min, max)
 end
 
 --Use survival skill to determine how long a buff should last
-function this.calculateTeaBuffDuration(amount, maxDuration)
+function this.calculateTeaBuffDuration(maxDuration, waterHeat)
+    local waterHeat = waterHeat or 0
+    local isCold = waterHeat < staticConfigs.hotWaterHeatValue
     --Drinking more than limit doesn't increase duration
-    local minDuration = 0.5
-    local amountLimitLow = 0
-    local amountLimitHigh = 50
-    amount = math.clamp(amount, amountLimitLow, amountLimitHigh)
-    local duration = math.remap(amount, 0, amountLimitHigh, minDuration, maxDuration)
     --Max survival skill doubles duration
     local survivalSkill = skillModule.getSkill("Ashfall:Survival").value
     local skillMulti =  math.remap(survivalSkill, 0, 100, 1.0, 2.0)
-    return duration * skillMulti
+    --Duration is halved if the tea is cold
+    local coldEffect = isCold and 0.5 or 1.0
+    return maxDuration * skillMulti * coldEffect
 end
 
 function this.pickUp(reference)
@@ -791,11 +800,46 @@ function this.pickUp(reference)
     end
 
     timer.frame.delayOneFrame(function()
-        event.register("activate", stealActivateEvent)
-        event.register("addSound", blockSound)
+        event.register("activate", stealActivateEvent, { priority = 1000000})
+        event.register("addSound", blockSound, { priority = 1000000})
         tes3.player:activate(reference)
     end)
 end
 
+--Check if there is a heat source below ref
+--Based on mesh nodes, can be a fire (which can cook food)
+--or a candle (which can warm tea)
+function this.getHeatFromBelow(ref, requiredHeatType)
+    local ignoreList = {ref}
+    --Ignore frying pans
+    this.iterateRefType("fryingPan", function(fryingPan)
+        table.insert(ignoreList, fryingPan)
+    end)
+    local result = this.getGroundBelowRef{ ref = ref, ignoreList = ignoreList}
+    if not result then return end
+    if not result.reference then return end
+    local nodes = {
+        ATTACH_GRILL = "strong",
+        ASHFALL_GRILLER = "strong",
+        TEA_WARMER = "weak",
+        ASHFALL_FIREBASE = "strong",
+    }
+    local node = result.object
+    local heatType
+    while node and node.parent and node.name and heatType == nil do
+        heatType = nodes[node.name:upper()]
+        node = node.parent
+    end
+
+    if heatType then
+        if ( not requiredHeatType) or (heatType == requiredHeatType ) then
+            return result.reference, heatType
+        end
+    end
+end
+
+function this.isModifierKeyPressed()
+    return tes3.worldController.inputController:isKeyDown(config.modifierHotKey.keyCode)
+end
 
 return this

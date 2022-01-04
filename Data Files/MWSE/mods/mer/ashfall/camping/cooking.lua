@@ -20,46 +20,6 @@ local function calculateCookWeightModifier(ingredObject)
     return math.clamp(math.remap(ingredObject.weight, 1, 2, 1, 0.5), 0.25, 4.0)
 end
 
---Checks if the ingredient has been placed on a campfire
-local function findGriller(ingredient)
-
-
-    local ignoreList = {ingredient}
-    --Ignore frying pans
-    common.helper.iterateRefType("fryingPan", function(fryingPan)
-        table.insert(ignoreList, fryingPan)
-    end)
-    local result = common.helper.getGroundBelowRef{ ref = ingredient, ignoreList = ignoreList}
-
-    if result and result.reference then
-        --Find cooking pot attached to campfire
-        local node = result.object
-        local onGrill
-        local grillNodes = {
-            SWITCH_BASE = true,
-            ATTACH_GRILL = true,
-            ATTACH_FIREWOOD = true,
-            ASHFALL_GRILLER = true
-        }
-        while node and node.parent and node.name do
-            if grillNodes[node.name:upper()] then
-                onGrill = true
-                break
-            else
-                node = node.parent
-            end
-        end
-        --Node below ingredient is a cooking pot node
-        if onGrill then
-            return result.reference
-        end
-    else
-        common.log:trace("ray return nothing")
-    end
-end
-
-
-
 local function resetCookingTime(ingredRef)
     if not common.helper.isStack(ingredRef) and ingredRef.data then
         ingredRef.data.lastCookUpdated = nil
@@ -147,7 +107,7 @@ end
 ---@param timestamp number
 local function grillFoodItem(ingredReference, timestamp)
     --Can only grill certain types of food
-    local campfire = findGriller(ingredReference)
+    local campfire = common.helper.getHeatFromBelow(ingredReference, "strong")
     if campfire then
         if campfire.data.isLit then
             if common.helper.isStack(ingredReference) or ingredReference.data.lastCookUpdated == nil then
@@ -164,7 +124,7 @@ local function grillFoodItem(ingredReference, timestamp)
                 addGrillPatina(campfire, difference)
                 ingredReference.data.lastCookUpdated = timestamp
 
-                local thisCookMulti = calculateCookMultiplier(CampfireUtil.getHeat(campfire.data))
+                local thisCookMulti = calculateCookMultiplier(CampfireUtil.getHeat(campfire))
                 local weightMulti = calculateCookWeightModifier(ingredReference.object)
                 ingredReference.data.cookedAmount = ingredReference.data.cookedAmount + ( difference * thisCookMulti * weightMulti)
                 local cookedAmount = ingredReference.data.cookedAmount
@@ -240,12 +200,6 @@ local function doAddingredToStew(campfire, reference)
         return
     end
 
-    if not campfire.data.waterCapacity then
-        tes3.messageBox("Cooking pot must be attached to a campfire.")
-        common.helper.pickUp(reference)
-        return
-    end
-
     local amount = common.helper.getStackCount(reference)
     local amountAdded = CampfireUtil.addIngredToStew{
         campfire = campfire,
@@ -271,7 +225,6 @@ end
 
 --Place food on a grill or into a pot
 local function foodPlaced(e)
-
     if e.reference and e.reference.object then
         local isIngredient = e.reference.object.objectType == tes3.objectType.ingredient
         if not isIngredient then return end
@@ -287,8 +240,12 @@ local function foodPlaced(e)
                 local hasWater = campfire.data.waterAmount and campfire.data.waterAmount > 0
                 local hasLadle = campfire.data.ladle == true
                 --ingredient placed on a cooking pot with water in it
-                if hasWater and hasLadle and utensilData and utensilData.holdsStew then
-                    doAddingredToStew(campfire, e.reference)
+                if hasWater and utensilData and utensilData.holdsStew then
+                    if not hasLadle then
+                        tes3.messageBox("Requires ladle.")
+                    else
+                        doAddingredToStew(campfire, e.reference)
+                    end
                 end
             elseif foodConfig.getGrillValues(e.reference.object) and not common.helper.isStack(e.reference) then
                 local timestamp = tes3.getSimulationTimestamp()
@@ -312,6 +269,10 @@ local function clearWaterData(e)
     e.teaProgress = nil
     e.stewBuffs = nil
     e.waterHeat = nil
+    e.lastWaterUpdated = nil
+    e.lastBrewUpdated = nil
+    e.lastStewUpdated = nil
+    e.lastWaterHeatUpdated = nil
 end
 event.register("Ashfall:Campfire_clear_water_data", clearWaterData)
 

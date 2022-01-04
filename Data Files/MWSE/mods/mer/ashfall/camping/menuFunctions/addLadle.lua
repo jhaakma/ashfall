@@ -3,7 +3,7 @@ return {
     showRequirements = function(campfire)
         local hasLadleNode = campfire.sceneNode:getObjectByName("SWITCH_LADLE")
         local hasLadle =  campfire.data.ladle
-        local hasStaticLadle = campfire.data.dynamicConfig and campfire.data.dynamicConfig.ladle == "static"
+        local hasStaticLadle = (not campfire.data.dynamicConfig) or campfire.data.dynamicConfig.ladle == "static"
         return hasLadleNode
             and not hasLadle
             and not hasStaticLadle

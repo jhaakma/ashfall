@@ -57,7 +57,8 @@ event.register("Ashfall:VerticaliseNode", verticaliseNode)
 
 local function verticaliseNodes(e)
     if e.reference.disabled then return end
-    if e.reference.sceneNode and e.reference.sceneNode:getObjectByName("ALIGN_VERTICAL") then
+    if not e.reference.sceneNode then return end
+    if e.reference.sceneNode:getObjectByName("ALIGN_VERTICAL") then
         local safeRef = tes3.makeSafeObjectHandle(e.reference)
         local function f()
             if not safeRef:valid() then return end

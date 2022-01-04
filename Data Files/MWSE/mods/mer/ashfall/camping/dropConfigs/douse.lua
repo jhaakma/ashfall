@@ -5,6 +5,7 @@ return {
         return string.format("Extinguish")
     end,
     canDrop = function(campfire, item, itemData)
+        if not common.helper.isModifierKeyPressed() then return end
         local liquidContainer = LiquidContainer.createFromInventory(item, itemData)
         if liquidContainer then
             local fireLit = campfire.data.isLit
@@ -15,6 +16,7 @@ return {
         return false
     end,
     onDrop = function(campfire, reference)
+        if not common.helper.isModifierKeyPressed() then return end
         local liquidContainer = LiquidContainer.createFromReference(reference)
         if liquidContainer then
             event.trigger("Ashfall:fuelConsumer_Extinguish", {fuelConsumer = campfire, playSound = true})

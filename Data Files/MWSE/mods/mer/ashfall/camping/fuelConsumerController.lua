@@ -46,9 +46,9 @@ local function updateFuelConsumers(e)
 
                 --static campfires never go out
                 local isInfinite = fuelConsumer.data.infinite
-                    or (fuelConsumer.data.dynamicConfig
-                        and fuelConsumer.data.dynamicConfig.campfire.static
-                    )
+                    or fuelConsumer.data.staticCampfireInitialised
+                    or (fuelConsumer.data.dynamicConfig and fuelConsumer.data.dynamicConfig.campfire == "static")
+
                 if isInfinite then
                     fuelConsumer.data.fuelLevel = math.max(fuelConsumer.data.fuelLevel, 1)
                 end

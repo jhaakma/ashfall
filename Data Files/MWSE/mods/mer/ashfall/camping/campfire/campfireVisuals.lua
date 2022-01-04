@@ -109,7 +109,7 @@ local function updateLightingRadius(campfire)
         if not campfire.data.isLit then
             campfire.light:setAttenuationForRadius(0)
         else
-            local heatLevel = CampfireUtil.getHeat(campfire.data)
+            local heatLevel = CampfireUtil.getHeat(campfire)
             local newRadius = math.clamp( ( heatLevel / 10 ), 0.1, 1) * radius
             campfire.light:setAttenuationForRadius(newRadius)
         end
@@ -120,7 +120,7 @@ end
 local function updateFireScale(campfire)
     local fireNode = campfire.sceneNode:getObjectByName("FIRE_PARTICLE_NODE")
     if fireNode then
-        local fuelLevel = CampfireUtil.getHeat(campfire.data)
+        local fuelLevel = CampfireUtil.getHeat(campfire)
         local multiplier = 1 + ( fuelLevel * 0.05 )
         multiplier = math.clamp( multiplier, 0.5, 1.5)
         fireNode.scale = multiplier
@@ -212,7 +212,8 @@ local function updateSounds(campfire)
     if not campfire.data then return end
     local hasWater = campfire.data.waterAmount and campfire.data.waterAmount > 0
     local hasBoilingHeat = campfire.data.waterHeat and campfire.data.waterHeat >= common.staticConfigs.hotWaterHeatValue
-    if hasWater and hasBoilingHeat  then
+    local utensilOrCampfire = campfire.data.utensil or common.staticConfigs.utensils[campfire.object.id:lower()]
+    if hasWater and hasBoilingHeat and utensilOrCampfire then
         tes3.removeSound{
             reference = campfire,
             sound = "ashfall_boil"
@@ -223,7 +224,7 @@ local function updateSounds(campfire)
             loop = true
         }
     else
-        common.log:debug("campfireVisuals: removing boil sound")
+        common.log:trace("campfireVisuals: removing boil sound")
         tes3.removeSound{
             reference = campfire,
             sound = "ashfall_boil"
@@ -440,15 +441,18 @@ local function initialiseAttachNodes()
     common.helper.iterateRefType("fuelConsumer", function(campfire)
         updateAttachNodes{ campfire = campfire }
     end)
+    common.helper.iterateRefType("boiler", function(campfire)
+        updateSounds(campfire)
+    end)
 end
 event.register("cellChanged", initialiseAttachNodes)
 event.register("loaded", initialiseAttachNodes)
 
-event.register("referenceSceneNodeCreated", function(e)
-    if referenceController.controllers.utensil:requirements(e.reference) then
+event.register("referenceActivated", function(e)
+    if common.staticConfigs.utensils[e.reference.id:lower()] then
         updateAttachNodes{ campfire = e.reference }
     end
-    if referenceController.controllers.kettle:requirements(e.reference) then
-        updateAttachNodes{ campfire = e.reference }
+    if common.staticConfigs.bottleList[e.reference.id:lower()] then
+        updateSounds(e.reference)
     end
 end)

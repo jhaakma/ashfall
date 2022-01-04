@@ -18,13 +18,6 @@ return  {
         if isStaticCampfire(campfire) then
             common.log:debug("It's a static campfire, can not remove")
             return false
-        elseif campfire.data.stewLevels then
-            return (
-                campfire.data.stewProgress and
-                campfire.data.stewProgress >= 100
-            )
-        elseif campfire.data.teaProgress and teaConfig.teaTypes[campfire.data.waterType] then
-            return campfire.data.teaProgress >= 100
         else
             return  campfire.data.utensilId ~= nil
         end
@@ -63,11 +56,9 @@ return  {
             itemData.data.waterType = campfire.data.waterType
             itemData.data.waterHeat = campfire.data.waterHeat
             itemData.data.lastWaterUpdated = campfire.data.lastWaterUpdated
-        end
-
-        --add ladle
-        if campfire.data.ladle == true then
-            tes3.addItem{ reference = tes3.player, item = "misc_com_iron_ladle", playSound = false }
+            itemData.data.lastBrewUpdated = campfire.data.lastBrewUpdated
+            itemData.data.lastStewUpdated = campfire.data.lastStewUpdated
+            itemData.data.ladle = campfire.data.ladle
         end
         --clear data and trigger updates
         event.trigger("Ashfall:Campfire_clear_utensils", { campfire = campfire, removeUtensil = true})

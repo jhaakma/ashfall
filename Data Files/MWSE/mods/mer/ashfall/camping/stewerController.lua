@@ -136,9 +136,12 @@ local function eatStew(e)
                     effect.min = effectStrength
                     effect.max = effectStrength
                     mwscript.addSpell{ reference = tes3.player, spell = spell }
+                    --Effect maxes out at 10 units, then divide remaining 10 by 10 to get normalised effect
                     local ateAmountMulti = math.min(highestAmount, 10) / 10
                     common.log:debug("ateAmountMulti %s", ateAmountMulti)
-                    tes3.player.data.stewBuffTimeLeft = common.helper.calculateStewBuffDuration() * ateAmountMulti
+                    --Give at least half an hour when drinking a small amount
+                    local timeLeft = math.max(0.5, common.helper.calculateStewBuffDuration(e.data.waterHeat) * ateAmountMulti)
+                    tes3.player.data.stewBuffTimeLeft = timeLeft
                     common.log:debug("Set stew duration to %s", tes3.player.data.stewBuffTimeLeft)
                     event.trigger("Ashfall:registerReference", { reference = tes3.player})
                 end)
