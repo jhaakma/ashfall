@@ -202,25 +202,27 @@ local function onLeftClickInMenuPressed(e)
     --block if holding something
     local cursor = tes3ui.findHelpLayerMenu("CursorIcon")
     if cursor then return end
-    --block if another menu is sitting on top
-    local topMenu = tes3ui.getMenuOnTop()
-    local acceptableMenus = {
-        [tes3ui.registerID("MenuMulti")] = true,
-        [tes3ui.registerID("MenuStat")] = true,
-        [tes3ui.registerID("MenuMagic")] = true,
-        [tes3ui.registerID("MenuMap")] = true,
-        [tes3ui.registerID("MenuInventory")] = true,
-    }
-    local topMenuIsAcceptable = acceptableMenus[topMenu.id]
-    if not topMenuIsAcceptable then return end
+
     --block if not clicking the left button
     if not (e.button == 0) then return end
 
     --Trigger activate
     timer.frame.delayOneFrame(function()
-            doTriggerActivate()
+        --block if another menu is sitting on top
+        local topMenu = tes3ui.getMenuOnTop()
+        local acceptableMenus = {
+            [tes3ui.registerID("MenuMulti")] = true,
+            [tes3ui.registerID("MenuStat")] = true,
+            [tes3ui.registerID("MenuMagic")] = true,
+            [tes3ui.registerID("MenuMap")] = true,
+            [tes3ui.registerID("MenuInventory")] = true,
+        }
+        local topMenuIsAcceptable = acceptableMenus[topMenu.id]
+        if not topMenuIsAcceptable then return end
+        doTriggerActivate()
     end)
 end
-event.register("mouseButtonDown", onLeftClickInMenuPressed)
+--Too buggy
+--event.register("mouseButtonUp", onLeftClickInMenuPressed)
 
 return this
