@@ -113,6 +113,12 @@ local function addFoodTooltips(item, itemData, tooltip)
                 end
             end
         end
+
+        if common.helper.isModifierKeyPressed() then
+            local actionLabel  = tooltip:createLabel({ text = "Eat" })
+            actionLabel.color = tes3ui.getPalette("active_color")
+            centerText(actionLabel)
+        end
     end
 end
 
@@ -151,11 +157,13 @@ local function addTeaTooltips(item, itemData, tooltip)
 
 
             --for X hours
-            local amount = itemData.data.waterAmount
-            local duration = common.helper.calculateTeaBuffDuration(teaData.duration, itemData.data.waterHeat)
-            local hoursText = string.format("for %d hour%s", duration, (duration >= 2 and "s" or "") )
-
-            local effectLabelText = teaData.effectDescription .. " " .. hoursText
+            local hoursText = ""
+            if teaData.duration then
+                local amount = itemData.data.waterAmount
+                local duration = common.helper.calculateTeaBuffDuration(teaData.duration, itemData.data.waterHeat)
+                hoursText = string.format(" for %d hour%s", duration, (duration >= 2 and "s" or "") )
+            end
+            local effectLabelText = teaData.effectDescription .. hoursText
             local effectLabel = effectBlock:createLabel{ text = effectLabelText }
             effectLabel.borderLeft = 4
         end
@@ -231,6 +239,8 @@ local function addStewTooltips(item, itemData, tooltip)
                 ingredLabel = tooltip:createLabel{text = ingredText }
                 centerText(ingredLabel)
             end
+
+
         end
     end
 end
