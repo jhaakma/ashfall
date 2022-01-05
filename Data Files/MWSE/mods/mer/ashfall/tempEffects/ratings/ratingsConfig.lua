@@ -43,7 +43,7 @@ this.warmth = {
             ['slave'] = 25,
             ['steel'] = 20,
             ['telvanni '] = 60,
-            ['wolf '] = 100
+            ['wolf '] = 100,
         },
     },
     clothing = {
@@ -60,7 +60,8 @@ this.warmth = {
             [' exquisite'] = 70,
             ['fire'] = 100,
             ['flame'] = 100,
-            ['frost'] = 0
+            ['frost'] = 0,
+            ['cloak'] = 60,
         }
     },
 }

@@ -433,12 +433,5 @@ this.list.cookingPot = Activator:new{
 --     }
 -- }
 
-event.register("Ashfall:PrintActivatorIds", function(e)
-    local activator = this.list[e.activator]
-    mwse.log("printing ids for %s", e.activator)
-    for id, _ in pairs(activator.ids) do
-        mwse.log(id)
-    end
-end)
 
 return this

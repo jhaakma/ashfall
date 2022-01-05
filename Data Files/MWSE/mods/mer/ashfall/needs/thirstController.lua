@@ -21,7 +21,7 @@ function this.handleEmpties(data)
     common.log:trace("handleEmpties")
     if data.waterAmount and data.waterAmount < 1 then
         common.log:debug("handleEmpties: waterAmount < 1, clearing water data")
-        event.trigger("Ashfall:Campfire_clear_water_data", data)
+        event.trigger("Ashfall:Campfire_clear_water_data", {data = data})
         --restack / remove sound
         tes3ui.updateInventoryTiles()
     end

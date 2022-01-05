@@ -197,7 +197,7 @@ end
 ---@param to AshfallLiquidContainer
 ---@param amount number
 function LiquidContainer.transferLiquid(from, to, amount)
-    common.log:debug("Transferring %s from %s to %s", amount, from, to)
+    common.log:debug("Transferring %s from %s to %s", amount or "[infinite]", from, to)
 
     local canTransfer, errorMsg = from:canTransfer(to)
     if not canTransfer then

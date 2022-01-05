@@ -10,6 +10,7 @@ local this = {}
 local activatorConfig = require("mer.ashfall.config.staticConfigs").activatorConfig
 local config = require("mer.ashfall.config.config").config
 local common = require("mer.ashfall.common.common")
+local uiCommon = require("mer.ashfall.ui.uiCommon")
 this.list = activatorConfig.list
 this.current = nil
 this.currentRef = nil
@@ -38,8 +39,8 @@ end
 --[[
     Create a tooltip when looking at an activator
 ]]--
-local id_indicator = tes3ui.registerID("Ashfall:activatorTooltip")
-local id_label = tes3ui.registerID("Ashfall:activatorTooltipLabel")
+
+
 function this.getActivatorTooltip()
     local menu = tes3ui.findMenu(tes3ui.registerID("MenuMulti"))
     if menu then
@@ -54,64 +55,48 @@ local function centerText(element)
 end
 
 local function doActivate()
-    return (
-        (not tes3.mobilePlayer.werewolf)
+    return (not tes3.mobilePlayer.werewolf)
         and this.current
         and config[this.getCurrentActivator().mcmSetting] ~= false
-    )
+end
+
+local function getActivatorName()
+    local activator = this.list[this.current]
+    if activator then
+        if activator.name and activator.name ~= "" then
+            common.log:trace("returning activator name: %s", activator.name)
+            return activator.name
+        elseif this.currentRef then
+            common.log:trace("returning activator ref name: %s", this.currentRef.object.name)
+            return this.currentRef.object.name
+        else
+            common.log:trace("No ref found for activator")
+        end
+    end
+end
+
+local function doShowActivator()
+    local helpMenu = tes3ui.findHelpLayerMenu(tes3ui.registerID("HelpMenu"))
+    return doActivate() and not ( helpMenu and helpMenu.visible)
 end
 
 local function createActivatorIndicator()
-    local menu = tes3ui.findMenu(tes3ui.registerID("MenuMulti"))
-    if menu then
-        ---@type tes3uiElement
-        local mainBlock = menu:findChild(id_indicator)
-
-        if doActivate() then
-            if mainBlock then
-                mainBlock:destroy()
-            end
-
-            mainBlock = menu:createBlock({id = id_indicator })
-
-            mainBlock.absolutePosAlignX = 0.5
-            mainBlock.absolutePosAlignY = 0.03
-            mainBlock.autoHeight = true
-            mainBlock.autoWidth = true
-
-
-            local labelBackground = mainBlock:createRect({color = {0, 0, 0}})
-            --labelBackground.borderTop = 4
-            labelBackground.autoHeight = true
-            labelBackground.autoWidth = true
-
-            local labelBorder = labelBackground:createThinBorder({})
-            labelBorder.autoHeight = true
-            labelBorder.autoWidth = true
-            labelBorder.childAlignX = 0.5
-            labelBorder.paddingAllSides = 10
-            labelBorder.flowDirection = "top_to_bottom"
-
-            local text = this.list[this.current].name or ""
-            local label = labelBorder:createLabel{ id=id_label, text = text}
-            label.color = tes3ui.getPalette("header_color")
-            centerText(label)
-
-            local eventData = {
-                label = label,
-                parentNode = this.parentNode,
-                element = labelBorder,
-                reference = this.currentRef
-            }
-            event.trigger("Ashfall:Activator_tooltip", eventData, {filter = this.current })
-            if label.text == "" then
-                mainBlock.visible = false
-            end
-        else
-            if mainBlock then
-                mainBlock.visible = false
-            end
+    if doShowActivator() then
+        local headerText = getActivatorName()
+        local tooltipMenu = uiCommon.createOrUpdateTooltipMenu(headerText)
+        local hasIcon = this.currentRef
+            and this.currentRef.object.icon
+            and this.currentRef.object.icon ~= ""
+        if hasIcon then
+            uiCommon.addIconToHeader(this.currentRef.object.icon)
         end
+        local eventData = {
+            parentNode = this.parentNode,
+            reference = this.currentRef
+        }
+        event.trigger("Ashfall:Activator_tooltip", eventData, {filter = this.current })
+    else
+        uiCommon.disableTooltipMenu()
     end
 end
 

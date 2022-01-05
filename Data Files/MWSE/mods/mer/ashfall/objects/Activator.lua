@@ -43,4 +43,5 @@ function Activator:addPattern(pattern)
     self.patterns[pattern:lower()] = true
 end
 
+
 return Activator

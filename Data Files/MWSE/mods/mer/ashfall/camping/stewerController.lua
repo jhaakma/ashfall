@@ -148,7 +148,7 @@ local function eatStew(e)
             end
         end
         if e.data.waterAmount < 1 then
-            event.trigger("Ashfall:Campfire_clear_water_data", e.data)
+            event.trigger("Ashfall:Campfire_clear_water_data", { data = e.data } )
         end
     else
         tes3.messageBox("You are full.")

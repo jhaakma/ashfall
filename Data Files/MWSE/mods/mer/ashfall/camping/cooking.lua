@@ -107,7 +107,7 @@ end
 ---@param timestamp number
 local function grillFoodItem(ingredReference, timestamp)
     --Can only grill certain types of food
-    local campfire = common.helper.getHeatRefFromBelow(ingredReference, "strong")
+    local campfire = common.helper.getHeatFromBelow(ingredReference, "strong")
     if campfire then
         if campfire.data.isLit then
             if common.helper.isStack(ingredReference) or ingredReference.data.lastCookUpdated == nil then
@@ -262,17 +262,17 @@ event.register("referenceSceneNodeCreated" , foodPlaced)
 
 
 local function clearWaterData(e)
-    e.waterType = nil
-    e.waterAmount = nil
-    e.stewLevels = nil
-    e.stewProgress = nil
-    e.teaProgress = nil
-    e.stewBuffs = nil
-    e.waterHeat = nil
-    e.lastWaterUpdated = nil
-    e.lastBrewUpdated = nil
-    e.lastStewUpdated = nil
-    e.lastWaterHeatUpdated = nil
+    e.data.waterType = nil
+    e.data.waterAmount = nil
+    e.data.stewLevels = nil
+    e.data.stewProgress = nil
+    e.data.teaProgress = nil
+    e.data.stewBuffs = nil
+    e.data.waterHeat = nil
+    e.data.lastWaterUpdated = nil
+    e.data.lastBrewUpdated = nil
+    e.data.lastStewUpdated = nil
+    e.data.lastWaterHeatUpdated = nil
 end
 event.register("Ashfall:Campfire_clear_water_data", clearWaterData)
 
@@ -290,8 +290,7 @@ local function clearCampfireUtensilData(e)
 
     common.log:debug("Clearing Utensil Data")
     local campfire = e.campfire
-    clearWaterData(campfire.data)
-
+    clearWaterData{data = campfire.data}
 
     if e.removeUtensil then
         clearUtensilData(campfire.data)
