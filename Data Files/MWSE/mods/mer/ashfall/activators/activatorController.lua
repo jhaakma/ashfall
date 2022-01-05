@@ -176,7 +176,7 @@ event.register("loaded", function() isBlocked = false end)
     at an activator static then fire an event
 ]]--
 local function doTriggerActivate()
-    if (not tes3ui.menuMode()) and doActivate() and not isBlocked then
+    if this.list[this.current] and not isBlocked then
 
         local eventData = {
             activator = this.list[this.current],
@@ -188,6 +188,39 @@ local function doTriggerActivate()
     end
 end
 
-event.register("Ashfall:ActivateButtonPressed", doTriggerActivate)
+local function onActivateKeyPressed(e)
+    if (not tes3ui.menuMode()) and doActivate() then
+        doTriggerActivate()
+    end
+end
+event.register("Ashfall:ActivateButtonPressed", onActivateKeyPressed)
+
+
+local function onLeftClickInMenuPressed(e)
+    --block if not in menu mode
+    if not tes3ui.menuMode() then return end
+    --block if holding something
+    local cursor = tes3ui.findHelpLayerMenu("CursorIcon")
+    if cursor then return end
+    --block if another menu is sitting on top
+    local topMenu = tes3ui.getMenuOnTop()
+    local acceptableMenus = {
+        [tes3ui.registerID("MenuMulti")] = true,
+        [tes3ui.registerID("MenuStat")] = true,
+        [tes3ui.registerID("MenuMagic")] = true,
+        [tes3ui.registerID("MenuMap")] = true,
+        [tes3ui.registerID("MenuInventory")] = true,
+    }
+    local topMenuIsAcceptable = acceptableMenus[topMenu.id]
+    if not topMenuIsAcceptable then return end
+    --block if not clicking the left button
+    if not (e.button == 0) then return end
+
+    --Trigger activate
+    timer.frame.delayOneFrame(function()
+            doTriggerActivate()
+    end)
+end
+event.register("mouseButtonDown", onLeftClickInMenuPressed)
 
 return this

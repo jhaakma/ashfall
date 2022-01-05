@@ -163,12 +163,15 @@ local function registerWaterContainers(e)
                     data, listValidWaterContainers())
             )
 
+            --add to config
             staticConfigs.bottleList[id] = {
                 capacity = thisBottleConfig.capacity,
                 holdsStew = thisBottleConfig.holdsStew,
                 value = includeOverrides and thisBottleConfig.value or nil,
                 weight = includeOverrides and thisBottleConfig.weight or nil,
             }
+            --add as activator
+            activatorConfig.list.waterContainer:addId(id)
 
             local finalConfig = staticConfigs.bottleList[id]
             common.log:debug("    %s: { capacity: %d%s%s }",

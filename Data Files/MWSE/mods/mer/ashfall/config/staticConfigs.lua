@@ -443,8 +443,9 @@ this.bottleList = {
     t_de_yellowglassflask01 = this.bottleConfig.flask,
     t_de_yellowglasspot01 = this.bottleConfig.noValPot,
 }
-
-
+for id, _ in pairs(this.bottleList) do
+    this.activatorConfig.list.waterContainer:addId(id)
+end
 
 this.interiorTempValues = {
     default = -10,

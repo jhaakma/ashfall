@@ -9,7 +9,7 @@ local function addAdditionalTooltip(e)
     common.log:trace("Campfire tooltip")
     local campfire = e.reference
     local parentNode = e.parentNode
-    local attachmentConfig = CampfireUtil.getAttachmentConfig(parentNode)
+    local attachmentConfig = CampfireUtil.getAttachmentConfig(campfire, parentNode)
     if attachmentConfig and e.reference then
         if attachmentConfig.tooltipExtra then
             local tooltipContents = uiCommon.getTooltipContentsBlock()
@@ -27,8 +27,6 @@ local function addAdditionalTooltip(e)
         local tile = cursor
             and cursor:getPropertyObject("MenuInventory_Thing", "tes3inventoryTile")
         if tile and campfire then
-            -- local dropConfig = CampfireUtil.getDropConfig(parentNode)
-            -- if not dropConfig then return end
             local dropText =  CampfireUtil.getDropText(parentNode, campfire, tile.item, tile.itemData)
             if dropText then
                 uiCommon.addCenterLabel{

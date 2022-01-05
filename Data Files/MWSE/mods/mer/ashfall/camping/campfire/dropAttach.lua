@@ -16,9 +16,9 @@ local function onDrop(e)
     if target then
         common.log:trace("CurrentRef: %s", target.object.id)
         local node = activatorController.parentNode
-        local dropConfig = CampfireUtil.getDropConfig(node)
+        local dropConfig = CampfireUtil.getDropConfig(target, node)
         if not dropConfig then
-            common.log:trace("No drop config for %s", target.object.id)
+            common.log:debug("No drop config for %s", target.object.id)
             return
         end
         common.log:trace("Drop config found")
@@ -38,14 +38,16 @@ local function onDrop(e)
 end
 event.register("itemDropped", onDrop)
 
-local function dropWaterOnUtensil(e)
+local function dropWaterOnWaterContainer(e)
     local target = CampfireUtil.getPlacedOnContainer()
     if not target then return end
-    local targetisUtensil = common.staticConfigs.utensils[target.object.id:lower()]
-    if targetisUtensil then return end --Handled by dropConfig
+    local targetisWaterContainer = activatorController.list.waterContainer:isActivator(target.object.id:lower())
+    if not targetisWaterContainer then return end --Handled by dropConfig
+
     local from = LiquidContainer.createFromReference(e.reference)
     local to = LiquidContainer.createFromReference(target)
     if from and to then
+        common.log:debug("dropped water on water container")
         local waterAdded
         local errorMsg
         if common.helper.isModifierKeyPressed() then
@@ -60,4 +62,4 @@ local function dropWaterOnUtensil(e)
         common.helper.pickUp(e.reference)
     end
 end
-event.register("itemDropped", dropWaterOnUtensil)
+event.register("itemDropped", dropWaterOnWaterContainer)

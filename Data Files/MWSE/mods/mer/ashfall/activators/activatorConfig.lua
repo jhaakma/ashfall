@@ -19,6 +19,7 @@ this.types = {
     teaWarmer = "teaWarmer",
     kettle = "kettle",
     cookingPot = "cookingPot",
+    waterContainer = "waterContainer",
 }
 
 this.list = {}
@@ -424,14 +425,12 @@ this.list.cookingPot = Activator:new{
     }
 }
 
--- this.list.branch = Activator:new{
---     name = "Branch",
---     type = this.types.branch,
---     mcmSetting = nil,
---     ids = {
---         "ashfall_branch"
---     }
--- }
+this.list.waterContainer = Activator:new{
+    type = this.types.waterContainer,
+    ids = {
+        --added in staticConfigs/interop
+    }
+}
 
 
 return this

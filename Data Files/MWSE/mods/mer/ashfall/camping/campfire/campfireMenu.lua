@@ -22,7 +22,7 @@ local function onActivateCampfire(e)
 
     local attachmentConfig
     if node then
-        attachmentConfig = CampfireUtil.getAttachmentConfig(node)
+        attachmentConfig = CampfireUtil.getAttachmentConfig(campfire, node)
     elseif e.attachmentConfig then
         attachmentConfig = e.attachmentConfig
     end

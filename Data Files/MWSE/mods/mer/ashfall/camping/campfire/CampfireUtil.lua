@@ -1,6 +1,6 @@
 
 local DropConfig = require "mer.ashfall.camping.campfire.config.DropConfig"
-
+local cookingTooltips = require("mer.ashfall.ui.cookingTooltips")
 local activatorController = require "mer.ashfall.activators.activatorController"
 local foodConfig = require "mer.ashfall.config.foodConfig"
 
@@ -32,7 +32,15 @@ function CampfireUtil.getHeat(reference)
     end
 end
 
-function CampfireUtil.getAttachmentConfig(node)
+function CampfireUtil.getAttachmentConfig(reference, node)
+    if common.staticConfigs.activatorConfig.list.waterContainer:isActivator(reference.object.id:lower()) then
+        return {
+            tooltipExtra = function(campfire, tooltip)
+                cookingTooltips(campfire.object, campfire.itemData, tooltip)
+            end
+        }
+    end
+
     if not node then return end
     --default campfire
     local attachmentConfig
@@ -46,12 +54,15 @@ function CampfireUtil.getAttachmentConfig(node)
     return attachmentConfig
 end
 
-function CampfireUtil.getDropConfig(node)
+function CampfireUtil.getDropConfig(reference, node)
+    if common.staticConfigs.activatorConfig.list.waterContainer:isActivator(reference.object.id:lower()) then
+        return DropConfig.waterContainer
+    end
     --default campfire
     local dropConfig
     while node.parent do
-        if DropConfig[node.name] then
-            dropConfig = DropConfig[node.name]
+        if DropConfig.node[node.name] then
+            dropConfig = DropConfig.node[node.name]
             break
         end
         node = node.parent
@@ -316,13 +327,13 @@ function CampfireUtil.getFoodPlacedOnGrill(ingredReference, campfire)
     end
 end
 
-function CampfireUtil.getDropText(node, campfire, item, itemData)
-    local dropConfig = CampfireUtil.getDropConfig(node)
+function CampfireUtil.getDropText(node, reference, item, itemData)
+    local dropConfig = CampfireUtil.getDropConfig(reference, node)
     if not dropConfig then return end
     for _, optionId in ipairs(dropConfig) do
         local option = require('mer.ashfall.camping.dropConfigs.' .. optionId)
-        if option.canDrop(campfire, item, itemData) then
-            return option.dropText(campfire, item, itemData)
+        if option.canDrop(reference, item, itemData) then
+            return option.dropText(reference, item, itemData)
         end
     end
 end
