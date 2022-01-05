@@ -20,6 +20,10 @@ local ReferenceController = {
             self.references[ref] = nil
     end,
 
+    isReference = function(self, ref)
+        return self:requirements(ref)
+    end,
+
     references = nil,
     requirements = nil
 }
@@ -29,11 +33,15 @@ this.controllers = {
 
     campfire = ReferenceController:new{
         requirements = function(_, ref)
-            return (
-                ref.object and
-                ref.object.id and
-                staticConfigs.activatorConfig.list.campfire:isActivator(ref.object.id)
-            )
+            return ref.sceneNode
+                and ref.sceneNode:getObjectByName("SWITCH_FIRE")
+        end
+    },
+
+    weakFire = ReferenceController:new{
+        requirements = function(_, ref)
+            return ref.sceneNode
+                and ref.sceneNode:getObjectByName("SWITCH_CANDLELIGHT")
         end
     },
 

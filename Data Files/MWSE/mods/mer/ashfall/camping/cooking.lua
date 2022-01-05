@@ -107,7 +107,7 @@ end
 ---@param timestamp number
 local function grillFoodItem(ingredReference, timestamp)
     --Can only grill certain types of food
-    local campfire = common.helper.getHeatFromBelow(ingredReference, "strong")
+    local campfire = common.helper.getHeatRefFromBelow(ingredReference, "strong")
     if campfire then
         if campfire.data.isLit then
             if common.helper.isStack(ingredReference) or ingredReference.data.lastCookUpdated == nil then

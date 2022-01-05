@@ -7,7 +7,7 @@ return {
         if not fireLit then
             --Light item with duration
             if item.objectType == tes3.objectType.light then
-                local duration = itemData.timeLeft
+                local duration = itemData and itemData.timeLeft
                 if duration and duration > DURATION_COST then
                     return true
                 end

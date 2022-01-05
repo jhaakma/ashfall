@@ -8,7 +8,6 @@ local activatorController = require("mer.ashfall.activators.activatorController"
 local function getUtensilData(dataHolder)
     local utensilId = dataHolder.data.utensilId
     local utensilData = common.staticConfigs.utensils[utensilId]
-
     if dataHolder.object and not utensilData then
         utensilData = common.staticConfigs.utensils[dataHolder.object.id:lower()]
     end
@@ -22,44 +21,36 @@ local function centerText(element)
     element.justifyText = "center"
 end
 
-local function addCookingTooltips(item, itemData, tooltip)
-
-
+local function addLadleTooltips(item, itemData, tooltip)
+    if not itemData then return end
     --Ladle
     if common.staticConfigs.cookingPots[item.id:lower()] and itemData.data.ladle then
         common.helper.addLabelToTooltip(tooltip,
             string.format("+Ladle")
         )
     end
+end
 
+local function addWaterTooltips(item, itemData, tooltip)
     local waterAmount = itemData and itemData.data.waterAmount
-    if waterAmount then
-        --WATER
-        local waterHeat = itemData.data.waterHeat or 0
-        local bottleData = common.staticConfigs.bottleList[item.id and string.lower(item.id)]
-        local utensilData = getUtensilData(itemData)
-        local capacity = (bottleData and bottleData.capacity) or ( utensilData and utensilData.capacity )
-
-        common.helper.addLabelToTooltip(tooltip,
-            string.format("Heat: %d/100", waterHeat)
+    if not waterAmount then return end
+    local waterHeat = itemData.data.waterHeat or 0
+    local bottleData = common.staticConfigs.bottleList[item.id and string.lower(item.id)]
+    local utensilData = getUtensilData(itemData)
+    local capacity = (bottleData and bottleData.capacity) or ( utensilData and utensilData.capacity )
+    common.helper.addLabelToTooltip(tooltip,
+        string.format("Heat: %d/100", waterHeat)
+    )
+    common.helper.addLabelToTooltip(tooltip,
+        string.format("Water: %d/%d %s",
+            math.ceil(waterAmount),
+            capacity,
+            ( itemData.data.waterType == "dirty" and "(Dirty) " or "")
         )
-        common.helper.addLabelToTooltip(tooltip,
-            string.format("Water: %d/%d %s",
-                math.ceil(waterAmount),
-                capacity,
-                ( itemData.data.waterType == "dirty" and "(Dirty) " or "")
-            )
-        )
-    end
+    )
+end
 
-    local showPatina = false
-        if showPatina then
-        --Patina
-        if itemData and itemData.data and itemData.data.patinaAmount then
-            common.helper.addLabelToTooltip(tooltip, string.format("Patina: %d/100", itemData.data.patinaAmount))
-        end
-    end
-
+local function addFoodTooltips(item, itemData, tooltip)
     --Food tooltips
     local labelText
     local thisFoodType = foodConfig.getFoodType(item)
@@ -123,7 +114,9 @@ local function addCookingTooltips(item, itemData, tooltip)
             end
         end
     end
+end
 
+local function addTeaTooltips(item, itemData, tooltip)
     if itemData and teaConfig.teaTypes[itemData.data.waterType] then
         local progress = itemData.data.teaProgress or 0
         local teaData = teaConfig.teaTypes[itemData.data.waterType]
@@ -167,7 +160,9 @@ local function addCookingTooltips(item, itemData, tooltip)
             effectLabel.borderLeft = 4
         end
     end
+end
 
+local function addStewTooltips(item, itemData, tooltip)
     if itemData and itemData.data.stewLevels then
         local stewName = foodConfig.isStewNotSoup(itemData.data.stewLevels) and "Stew" or "Soup"
 
@@ -238,16 +233,14 @@ local function addCookingTooltips(item, itemData, tooltip)
             end
         end
     end
+end
 
-
-    -- if activatorController.currentRef and  activatorController.parentNode then
-    --     local eventData = {
-    --         parentNode = activatorController.parentNode,
-    --         element = tooltip,
-    --         reference = activatorController.currentRef
-    --     }
-    --     event.trigger("Ashfall:Activator_tooltip", eventData, {filter = activatorController.current })
-    -- end
+local function addCookingTooltips(item, itemData, tooltip)
+    addLadleTooltips(item, itemData, tooltip)
+    addWaterTooltips(item, itemData, tooltip)
+    addFoodTooltips(item, itemData, tooltip)
+    addTeaTooltips(item, itemData, tooltip)
+    addStewTooltips(item, itemData, tooltip)
 end
 
 return addCookingTooltips

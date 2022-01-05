@@ -14,6 +14,10 @@ local switchNodeValues = {
         local state = { OFF = 0, LIT = 1, UNLIT = 2 }
         return campfire.data.isLit and state.LIT or state.UNLIT
     end,
+    SWITCH_CANDLELIGHT = function(campfire)
+        local state = { OFF = 0, LIT = 1, UNLIT = 2 }
+        return campfire.data.isLit and state.LIT or state.UNLIT
+    end,
     SWITCH_WOOD = function(campfire)
         local state = { OFF = 0, UNBURNED = 1, BURNED = 2 }
         if campfire.data.fuelLevel and campfire.data.fuelLevel > 0 then
@@ -438,21 +442,20 @@ end
 event.register("Ashfall:UpdateAttachNodes", updateAttachNodes)
 
 local function initialiseAttachNodes()
-    common.helper.iterateRefType("fuelConsumer", function(campfire)
-        updateAttachNodes{ campfire = campfire }
+    common.helper.iterateRefType("fuelConsumer", function(ref)
+        updateAttachNodes{ campfire = ref }
     end)
-    common.helper.iterateRefType("boiler", function(campfire)
-        updateSounds(campfire)
+    common.helper.iterateRefType("boiler", function(ref)
+        updateAttachNodes{ campfire = ref }
     end)
 end
 event.register("cellChanged", initialiseAttachNodes)
 event.register("loaded", initialiseAttachNodes)
 
 event.register("referenceActivated", function(e)
-    if common.staticConfigs.utensils[e.reference.id:lower()] then
+    local isFuelConsumer = referenceController.controllers.fuelConsumer:isReference(e.reference)
+    local isBoiler = referenceController.controllers.boiler:isReference(e.reference)
+    if isFuelConsumer or isBoiler then
         updateAttachNodes{ campfire = e.reference }
-    end
-    if common.staticConfigs.bottleList[e.reference.id:lower()] then
-        updateSounds(e.reference)
     end
 end)

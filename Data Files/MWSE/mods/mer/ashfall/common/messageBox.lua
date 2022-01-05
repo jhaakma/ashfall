@@ -42,12 +42,20 @@ local function populateButtons(e)
             end
 
             if not disabled and data.tooltip then
+                local tooltip = data.toltip
+                if type(data.tooltip) == "function" then
+                    tooltip = data.tooltip()
+                end
                 button:register( "help", function()
-                    createTooltip(data.tooltip)
+                    createTooltip(tooltip)
                 end)
             elseif disabled and data.tooltipDisabled then
+                local tooltipDisabled = data.tooltipDisabled
+                if type(data.tooltipDisabled) == "function" then
+                    tooltipDisabled = data.tooltipDisabled()
+                end
                 button:register( "help", function()
-                    createTooltip(data.tooltipDisabled)
+                    createTooltip(tooltipDisabled)
                 end)
             end
         end

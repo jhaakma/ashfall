@@ -17,7 +17,7 @@ local function initialized()
         require("mer.ashfall.scriptTimer")
         -- needs
         require("mer.ashfall.needs.waterController")
-        require("mer.ashfall.needs.needsTooltips")
+        require("mer.ashfall.ui.needsTooltips")
         require("mer.ashfall.needs.extremeEffects")
         require("mer.ashfall.needs.diseasedMeat")
 

@@ -7,55 +7,9 @@ local thirstController = require('mer.ashfall.needs.thirstController')
 local foodConfig = common.staticConfigs.foodConfig
 local cookingTooltips = require("mer.ashfall.ui.cookingTooltips")
 
-
-
---Adds fillbar showing how much water is left in a bottle.
---Height of fillbar border based on capacity of bottle.
-local function updateFoodAndWaterTile(e)
-    if not common.data then return end
-
-    --bottles show water amount
-    local bottleData = thirstController.getBottleData(e.item.id)
-    if bottleData then
-        local liquidLevel = e.itemData and e.itemData.data.waterAmount or 0
-        local capacity = bottleData.capacity
-        local maxHeight = 32 * ( capacity / common.staticConfigs.capacities.MAX)
-
-        local indicatorBlock = e.element:createThinBorder()
-        indicatorBlock.consumeMouseEvents = false
-        indicatorBlock.absolutePosAlignX = 0.1
-        indicatorBlock.absolutePosAlignY = 1.0
-        indicatorBlock.width = 8
-        indicatorBlock.height = maxHeight
-        indicatorBlock.paddingAllSides = 2
-
-        local levelIndicator = indicatorBlock:createImage({ path = "textures/menu_bar_blue.dds" })
-
-        --Add brown tinge to dirty water
-        if e.itemData then
-            if e.itemData.data.waterType == "dirty" then
-                levelIndicator.color = { 0.8, 0.6, 0.5 }
-            elseif teaConfig.teaTypes[e.itemData.data.waterType] then
-                levelIndicator.color = teaConfig.tooltipColor
-            elseif e.itemData.data.stewLevels then
-                levelIndicator.color = { 0.9, 0.7, 0.4 }
-            end
-            --Make the icon more red if it's hot
-            if e.itemData.data.waterHeat and e.itemData.data.waterHeat > common.staticConfigs.hotWaterHeatValue then
-                indicatorBlock.color = {1, 0, 0}
-            end
-        end
-
-        levelIndicator.consumeMouseEvents = false
-        levelIndicator.width = 6
-        levelIndicator.height = maxHeight * ( liquidLevel / capacity )
-        levelIndicator.scaleMode = true
-        levelIndicator.absolutePosAlignY = 1.0
-    end
-
+local function updateFoodTile(e)
     if foodConfig.getGrillValues(e.item) then
         local maxHeight = 32
-
         local indicatorBlock = e.element:createThinBorder()
         indicatorBlock.consumeMouseEvents = false
         indicatorBlock.absolutePosAlignX = 0.1
@@ -87,10 +41,57 @@ local function updateFoodAndWaterTile(e)
             levelIndicator.scaleMode = true
             levelIndicator.absolutePosAlignY = 1.0
         end
-
     end
 end
 
+local function updateWaterTile(e)
+   --bottles show water amount
+   local bottleData = thirstController.getBottleData(e.item.id)
+   if bottleData then
+       local liquidLevel = e.itemData and e.itemData.data.waterAmount or 0
+       local capacity = bottleData.capacity
+       local maxHeight = 32 * ( capacity / common.staticConfigs.capacities.MAX)
+
+       local indicatorBlock = e.element:createThinBorder()
+       indicatorBlock.consumeMouseEvents = false
+       indicatorBlock.absolutePosAlignX = 0.1
+       indicatorBlock.absolutePosAlignY = 1.0
+       indicatorBlock.width = 8
+       indicatorBlock.height = maxHeight
+       indicatorBlock.paddingAllSides = 2
+
+       local levelIndicator = indicatorBlock:createImage({ path = "textures/menu_bar_blue.dds" })
+
+       --Add brown tinge to dirty water
+       if e.itemData then
+           if e.itemData.data.waterType == "dirty" then
+               levelIndicator.color = { 0.8, 0.6, 0.5 }
+           elseif teaConfig.teaTypes[e.itemData.data.waterType] then
+               levelIndicator.color = teaConfig.tooltipColor
+           elseif e.itemData.data.stewLevels then
+               levelIndicator.color = { 0.9, 0.7, 0.4 }
+           end
+           --Make the icon more red if it's hot
+           if e.itemData.data.waterHeat and e.itemData.data.waterHeat > common.staticConfigs.hotWaterHeatValue then
+               indicatorBlock.color = {1, 0, 0}
+           end
+       end
+
+       levelIndicator.consumeMouseEvents = false
+       levelIndicator.width = 6
+       levelIndicator.height = maxHeight * ( liquidLevel / capacity )
+       levelIndicator.scaleMode = true
+       levelIndicator.absolutePosAlignY = 1.0
+   end
+end
+
+--Adds fillbar showing how much water is left in a bottle.
+--Height of fillbar border based on capacity of bottle.
+local function updateFoodAndWaterTile(e)
+    if not common.data then return end
+    updateFoodTile(e)
+    updateWaterTile(e)
+end
 event.register( "itemTileUpdated", updateFoodAndWaterTile )
 
 local function onMenuInventorySelectMenu(e)
