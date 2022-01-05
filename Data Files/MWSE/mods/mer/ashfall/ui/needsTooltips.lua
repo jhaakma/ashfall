@@ -208,24 +208,25 @@ local function teaBrewingTooltip(e)
 
             local teaDescription = textBlock:createLabel{ text = teaData.teaDescription }
             teaDescription.wrapText = true
-            teaDescription.maxWidth = 300
+            teaDescription.maxWidth = 350
 
             --Tea description
-            local effectBlock = textBlock:createBlock()
-            effectBlock.borderAllSides = 6
+            local effectBlock = tooltip:createBlock{}
             effectBlock.childAlignX = 0.5
             effectBlock.autoHeight = true
-            effectBlock.widthProportional = 1.0
+            effectBlock.autoWidth = true
             effectBlock.flowDirection = "left_to_right"
 
             local icon = effectBlock:createImage{ path = "Icons/ashfall/spell/teaBuff.dds" }
             icon.height = 16
             icon.width = 16
             icon.scaleMode = true
+            icon.borderAllSides = 1
 
-            local effectText = teaData.effectDescription
-            local effectLabel = effectBlock:createLabel{ text = effectText }
-            effectLabel.borderLeft = 5
+
+            local effectLabelText = teaData.effectDescription
+            local effectLabel = effectBlock:createLabel{ text = effectLabelText }
+            effectLabel.borderLeft = 4
         end
     end
 end
