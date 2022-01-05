@@ -23,8 +23,7 @@ local function centerText(element)
 end
 
 local function addCookingTooltips(item, itemData, tooltip)
-    if not itemData then return end
-    local waterAmount = itemData.data.waterAmount
+
 
     --Ladle
     if common.staticConfigs.cookingPots[item.id:lower()] and itemData.data.ladle then
@@ -33,6 +32,7 @@ local function addCookingTooltips(item, itemData, tooltip)
         )
     end
 
+    local waterAmount = itemData and itemData.data.waterAmount
     if waterAmount then
         --WATER
         local waterHeat = itemData.data.waterHeat or 0
@@ -124,7 +124,7 @@ local function addCookingTooltips(item, itemData, tooltip)
         end
     end
 
-    if teaConfig.teaTypes[itemData.data.waterType] then
+    if itemData and teaConfig.teaTypes[itemData.data.waterType] then
         local progress = itemData.data.teaProgress or 0
         local teaData = teaConfig.teaTypes[itemData.data.waterType]
 
@@ -168,7 +168,7 @@ local function addCookingTooltips(item, itemData, tooltip)
         end
     end
 
-    if itemData.data.stewLevels then
+    if itemData and itemData.data.stewLevels then
         local stewName = foodConfig.isStewNotSoup(itemData.data.stewLevels) and "Stew" or "Soup"
 
         local progress = ( itemData.data.stewProgress or 0 )
