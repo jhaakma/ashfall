@@ -442,10 +442,23 @@ this.bottleList = {
     t_de_yellowglasscup01 = this.bottleConfig.cup,
     t_de_yellowglassflask01 = this.bottleConfig.flask,
     t_de_yellowglasspot01 = this.bottleConfig.noValPot,
+
+    ashfall_teacup_01 = {
+        capacity = 25,
+        waterMaxScale = 1.9,
+        waterMaxHeight = 2.5,
+    },
+    ashfall_teacup_02 = {
+        capacity = 25,
+        waterMaxScale = 1.9,
+        waterMaxHeight = 2.5,
+    },
+    ashfall_teacup_03 = {
+        capacity = 25,
+        waterMaxScale = 1.9,
+        waterMaxHeight = 2.5,
+    },
 }
-for id, _ in pairs(this.bottleList) do
-    this.activatorConfig.list.waterContainer:addId(id)
-end
 
 this.interiorTempValues = {
     default = -10,
@@ -642,6 +655,105 @@ this.utensils = {
         type = "kettle",
         capacity = 130,
     },
+    --Japanese teapot
+    ashfall_kettle_08 = {
+        type = "kettle",
+        capacity = 100,
+    },
+
+    --Tea Mod Teapots
+    teamod_teapot_kb02 ={
+        type = "kettle",
+        capacity = 100,
+    },
+    teamod_teapot_q2 = {
+        type = "kettle",
+        capacity = 100,
+    },
+    teamod_teapot_q6 = {
+        type = "kettle",
+        capacity = 100,
+    },
+    teamod_teapot_q7 = {
+        type = "kettle",
+        capacity = 100,
+    },
+    teamod_teapot_qg = {
+        type = "kettle",
+        capacity = 100,
+    },
+    teamod_teapot_qgl = {
+        type = "kettle",
+        capacity = 100,
+    },
+    teamod_teapot_st01 = {
+        type = "kettle",
+        capacity = 100,
+    },
+    teamod_teapot_st02 = {
+        type = "kettle",
+        capacity = 100,
+    },
+    teamod_teapot_st03 = {
+        type = "kettle",
+        capacity = 100,
+    },
+    teamod_teapot_st04 = {
+        type = "kettle",
+        capacity = 100,
+    },
+    teamod_teapot_st05 = {
+        type = "kettle",
+        capacity = 100,
+    },
+    teamod_teapot_st06 = {
+        type = "kettle",
+        capacity = 100,
+    },
+    teamod_teapot_st07 = {
+        type = "kettle",
+        capacity = 100,
+    },
+    teamod_teapot_st08 = {
+        type = "kettle",
+        capacity = 100,
+    },
+    teamod_teapot_st09 = {
+        type = "kettle",
+        capacity = 100,
+    },
+    teamod_teapot_st10 = {
+        type = "kettle",
+        capacity = 100,
+    },
+    teamod_teapot_st11 = {
+        type = "kettle",
+        capacity = 100,
+    },
+    teamod_teapot_st12 = {
+        type = "kettle",
+        capacity = 100,
+    },
+    --Tea Mod Kettles
+    teamod_kettle_st01 = {
+        type = "kettle",
+        capacity = 125,
+    },
+    teamod_kettle_st02 = {
+        type = "kettle",
+        capacity = 125,
+    },
+
+    --TR kettles
+    tm_kettle_bar_01 = {
+        type = "kettle",
+        capacity = 130,
+    },
+    tm_kettle_bar_02 = {
+        type = "kettle",
+        capacity = 130,
+    },
+
     -- misc_com_bucket_metal = {
     --     type = "cookingPot",
     --     meshOverride = "ashfall\\bucket_metal.nif",
