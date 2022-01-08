@@ -1,4 +1,5 @@
 local common = require ("mer.ashfall.common.common")
+local CampfireUtil = require ("mer.ashfall.camping.campfire.CampfireUtil")
 
 return {
     dropText = function(campfire, item, itemData)
@@ -7,11 +8,10 @@ return {
     canDrop = function(campfire, item, itemData)
         --This one is basically to stop being able to attach to misc supports
         --(TODO: allow this and handle all the jazz that goes with it)
-        local canAttachSupports = campfire.sceneNode:getObjectByName("DROP_HANG_UTENSIL")
-
-        local isUtensil = common.staticConfigs.utensils[item.id:lower()]
+        local canAttachSupports = CampfireUtil.refCanHangUtensil(campfire)
+        local canBeAttached = CampfireUtil.itemCanBeHanged(item)
         local campfireHasRoom = not campfire.data.utensilId
-        return isUtensil and campfireHasRoom and canAttachSupports
+        return canAttachSupports and canBeAttached and campfireHasRoom
     end,
     onDrop = function(campfire, reference)
         local utensilData = common.staticConfigs.utensils[reference.object.id:lower()]

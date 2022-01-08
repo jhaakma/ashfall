@@ -67,18 +67,19 @@ local function updateStewers(e)
 
         if difference > STEWER_UPDATE_INTERVAL then
             stewerRef.data.lastStewUpdated = e.timestamp
-            stewerRef.data.waterHeat = stewerRef.data.waterHeat or 0
             local hasWater = stewerRef.data.waterAmount and stewerRef.data.waterAmount > 0
-            local waterIsBoiling = stewerRef.data.waterHeat and stewerRef.data.waterHeat >= common.staticConfigs.hotWaterHeatValue
-            local hasStew = stewerRef.data.stewLevels
-            if hasWater and waterIsBoiling and hasStew then
-
-                --Cook the stew
-                stewerRef.data.stewProgress = stewerRef.data.stewProgress or 0
-                local waterHeatEffect = common.helper.calculateWaterHeatEffect(stewerRef.data.waterHeat)
-                stewerRef.data.stewProgress = math.clamp((stewerRef.data.stewProgress + ( difference * stewCookRate * waterHeatEffect )), 0, 100)
-            else
-                stewerRef.data.lastStewUpdated = nil
+            if hasWater then
+                stewerRef.data.waterHeat = stewerRef.data.waterHeat or 0
+                local waterIsBoiling = stewerRef.data.waterHeat and stewerRef.data.waterHeat >= common.staticConfigs.hotWaterHeatValue
+                local hasStew = stewerRef.data.stewLevels
+                if waterIsBoiling and hasStew then
+                    --Cook the stew
+                    stewerRef.data.stewProgress = stewerRef.data.stewProgress or 0
+                    local waterHeatEffect = common.helper.calculateWaterHeatEffect(stewerRef.data.waterHeat)
+                    stewerRef.data.stewProgress = math.clamp((stewerRef.data.stewProgress + ( difference * stewCookRate * waterHeatEffect )), 0, 100)
+                else
+                    stewerRef.data.lastStewUpdated = nil
+                end
             end
         end
     end

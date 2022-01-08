@@ -347,7 +347,6 @@ local function checkKitBashObjects(vanillaRef)
 
             if common.helper.getCloseEnough({ref1 = ref, ref2 = vanillaRef, distHorizontal = 75, distVertical = 300}) then
                 if ref ~= vanillaRef then
-                    common.log:debug("Nearby ref: %s", ref.object.id)
 
                     local skipRef
                     for _, pattern in ipairs(ignorePatterns) do

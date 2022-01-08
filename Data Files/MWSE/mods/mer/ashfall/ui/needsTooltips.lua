@@ -50,7 +50,7 @@ local function updateWaterTile(e)
    if bottleData then
        local liquidLevel = e.itemData and e.itemData.data.waterAmount or 0
        local capacity = bottleData.capacity
-       local maxHeight = 32 * ( capacity / common.staticConfigs.capacities.MAX)
+       local maxHeight = 32 * math.max(0.33, capacity / common.staticConfigs.capacities.MAX)
 
        local indicatorBlock = e.element:createThinBorder()
        indicatorBlock.consumeMouseEvents = false
@@ -79,7 +79,7 @@ local function updateWaterTile(e)
 
        levelIndicator.consumeMouseEvents = false
        levelIndicator.width = 6
-       levelIndicator.height = maxHeight * ( liquidLevel / capacity )
+       levelIndicator.height = maxHeight * (liquidLevel / capacity )
        levelIndicator.scaleMode = true
        levelIndicator.absolutePosAlignY = 1.0
    end

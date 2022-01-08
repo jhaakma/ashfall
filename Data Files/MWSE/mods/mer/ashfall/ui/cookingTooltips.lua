@@ -5,13 +5,28 @@ local foodConfig = require("mer.ashfall.config.foodConfig")
 local hungerController = require("mer.ashfall.needs.hungerController")
 local activatorController = require("mer.ashfall.activators.activatorController")
 
+--Todo- refactor and get rid of these duplicate functions
+--They are in CampfireUtil, but that file requires this one already
 local function getUtensilData(dataHolder)
     local utensilId = dataHolder.data.utensilId
     local utensilData = common.staticConfigs.utensils[utensilId]
+
     if dataHolder.object and not utensilData then
         utensilData = common.staticConfigs.utensils[dataHolder.object.id:lower()]
     end
     return utensilData
+end
+
+local function getUtensilCapacity(e)
+    local ref = e.dataHolder
+    local object = e.object
+
+    local bottleData = object and common.staticConfigs.bottleList[object.id:lower()]
+    local utensilData = ref and ref.object and getUtensilData(ref)
+    local capacity = (bottleData and bottleData.capacity)
+        or ( utensilData and utensilData.capacity )
+
+    return capacity
 end
 
 local function centerText(element)
@@ -32,22 +47,27 @@ local function addLadleTooltips(item, itemData, tooltip)
 end
 
 local function addWaterTooltips(item, itemData, tooltip)
-    local waterAmount = itemData and itemData.data.waterAmount
-    if not waterAmount then return end
-    local waterHeat = itemData.data.waterHeat or 0
-    local bottleData = common.staticConfigs.bottleList[item.id and string.lower(item.id)]
-    local utensilData = getUtensilData(itemData)
-    local capacity = (bottleData and bottleData.capacity) or ( utensilData and utensilData.capacity )
-    common.helper.addLabelToTooltip(tooltip,
-        string.format("Heat: %d/100", waterHeat)
-    )
-    common.helper.addLabelToTooltip(tooltip,
-        string.format("Water: %d/%d %s",
-            math.ceil(waterAmount),
-            capacity,
-            ( itemData.data.waterType == "dirty" and "(Dirty) " or "")
+    local data = itemData and itemData.data or nil
+
+    local waterHeat = data and data.waterHeat
+    if waterHeat then
+        common.helper.addLabelToTooltip(tooltip,
+            string.format("Heat: %d/100", waterHeat)
         )
-    )
+    end
+
+    local capacity = getUtensilCapacity{ object = item }
+    if capacity then
+        local waterAmount = data and data.waterAmount or 0
+        local waterType = data and data.waterType or nil
+        common.helper.addLabelToTooltip(tooltip,
+            string.format("Water: %d/%d %s",
+                math.ceil(waterAmount),
+                capacity,
+                ( waterType and waterType == "dirty" and "(Dirty) " or "")
+            )
+        )
+    end
 end
 
 local function addFoodTooltips(item, itemData, tooltip)
@@ -122,39 +142,21 @@ local function addFoodTooltips(item, itemData, tooltip)
     end
 end
 
+---@param item tes3object
+---@param itemData tes3itemData
+---@param tooltip tes3uiElement
 local function addTeaTooltips(item, itemData, tooltip)
     if itemData and teaConfig.teaTypes[itemData.data.waterType] then
         local progress = itemData.data.teaProgress or 0
         local teaData = teaConfig.teaTypes[itemData.data.waterType]
 
-        local teaLabelText = teaData.teaName
-        local waterHeat = itemData.data.waterHeat or 0
-        local isCold = waterHeat < common.staticConfigs.hotWaterHeatValue
-
-        if progress == 0 then
-            teaLabelText = string.format("%s (Unbrewed)", teaLabelText)
-        elseif progress < 100 then
-            teaLabelText = string.format("%s (%d%% Brewed)", teaLabelText, progress)
-        elseif isCold then
-            teaLabelText = teaLabelText .. " (Cold)"
-        end
-
-        local teaLabel = tooltip:createLabel({ text = teaLabelText })
-        teaLabel.color = tes3ui.getPalette("header_color")
-        centerText(teaLabel)
         if progress >= 100 then
-            local effectBlock = tooltip:createBlock{}
-            effectBlock.childAlignX = 0.5
-            effectBlock.autoHeight = true
-            effectBlock.autoWidth = true
-            effectBlock.flowDirection = "left_to_right"
-
+            local effectBlock = common.helper.addLabelToTooltip(tooltip)
             local icon = effectBlock:createImage{ path = "Icons/ashfall/spell/teaBuff.dds" }
             icon.height = 16
             icon.width = 16
             icon.scaleMode = true
             icon.borderAllSides = 1
-
 
             --for X hours
             local hoursText = ""
@@ -167,6 +169,21 @@ local function addTeaTooltips(item, itemData, tooltip)
             local effectLabel = effectBlock:createLabel{ text = effectLabelText }
             effectLabel.borderLeft = 4
         end
+
+
+        local teaLabelText = teaData.teaName
+        local waterHeat = itemData.data.waterHeat or 0
+        local isCold = waterHeat < common.staticConfigs.hotWaterHeatValue
+        if progress == 0 then
+            teaLabelText = string.format("%s (Unbrewed)", teaLabelText)
+        elseif progress < 100 then
+            common.log:debug("Tea progress: %d", progress)
+            teaLabelText = string.format("%s (%d%% Brewed)", teaLabelText, progress)
+        elseif isCold then
+            teaLabelText = teaLabelText .. " (Cold)"
+        end
+        local teaLabel = common.helper.addLabelToTooltip(tooltip, teaLabelText, tes3ui.getPalette("header_color"))
+
     end
 end
 
@@ -239,18 +256,18 @@ local function addStewTooltips(item, itemData, tooltip)
                 ingredLabel = tooltip:createLabel{text = ingredText }
                 centerText(ingredLabel)
             end
-
-
         end
     end
 end
 
 local function addCookingTooltips(item, itemData, tooltip)
     addLadleTooltips(item, itemData, tooltip)
+    addTeaTooltips(item, itemData, tooltip)
     addWaterTooltips(item, itemData, tooltip)
     addFoodTooltips(item, itemData, tooltip)
-    addTeaTooltips(item, itemData, tooltip)
     addStewTooltips(item, itemData, tooltip)
+
+    tooltip:updateLayout()
 end
 
 return addCookingTooltips

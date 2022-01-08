@@ -28,10 +28,11 @@ return {
         ["ababael timsar-dadisun"] = true,--super pro ashlander merchant - Dark Elf - what 9000
         ["shulki ashunbabi"] = true,--Gnisis trader - Dark Elf - 400
         ["perien aurelie"] = true, --hla-oad pawnbroker - Breton - 150
-        ["thongar"] = true,--khuul trader/fake inkeeper - Nord - 1200
-        ["vasesius viciulus"] = true,--molag mar trader - Imperial - 1000
-        ["baissa"] = true,--vivec foreign quarter trader - Khajiit - 100
-        ["sedam omalen"] = true,--ald velothi's only trader - Dark Elf 400
+        ["thongar"] = true,--Khuul trader/fake inkeeper - Nord - 1200
+        ["vasesius viciulus"] = true,--Molag mar trader - Imperial - 1000
+        ["baissa"] = true,--Vivec foreign quarter trader - Khajiit - 100
+        ["sedam omalen"] = true,--Ald Velothi's only trader - Dark Elf 400
+        ["ferele athram"] = true, --Tel Aruhn trader
     },
     foodWaterMerchants = {
         ["arrille"] = true,--seyda neen trader

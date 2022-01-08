@@ -1,4 +1,5 @@
 local common = require ("mer.ashfall.common.common")
+local CampfireUtil = require ("mer.ashfall.camping.campfire.CampfireUtil")
 
 local function addUtensil(item, campfire, itemData)
     tes3.removeItem{ reference = tes3.player, item = item, itemData = itemData, playSound = false }
@@ -37,6 +38,7 @@ local function addUtensil(item, campfire, itemData)
     event.trigger("Ashfall:registerReference", { reference = campfire})
     event.trigger("Ashfall:UpdateAttachNodes", {campfire = campfire})
     --event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})
+
 end
 
 local function utensilSelect(campfire)
@@ -45,7 +47,7 @@ local function utensilSelect(campfire)
             title = "Select Utensil",
             noResultsText = "You do not have any utensils.",
             filter = function(e)
-                return common.staticConfigs.utensils[e.item.id:lower()] ~= nil
+                return CampfireUtil.itemCanBeHanged(e.item) ~= nil
             end,
             callback = function(e)
                 if e.item then
@@ -64,9 +66,11 @@ return {
             and not campfire.data.utensil
     end,
     enableRequirements = function()
-        for id, _ in pairs(common.staticConfigs.utensils) do
-            if  mwscript.getItemCount{ reference = tes3.player, item = id} > 0 then
-                return true
+        for stack in tes3.iterate(tes3.player.object.inventory.iterator) do
+            if common.staticConfigs.utensils[stack.object.id:lower()] then
+                if CampfireUtil.itemCanBeHanged(stack.object) then
+                    return true
+                end
             end
         end
         return false

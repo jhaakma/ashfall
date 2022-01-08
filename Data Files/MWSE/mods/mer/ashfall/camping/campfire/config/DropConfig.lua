@@ -1,6 +1,7 @@
 local DropConfig = {
     waterContainer = {
-        "liquid"
+        "liquid",
+        "tea"
     },
     node = {
         DROP_GROUND_UTENSIL = {

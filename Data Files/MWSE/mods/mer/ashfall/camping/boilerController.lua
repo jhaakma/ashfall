@@ -43,7 +43,6 @@ local function updateBoilers(e)
         end
 
         if timeSinceLastUpdate > BOILER_UPDATE_INTERVAL then
-            boilerRef.data.lastWaterUpdated = e.timestamp
             local hasFilledPot = (
                 boilerRef.data.waterAmount and
                 boilerRef.data.waterAmount > 0

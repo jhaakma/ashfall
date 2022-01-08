@@ -412,12 +412,14 @@ event.register("equip", drinkFromContainer, { filter = tes3.player, priority = -
 
 local skipActivate
 local function onShiftActivateWater(e)
+    common.log:debug("onShiftActivateWater")
     if tes3ui.menuMode() then return end
     if not (e.activator == tes3.player) then return end
-    if common.staticConfigs.utensils[e.target.object.id:lower()] then
-        --Utensils handled elsewhere
-        return
-    end
+    -- if activatorController.currentRef == e.target then
+    --     common.log:debug("Ignoring Activator")
+    --     --Activators handled elsewhere
+    --     return
+    -- end
     if skipActivate then
         skipActivate = false
         return

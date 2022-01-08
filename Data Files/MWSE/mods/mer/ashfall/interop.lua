@@ -170,8 +170,6 @@ local function registerWaterContainers(e)
                 value = includeOverrides and thisBottleConfig.value or nil,
                 weight = includeOverrides and thisBottleConfig.weight or nil,
             }
-            --add as activator
-            activatorConfig.list.waterContainer:addId(id)
 
             local finalConfig = staticConfigs.bottleList[id]
             common.log:debug("    %s: { capacity: %d%s%s }",

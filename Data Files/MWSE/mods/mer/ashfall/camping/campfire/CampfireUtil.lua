@@ -33,7 +33,7 @@ function CampfireUtil.getHeat(reference)
 end
 
 function CampfireUtil.getAttachmentConfig(reference, node)
-    if common.staticConfigs.activatorConfig.list.waterContainer:isActivator(reference.object.id:lower()) then
+    if common.staticConfigs.bottleList[reference.object.id:lower()] then
         return {
             tooltipExtra = function(campfire, tooltip)
                 cookingTooltips(campfire.object, campfire.itemData, tooltip)
@@ -55,9 +55,6 @@ function CampfireUtil.getAttachmentConfig(reference, node)
 end
 
 function CampfireUtil.getDropConfig(reference, node)
-    if common.staticConfigs.activatorConfig.list.waterContainer:isActivator(reference.object.id:lower()) then
-        return DropConfig.waterContainer
-    end
     --default campfire
     local dropConfig
     while node.parent do
@@ -66,6 +63,11 @@ function CampfireUtil.getDropConfig(reference, node)
             break
         end
         node = node.parent
+    end
+    if not dropConfig then
+        if common.staticConfigs.bottleList[reference.object.id:lower()] then
+            return DropConfig.waterContainer
+        end
     end
     return dropConfig
 end
@@ -97,10 +99,8 @@ function CampfireUtil.getUtensilData(dataHolder)
 end
 
 function CampfireUtil.getUtensilCapacity(e)
-    common.log:debug("getting utensil capacity for %s", e.object.id)
     local ref = e.dataHolder
     local obj = e.object
-
     local bottleData = obj and common.staticConfigs.bottleList[obj.id:lower()]
     local utensilData = ref and ref.object and CampfireUtil.getUtensilData(ref)
     local capacity = (bottleData and bottleData.capacity)
@@ -157,9 +157,9 @@ local maxFuelWaterHeat = 10--max fuel multiplier on water heating
 function CampfireUtil.updateWaterHeat(refData, capacity, reference)
     if not refData.waterAmount then return end
     local now = tes3.getSimulationTimestamp()
-    refData.lastWaterHeatUpdated = refData.lastWaterHeatUpdated or now
-    local timeSinceLastUpdate = now - refData.lastWaterHeatUpdated
-    refData.lastWaterHeatUpdated = now
+    refData.lastWaterUpdated = refData.lastWaterUpdated or now
+    local timeSinceLastUpdate = now - refData.lastWaterUpdated
+    refData.lastWaterUpdated = now
     refData.waterHeat = refData.waterHeat or 0
     local oldHeat = refData.waterHeat
     --Heats up or cools down depending on fuel/is lit
@@ -336,6 +336,21 @@ function CampfireUtil.getDropText(node, reference, item, itemData)
             return option.dropText(reference, item, itemData)
         end
     end
+end
+
+function CampfireUtil.refCanHangUtensil(reference)
+    return reference.sceneNode:getObjectByName("DROP_HANG_UTENSIL")
+end
+
+function CampfireUtil.itemCanBeHanged(item)
+    if common.staticConfigs.utensils[item.id:lower()] then
+        local mesh = tes3.loadMesh(item.mesh)
+        return mesh:getObjectByName("ATTACH_POINT")
+    end
+end
+
+function CampfireUtil.refCanBeHanged(reference)
+    return reference.sceneNode:getObjectByName("ATTACH_POINT")
 end
 
 return CampfireUtil

@@ -425,12 +425,5 @@ this.list.cookingPot = Activator:new{
     }
 }
 
-this.list.waterContainer = Activator:new{
-    type = this.types.waterContainer,
-    ids = {
-        --added in staticConfigs/interop
-    }
-}
-
 
 return this

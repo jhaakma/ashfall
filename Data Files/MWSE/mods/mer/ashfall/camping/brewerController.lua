@@ -120,18 +120,19 @@ local function updateBrewers(e)
 
         if difference > BREWER_UPDATE_INTERVAL then
             brewerRef.data.lastBrewUpdated = e.timestamp
-            brewerRef.data.waterHeat =  brewerRef.data.waterHeat  or 0
             local hasWater = brewerRef.data.waterAmount and brewerRef.data.waterAmount > 0
-            local waterIsBoiling = brewerRef.data.waterHeat >= common.staticConfigs.hotWaterHeatValue
-            local hasTea = teaConfig.teaTypes[brewerRef.data.waterType]
-            if hasWater and waterIsBoiling and hasTea then
-
-                --Brew the Tea
-                brewerRef.data.teaProgress = brewerRef.data.teaProgress or 0
-                local waterHeatEffect = common.helper.calculateWaterHeatEffect(brewerRef.data.waterHeat)
-                brewerRef.data.teaProgress = math.clamp((brewerRef.data.teaProgress + ( difference * brewRate * waterHeatEffect )), 0, 100)
-            else
-                brewerRef.data.lastBrewUpdated = nil
+            if hasWater then
+                brewerRef.data.waterHeat =  brewerRef.data.waterHeat  or 0
+                local waterIsBoiling = brewerRef.data.waterHeat >= common.staticConfigs.hotWaterHeatValue
+                local hasTea = teaConfig.teaTypes[brewerRef.data.waterType]
+                if waterIsBoiling and hasTea then
+                    --Brew the Tea
+                    brewerRef.data.teaProgress = brewerRef.data.teaProgress or 0
+                    local waterHeatEffect = common.helper.calculateWaterHeatEffect(brewerRef.data.waterHeat)
+                    brewerRef.data.teaProgress = math.clamp((brewerRef.data.teaProgress + ( difference * brewRate * waterHeatEffect )), 0, 100)
+                else
+                    brewerRef.data.lastBrewUpdated = nil
+                end
             end
         end
     end

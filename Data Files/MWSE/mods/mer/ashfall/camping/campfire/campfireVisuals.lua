@@ -69,6 +69,15 @@ local switchNodeValues = {
         if campfire.data.utensil and campfire.data.utensil ~= "cookingPot" then return state.OFF end
         return campfire.data.stewLevels and state.STEW or state.WATER
     end,
+    SWITCH_TEA = function(campfire)
+        common.log:debug("Found tea switch")
+        local state = { OFF = 0, WATER = 1, TEA = 2 }
+        local hasTea = campfire.data.waterType ~= nil
+            and campfire.data.waterType ~= "dirty"
+        local thisState = hasTea and state.TEA or state.WATER
+        common.log:debug("Tea switch state: " .. thisState)
+        return thisState
+    end,
 }
 
 local supportMapping = {
@@ -134,14 +143,16 @@ end
 
 --Update the water level of the cooking pot
 local function updateWaterHeight(ref)
-
-
-    local utensilData = CampfireUtil.getUtensilData(ref)
-    if not utensilData then return end
-
-    local capacity = utensilData.capacity
+    local capacity = CampfireUtil.getUtensilCapacity{
+        dataHolder = ref,
+        object = ref.object
+    }
     if not capacity then
-        common.log:trace("Couldn't get capacity")
+        return
+    end
+
+    local utensilData = common.staticConfigs.bottleList[ref.object.id:lower()]
+    if not utensilData then
         return
     end
 
@@ -161,6 +172,12 @@ local function updateWaterHeight(ref)
     if stewNode then
         stewNode.translation.z = height
         stewNode.scale = scale
+    end
+    local teaNode = ref.sceneNode:getObjectByName("POT_TEA")
+    if teaNode then
+        common.log:debug("Found Tea Node! Setting height to %s and scale to %s", height, scale)
+        teaNode.translation.z = height
+        teaNode.scale = scale
     end
     local steamNode = ref.sceneNode:getObjectByName("POT_STEAM")
     if steamNode then
@@ -402,6 +419,7 @@ local function updateAttachNodes(e)
     local sceneNode = campfire.sceneNode
 
     if not campfire.data then return end
+    if not sceneNode then return end
     for _, attachData in ipairs(attachNodes) do
         common.log:trace("++++ATTACH NODE: %s+++++++", attachData.attachNodeName)
         local attachNode = sceneNode:getObjectByName(attachData.attachNodeName)
@@ -448,6 +466,10 @@ local function initialiseAttachNodes()
     common.helper.iterateRefType("boiler", function(ref)
         updateAttachNodes{ campfire = ref }
     end)
+    common.helper.iterateRefType("utensil", function(ref)
+        updateAttachNodes{ campfire = ref }
+    end)
+
 end
 event.register("cellChanged", initialiseAttachNodes)
 event.register("loaded", initialiseAttachNodes)
@@ -455,6 +477,7 @@ event.register("loaded", initialiseAttachNodes)
 event.register("referenceActivated", function(e)
     local isFuelConsumer = referenceController.controllers.fuelConsumer:isReference(e.reference)
     local isBoiler = referenceController.controllers.boiler:isReference(e.reference)
+    local isUtensil = referenceController.controllers.utensil:isReference(e.reference)
     if isFuelConsumer or isBoiler then
         updateAttachNodes{ campfire = e.reference }
     end
