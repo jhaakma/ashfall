@@ -32,12 +32,18 @@ local function onDrop(e)
     for _, optionId in ipairs(dropConfig) do
         common.log:debug("optionId: %s", optionId)
         local option = require('mer.ashfall.camping.dropConfigs.' .. optionId)
-        if option.canDrop(target, droppedRef.object, droppedRef.itemData) then
+        local canDrop, errorMsg = option.canDrop(target, droppedRef.object, droppedRef.itemData)
+        if canDrop then
             common.log:debug("Can drop")
             if option.onDrop then
                 option.onDrop(target, droppedRef)
             end
         else
+            if errorMsg then
+                common.log:debug("Showing can't drop message")
+                tes3.messageBox(errorMsg)
+                common.helper.pickUp(droppedRef)
+            end
             common.log:debug("Can't drop")
         end
     end

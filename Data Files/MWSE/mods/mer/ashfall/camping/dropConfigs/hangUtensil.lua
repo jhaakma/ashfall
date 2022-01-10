@@ -9,9 +9,18 @@ return {
         --This one is basically to stop being able to attach to misc supports
         --(TODO: allow this and handle all the jazz that goes with it)
         local canAttachSupports = CampfireUtil.refCanHangUtensil(campfire)
+        if not canAttachSupports then
+            return false
+        end
         local canBeAttached = CampfireUtil.itemCanBeHanged(item)
+        if not canBeAttached then
+            return false
+        end
         local campfireHasRoom = not campfire.data.utensilId
-        return canAttachSupports and canBeAttached and campfireHasRoom
+        if not campfireHasRoom then
+            return false, "Campfire already has a utensil."
+        end
+        return true
     end,
     onDrop = function(campfire, reference)
         local utensilData = common.staticConfigs.utensils[reference.object.id:lower()]

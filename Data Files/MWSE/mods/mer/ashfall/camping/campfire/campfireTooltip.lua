@@ -9,16 +9,18 @@ local function addAdditionalTooltip(e)
     common.log:trace("Campfire tooltip")
     local campfire = e.reference
     local parentNode = e.parentNode
+    if campfire then
     local attachmentConfig = CampfireUtil.getAttachmentConfig(campfire, parentNode)
-    if attachmentConfig and e.reference then
-        if attachmentConfig.tooltipExtra then
-            local tooltipContents = uiCommon.getTooltipContentsBlock()
-            attachmentConfig.tooltipExtra(campfire, tooltipContents)
-        end
+        if attachmentConfig then
+            if attachmentConfig.tooltipExtra then
+                local tooltipContents = uiCommon.getTooltipContentsBlock()
+                attachmentConfig.tooltipExtra(campfire, tooltipContents)
+            end
 
-        local newText = CampfireUtil.getAttachmentName(campfire, attachmentConfig)
-        if newText then
-            uiCommon.updateTooltipHeader(newText)
+            local newText = CampfireUtil.getAttachmentName(campfire, attachmentConfig)
+            if newText then
+                uiCommon.updateTooltipHeader(newText)
+            end
         end
     end
 
@@ -27,11 +29,11 @@ local function addAdditionalTooltip(e)
         local tile = cursor
             and cursor:getPropertyObject("MenuInventory_Thing", "tes3inventoryTile")
         if tile and campfire then
-            local dropText =  CampfireUtil.getDropText(parentNode, campfire, tile.item, tile.itemData)
+            local dropText, hasError =  CampfireUtil.getDropText(parentNode, campfire, tile.item, tile.itemData)
             if dropText then
                 uiCommon.addCenterLabel{
                     text = dropText,
-                    color =  "active_color"
+                    color = hasError and "negative_color" or "active_color"
                 }
             end
         end

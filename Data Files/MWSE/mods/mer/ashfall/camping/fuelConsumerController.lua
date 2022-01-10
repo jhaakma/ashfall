@@ -45,8 +45,7 @@ local function updateFuelConsumers(e)
                 fuelConsumer.data.fuelLevel = fuelConsumer.data.fuelLevel - ( difference * fuelDecay * rainEffect * bellowsEffect )
 
                 --static campfires never go out
-                local isInfinite = fuelConsumer.data.infinite
-                    or fuelConsumer.data.staticCampfireInitialised
+                local isInfinite = fuelConsumer.data.staticCampfireInitialised
                     or (fuelConsumer.data.dynamicConfig and fuelConsumer.data.dynamicConfig.campfire == "static")
 
                 if isInfinite then

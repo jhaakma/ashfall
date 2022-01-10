@@ -33,12 +33,14 @@ function CampfireUtil.getHeat(reference)
 end
 
 function CampfireUtil.getAttachmentConfig(reference, node)
-    if common.staticConfigs.bottleList[reference.object.id:lower()] then
-        return {
-            tooltipExtra = function(campfire, tooltip)
-                cookingTooltips(campfire.object, campfire.itemData, tooltip)
-            end
-        }
+    if reference then
+        if common.staticConfigs.bottleList[reference.object.id:lower()] then
+            return {
+                tooltipExtra = function(campfire, tooltip)
+                    cookingTooltips(campfire.object, campfire.itemData, tooltip)
+                end
+            }
+        end
     end
 
     if not node then return end
@@ -90,10 +92,10 @@ end
 
 function CampfireUtil.getUtensilData(dataHolder)
     local utensilId = dataHolder.data.utensilId
-    local utensilData = common.staticConfigs.utensils[utensilId]
+    local utensilData = common.staticConfigs.bottleList[utensilId]
 
     if dataHolder.object and not utensilData then
-        utensilData = common.staticConfigs.utensils[dataHolder.object.id:lower()]
+        utensilData = common.staticConfigs.bottleList[dataHolder.object.id:lower()]
     end
     return utensilData
 end
@@ -102,7 +104,7 @@ function CampfireUtil.getUtensilCapacity(e)
     local ref = e.dataHolder
     local obj = e.object
     local bottleData = obj and common.staticConfigs.bottleList[obj.id:lower()]
-    local utensilData = ref and ref.object and CampfireUtil.getUtensilData(ref)
+    local utensilData = ref and CampfireUtil.getUtensilData(ref)
     local capacity = (bottleData and bottleData.capacity)
         or ( utensilData and utensilData.capacity )
 
@@ -151,7 +153,7 @@ end
 
 local heatLossAtMinCapacity = 2.5
 local heatLossAtMaxCapacity = 1.0
-local waterHeatRate = 30--base water heat/cooling speed
+local waterHeatRate = 40--base water heat/cooling speed
 local minFuelWaterHeat = 5--min fuel multiplier on water heating
 local maxFuelWaterHeat = 10--max fuel multiplier on water heating
 function CampfireUtil.updateWaterHeat(refData, capacity, reference)
@@ -200,6 +202,11 @@ function CampfireUtil.updateWaterHeat(refData, capacity, reference)
     local heatChange = timeSinceLastUpdate * heatEffect * filledAmountEffect * waterHeatRate
     local newHeat = oldHeat + heatChange
     CampfireUtil.setHeat(refData, newHeat, reference)
+end
+
+---@param object tes3object
+function CampfireUtil.isUtensil(object)
+    return common.staticConfigs.utensils[object.id:lower()] ~= nil
 end
 
 ---@class AshfallAddIngredToStewType
@@ -332,8 +339,10 @@ function CampfireUtil.getDropText(node, reference, item, itemData)
     if not dropConfig then return end
     for _, optionId in ipairs(dropConfig) do
         local option = require('mer.ashfall.camping.dropConfigs.' .. optionId)
-        if option.canDrop(reference, item, itemData) then
-            return option.dropText(reference, item, itemData)
+        local canDrop, errorMsg = option.canDrop(reference, item, itemData)
+        local hasError = (errorMsg ~= nil)
+        if canDrop or hasError then
+            return option.dropText(reference, item, itemData), hasError
         end
     end
 end

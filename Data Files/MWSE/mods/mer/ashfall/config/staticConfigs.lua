@@ -459,6 +459,9 @@ this.bottleList = {
         waterMaxHeight = 2.5,
     },
 }
+for id, _ in pairs(this.bottleList) do
+    this.activatorConfig.list.waterContainer:addId(id)
+end
 
 this.interiorTempValues = {
     default = -10,

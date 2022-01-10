@@ -18,11 +18,11 @@ local function getUtensilData(dataHolder)
 end
 
 local function getUtensilCapacity(e)
-    local ref = e.dataHolder
+    local dataHolder = e.dataHolder
     local object = e.object
 
     local bottleData = object and common.staticConfigs.bottleList[object.id:lower()]
-    local utensilData = ref and ref.object and getUtensilData(ref)
+    local utensilData = dataHolder and getUtensilData(dataHolder)
     local capacity = (bottleData and bottleData.capacity)
         or ( utensilData and utensilData.capacity )
 
@@ -56,7 +56,7 @@ local function addWaterTooltips(item, itemData, tooltip)
         )
     end
 
-    local capacity = getUtensilCapacity{ object = item }
+    local capacity = getUtensilCapacity{ dataHolder = itemData, object = item }
     if capacity then
         local waterAmount = data and data.waterAmount or 0
         local waterType = data and data.waterType or nil

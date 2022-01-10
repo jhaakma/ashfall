@@ -1,14 +1,24 @@
 local common = require ("mer.ashfall.common.common")
 return {
-    canDrop = function(campfire, item, itemData)
-        local canAttachSupports = campfire.sceneNode:getObjectByName("ATTACH_SUPPORTS")
-        local id = item.id:lower()
-        local isSupports = common.staticConfigs.supports[id]
-        local hasSupports = campfire.data.supportsId
-        return canAttachSupports and isSupports and not hasSupports
-    end,
     dropText = function(campfire, item, itemData)
         return string.format("Attach %s", common.helper.getGenericUtensilName(item))
+    end,
+    canDrop = function(campfire, item, itemData)
+        local canAttachSupports = campfire.sceneNode:getObjectByName("ATTACH_SUPPORTS")
+        if not canAttachSupports then
+            return false
+        end
+        local id = item.id:lower()
+        local isSupports = common.staticConfigs.supports[id]
+        if not isSupports then
+            return false
+        end
+        local hasSupports = campfire.data.supportsId
+        if hasSupports then
+            return false, "Campfire already has supports."
+        end
+
+        return true
     end,
     onDrop = function(campfire, reference)
         local id = reference.object.id:lower()

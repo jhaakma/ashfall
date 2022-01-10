@@ -1,5 +1,5 @@
 local common = require ("mer.ashfall.common.common")
-local campfireUtil = require ("mer.ashfall.camping.campfire.CampfireUtil")
+local CampfireUtil = require ("mer.ashfall.camping.campfire.CampfireUtil")
 local thirstController = require("mer.ashfall.needs.thirstController")
 local teaConfig = common.staticConfigs.teaConfig
 
@@ -33,7 +33,8 @@ return {
     end,
     enableRequirements = function(campfire)
         local tooHotToDrink =
-            hasWaterAmount(campfire)
+            CampfireUtil.isUtensil(campfire.object)
+            and hasWaterAmount(campfire)
             and (not hasStew(campfire))
             and isBoiling(campfire)
         if tooHotToDrink and not campfire.data.ladle then
@@ -47,7 +48,7 @@ return {
     callback = function(campfire)
         local function doDrink()
             --tes3.playSound{ reference = tes3.player, sound = "Swallow" }
-            local maxCapacity = campfireUtil.getWaterCapacityFromReference(campfire)
+            local maxCapacity = CampfireUtil.getWaterCapacityFromReference(campfire)
             local amountToDrink = math.min(maxCapacity, campfire.data.waterAmount)
             local amountDrank = thirstController.drinkAmount{ amount = amountToDrink, waterType = campfire.data.waterType,}
             campfire.data.waterAmount = campfire.data.waterAmount - amountDrank
@@ -59,6 +60,7 @@ return {
             if campfire.data.waterAmount < 1 then
                 event.trigger("Ashfall:Campfire_clear_utensils", { campfire = campfire})
             end
+            event.trigger("Ashfall:UpdateAttachNodes", { campfire = campfire})
         end
 
         local utensilNames = {

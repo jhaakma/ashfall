@@ -425,5 +425,13 @@ this.list.cookingPot = Activator:new{
     }
 }
 
+this.list.waterContainer = Activator:new{
+    type = this.types.waterContainer,
+    mcmSetting = nil,
+    ids = {
+        --Added in staticConfigs
+    }
+}
+
 
 return this

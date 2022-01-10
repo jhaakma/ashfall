@@ -66,7 +66,6 @@ local vanillaCampfires = {
 }
 
 local legacyReplacedCampfires = {
-    ashfall_campfire = true,
     ashfall_campfire_static = true,
     ashfall_campfire_mr = true,
     ashfall_campfire_sup = true,
@@ -470,13 +469,6 @@ local function moveFood(campfire, foodList)
 end
 
 local function replaceCampfire(e)
-
-    local isLegacy  = legacyReplacedCampfires[e.reference.object.id:lower()]
-    if isLegacy and e.reference.data.dynamicConfig then
-        --For older replaced campfires, we need to set the infinite flag
-        e.reference.data.infinite = true
-    end
-
     local vanillaConfig = vanillaCampfires[e.reference.object.id:lower()]
     local campfireReplaced = e.reference.data and e.reference.data.campfireReplaced
     if vanillaConfig then

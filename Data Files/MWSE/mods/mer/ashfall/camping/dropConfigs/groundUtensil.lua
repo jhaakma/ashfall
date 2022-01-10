@@ -1,23 +1,36 @@
 local common = require ("mer.ashfall.common.common")
 return {
+    dropText = function(campfire, item, itemData)
+        return string.format("Attach %s", common.helper.getGenericUtensilName(item))
+    end,
     canDrop = function(campfire, item, itemData)
         local canAttachGrill = campfire.sceneNode:getObjectByName("ATTACH_GRILL") ~= nil
         local canAttachBellows = campfire.sceneNode:getObjectByName("ATTACH_BELLOWS") ~= nil
         local id = item.id:lower()
-        if canAttachGrill and not campfire.data.grillId then
-            if common.staticConfigs.grills[id] then
-                return true
+
+        local isGrill = common.staticConfigs.grills[id]
+        local isBellows = common.staticConfigs.bellows[id]
+
+        if isGrill then
+            if canAttachGrill then
+                if campfire.data.grillId then
+                    return false, "Campfire already has a grill."
+                end
+            else
+                return false
             end
-        end
-        if canAttachBellows and not campfire.data.bellowsId then
-            if common.staticConfigs.bellows[id] then
-                return true
+        elseif isBellows then
+            if canAttachBellows then
+                if campfire.data.bellowsId then
+                    return false, "Campfire already has a bellows."
+                end
+            else
+                return false
             end
+        else
+            return false
         end
-        return false
-    end,
-    dropText = function(campfire, item, itemData)
-        return string.format("Attach %s", common.helper.getGenericUtensilName(item))
+        return true
     end,
     onDrop = function(campfire, reference)
         local id = reference.baseObject.id:lower()

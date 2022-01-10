@@ -143,18 +143,11 @@ end
 
 --Update the water level of the cooking pot
 local function updateWaterHeight(ref)
-    local capacity = CampfireUtil.getUtensilCapacity{
-        dataHolder = ref,
-        object = ref.object
-    }
-    if not capacity then
-        return
-    end
-
-    local utensilData = common.staticConfigs.bottleList[ref.object.id:lower()]
+    local utensilData = CampfireUtil.getUtensilData(ref)
     if not utensilData then
         return
     end
+    local capacity = utensilData.capacity
 
     local waterMaxScale = utensilData.waterMaxScale or 1.0
     local waterMaxHeight = utensilData.waterMaxHeight or 20
@@ -165,6 +158,7 @@ local function updateWaterHeight(ref)
 
     local waterNode = ref.sceneNode:getObjectByName("POT_WATER")
     if waterNode then
+        common.log:debug("Found Water Node! Setting height to %s and scale to %s", height, scale)
         waterNode.translation.z = height
         waterNode.scale = scale
     end
@@ -265,9 +259,11 @@ local function updateCampfireVisuals(campfire)
     campfire.sceneNode:updateNodeEffects()
 end
 local function updateVisuals(e)
-    common.helper.iterateRefType("fuelConsumer", updateCampfireVisuals)
+    common.helper.iterateRefType("fuelConsumer", function(campfire)
+        updateLightingRadius(campfire)
+        updateFireScale(campfire)
+    end)
 end
-
 event.register("simulate", updateVisuals)
 
 ---@param node niNode
@@ -463,22 +459,17 @@ local function initialiseAttachNodes()
     common.helper.iterateRefType("fuelConsumer", function(ref)
         updateAttachNodes{ campfire = ref }
     end)
-    common.helper.iterateRefType("boiler", function(ref)
+    common.helper.iterateRefType("waterContainer", function(ref)
         updateAttachNodes{ campfire = ref }
     end)
-    common.helper.iterateRefType("utensil", function(ref)
-        updateAttachNodes{ campfire = ref }
-    end)
-
 end
 event.register("cellChanged", initialiseAttachNodes)
 event.register("loaded", initialiseAttachNodes)
 
 event.register("referenceActivated", function(e)
     local isFuelConsumer = referenceController.controllers.fuelConsumer:isReference(e.reference)
-    local isBoiler = referenceController.controllers.boiler:isReference(e.reference)
-    local isUtensil = referenceController.controllers.utensil:isReference(e.reference)
-    if isFuelConsumer or isBoiler then
+    local isWaterContainer = referenceController.controllers.waterContainer:isReference(e.reference)
+    if isFuelConsumer or isWaterContainer then
         updateAttachNodes{ campfire = e.reference }
     end
 end)

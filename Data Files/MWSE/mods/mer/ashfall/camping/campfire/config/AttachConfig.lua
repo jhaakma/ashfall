@@ -8,6 +8,31 @@ local function centerText(element)
 end
 
 local AttachConfig = {
+    waterContainer = {
+        commands = {
+            --actions
+            "drink",
+            "brewTea",
+            "eatStew",
+            "douse",
+            "companionEatStew",
+            "addIngredient",
+            "fillContainer",
+            "addWater",
+            "emptyPot",
+            --attach
+            "addLadle",
+            "emptyKettle",
+            --remove
+            "removeUtensil",
+            "removeLadle",
+            "pickup",
+        },
+        tooltipExtra = function(campfire, tooltip)
+            cookingTooltips(campfire.object, campfire.itemData, tooltip)
+        end,
+    },
+
     ACTIVATE_DOOR = {
         name = "Door",
         command = function(ref)
@@ -123,14 +148,16 @@ local AttachConfig = {
             "drink",
             "eatStew",
             "companionEatStew",
+            "douse",
             "addIngredient",
             "fillContainer",
             "addWater",
-            "emptyPot",
             --attach
             "addLadle",
+            "emptyPot",
             --remove
             "removeUtensil",
+            "removeLadle",
             "pickup",
         },
         shiftCommand = "removeUtensil",
@@ -143,6 +170,7 @@ local AttachConfig = {
         commands = {
             --actions
             "drink",
+            "douse",
             "brewTea",
             "fillContainer",
             "addWater",

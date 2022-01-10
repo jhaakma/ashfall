@@ -3,18 +3,32 @@ local teaConfig       = require("mer.ashfall.config.teaConfig")
 
 return {
     dropText = function(campfire, item, itemData)
-        --Tea
         local teaData = teaConfig.teaTypes[item.id:lower()]
         return string.format("Brew %s", teaData.teaName)
     end,
-    --onDrop for Stew handled separately, this only does tea
     canDrop = function(campfire, item, itemData)
+        local isTeaLeaf = teaConfig.teaTypes[item.id:lower()]
+        if not isTeaLeaf then
+            return false
+        end
+
         local hasWater = campfire.data.waterAmount and campfire.data.waterAmount > 0
+        if not hasWater then
+            return false, "No water in campfire."
+        end
+
         local hasKettle = campfire.data.utensil == "kettle"
             or common.staticConfigs.kettles[campfire.object.id:lower()]
+        if not hasKettle then
+            return false
+        end
+
         local waterClean = not campfire.data.waterType
-        local isTeaLeaf = teaConfig.teaTypes[item.id:lower()]
-        return hasWater and hasKettle and waterClean and isTeaLeaf
+        if not waterClean then
+            return false, "Clean water required to make tea."
+        end
+
+        return true
     end,
     onDrop = function(campfire, reference)
         campfire.data.waterType = reference.object.id:lower()

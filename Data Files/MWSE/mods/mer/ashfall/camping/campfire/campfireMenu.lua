@@ -1,7 +1,7 @@
 local common = require ("mer.ashfall.common.common")
 local config = require("mer.ashfall.config.config").config
 local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
-
+local AttachConfig = require "mer.ashfall.camping.campfire.config.AttachConfig"
 --[[
     No longer just for campfires!
 
@@ -73,6 +73,7 @@ local function onActivateCampfire(e)
                 callback = function()
                     if buttonData.callback then
                         buttonData.callback(campfire)
+                        event.trigger("Ashfall:UpdateAttachNodes", { campfire = campfire})
                     end
                     event.trigger("Ashfall:registerReference", { reference = campfire})
                 end,
@@ -116,3 +117,19 @@ event.register(
     "Ashfall:ActivatorActivated",
     onActivateCampfire
 )
+
+event.register("activate", function(e)
+    if tes3ui.menuMode() then return end
+    if common.helper.isModifierKeyPressed() then return end
+    local hasWater = e.target.data and e.target.data.waterAmount and e.target.data.waterAmount > 0
+    local isUtensil = CampfireUtil.isUtensil(e.target.object)
+    if isUtensil or hasWater then
+        common.log:debug("Activating water, triggering Menu")
+        onActivateCampfire{
+            ref = e.target,
+            node = nil,
+            attachmentConfig = AttachConfig.waterContainer
+        }
+        return false
+    end
+end, { filter = tes3.player })

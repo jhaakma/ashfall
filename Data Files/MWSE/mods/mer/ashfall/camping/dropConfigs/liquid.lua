@@ -14,14 +14,31 @@ return {
     end,
     --onDrop for Stew handled separately, this only does tea
     canDrop = function(target, item, itemData)
-        local liquidContainer = LiquidContainer.createFromInventory(item, itemData)
+        local itemLiquidContainer = LiquidContainer.createFromInventory(item, itemData)
+        local targetLiquidContainer = LiquidContainer.createFromReference(target)
+        if not itemLiquidContainer then return false end
+        if not targetLiquidContainer then return false end
+
         local isModifierKeyPressed = common.helper.isModifierKeyPressed()
-        if not liquidContainer then return false end
         if isModifierKeyPressed then --retrieving water from target
-            return target.data.waterAmount and target.data.waterAmount > 0
+            if not (target.data.waterAmount and target.data.waterAmount > 0) then
+                return false, "No water in campfire."
+            end
+            local canTransfer, errorMsg = targetLiquidContainer:canTransfer(itemLiquidContainer)
+            if not canTransfer then
+                return false, errorMsg
+            end
         else --adding water to target
-            return liquidContainer.waterAmount > 0
+            if not (itemLiquidContainer.waterAmount > 0) then
+                return false, "No water in item."
+            end
+            local canTransfer, errorMsg = itemLiquidContainer:canTransfer(targetLiquidContainer)
+            if not canTransfer then
+                return false, errorMsg
+            end
         end
+
+        return true
     end,
     onDrop = function(target, reference)
         local from = LiquidContainer.createFromReference(reference)

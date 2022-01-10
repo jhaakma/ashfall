@@ -96,6 +96,12 @@ this.controllers = {
     },
 
 
+    waterContainer = ReferenceController:new{
+        requirements = function(_, ref)
+            return staticConfigs.bottleList[ref.object.id:lower()]
+        end
+    },
+
     utensil = ReferenceController:new{
         requirements = function(_, ref)
             return ref.sceneNode and ref.sceneNode:getObjectByName("POT_WATER")

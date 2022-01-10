@@ -22,9 +22,7 @@ local thirst = common.staticConfigs.conditionConfig.thirst
 local hunger = common.staticConfigs.conditionConfig.hunger
 local wetness = common.staticConfigs.conditionConfig.wetness
 
-
-
-local wetnessPerWater = 10
+local wetnessPerWater = 5
 local function douse(bottleData)
     local amount =  bottleData and bottleData.waterAmount or 1000
     common.log:debug("Douse: amount = %s", amount)
@@ -49,6 +47,9 @@ local function douse(bottleData)
 
     return waterUsed
 end
+event.register("Ashfall:Douse", function(e)
+    douse(e.data)
+end)
 
 
 --Create messageBox for water menu
@@ -531,7 +532,7 @@ local function onShiftActivateWater(e)
         end
     end
 end
-event.register("activate", onShiftActivateWater, { filter = tes3.player })
+-- event.register("activate", onShiftActivateWater, { filter = tes3.player })
 
 
 
