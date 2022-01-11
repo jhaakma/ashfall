@@ -124,9 +124,9 @@ local function onMenuInventorySelectMenu(e)
         -- end
 
     end
-    timer.frame.delayOneFrame(function()
+    --timer.frame.delayOneFrame(function()
         e.menu:updateLayout()
-    end)
+    --end)
 end
 event.register("menuEnter", onMenuInventorySelectMenu, { filter = "MenuInventorySelect"})
 
