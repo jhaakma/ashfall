@@ -122,7 +122,7 @@ event.register("activate", function(e)
     if tes3ui.menuMode() then return end
     if common.helper.isModifierKeyPressed() then return end
     local hasWater = e.target.data and e.target.data.waterAmount and e.target.data.waterAmount > 0
-    local isUtensil = CampfireUtil.isUtensil(e.target.object)
+    local isUtensil = CampfireUtil.isUtensil(e.target)
     if isUtensil or hasWater then
         common.log:debug("Activating water, triggering Menu")
         onActivateCampfire{

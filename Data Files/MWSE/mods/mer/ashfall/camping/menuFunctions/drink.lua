@@ -33,7 +33,7 @@ return {
     end,
     enableRequirements = function(campfire)
         local tooHotToDrink =
-            CampfireUtil.isUtensil(campfire.object)
+            CampfireUtil.isUtensil(campfire)
             and hasWaterAmount(campfire)
             and (not hasStew(campfire))
             and isBoiling(campfire)
