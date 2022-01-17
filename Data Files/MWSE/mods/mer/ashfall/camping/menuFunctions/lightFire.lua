@@ -1,11 +1,17 @@
 local common = require ("mer.ashfall.common.common")
 
+local function isBlacklisted(item)
+    return common.staticConfigs.lightFireBlacklist[item.id:lower()] ~= nil
+end
+
 local function isLight(item)
     return item.objectType == tes3.objectType.light
+        and not isBlacklisted(item)
 end
 
 local function isFireStarter(item)
     return common.staticConfigs.firestarters[item.id:lower()] ~= nil
+        and not isBlacklisted(item)
 end
 
 local function filterFireStarter(e)

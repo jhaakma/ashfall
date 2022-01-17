@@ -882,4 +882,9 @@ this.firestarters = {
     ashfall_flintsteel = true,
 }
 
+
+this.lightFireBlacklist = {
+    ashfall_teawarmer_01 = true,
+}
+
 return this
