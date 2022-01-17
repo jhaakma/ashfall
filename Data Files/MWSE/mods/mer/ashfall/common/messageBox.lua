@@ -65,33 +65,51 @@ local function populateButtons(e)
 end
 local messageBoxId = tes3ui.registerID("CustomMessageBox")
 
+local function resolveText(text)
+    if type(text) == "function" then
+        return text()
+    else
+        return text
+    end
+end
+
+local function enable(button)
+    button.disabled = false
+    button.widget.state = 1
+    button.color = tes3ui.getPalette("normal_color")
+end
+
+local function disable(button)
+    button.disabled = true
+    button.widget.state = 2
+    button.color = tes3ui.getPalette("disabled_color")
+end
 
 --- @param params AshfallMessageBoxData
 local function messageBox(params)
-    local function enable(button)
-        button.disabled = false
-        button.widget.state = 1
-        button.color = tes3ui.getPalette("normal_color")
-    end
 
-    local function disable(button)
-        button.disabled = true
-        button.widget.state = 2
-        button.color = tes3ui.getPalette("disabled_color")
-    end
-    local maxButtonsPerColumn = params.maxButtons or 30
-    local message = params.message
-    local buttons = params.buttons
+
     --create menu
     local menu = tes3ui.createMenu{ id = messageBoxId, fixedFrame = true }
     menu:getContentElement().maxWidth = 400
-    do
-        menu:getContentElement().childAlignX = 0.5
-        tes3ui.enterMenuMode(messageBoxId)
-        local label = menu:createLabel{id = tes3ui.registerID("Ashfall:MessageBox_Title"), text = message}
-        label.wrapText = true
+    menu:getContentElement().childAlignX = 0.5
+    tes3ui.enterMenuMode(messageBoxId)
+
+    if params.header then
+        local label = menu:createLabel{
+            id = tes3ui.registerID("Ashfall:MessageBox_Message"),
+            text = resolveText(params.header)
+        }
+        label.color = tes3ui.getPalette("header_color")
     end
 
+    if params.message then
+        local label = menu:createLabel{
+            id = tes3ui.registerID("Ashfall:MessageBox_Message"),
+            text = resolveText(params.message)
+        }
+        label.wrapText = true
+    end
     --create button block
     local buttonsBlock = menu:createBlock()
     do
@@ -102,6 +120,8 @@ local function messageBox(params)
     end
 
     --populate initial buttons
+    local buttons = params.buttons
+    local maxButtonsPerColumn = params.maxButtons or 30
     local startIndex, endIndex = 1, maxButtonsPerColumn
     populateButtons{ buttons= buttons, menu = menu, buttonsBlock = buttonsBlock, startIndex = startIndex, endIndex = endIndex}
 
