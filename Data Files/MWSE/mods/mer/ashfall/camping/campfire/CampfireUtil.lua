@@ -175,14 +175,17 @@ function CampfireUtil.updateWaterHeat(refData, capacity, reference)
         heatEffect = math.remap(CampfireUtil.getHeat(reference), 0, common.staticConfigs.maxWoodInFire, minFuelWaterHeat, maxFuelWaterHeat)
         common.log:trace("BOILER heatEffect: %s", heatEffect)
     else
-        common.log:trace("Looking for heat source underneath. only works for utensils")
+        common.log:trace("Looking for heat source underneath. Strong heat only heats utensils, weak heat doesn't work on pots")
         local heater, heatType = common.helper.getHeatFromBelow(reference)
-        local isUtensil = reference and common.staticConfigs.utensils[reference.object.id:lower()]
-        if isUtensil and heater and heater.data.isLit then
+        local heaterIsLit = heater and heater.data.isLit
+        if heaterIsLit then
+            local isUtensil = reference and common.staticConfigs.utensils[reference.object.id:lower()]
             local isCookingPot = reference and common.staticConfigs.cookingPots[reference.object.id:lower()]
-            if heatType == "strong" then
+            local doStrongHeat = isUtensil and heatType == "strong"
+            local doWeakHeat = (not isCookingPot) and heatType == "weak"
+            if doStrongHeat then
                 heatEffect = math.remap(CampfireUtil.getHeat(heater), 0, common.staticConfigs.maxWoodInFire, minFuelWaterHeat, maxFuelWaterHeat)
-            elseif heatType == "weak" and not isCookingPot then
+            elseif doWeakHeat then
                 --Weak flames greatly reduce the rate of heat loss
                 --but not for cooking pots
                 heatEffect = -0.01
