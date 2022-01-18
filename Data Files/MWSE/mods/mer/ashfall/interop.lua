@@ -57,7 +57,7 @@ local function registerActivatorType(e)
 
     if not activatorConfig.types[e.type] then
         common.log:debug('Type "%s" does not exist, creating', e.type)
-        activatorConfig.types[e.type] = activatorConfig.types[e.type]
+        activatorConfig.types[e.type] = e.type
     end
     local idList = {}
     if e.ids then
@@ -286,7 +286,7 @@ local function registerWoodAxes(data)
     return true
 end
 
-
+local conditionConfig = common.staticConfigs.conditionConfig
 
 local Interop = {
     --Block or unblock hunger, thirst and sleep
@@ -341,6 +341,39 @@ local Interop = {
             return true
         end
     end,
+    --Getters and Setters for Conditions
+    getHunger = function()
+        return conditionConfig.hunger:getValue()
+    end,
+    setHunger = function(value)
+        return conditionConfig.hunger:setValue(value)
+    end,
+    getThirst = function()
+        return conditionConfig.thirst:getValue()
+    end,
+    setThirst = function(value)
+        return conditionConfig.thirst:setValue(value)
+    end,
+    getTiredness = function()
+        return conditionConfig.tiredness:getValue()
+    end,
+    setTiredness = function(value)
+        return conditionConfig.tiredness:setValue(value)
+    end,
+    getTemp = function()
+        return conditionConfig.temp:getValue()
+    end,
+    setTemp = function(value)
+        return conditionConfig.temp:setValue(value)
+    end,
+    getWetness = function()
+        return conditionConfig.wetness:getValue()
+    end,
+    setWetness = function(value)
+        return conditionConfig.wetness:setValue(value)
+    end,
+
+
     --object registrations
     registerActivatorType = registerActivatorType,
     registerActivators = function(data, usePatterns)

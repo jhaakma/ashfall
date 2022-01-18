@@ -155,9 +155,10 @@ end
 function Condition:setValue(newVal)
     if not tes3.player or not tes3.player.data.Ashfall then
         --log:error("trying to set condition value %s before player was loaded", self.id)
-        return
+        return false
     end
     tes3.player.data.Ashfall[self.id] = math.clamp(newVal, self.min, self.max)
+    return tes3.player.data.Ashfall[self.id]
 end
 
 function Condition:getStatMultiplier()
