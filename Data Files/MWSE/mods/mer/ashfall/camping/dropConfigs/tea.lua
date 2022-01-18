@@ -1,6 +1,6 @@
 local common = require ("mer.ashfall.common.common")
 local teaConfig       = require("mer.ashfall.config.teaConfig")
-
+local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 return {
     dropText = function(campfire, item, itemData)
         local teaData = teaConfig.teaTypes[item.id:lower()]
@@ -33,10 +33,14 @@ return {
     onDrop = function(campfire, reference)
         campfire.data.waterType = reference.object.id:lower()
         campfire.data.teaProgress = 0
+
         local currentHeat = campfire.data.waterHeat or 0
-        local newHeat = currentHeat + math.max(0, (campfire.data.waterHeat - 10))
-        --CampfireUtil.setHeat(campfire.data, newHeat, campfire)
-        campfire.data.waterHeat = newHeat
+        common.log:debug("currentHeat: %s", currentHeat)
+        local newHeat = math.max(0, (campfire.data.waterHeat - 10))
+        common.log:debug("newHeat: %s", newHeat)
+        CampfireUtil.setHeat(campfire.data, newHeat, campfire)
+        common.log:debug("campfire.data.waterHeat: %s", campfire.data.waterHeat)
+
         local skillSurvivalTeaBrewIncrement = 5
         common.skills.survival:progressSkill(skillSurvivalTeaBrewIncrement)
         local remaining = common.helper.reduceReferenceStack(reference, 1)

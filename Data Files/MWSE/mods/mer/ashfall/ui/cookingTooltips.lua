@@ -177,7 +177,6 @@ local function addTeaTooltips(item, itemData, tooltip)
         if progress == 0 then
             teaLabelText = string.format("%s (Unbrewed)", teaLabelText)
         elseif progress < 100 then
-            common.log:debug("Tea progress: %d", progress)
             teaLabelText = string.format("%s (%d%% Brewed)", teaLabelText, progress)
         elseif isCold then
             teaLabelText = teaLabelText .. " (Cold)"
