@@ -1,22 +1,32 @@
 local common = require ("mer.ashfall.common.common")
+local DURATION_COST = 10
 
-local function isBlacklisted(item)
-    return common.staticConfigs.lightFireBlacklist[item.id:lower()] ~= nil
+local function isBlacklisted(e)
+    return common.staticConfigs.lightFireBlacklist[e.item.id:lower()] ~= nil
 end
 
-local function isLight(item)
-    return item.objectType == tes3.objectType.light
-        and not isBlacklisted(item)
+local function hasDuration(e)
+    return e.itemData and e.itemData.timeLeft
+        and e.itemData.timeLeft > DURATION_COST
 end
 
-local function isFireStarter(item)
-    return common.staticConfigs.firestarters[item.id:lower()] ~= nil
-        and not isBlacklisted(item)
+local function isLight(e)
+    return e.item.objectType == tes3.objectType.light
+        and hasDuration(e)
 end
+
+local function isFireStarter(e)
+    return common.staticConfigs.firestarters[e.item.id:lower()] ~= nil
+end
+
 
 local function filterFireStarter(e)
-    return isLight(e.item) or isFireStarter(e.item)
+    if isBlacklisted(e) then
+        return false
+    end
+    return isLight(e) or isFireStarter(e)
 end
+
 
 local menuConfig = {
     text = "Light Fire",

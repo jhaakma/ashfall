@@ -885,6 +885,20 @@ this.firestarters = {
 
 this.lightFireBlacklist = {
     ashfall_teawarmer_01 = true,
+    g7_initialized = true,
+    g7_inventory_alch = true,
+    g7_inventory_ammo = true,
+    g7_inventory_armo = true,
+    g7_inventory_book = true,
+    g7_inventory_clot = true,
+    g7_inventory_ingr = true,
+    g7_inventory_keys = true,
+    g7_inventory_lock = true,
+    g7_inventory_misc = true,
+    g7_inventory_repa = true,
+    g7_inventory_scrl = true,
+    g7_inventory_soul = true,
+    g7_inventory_weap = true,
 }
 
 return this
