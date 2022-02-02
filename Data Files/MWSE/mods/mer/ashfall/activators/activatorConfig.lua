@@ -195,6 +195,14 @@ this.list.well = Activator:new{
 
         --OAAB
         ["mr_imp_well"] = true,
+
+        --SHOTN
+        t_nor_set_well_01 = true,
+        t_nor_set_well_02 = true,
+        t_nor_set_well_03 = true,
+        t_nor_set_well_04 = true,
+        t_nor_set_well_05 = true,
+        t_rga_set_reach_x_pool_01 = true,
     }
 }
 this.list.keg = Activator:new{
@@ -220,6 +228,32 @@ this.list.vegetation = Activator:new{
         ["_kelp_"] = true,
         ["_fern_"] = true,
         ["_vine_"] = true,
+    },
+    ids = {
+        t_sky_flora_bushpine4dry_01 = true,
+        t_sky_flora_bushpine4dry_02 = true,
+        t_sky_flora_bushleaves1dry_01 = true,
+        t_sky_flora_bushleaves1dry_02 = true,
+        t_sky_flora_bushleaves5_01 = true,
+        t_sky_flora_bushleaves5_02 = true,
+        t_sky_flora_bushleaves5_03 = true,
+        t_sky_flora_bushleaves5dry_01 = true,
+        t_sky_flora_bushleaves5dry_02 = true,
+        t_sky_flora_bushleaves5dry_03 = true,
+        t_sky_flora_bushpine1_01 = true,
+        t_sky_flora_bushpine1_02 = true,
+        t_sky_flora_bushpine1dry_01 = true,
+        t_sky_flora_bushpine1dry_02 = true,
+        t_sky_flora_bushpine2_01 = true,
+        t_sky_flora_bushpine2_02 = true,
+        t_sky_flora_bushpine2_03 = true,
+        t_sky_flora_bushpine2dry_01 = true,
+        t_sky_flora_bushpine2dry_02 = true,
+        t_sky_flora_bushpine2dry_03 = true,
+        t_sky_flora_bushpine3dry_01 = true,
+        t_sky_flora_bushpine3dry_02 = true,
+        t_sky_flora_bushpine3dry_03 = true,
+        t_sky_flora_bushplain1_03 = true,
     }
 }
 this.list.tree = Activator:new{
