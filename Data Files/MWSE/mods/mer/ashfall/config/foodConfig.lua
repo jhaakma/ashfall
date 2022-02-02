@@ -17,7 +17,7 @@ end
 function this.getFoodTypeResolveMeat(obj)
 
     local foodType = this.getFoodType(obj)
-    if foodType == this.type.cookedMeat then
+    if foodType == this.type.cookedmeat then
         foodType = this.type.meat
     end
     return foodType
@@ -44,7 +44,7 @@ function this.getStewBuffForId(obj)
 end
 
 function this.getStewBuffForFoodType(foodType)
-    if foodType == this.type.cookedMeat then
+    if foodType == this.type.cookedmeat then
         foodType = this.type.meat
     end
     return this.stewBuffs[foodType]
@@ -80,7 +80,7 @@ end
 
 this.type = {
     meat = "Meat",
-    cookedMeat = "Meat (Cooked)",
+    cookedmeat = "Meat (Cooked)",
     egg = "Egg",
     vegetable = "Vegetable",
     mushroom = "Mushroom",
@@ -146,7 +146,7 @@ this.grillValues = {
 --Nutrition at weight==1.0
 this.nutrition = {
     [this.type.meat] = 12,
-    [this.type.cookedMeat] = (12 * this.grillValues[this.type.meat].min),
+    [this.type.cookedmeat] = (12 * this.grillValues[this.type.meat].min),
     [this.type.egg] = 10,
     [this.type.vegetable] = 10,
     [this.type.mushroom] = 8,
@@ -728,13 +728,13 @@ this.ingredTypes = {
     --Morrowind Jobs
     ["jobcookedashyam"] = this.type.food,
     ["jobcookedbittergreenpetals"] = this.type.food,
-    ["jobcookedcrabmeat"] = this.type.cookedMeat,
-    ["jobcookeddurzogmeat"] = this.type.cookedMeat,
+    ["jobcookedcrabmeat"] = this.type.cookedmeat,
+    ["jobcookeddurzogmeat"] = this.type.cookedmeat,
     ["jobcookedhackleloleaf"] = this.type.food,
-    ["jobcookedhoundmeat"] = this.type.cookedMeat,
+    ["jobcookedhoundmeat"] = this.type.cookedmeat,
     ["jobcookedlargekwamaegg"] = this.type.food,
     ["jobcookedmarshmerrow"] = this.type.food,
-    ["jobcookedratmeat"] = this.type.cookedMeat,
+    ["jobcookedratmeat"] = this.type.cookedmeat,
     ["jobcookedsaltrice"] = this.type.food,
     ["jobcookedscales"] = this.type.food,
     ["jobcookedsmallkwamaegg"] = this.type.food,
@@ -769,6 +769,14 @@ this.ingredTypes = {
     ["ab_ingfood_saltriceporridge"] = this.type.food,
     ["ab_ingfood_scuttlepie"] = this.type.food,
     ["ab_ingfood_sweetroll"] = this.type.food,
+    ["ab_ingflor_pomegranate01"] = this.type.food,
+    ["ab_ingflor_pomegranate02"] = this.type.food,
+    ["ab_ingcrea_sturgeonmeat01"] = this.type.meat,
+    ["ab_ingcrea_sturgeonmeat02"] = this.type.meat,
+    ["ab_ingcrea_sturgeonmeat03"] = this.type.meat,
+    ["ab_ingcrea_sturgeonroe"] = this.type.food,
+    ["ab_ingflor_harrada_01"] = this.type.herb,
+    ["ab_ingflor_harrada_02"] = this.type.herb,
 
     --Food of Tamriel
     ["1foodbreadslice"] = this.type.food,
@@ -811,12 +819,26 @@ this.ingredTypes = {
     ["mr_berries"] = this.type.herb,
     ["mr_crab_pudding"] = this.type.food,
     ["mr_guar_meat"] = this.type.meat,
-    ["mr_guar_sausage"] = this.type.cookedMeat,
+    ["mr_guar_sausage"] = this.type.cookedmeat,
     ["mr_kwama_egg_blight"] = this.type.egg,
     ["mr_marshmerrow_boiled"] = this.type.food,
     ["mr_nether_salt"] = this.type.seasoning,
     ["mr_sweetroll"] = this.type.food,
     ["mr_wind_salt"] = this.type.seasoning,
+
+    --ashen divide
+    ["dk_fomentarius_ing"] = this.type.mushroom,
+    ["dk_urnula_ing"] = this.type.mushroom,
+    ["aaa_dustcap_ing_01"] = this.type.mushroom,
+    --aversa
+    ["or_dr_food_fishmeat"] = this.type.meat,
+
+    --bcom
+    ["ingred_green_olive_01"] = this.type.food,
+    ["ingred_bread_01_uni3-d"] = this.type.food,
+    ["ingred_bread_01_uni2-a"] = this.type.food,
+    ["ingred_crab_meat_01-fried"] = this.type.cookedmeat,
+    ["ingred_resin_01_h"] = this.type.food,
 }
 
 return this
