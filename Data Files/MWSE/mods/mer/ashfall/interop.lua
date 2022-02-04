@@ -275,13 +275,16 @@ local function registerClimates(e)
 end
 
 local function registerWoodAxes(data)
-    local woodAxeConfig = require("mer.ashfall.items.axe.config")
+    local woodAxeConfig = require("mer.ashfall.harvest.woodaxes")
     assert(type(data) == 'table', "registerWoodAxes: data must be a table of axe ids")
     common.log:debug("Registering wood axes: ")
     for _, id in ipairs(data) do
         assert(type(id) == 'string', "registerWoodAxes: id must be a string")
         common.log:debug(id)
-        woodAxeConfig.woodAxes[id:lower()] = true
+        woodAxeConfig[id:lower()] = {
+            effectiveness = 1.5,
+            degradeMulti = 0.5,
+        }
     end
     return true
 end

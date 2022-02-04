@@ -17,7 +17,7 @@ end
 function this.getFoodTypeResolveMeat(obj)
 
     local foodType = this.getFoodType(obj)
-    if foodType == this.type.cookedmeat then
+    if foodType == this.type.cookedMeat then
         foodType = this.type.meat
     end
     return foodType
@@ -44,7 +44,7 @@ function this.getStewBuffForId(obj)
 end
 
 function this.getStewBuffForFoodType(foodType)
-    if foodType == this.type.cookedmeat then
+    if foodType == this.type.cookedMeat then
         foodType = this.type.meat
     end
     return this.stewBuffs[foodType]
@@ -80,7 +80,7 @@ end
 
 this.type = {
     meat = "Meat",
-    cookedmeat = "Meat (Cooked)",
+    cookedMeat = "Meat (Cooked)",
     egg = "Egg",
     vegetable = "Vegetable",
     mushroom = "Mushroom",
@@ -146,7 +146,7 @@ this.grillValues = {
 --Nutrition at weight==1.0
 this.nutrition = {
     [this.type.meat] = 12,
-    [this.type.cookedmeat] = (12 * this.grillValues[this.type.meat].min),
+    [this.type.cookedMeat] = (12 * this.grillValues[this.type.meat].min),
     [this.type.egg] = 10,
     [this.type.vegetable] = 10,
     [this.type.mushroom] = 8,
@@ -319,7 +319,7 @@ this.ingredTypes = {
     ["t_ingfood_fishcod_01"] = this.type.meat,
     ["t_ingfood_fishcoddried_01"] = this.type.food,
     ["t_ingfood_fishleapertail_01"] = this.type.meat,
-    ["t_ingfood_fishlongfinfilet_01"] = this.type.cookedmeat,
+    ["t_ingfood_fishlongfinfilet_01"] = this.type.cookedMeat,
     ["t_ingfood_fishpike_01"] = this.type.meat,
     ["t_ingfood_fishpikeperch_01"] = this.type.meat,
     ["t_ingfood_fishsalmon_01"] = this.type.meat,
@@ -342,24 +342,24 @@ this.ingredTypes = {
     ["t_ingfood_meatbeef_01"] = this.type.meat,
     ["t_ingfood_meatboar_01"] = this.type.meat,
     ["t_ingfood_meatboar_02"] = this.type.meat,
-    ["t_ingfood_meatboarroast_02"] = this.type.cookedmeat,
+    ["t_ingfood_meatboarroast_02"] = this.type.cookedMeat,
     ["t_ingfood_meatchicken_01"] = this.type.meat,
-    ["t_ingfood_meatchickenroast_01"] = this.type.cookedmeat,
+    ["t_ingfood_meatchickenroast_01"] = this.type.cookedMeat,
     ["t_ingfood_meatcliffracer_01"] = this.type.meat,
-    ["t_ingfood_meatdurzog_01"] = this.type.cookedmeat,
+    ["t_ingfood_meatdurzog_01"] = this.type.cookedMeat,
     ["t_ingfood_meatguar_01"] = this.type.meat,
     ["t_ingfood_meatham_01"] = this.type.meat,
     ["t_ingfood_meathorker_01"] = this.type.meat,
     ["t_ingfood_meatkagouti_01"] = this.type.meat,
     ["t_ingfood_meatkwama_01"] = this.type.meat,
     ["t_ingfood_meatmutton_01"] = this.type.meat,
-    ["t_ingfood_meatnixhoundroast_01"] = this.type.cookedmeat,
+    ["t_ingfood_meatnixhoundroast_01"] = this.type.cookedMeat,
     ["t_ingfood_meatornada_01"] = this.type.meat,
     ["t_ingfood_meatparastylus_01"] = this.type.meat,
-    ["t_ingfood_meatrat_01"] = this.type.cookedmeat,
-    ["t_ingfood_meatratroast_01"] = this.type.cookedmeat,
+    ["t_ingfood_meatrat_01"] = this.type.cookedMeat,
+    ["t_ingfood_meatratroast_01"] = this.type.cookedMeat,
     ["t_ingfood_meatvenison_01"] = this.type.meat,
-    ["t_ingfood_meatvenisonroast_01"] = this.type.cookedmeat,
+    ["t_ingfood_meatvenisonroast_01"] = this.type.cookedMeat,
     ["t_ingfood_olives_01"] = this.type.food,
     ["t_ingfood_onion_01"] = this.type.food,
     ["t_ingfood_poppadgourd_01"] = this.type.food,
@@ -671,13 +671,13 @@ this.ingredTypes = {
     ["mc_bubble_squeak"] = this.type.food,--"bubble and squeak"
     ["mc_chefsalad"] = this.type.food,--"chef salad"
     ["mc_cookie"] = this.type.food,--"gramcookie"
-    ["mc_crabmeat_cooked"] = this.type.cookedmeat,--"steamed crab"
-    ["mc_durzog_cooked"] = this.type.cookedmeat,--"cooked durzog meat"
+    ["mc_crabmeat_cooked"] = this.type.cookedMeat,--"steamed crab"
+    ["mc_durzog_cooked"] = this.type.cookedMeat,--"cooked durzog meat"
     ["mc_felaril"] = this.type.food,--"felaril"
-    ["mc_fish_cooked"] = this.type.cookedmeat,--"grilled slaughterfish"
+    ["mc_fish_cooked"] = this.type.cookedMeat,--"grilled slaughterfish"
     ["mc_fried_mushroom"] = this.type.food,--"fried mushrooms"
     ["mc_glowpotsoup"] = this.type.food,--"glowpot soup"
-    ["mc_guar_cooked"] = this.type.cookedmeat,--"cooked guar meat"
+    ["mc_guar_cooked"] = this.type.cookedMeat,--"cooked guar meat"
     ["mc_kagarine"] = this.type.food,--"kagarine"
     ["mc_guarherdpie"] = this.type.food,--"guarherd pie"
     ["mc_guarstew"] = this.type.food,--"guar stew"
@@ -698,8 +698,8 @@ this.ingredTypes = {
     ["mc_sweetyam_pie"] = this.type.food,--"sweet yam pie"
     ["mc_trailbroth"] = this.type.food,--"trail broth"
     ["mc_wheatroll"] = this.type.food,--"wheat roll"
-    ["mc_hound_cooked"] = this.type.cookedmeat,--"cooked hound steak"
-    ["mc_kagouti_cooked"] = this.type.cookedmeat,--"cooked kagouti steak"
+    ["mc_hound_cooked"] = this.type.cookedMeat,--"cooked hound steak"
+    ["mc_kagouti_cooked"] = this.type.cookedMeat,--"cooked kagouti steak"
     ["mc_kwamalarge"] = this.type.food,--"large boiled kwama egg"
     ["mc_kwamasmall"] = this.type.food,--"small boiled kwama egg"
     ["mc_mixedgreens"] = this.type.food,--"mixed greens salad"
@@ -728,13 +728,13 @@ this.ingredTypes = {
     --Morrowind Jobs
     ["jobcookedashyam"] = this.type.food,
     ["jobcookedbittergreenpetals"] = this.type.food,
-    ["jobcookedcrabmeat"] = this.type.cookedmeat,
-    ["jobcookeddurzogmeat"] = this.type.cookedmeat,
+    ["jobcookedcrabmeat"] = this.type.cookedMeat,
+    ["jobcookeddurzogmeat"] = this.type.cookedMeat,
     ["jobcookedhackleloleaf"] = this.type.food,
-    ["jobcookedhoundmeat"] = this.type.cookedmeat,
+    ["jobcookedhoundmeat"] = this.type.cookedMeat,
     ["jobcookedlargekwamaegg"] = this.type.food,
     ["jobcookedmarshmerrow"] = this.type.food,
-    ["jobcookedratmeat"] = this.type.cookedmeat,
+    ["jobcookedratmeat"] = this.type.cookedMeat,
     ["jobcookedsaltrice"] = this.type.food,
     ["jobcookedscales"] = this.type.food,
     ["jobcookedsmallkwamaegg"] = this.type.food,
@@ -819,7 +819,7 @@ this.ingredTypes = {
     ["mr_berries"] = this.type.herb,
     ["mr_crab_pudding"] = this.type.food,
     ["mr_guar_meat"] = this.type.meat,
-    ["mr_guar_sausage"] = this.type.cookedmeat,
+    ["mr_guar_sausage"] = this.type.cookedMeat,
     ["mr_kwama_egg_blight"] = this.type.egg,
     ["mr_marshmerrow_boiled"] = this.type.food,
     ["mr_nether_salt"] = this.type.seasoning,
@@ -837,7 +837,7 @@ this.ingredTypes = {
     ["ingred_green_olive_01"] = this.type.food,
     ["ingred_bread_01_uni3-d"] = this.type.food,
     ["ingred_bread_01_uni2-a"] = this.type.food,
-    ["ingred_crab_meat_01-fried"] = this.type.cookedmeat,
+    ["ingred_crab_meat_01-fried"] = this.type.cookedMeat,
     ["ingred_resin_01_h"] = this.type.food,
 }
 

@@ -41,7 +41,7 @@ local function initialized()
         require("mer.ashfall.branch.branches")
 
         require("mer.ashfall.crafting.controllers")
-
+        require('mer.ashfall.harvest.harvestController')
 
         require("mer.ashfall.ui.sephInterop")
         event.trigger("Ashfall:Interop", Interop)

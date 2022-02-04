@@ -20,6 +20,11 @@ function this.getCurrentActivator()
     return this.list[this.current]
 end
 
+---@return tes3reference | nil
+function this.getCurrentActivatorReference()
+    return this.currentRef
+end
+
 function this.getCurrentType()
     local currentActivator = this.getCurrentActivator()
     if currentActivator then
@@ -35,24 +40,6 @@ function this.getRefActivator(reference)
     end
 end
 
-
---[[
-    Create a tooltip when looking at an activator
-]]--
-
-
-function this.getActivatorTooltip()
-    local menu = tes3ui.findMenu(tes3ui.registerID("MenuMulti"))
-    if menu then
-        return menu:findChild(id_indicator)
-    end
-end
-
-local function centerText(element)
-    element.autoHeight = true
-    element.autoWidth = true
-    element.wrapText = true
-end
 
 local function doActivate()
     return (not tes3.mobilePlayer.werewolf)
