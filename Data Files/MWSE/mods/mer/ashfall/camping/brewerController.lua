@@ -79,11 +79,11 @@ local function onDrinkTea(e)
             common.log:debug("onDrinkTea: Creating new spell")
             teaSpell = tes3spell.create(teaData.spell.id, teaData.teaName)
         end
-        teaSpell.castType = tes3.spellType.ability
+        teaSpell.castType = teaData.spell.spellType or tes3.spellType.ability
         for i=1, #teaData.spell.effects do
             local effect = teaSpell.effects[i]
             local newEffect = teaData.spell.effects[i]
-
+            effect.duration = newEffect.duration
             effect.id = newEffect.id
             effect.attribute = newEffect.attribute
             effect.skill = newEffect.skill
@@ -96,7 +96,18 @@ local function onDrinkTea(e)
         common.log:debug("onDrinkTea: has spell: adding %s", teaData.spell.id)
 
         --delay 3 frames to let the previous tea spell wear off
-        mwscript.addSpell{ reference = tes3.player, spell = teaSpell }
+        if teaSpell.castType == tes3.spellType.ability then
+            common.log:debug("Applying tea effect as ability")
+            mwscript.addSpell{ reference = tes3.player, spell = teaSpell }
+        else
+            common.log:debug("Applying tea spell as magic source")
+            tes3.applyMagicSource{
+                reference = tes3.player,
+                source = teaSpell,
+                castChance = 100,
+                bypassResistances = true,
+            }
+        end
     elseif teaData.onCallback then
         common.log:debug("onDrinkTea: callback")
         teaData.onCallback()

@@ -396,7 +396,7 @@ local Interop = {
         return registerHeatSources({data = data})
     end,
     registerTeas = function(data)
-        registerTeas({ data = data })
+        return registerTeas({ data = data })
     end,
 
     --Survival skill
