@@ -11,6 +11,7 @@
 ---@field name string Name needed for error message when harvesting is illegal
 ---@field weaponTypes table<number, AshfallHarvestWeaponData> Key: tes3.weaponType
 ---@field weaponIds table<number, AshfallHarvestWeaponData> Key: tes3.weaponType
+---@field weaponNamePatterns table<string, AshfallHarvestWeaponData> Key: String pattern to search in object name
 ---@field items AshfallHarvestConfigHarvestable[] Array of harvestables
 ---@field sound string
 ---@field swingsNeeded number
@@ -101,7 +102,7 @@ return {
                 },
             },
             items = {
-                { id = "ashfall_plant_fibre", count = 6, chance = 1.4 },
+                { id = "ashfall_plant_fibre", count = 6, chance = 1.0 },
             },
             sound ="ashfall\\chopveg.wav",
             swingsNeeded = 2
@@ -110,6 +111,17 @@ return {
             attackDirections = {
                 [attackDirection.chop] = true
             },
+            weaponNamePatterns = {
+                ["pick"] = {
+                    effectiveness = 1.0,
+                    degradeMulti = 1.0,
+                }
+            },
+            items = {
+                { id = "ashfall_flint", count = 1, chance = 1.0 }
+            },
+            sound = "Fx\\Heavy Armor Hit.wav",
+            swingsNeeded = 6
         }
     }
 }

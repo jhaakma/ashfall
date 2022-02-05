@@ -20,6 +20,7 @@ this.types = {
     kettle = "kettle",
     cookingPot = "cookingPot",
     waterContainer = "waterContainer",
+    stoneSource = "stoneSource",
 }
 
 this.list = {}
@@ -456,5 +457,13 @@ this.list.waterContainer = Activator:new{
     }
 }
 
+this.list.stoneSource = Activator:new{
+    name = "Rock",
+    type = this.types.stoneSource,
+    mcmSetting = nil,
+    patterns = {
+        ["terrain_rock"] = true
+    }
+}
 
 return this

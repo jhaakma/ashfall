@@ -19,11 +19,33 @@ end
 ---@param harvestConfig AshfallHarvestConfig
 ---@return AshfallHarvestWeaponData | nil
 function HarvestService.getWeaponHarvestData(weapon, harvestConfig)
+    --Exact IDs
+    local weaponDataFromId = harvestConfig.weaponIds
+        and harvestConfig.weaponIds[weapon.object.id:lower()]
+    if weaponDataFromId then
+        return weaponDataFromId
+    end
+
+    --Pattern match on name
+    local weaponDataFromName
+    if harvestConfig.weaponNamePatterns then
+        for pattern, data in pairs(harvestConfig.weaponNamePatterns) do
+            if string.match(weapon.object.name:lower(), pattern) then
+                weaponDataFromName = data
+                break
+            end
+        end
+    end
+    if weaponDataFromName then
+        return weaponDataFromName
+    end
+
+    --Weapon Type
     local weaponTypeData = harvestConfig.weaponTypes
         and harvestConfig.weaponTypes[weapon.object.type]
-    local weaponData = harvestConfig.weaponIds
-        and harvestConfig.weaponIds[weapon.object.id:lower()]
-    return weaponData or weaponTypeData or nil
+    if weaponTypeData then
+        return weaponTypeData
+    end
 end
 
 ---@param weapon tes3equipmentStack

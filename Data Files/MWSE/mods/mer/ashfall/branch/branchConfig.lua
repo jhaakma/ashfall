@@ -39,6 +39,9 @@ this.branchGroups = {
         "ashfall_branch_wg_02",
         "ashfall_branch_wg_03",
     },
+    flint = {
+        "ashfall_flint"
+    }
 }
 
 --Ids for various fallen branches
@@ -98,6 +101,7 @@ this.patternMapping = {
     _al_ = this.branchGroups.ashlands,
     _gl_ = this.branchGroups.grazelands,
     _wg_ = this.branchGroups.westGash,
+    flora_kelp = this.branchGroups.flint,
 }
 
 this.idMapping = {}
