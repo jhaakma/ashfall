@@ -11,6 +11,7 @@ local backpacks = {
     ashfall_pack_01 = true,
     ashfall_pack_02 = true,
     ashfall_pack_03 = true,
+    ashfall_pack_04 = true,
 }
 
 
