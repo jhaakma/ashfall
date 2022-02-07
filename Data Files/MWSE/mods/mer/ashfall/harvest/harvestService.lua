@@ -117,8 +117,9 @@ end
 ---@param weaponData AshfallHarvestWeaponData
 function HarvestService.degradeWeapon(weapon, swingStrength, weaponData)
     local degradeMulti = weaponData.degradeMulti or 1.0
+    common.log:debug("degrade multiplier: %s", degradeMulti)
     --Weapon degradation
-    weapon.variables.condition = weapon.variables.condition - (20 * swingStrength * degradeMulti)
+    weapon.variables.condition = weapon.variables.condition - (2 * swingStrength * degradeMulti)
     --weapon is broken, unequip
     if weapon.variables.condition <= 0 then
         weapon.variables.condition = 0
@@ -174,6 +175,7 @@ function HarvestService.harvest(reference, harvestConfig)
     HarvestService.resetSwings(reference)
     common.skills.survival:progressSkill(harvestConfig.swingsNeeded * 2)
     HarvestService.addItems(harvestConfig)
+    tes3.playSound{ reference = tes3.player, sound = "Item Misc Up"  }
 end
 
 return HarvestService
