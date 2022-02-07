@@ -18,9 +18,9 @@ this.objectIds = {
     canvasTent = "ashfall_tent_misc",
     ashlanderTent = "ashfall_tent_ashl_misc",
     woodaxe = "ashfall_woodaxe",
-    pack_b = "ashfall_backpack_b",
-    pack_w = "ashfall_backpack_w",
-    pack_n = "ashfall_backpack_n",
+    pack_b = "ashfall_pack_01",
+    pack_w = "ashfall_pack_01",
+    pack_n = "ashfall_pack_01",
 }
 this.crateIds = {
     camping = "ashfall_crate_camping",
@@ -899,6 +899,12 @@ this.lightFireBlacklist = {
     g7_inventory_scrl = true,
     g7_inventory_soul = true,
     g7_inventory_weap = true,
+}
+
+this.shadeEquipment = {
+    ashfall_pack_05 = true,
+    gondolier_helm = true,
+    ashfall_strawhat = true
 }
 
 return this

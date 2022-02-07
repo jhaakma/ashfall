@@ -29,14 +29,14 @@ local soakedHeight = 110
 
 --How Cold 100% wetness is
 local wetTempMax = -35
-
-
 function this.checkForShelter()
-    local sheltered = common.helper.checkRefSheltered()
+
     if common.helper.getInTent() then
-        sheltered = true
+        common.data.isSheltered = true
+        return
     end
 
+    local sheltered = common.helper.checkRefSheltered()
     if sheltered ~= nil then
         common.data.isSheltered = sheltered
     end

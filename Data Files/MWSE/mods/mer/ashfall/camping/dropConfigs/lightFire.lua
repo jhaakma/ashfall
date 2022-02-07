@@ -35,18 +35,21 @@ return {
         end
 
         local fireLit = campfire.data.isLit
-        if  fireLit then
-            return false, "Campfire is already lit."
-        end
 
         if isLight(e) then
             if not hasDuration(e) then
                 return false, "Not enough time left on light."
             end
+            if fireLit then
+                return false, "Campfire is already lit."
+            end
             return true
         end
 
         if isFireStarter(e) then
+            if fireLit then
+                return false, "Campfire is already lit."
+            end
             return true
         end
 

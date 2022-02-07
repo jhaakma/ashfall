@@ -26,6 +26,10 @@ end
 
 
 --Gets the raw warmth rating of a piece of armor or clothing.
+local warmthCache = {
+    clothing = {},
+    armor = {}
+}
 local function getRawItemWarmth(object)
     local id = object.id:lower()
     --get item type
@@ -41,9 +45,9 @@ local function getRawItemWarmth(object)
 
 
     --Find in cache
-    if config.warmthValues[objType][id] then
+    if warmthCache[objType][id] then
         common.log:debug("Found %s in cache", id)
-        return config.warmthValues[objType][id]
+        return warmthCache[objType][id]
 
     --Not in cache, generate from name and save to cache
     else
@@ -51,7 +55,7 @@ local function getRawItemWarmth(object)
         --String search item names
         for pattern, value in pairs(ratingsConfig.warmth[objType].values) do
             if string.find(itemName, string.lower(pattern)) then
-                config.warmthValues[objType][id] = value
+                warmthCache[objType][id] = value
                 config.save()
                 return value
             end
@@ -140,17 +144,15 @@ end
 --Returns a table of bodyParts covered by this item
 local function getItemBodyParts(object)
     local mapper
-    local slot
     if object.objectType == tes3.objectType.armor then
-        slot = tes3.armorSlot
         mapper = ratingsConfig.armorPartMapping
     elseif object.objectType == tes3.objectType.clothing then
-        slot = tes3.clothingSlot
         mapper = ratingsConfig.clothingPartMapping
     else
         common.log:error("getItemBodyParts: Not a clothing or armor piece. ")
         return
     end
+
 
     if mapper[object.slot] then
         return mapper[object.slot]
@@ -184,7 +186,8 @@ function this.getCoveredParts()
         feet = false,
     }
     --clothing
-    for _, slot in pairs(tes3.clothingSlot) do
+    local clothingSlots = table.copy(tes3.clothingSlot, { backpack = 11 })
+    for _, slot in pairs(clothingSlots) do
         local stack = tes3.getEquippedItem({ actor = tes3.player, objectType = tes3.objectType.clothing, slot = slot })
         local validSlot = this.isValidClothingSlot(slot)
         if stack and validSlot then
@@ -206,6 +209,8 @@ function this.getCoveredParts()
             end
         end
     end
+
+
 
     return partsCovered
 end

@@ -73,8 +73,8 @@ return {
             weaponIds = woodaxes,
             items = {
 
-                { id = "ashfall_firewood", count = 6, chance = 0.6 },
-                { id = "ingred_resin_01", count = 3, chance = 0.4 },
+                { id = "ashfall_firewood", count = 6, chance = 0.8 },
+                { id = "ingred_resin_01", count = 3, chance = 0.2 },
             },
             sound = "ashfall\\chopshort.wav",
             swingsNeeded = 5

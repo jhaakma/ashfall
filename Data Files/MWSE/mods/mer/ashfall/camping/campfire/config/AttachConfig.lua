@@ -1,5 +1,5 @@
 local common = require ("mer.ashfall.common.common")
-local cookingTooltips = require("mer.ashfall.ui.cookingTooltips")
+local itemTooltips = require("mer.ashfall.ui.itemTooltips")
 local function centerText(element)
     element.autoHeight = true
     element.autoWidth = true
@@ -29,7 +29,7 @@ local AttachConfig = {
             "pickup",
         },
         tooltipExtra = function(campfire, tooltip)
-            cookingTooltips(campfire.object, campfire.itemData, tooltip)
+            itemTooltips(campfire.object, campfire.itemData, tooltip)
         end,
     },
 
@@ -162,7 +162,7 @@ local AttachConfig = {
         },
         shiftCommand = "removeUtensil",
         tooltipExtra = function(campfire, tooltip)
-            cookingTooltips(campfire.object, campfire.itemData, tooltip)
+            itemTooltips(campfire.object, campfire.itemData, tooltip)
         end,
     },
     KETTLE = {
@@ -184,7 +184,7 @@ local AttachConfig = {
         shiftCommand = "removeUtensil",
 
         tooltipExtra = function(campfire, tooltip)
-            cookingTooltips(campfire.object, campfire.itemData, tooltip)
+            itemTooltips(campfire.object, campfire.itemData, tooltip)
         end,
     },
     SWITCH_LADLE = {

@@ -26,7 +26,7 @@ local function initialized()
         require("mer.ashfall.effects.frostbreath")
         require("mer.ashfall.effects.keybinds")
         require("mer.ashfall.ui.hud")
-        require("mer.ashfall.ui.itemTooltips")
+        require("mer.ashfall.ui.tooltipsCompleteInterop")
         require("mer.ashfall.tempEffects.ratings.ratingEffects")
 
         require("mer.ashfall.quickKeys")

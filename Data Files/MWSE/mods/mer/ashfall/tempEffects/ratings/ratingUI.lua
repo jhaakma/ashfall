@@ -72,8 +72,61 @@ local IDs = {
     warmthValue = tes3ui.registerID("Ashfall:ratings_warmthValue"),
     coverageBlock = tes3ui.registerID("Ashfall:ratings_coverageBlock"),
     coverageHeader = tes3ui.registerID("Ashfall:ratings_coverageHeader"),
-    coverageValue = tes3ui.registerID("Ashfall:ratings_coverageValue")
+    coverageValue = tes3ui.registerID("Ashfall:ratings_coverageValue"),
+    shadeBlock = tes3ui.registerID("Ashfall:ratings_shadeBlock"),
+    shadeHeader = tes3ui.registerID("Ashfall:ratings_shadeHeader"),
 }
+
+---@param parent tes3uiElement
+local function createspecialFlagsLabel(parent, object)
+    if common.staticConfigs.shadeEquipment[object.id:lower()] then
+        local shadeBlock = parent:createBlock({ id = IDs.shadeBlock })
+        shadeBlock.flowDirection = "left_to_right"
+        shadeBlock.autoWidth = true
+        shadeBlock.childAlignX  = 0.5
+        shadeBlock.autoHeight = true
+
+        local shadeHeader = shadeBlock:createLabel({ id = IDs.shadeHeader, text = "Sun Shade" })
+        quickFormat(shadeHeader)
+        shadeHeader.color = {157/255, 200/255, 207/255}
+
+        parent:reorderChildren(1, shadeBlock, 1)
+    end
+end
+
+local function createWarmthLabel(parent, object)
+    local warmthBlock = parent:createBlock({ id = IDs.warmthBlock })
+    warmthBlock.flowDirection = "left_to_right"
+    warmthBlock.autoWidth = true
+    warmthBlock.childAlignX  = 0.5
+    warmthBlock.autoHeight = true
+
+    local warmthHeader = warmthBlock:createLabel({ id = IDs.warmthHeader, text = "Warmth: " })
+    quickFormat(warmthHeader)
+
+    local warmth = ratingsCommon.getItemWarmth( object )
+    local warmthText = string.format(" %d", warmth)
+    local warmthValue = warmthBlock:createLabel({ id = IDs.warmthValue, text = warmthText })
+    warmthValue.autoHeight = true
+    warmthValue.autoWidth = true
+end
+
+local function createCoverageLabel(parent, object)
+    local coverageBlock = parent:createBlock({ id = IDs.coverageBlock })
+        coverageBlock.flowDirection = "left_to_right"
+        coverageBlock.autoWidth = true
+        coverageBlock.childAlignX  = 0.5
+        coverageBlock.autoHeight = true
+
+        local coverageHeader = coverageBlock:createLabel({ id = IDs.coverageHeader, text = "Coverage: " })
+        quickFormat(coverageHeader)
+
+        local coverage = ratingsCommon.getAdjustedCoverage( ratingsCommon.getItemCoverage( object ) )
+        local coverageText = string.format(" %d", coverage )
+        local coverageValue = coverageBlock:createLabel({ id = IDs.coverageValue, text = coverageText })
+        coverageValue.autoHeight = true
+        coverageValue.autoWidth = true
+end
 
 --[[
     Insert ratings into Equipment tooltips
@@ -112,6 +165,7 @@ local function insertRatingsTooltips(e)
         end
 
 
+
         local ratingsBlock = innerBlock:createBlock({ id = IDs.ratingsBlock })
         ratingsBlock.flowDirection = "top_to_bottom"
         ratingsBlock.paddingTop = 0
@@ -119,40 +173,15 @@ local function insertRatingsTooltips(e)
         ratingsBlock.childAlignX  = 0.5
         ratingsBlock.autoWidth = true
         ratingsBlock.autoHeight = true
-
-        local warmthBlock = ratingsBlock:createBlock({ id = IDs.warmthBlock })
-        warmthBlock.flowDirection = "left_to_right"
-        warmthBlock.autoWidth = true
-        warmthBlock.childAlignX  = 0.5
-        warmthBlock.autoHeight = true
-
-        local warmthHeader = warmthBlock:createLabel({ id = IDs.warmthHeader, text = "Warmth: " })
-        quickFormat(warmthHeader)
-        --warmthHeader.color = tes3ui.getPalette("header_color")
-
-        local warmth = ratingsCommon.getItemWarmth( e.object )
-        local warmthText = string.format(" %d", warmth)
-        local warmthValue = warmthBlock:createLabel({ id = IDs.warmthValue, text = warmthText })
-        warmthValue.autoHeight = true
-        warmthValue.autoWidth = true
-
-        local coverageBlock = ratingsBlock:createBlock({ id = IDs.coverageBlock })
-        coverageBlock.flowDirection = "left_to_right"
-        coverageBlock.autoWidth = true
-        coverageBlock.childAlignX  = 0.5
-        coverageBlock.autoHeight = true
-
-        local coverageHeader = coverageBlock:createLabel({ id = IDs.coverageHeader, text = "Coverage: " })
-        quickFormat(coverageHeader)
-        --coverageHeader.color = tes3ui.getPalette("header_color")
-
-        local coverage = ratingsCommon.getAdjustedCoverage( ratingsCommon.getItemCoverage( e.object ) )
-        local coverageText = string.format(" %d", coverage )
-        local coverageValue = coverageBlock:createLabel({ id = IDs.coverageValue, text = coverageText })
-        coverageValue.autoHeight = true
-        coverageValue.autoWidth = true
-
         innerBlock:reorderChildren( statsIndex, ratingsBlock, -1 )
+        --WARMTH
+        createWarmthLabel(ratingsBlock, e.object)
+        --COVERAGE
+        createCoverageLabel(ratingsBlock, e.object)
+
+        --SPECIAL FLAGS
+        createspecialFlagsLabel(innerBlock, e.object)
+
         innerBlock:updateLayout()
     end
 end

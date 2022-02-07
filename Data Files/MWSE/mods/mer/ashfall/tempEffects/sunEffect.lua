@@ -23,6 +23,39 @@ local sunWeatherMapping = {
 	[tes3.weather.blizzard] = 0.1,
 }
 
+
+local function getWearingShade()
+    for id, _ in pairs(common.staticConfigs.shadeEquipment ) do
+        local obj = tes3.getObject(id)
+        local equippedStack = tes3.getEquippedItem{
+            actor = tes3.player,
+            objectType = obj.objectType,
+            slot = obj.slot,
+            type = obj.type
+        }
+        if equippedStack and equippedStack.object == obj then
+            return true
+        end
+    end
+    return false
+end
+
+local function getSunBlocked()
+    local sunPos = tes3.worldController.weatherController.sceneSunBase.worldTransform.translation
+    local playerPos = tes3.getPlayerEyePosition()
+    local sunLightDirection = (sunPos - tes3.getCameraPosition() ):normalized()
+    local result = tes3.rayTest{
+        position = playerPos,
+        direction = sunLightDirection,
+        ignore = { tes3.player }
+    }
+    return result ~= nil
+end
+
+local function getInShade()
+    return getWearingShade() or getSunBlocked() or false
+end
+
 function this.calculate(interval)
     local shadeMultiplier
     local hour = tes3.worldController.hour.value
@@ -34,16 +67,8 @@ function this.calculate(interval)
             --definitely night time
             shadeMultiplier = 0.0
         else
-            local sunPos = tes3.worldController.weatherController.sceneSunBase.worldTransform.translation
-            local playerPos = tes3.getPlayerEyePosition()
-            local sunLightDirection = (sunPos - tes3.getCameraPosition() ):normalized()
-            local result = tes3.rayTest{
-                position = playerPos,
-                direction = sunLightDirection,
-                ignore = { tes3.player }
-            }
             shadeMultiplier = sunWeatherMapping[tes3.getCurrentWeather().index]
-            if result then
+            if getInShade() then
                 shadeMultiplier = math.max(0, shadeMultiplier * 0.2 - 0.1)
             end
         end

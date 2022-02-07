@@ -6,7 +6,8 @@ local function isBlacklisted(e)
 end
 
 local function hasDuration(e)
-    return e.itemData and e.itemData.timeLeft
+    return (not e.itemData)
+        or e.itemData and e.itemData.timeLeft
         and e.itemData.timeLeft > DURATION_COST
 end
 

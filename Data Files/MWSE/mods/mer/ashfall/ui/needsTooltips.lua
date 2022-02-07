@@ -5,7 +5,7 @@ local teaConfig = common.staticConfigs.teaConfig
 local hungerController = require('mer.ashfall.needs.hungerController')
 local thirstController = require('mer.ashfall.needs.thirstController')
 local foodConfig = common.staticConfigs.foodConfig
-local cookingTooltips = require("mer.ashfall.ui.cookingTooltips")
+local itemTooltips = require("mer.ashfall.ui.itemTooltips")
 
 local function updateFoodTile(e)
     if foodConfig.getGrillValues(e.item) then
@@ -156,7 +156,7 @@ local function createNeedsTooltip(e)
     end
 
     --used for item and campfire tooltips
-    cookingTooltips(e.object, e.itemData, tooltip)
+    itemTooltips(e.object, e.itemData, tooltip)
 
     local icon = e.tooltip:findChild(tes3ui.registerID("HelpMenu_icon"))
     if icon then

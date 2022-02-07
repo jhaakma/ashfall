@@ -287,6 +287,7 @@ this.list.tree = Activator:new{
         ['florakstr_tree'] = true, --TR
         ['floravm_tree'] = true, --TR
         ['floraww_tree'] = true, --TR
+        ['mdbc_treehuge'] = true, -- Mels Graht trees
     },
 }
 this.list.wood = Activator:new{
@@ -310,6 +311,9 @@ this.list.wood = Activator:new{
         ["flora_trama_shrub_05"] = true,
         ["flora_trama_shrub_06"] = true,
         --["furn_log"] = true
+        ['mdbc_treehugestump'] = true, -- Mels Graht trees
+        ['mdbc_treehugelog'] = true, -- Mels Graht trees
+        ['mdbc_treehugeloghollow'] = true, -- Mels Graht trees
     }
 }
 this.list.fire = Activator:new{

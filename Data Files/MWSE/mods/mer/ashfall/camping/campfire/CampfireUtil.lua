@@ -1,6 +1,6 @@
 
 local DropConfig = require "mer.ashfall.camping.campfire.config.DropConfig"
-local cookingTooltips = require("mer.ashfall.ui.cookingTooltips")
+local itemTooltips = require("mer.ashfall.ui.itemTooltips")
 local activatorController = require "mer.ashfall.activators.activatorController"
 local foodConfig = require "mer.ashfall.config.foodConfig"
 
@@ -37,7 +37,7 @@ function CampfireUtil.getAttachmentConfig(reference, node)
         if common.staticConfigs.bottleList[reference.object.id:lower()] then
             return {
                 tooltipExtra = function(campfire, tooltip)
-                    cookingTooltips(campfire.object, campfire.itemData, tooltip)
+                    itemTooltips(campfire.object, campfire.itemData, tooltip)
                 end
             }
         end

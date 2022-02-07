@@ -62,6 +62,7 @@ this.warmth = {
             ['flame'] = 100,
             ['frost'] = 0,
             ['cloak'] = 60,
+            ["backpack"] = 0,
         }
     },
 }
@@ -103,6 +104,12 @@ this.clothingPartMapping = {
     [tes3.clothingSlot.leftGlove] = { "rightHand", "rightWrist" },
     [tes3.clothingSlot.skirt] = { "legs" },
     [11] = { "back" }--backpack
+}
+
+---To Do: Refactor to only be applied to rain
+this.coverageOverrides = {
+    ['ashfall_pack_05'] ={ "back", "head", "chest"},
+    ['gondolier_helm'] = { "back", "head", "chest"},
 }
 
 return this

@@ -76,7 +76,7 @@ this.recipes = {
     },
     {
         id = "ashfall_strawhat",
-        description = "A straw hat the offers mild protection from the rain.",
+        description = "A straw hat which protects the wearer from the sun.",
         materials = {
             { material = this.materials.fibre, count = 4 }
         }
