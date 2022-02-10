@@ -50,7 +50,7 @@ local function addWaterTooltips(item, itemData, tooltip)
     local data = itemData and itemData.data or nil
 
     local waterHeat = data and data.waterHeat
-    if waterHeat then
+    if waterHeat and waterHeat > 0 then
         common.helper.addLabelToTooltip(tooltip,
             string.format("Heat: %d/100", waterHeat)
         )
