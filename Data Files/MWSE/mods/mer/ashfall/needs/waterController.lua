@@ -558,6 +558,7 @@ local function addWaterToWorld(e)
                         --Make sure it's not a tea added by a mod the player doesn't have
                         if tes3.getObject(waterType) then
                             ref.data.waterType = waterType
+                            ref.data.teaProgress = 100
                         end
                     end
 
