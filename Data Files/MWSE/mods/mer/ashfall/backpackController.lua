@@ -14,7 +14,7 @@ local backpacks = {
     ashfall_pack_04 = true,
     ashfall_pack_05 = true,
 }
-
+local strapsPath = "ashfall\\pack_straps.nif"
 
 local switchNodes = {
     SWITCH_AXE = {
@@ -128,8 +128,6 @@ local function setSwitchNodes(e)
     ref.sceneNode:updateNodeEffects()
     --ref:updateEquipment()
 end
-
-
 
 local function attachBackpack(parent, fileName, ref)
     if not config.showBackpacks then return end
