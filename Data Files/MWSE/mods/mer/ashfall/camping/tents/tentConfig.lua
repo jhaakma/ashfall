@@ -35,7 +35,7 @@ this.trinkets = {
     --Censer: Blight resistance
     ashfall_trinket_censer = {
         id = "ashfall_trinket_censer",
-        description = "The pungent aroma emanating from the Censer cleanses the air and provides protection from The Blight.",
+        description = "The pungent aroma emanating from the Censer cleanses the air and provides protection from The Blight when attached to a tent.",
         mesh = "ashfall\\tent\\trink_censer_a.nif",
         soundPath = nil,
         message = "The smell of incense cleanses the air.",
@@ -50,7 +50,7 @@ this.trinkets = {
     --Bouquet: Fatigue Regen
     ashfall_trinket_flower = {
         id = "ashfall_trinket_flower",
-        description = "This simple bouquet of stoneflowers fills the air will an invigorating aroma which improves fatigue regeneration.",
+        description = "This simple bouquet of stoneflowers fills the air will an invigorating aroma which improves fatigue regeneration when attached to a tent.",
         mesh = "ashfall\\tent\\trink_flower_a.nif",
         soundPath = nil,
         message = "A sweet floral aroma fills the air.",
@@ -71,7 +71,7 @@ this.trinkets = {
     --Chimes: Health Regen
     ashfall_trinket_chimes = {
         id = "ashfall_trinket_chimes",
-        description = "The soothing sound of wind chimes helps with rest and recovery, providing a mild health regeneration effect.",
+        description = "The soothing sound of wind chimes helps with rest and recovery, providing a mild health regeneration effect when attached to a tent.",
         mesh = "ashfall\\tent\\trink_chimes_a.nif",
         soundPath = "\\Fx\\envrn\\woodchimes.wav",
         effects = nil,
@@ -86,7 +86,7 @@ this.trinkets = {
     --DreamCatcher: Magicka Regen
     ashfall_trinket_dream = {
         id = "ashfall_trinket_dream",
-        description = "The Dream Catcher collects ambient magic from the air and provides a mild magicka regeneration effect.",
+        description = "The Dream Catcher collects ambient magic from the air and provides a mild magicka regeneration effect when attached to a tent.",
         mesh = "ashfall\\tent\\trink_dream_a.nif",
         soundPath = nil,
         effects = nil,
@@ -100,7 +100,7 @@ this.trinkets = {
 
     ashfall_trinket_tooth = {
         id = "ashfall_trinket_tooth",
-        description = "The Bone Ward strikes fear into the hearts of nearby creatures, making them more likely to flee from combat.",
+        description = "The Bone Ward strikes fear into the hearts of nearby creatures, making them more likely to flee from combat when attached to a tent.",
         mesh = "ashfall\\tent\\trink_tooth_a.nif",
         soundPath = nil,
         message = "Creatures flee at the sight of the bone ward.",
@@ -114,7 +114,7 @@ this.trinkets = {
     },
     ashfall_trinket_skull = {
         id = "ashfall_trinket_skull",
-        description = "The Skull Ward serves as a brutal warning, making nearby hostile NPCs more likely to flee from battle.",
+        description = "The Skull Ward serves as a brutal warning, making nearby hostile NPCs more likely to flee from battle when attached to a tent.",
         mesh = "ashfall\\tent\\trink_skull_a.nif",
         soundPath = nil,
         message = "Enemies flee at the sight of the skull ward.",
