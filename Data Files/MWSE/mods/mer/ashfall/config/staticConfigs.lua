@@ -904,7 +904,8 @@ this.lightFireBlacklist = {
 this.shadeEquipment = {
     ashfall_pack_05 = true,
     gondolier_helm = true,
-    ashfall_strawhat = true
+    ashfall_strawhat = true,
+    t_de_caravaner_helm_01 = true,
 }
 
 return this
