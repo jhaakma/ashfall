@@ -363,6 +363,7 @@ local function cullRain(tent)
   --  common.helper.iterateRefType("tent", doCullRain)
 end
 
+--Must be done each frame to remove the particles as they get added
 local function tentSimulate(e)
     local _, safeTent = common.helper.checkRefSheltered()
     setTent{

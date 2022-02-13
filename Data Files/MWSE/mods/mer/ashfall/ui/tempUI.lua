@@ -16,6 +16,10 @@ local IDs = {
     shelteredBlock = tes3ui.registerID("Ashfall:HUD_shelteredBlock"),
     unshelteredIcon = tes3ui.registerID("Ashfall:HUD_unshelteredIcon"),
     shelteredIcon = tes3ui.registerID("Ashfall:HUD_shelteredIcon"),
+    rain_sheltered = tes3ui.registerID("Ashfall:HUD_rain_sheltered"),
+    rain_unsheltered = tes3ui.registerID("Ashfall:HUD_rain_unsheltered"),
+    sun_sheltered = tes3ui.registerID("Ashfall:HUD_sun_sheltered"),
+    sun_unsheltered = tes3ui.registerID("Ashfall:HUD_sun_unsheltered"),
 
     conditionLabelBlock = tes3ui.registerID("Ashfall:HUD_conditionLabelBlock"),
     conditionLabel = tes3ui.registerID("Ashfall:HUD_conditionLabel"),
@@ -56,25 +60,28 @@ function this.updateHUD()
         local bottomBlock = findHUDElement(IDs.bottomBlock)
         if bottomBlock then
 
-
             local wetness = common.data.wetness or 0
             wetness = math.clamp(wetness, 0, 100) or 0
             local wetnessBar = findHUDElement(IDs.wetnessBar)
             wetnessBar.widget.current = wetness
 
+            local rain_sheltered = findHUDElement(IDs.rain_sheltered)
+            rain_sheltered.visible =  common.data.isSheltered
+            local rainUnsheltered = findHUDElement(IDs.rain_unsheltered)
+            rainUnsheltered.visible = not common.data.isSheltered
 
-            local shelteredIcon = findHUDElement(IDs.shelteredIcon)
-            shelteredIcon.visible = common.data.isSheltered
-            local unshelteredIcon = findHUDElement(IDs.unshelteredIcon)
-            unshelteredIcon.visible = not common.data.isSheltered
+            local sun_sheltered = findHUDElement(IDs.sun_sheltered)
+            sun_sheltered.visible = common.data.sunShaded
+            local sunUnsheltered = findHUDElement(IDs.sun_unsheltered)
+            sunUnsheltered.visible = not common.data.sunShaded
+
+            -- local shelteredBlock = findHUDElement(IDs.shelteredBlock)
+            -- shelteredBlock.visible = rain_sheltered.visible or sun_sheltered.visible
 
 
             local condition = common.staticConfigs.conditionConfig.temp.states[( common.data.currentStates.temp  or "comfortable" )].text
             local conditionLabel = findHUDElement(IDs.conditionLabel)
             conditionLabel.text = condition
-
-
-
 
             --Update Temp Player bars
             local tempPlayer = common.staticConfigs.conditionConfig.temp:getValue()
@@ -365,15 +372,36 @@ local function createShelteredIndicator(parentBlock)
         common.helper.createTooltip({header = headerText, text = labelText})
     end)
 
-    local unshelteredIcon = shelteredBlock:createImage({path="Icons/ashfall/hud/unsheltered.dds", id = IDs.unshelteredIcon})
-    unshelteredIcon.height = 16
-    unshelteredIcon.width = 16
-    unshelteredIcon.borderAllSides = 2
+    -- local unshelteredIcon = shelteredBlock:createImage({path="Icons/ashfall/hud/unsheltered.dds", id = IDs.unshelteredIcon})
+    -- unshelteredIcon.height = 16
+    -- unshelteredIcon.width = 16
+    -- unshelteredIcon.borderAllSides = 2
 
-    local shelteredIcon = shelteredBlock:createImage({path="Icons/ashfall/hud/sheltered.dds", id = IDs.shelteredIcon})
-    shelteredIcon.height = 16
-    shelteredIcon.width = 16
-    shelteredIcon.borderAllSides = 2
+    -- local shelteredIcon = shelteredBlock:createImage({path="Icons/ashfall/hud/sheltered.dds", id = IDs.shelteredIcon})
+    -- shelteredIcon.height = 16
+    -- shelteredIcon.width = 16
+    -- shelteredIcon.borderAllSides = 2
+
+    local rainSheltered = shelteredBlock:createImage({path="Icons/ashfall/hud/rain_on.dds", id = IDs.rain_sheltered})
+    rainSheltered.height = 16
+    rainSheltered.width = 12
+    rainSheltered.borderAllSides = 2
+
+    local rainUnsheltered = shelteredBlock:createImage({path="Icons/ashfall/hud/rain_off.dds", id = IDs.rain_unsheltered})
+    rainUnsheltered.height = 16
+    rainUnsheltered.width = 12
+    rainUnsheltered.borderAllSides = 2
+
+    local sunSheltered = shelteredBlock:createImage({path="Icons/ashfall/hud/sun_on.dds", id = IDs.sun_sheltered})
+    sunSheltered.height = 16
+    sunSheltered.width = 16
+    sunSheltered.borderAllSides = 2
+
+    local sunUnsheltered = shelteredBlock:createImage({path="Icons/ashfall/hud/sun_off.dds", id = IDs.sun_unsheltered})
+    sunUnsheltered.height = 16
+    sunUnsheltered.width = 16
+    sunUnsheltered.borderAllSides = 2
+
     return shelteredBlock
 end
 

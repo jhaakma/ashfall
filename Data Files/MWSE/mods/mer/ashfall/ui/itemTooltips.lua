@@ -188,12 +188,19 @@ end
 
 local function addStewTooltips(item, itemData, tooltip)
     if itemData and itemData.data.stewLevels then
+        local outerBlock = tooltip:createBlock{}
+                outerBlock.autoHeight = true
+                outerBlock.autoWidth = true
+                outerBlock.childAlignX = 0.5
+                outerBlock.flowDirection = "top_to_bottom"
+
+        common.log:trace("Stew Tooltips")
         local stewName = foodConfig.isStewNotSoup(itemData.data.stewLevels) and "Stew" or "Soup"
 
         local progress = ( itemData.data.stewProgress or 0 )
         local progressText
 
-
+        common.log:trace("progress: %d", progress)
         if progress < 100 then
             progressText = string.format("%s (%d%% Cooked)", stewName, progress )
         elseif itemData.data.waterHeat < common.staticConfigs.hotWaterHeatValue then
@@ -201,12 +208,16 @@ local function addStewTooltips(item, itemData, tooltip)
         else
             progressText = string.format("%s (Cooked)", stewName)
         end
-        local stewProgressLabel = tooltip:createLabel({ text = progressText })
+        local stewProgressLabel = outerBlock:createLabel({ text = progressText })
         stewProgressLabel.color = tes3ui.getPalette("header_color")
         centerText(stewProgressLabel)
 
 
         for foodType, ingredLevel in pairs(itemData.data.stewLevels) do
+            local block = outerBlock:createBlock{}
+                block.autoHeight = true
+                block.autoWidth = true
+                block.childAlignX = 0.5
             local value = math.min(ingredLevel, 100)
             local stewBuff = foodConfig.getStewBuffForFoodType(foodType)
             local spell = tes3.getObject(stewBuff.id)
@@ -216,10 +227,7 @@ local function addStewTooltips(item, itemData, tooltip)
             local ingredLabel
 
             if progress >= 100 then
-                local block = tooltip:createBlock{}
-                block.autoHeight = true
-                block.autoWidth = true
-                block.childAlignX = 0.5
+
 
 
                 local image = block:createImage{path=("icons\\" .. effect.object.icon)}
