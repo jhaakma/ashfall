@@ -338,8 +338,8 @@ local attachNodes = {
                 local meshId = utensilData and utensilData.meshOverride or utensilObj.mesh
                 local mesh = common.loadMesh(meshId)
                 local idToNameMappings = {
-                    kettle = "Kettle",
-                    cookingPot = "Cooking Pot",
+                    kettle = "KETTLE",
+                    cookingPot = "COOKING_POT",
                 }
                 moveOriginToAttachPoint(mesh)
                 mesh.name = idToNameMappings[campfire.data.utensil]

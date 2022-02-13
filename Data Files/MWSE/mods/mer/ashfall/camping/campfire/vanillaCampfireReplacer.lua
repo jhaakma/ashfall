@@ -211,12 +211,10 @@ end
 local function addKettle(campfire)
     campfire.data.dynamicConfig.kettle = "static"
     campfire.data.utensil = "kettle"
-    campfire.data.utensilId = getRandomItem(common.staticConfigs.kettles)
+    campfire.data.utensilId = getRandomItem(common.staticConfigs.dynamicCampfireKettles)
     campfire.data.waterCapacity = common.staticConfigs.utensils[campfire.data.utensilId].capacity
     addWater(campfire)
 end
-
-
 
 local function addSupports(campfire, vanillaConfig)
     common.log:debug("Setting supports")
