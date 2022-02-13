@@ -90,8 +90,15 @@ function this.checkRefSheltered(reference)
         return true
     end
 
+    local height = reference.object.boundingBox
+        and reference.object.boundingBox.max.z or 0
+
     local results = tes3.rayTest{
-        position = reference.position,
+        position = {
+            reference.position.x,
+            reference.position.y,
+            reference.position.z + height
+        },
         direction = {0, 0, 1},
         findAll = true,
         maxDistance = 5000,
@@ -110,7 +117,9 @@ function this.checkRefSheltered(reference)
                 end
                 --this looks weird but it makes sense because we don't break out
                 --of the for loop if sheletered is false
-                if sheltered == true then break end
+                if sheltered == true then
+                    break
+                end
             end
         end
     end

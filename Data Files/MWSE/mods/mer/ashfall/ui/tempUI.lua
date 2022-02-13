@@ -365,12 +365,7 @@ end
 local function createShelteredIndicator(parentBlock)
     local shelteredBlock = parentBlock:createThinBorder({id = IDs.shelteredBlock})
     shelteredBlock = quickFormat(shelteredBlock, 0)
-    --Register Tooltip
-    shelteredBlock:register("help", function()
-        local headerText = common.data.isSheltered and "Sheltered" or "Not Sheltered"
-        local labelText = "Find shelter to avoid getting wet from the rain."
-        common.helper.createTooltip({header = headerText, text = labelText})
-    end)
+
 
     -- local unshelteredIcon = shelteredBlock:createImage({path="Icons/ashfall/hud/unsheltered.dds", id = IDs.unshelteredIcon})
     -- unshelteredIcon.height = 16
@@ -386,22 +381,41 @@ local function createShelteredIndicator(parentBlock)
     rainSheltered.height = 16
     rainSheltered.width = 12
     rainSheltered.borderAllSides = 2
+    rainSheltered:register("help", function()
+        local headerText = "Sheltered from Rain"
+        local labelText = "You are currently sheltered and will not get wet from rain."
+        common.helper.createTooltip({header = headerText, text = labelText})
+    end)
 
     local rainUnsheltered = shelteredBlock:createImage({path="Icons/ashfall/hud/rain_off.dds", id = IDs.rain_unsheltered})
     rainUnsheltered.height = 16
     rainUnsheltered.width = 12
     rainUnsheltered.borderAllSides = 2
+    rainUnsheltered:register("help", function()
+        local headerText = "Unsheletered from Rain"
+        local labelText = "Find shelter to prevent getting wet from the rain."
+        common.helper.createTooltip({header = headerText, text = labelText})
+    end)
 
     local sunSheltered = shelteredBlock:createImage({path="Icons/ashfall/hud/sun_on.dds", id = IDs.sun_sheltered})
     sunSheltered.height = 16
     sunSheltered.width = 16
     sunSheltered.borderAllSides = 2
+    sunSheltered:register("help", function()
+        local headerText = "Shaded from the Sun"
+        local labelText = "You are currently shaded from the heat of the sun."
+        common.helper.createTooltip({header = headerText, text = labelText})
+    end)
 
     local sunUnsheltered = shelteredBlock:createImage({path="Icons/ashfall/hud/sun_off.dds", id = IDs.sun_unsheltered})
     sunUnsheltered.height = 16
     sunUnsheltered.width = 16
     sunUnsheltered.borderAllSides = 2
-
+    sunUnsheltered:register("help", function()
+        local headerText = "Unshaded from the Sun"
+        local labelText = "Find shade to avoid the heat of the sun."
+        common.helper.createTooltip({header = headerText, text = labelText})
+    end)
     return shelteredBlock
 end
 
