@@ -348,28 +348,40 @@ local function setTent(e)
     setTentSwitchNodes()
 end
 
-local function cullRain(tent)
-    if not tent then return end
-    --local function doCullRain(tent)
-        local rain = tes3.worldController.weatherController.sceneRainRoot
-        for raindrop in table.traverse{rain} do
-            if not raindrop.appCulled then
-                if tent.position:distance(raindrop.worldTransform.translation) < 400 then
-                    raindrop.appCulled = true
-                end
+event.register(tes3.event.loaded, function()
+    timer.start{
+        duration = 0.5,
+        type = timer.simulate,
+        iterations = -1,
+        callback = function()
+            local _, safeTent = common.helper.checkRefSheltered()
+            setTent{
+                insideTent = safeTent ~= nil,
+                tent = safeTent
+            }
+        end
+    }
+end)
+
+
+local function cullRain(position)
+    local rain = tes3.worldController.weatherController.sceneRainRoot
+    for raindrop in table.traverse{rain} do
+        if not raindrop.appCulled then
+            if position:distance(raindrop.worldTransform.translation) < 400 then
+                raindrop.appCulled = true
             end
         end
-  --  end
-  --  common.helper.iterateRefType("tent", doCullRain)
+    end
 end
 
 --Must be done each frame to remove the particles as they get added
 local function tentSimulate(e)
-    local _, safeTent = common.helper.checkRefSheltered()
-    setTent{
-        insideTent = safeTent ~= nil,
-        tent = safeTent
-    }
-    cullRain(safeTent)
+    if config.disableRainInTents then
+        if currentTent then
+            local position = currentTent.position:copy()
+            cullRain(position)
+        end
+    end
 end
 event.register("simulate", tentSimulate)

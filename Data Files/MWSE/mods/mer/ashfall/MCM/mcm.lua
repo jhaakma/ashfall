@@ -276,6 +276,12 @@ local function registerModConfig()
             }
 
             categoryMisc:createYesNoButton{
+                label = "Disable Rain in Tents",
+                description = "When enabled, culls rain particles from inside your tent. Disabling this may improve performance.",
+                variable = mwse.mcm.createTableVariable{ id = "disableRainInTents", table = config }
+            }
+
+            categoryMisc:createYesNoButton{
                 label = "Atronachs Regain Magicka from Drinking",
                 description = "When you get thirsty, your maximum magicka (and, therefore, your current magicka) decreases. By default, recovering from thirst recovers the same amount of current magicka as what was lost from being thirsty, even if you have the Atronach sign. Disable this setting to prevent this magicka gain. Be warned, this means as an Atronach you will need to find ways to recover your magicka after drinking.",
                 variable = mwse.mcm.createTableVariable{ id = "atronachRecoverMagickaDrinking", table = config }

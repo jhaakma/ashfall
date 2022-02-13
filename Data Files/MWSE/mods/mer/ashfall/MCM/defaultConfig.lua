@@ -33,6 +33,7 @@ return {
         ["baissa"] = true,--Vivec foreign quarter trader - Khajiit - 100
         ["sedam omalen"] = true,--Ald Velothi's only trader - Dark Elf 400
         ["ferele athram"] = true, --Tel Aruhn trader
+        ["urfing"] = true --Moonmoth Legion Fort trader - Nord 400
     },
     foodWaterMerchants = {
         ["arrille"] = true,--seyda neen trader
@@ -85,6 +86,7 @@ return {
     atronachRecoverMagickaDrinking = true,
     potionsHydrate = true,
     seeThroughTents = true,
+    disableRainInTents = true,
 
     hungerRate = 20,
     thirstRate = 30,
