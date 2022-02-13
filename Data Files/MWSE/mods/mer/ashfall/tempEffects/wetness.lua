@@ -30,7 +30,7 @@ local soakedHeight = 110
 --How Cold 100% wetness is
 local wetTempMax = -35
 function this.checkForShelter()
-
+    common.log:trace("Checking for Shelter")
     if common.helper.getInTent() then
         common.data.isSheltered = true
         return
@@ -42,7 +42,15 @@ function this.checkForShelter()
     end
 end
 event.register("Ashfall:CheckForShelter", this.checkForShelter)
-
+event.register(tes3.event.loaded, function()
+    common.log:debug("Starting shelter timer")
+    timer.start{
+        duration = 1,
+        iterations = -1,
+        type = timer.simulate,
+        callback = this.checkForShelter
+    }
+end)
 
 --[[
     Called by tempTimer
@@ -51,7 +59,6 @@ function this.calculateWetTemp(interval)
     if not common.data then
         return
     end
-    this.checkForShelter()
     --Check if Ashfall is disabled
     if not config.enableTemperatureEffects then
         common.data.wetness = 0

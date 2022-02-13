@@ -56,7 +56,6 @@ local function getRawItemWarmth(object)
         for pattern, value in pairs(ratingsConfig.warmth[objType].values) do
             if string.find(itemName, string.lower(pattern)) then
                 warmthCache[objType][id] = value
-                config.save()
                 return value
             end
         end

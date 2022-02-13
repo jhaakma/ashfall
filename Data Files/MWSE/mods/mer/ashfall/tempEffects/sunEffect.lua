@@ -53,10 +53,29 @@ local function getSunBlocked()
 end
 
 local function getInShade()
-    return getWearingShade() or getSunBlocked() or false
+    return common.data.sunShaded
 end
 
+local function setInShade()
+    common.log:trace("Checking for Sun Shade")
+    local inside = common.helper.getInside(tes3.player)
+    local sunBlocked = getSunBlocked()
+    local wearingShade = getWearingShade()
+    common.data.sunShaded = inside or sunBlocked or wearingShade
+end
+event.register(tes3.event.loaded, function()
+    common.log:debug("Starting shade timer")
+    timer.start{
+        duration = 1,
+        iterations = -1,
+        type = timer.simulate,
+        callback = setInShade
+    }
+end)
+
+
 function this.calculate(interval)
+
     local shadeMultiplier
     local hour = tes3.worldController.hour.value
     if common.helper.getInside(tes3.player) then

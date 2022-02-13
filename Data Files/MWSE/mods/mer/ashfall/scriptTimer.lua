@@ -49,7 +49,7 @@ local function callUpdates()
     statsEffect.calculate()
 
     -- --Heavy scripts
-    activators.callRayTest()
+
     -- --temp effects
     raceEffects.calculateRaceEffects()
     torch.calculateTorchTemp()
@@ -67,7 +67,6 @@ local function callUpdates()
     temperatureController.calculate(interval)
     event.trigger("Ashfall:updateNeedsUI")
 end
-
 event.register("enterFrame", callUpdates)
 
 
@@ -98,5 +97,13 @@ event.register("enterFrame", callUpdates)
 
 local function resetTime()
     lastTime = nil
+    timer.start{
+        duration = 0.1,
+        type = timer.simulate,
+        iterations = -1,
+        callback = function()
+            activators.callRayTest()
+        end
+    }
 end
 event.register("loaded", resetTime)
