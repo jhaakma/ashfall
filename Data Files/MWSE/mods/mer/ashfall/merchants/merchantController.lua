@@ -1,6 +1,6 @@
 local gearId = 'ashfall_crate_rnd'
 local hasGearId = "ashfallGearAdded_v"
-local gearVersion = 20220207 --set to the date you added new gear
+local gearVersion = 20220213 --set to the date you added new gear
 local function hasGearAdded(reference)
     return reference.data[hasGearId .. gearVersion] == true
 end
@@ -22,6 +22,7 @@ local function removeOldContainers(ref)
         ashfall_gear_qual = true,
         ashfall_gear_dunmer = true,
         ashfall_gear_imperial = true,
+        ashfall_gear_nord = true
     }
     for container in ref.cell:iterateReferences(tes3.objectType.container) do
         if oldContainers[container.baseObject.id:lower()] then
@@ -56,16 +57,21 @@ local function determineMerchantContainers(reference)
     --Add base container
     table.insert(containers, "ashfall_gear_base")
 
-    --Extra items based on gold amount and race
-    local isRich = reference.baseObject.barterGold > 600
+    --Add racial extras
     local isDunmer = reference.baseObject.race and reference.baseObject.race.id == "Dark Elf"
+    local isNord = reference.baseObject.race and reference.baseObject.race.id == "Nord"
     local isImperial = reference.baseObject.race and reference.baseObject.race.id == "Imperial"
-
     if isDunmer then
         table.insert(containers, "ashfall_gear_dunmer")
     elseif isImperial then
         table.insert(containers, "ashfall_gear_imperial")
-    elseif isRich then
+    elseif isNord then
+        table.insert(containers, "ashfall_gear_nord")
+    end
+
+    --Add other extras
+    local isRich = reference.baseObject.barterGold > 600
+    if isRich then
         table.insert(containers, "ashfall_gear_qual")
     end
 

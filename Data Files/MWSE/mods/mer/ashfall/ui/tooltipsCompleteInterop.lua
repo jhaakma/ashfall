@@ -39,12 +39,11 @@ local tooltipData = {
     { id = objectIds.pack_w, description = "A white fur backpack of Nordic design." },
     { id = objectIds.pack_n, description = "A backpack made of netch leather." },
 
-    { id = "ashfall_pack_04", description = "A simple backpack with wooden frame."},
+    { id = "ashfall_pack_04", description = "A simple backpack for simple folk."},
     { id = "ashfall_pack_05", description = "A large backpack made of bamboo which provides shade from the sun."},
-
+    { id = "ashfall_pack_06", description = "A small fur backpack of Nordic design which provides a moderate amount of warmth."},
     --crab pot
     { id = "ashfall_crabpot_01_m", description = "Place underwater and wait to catch crabs and harvest their meat. Catch crabs faster by placing it deep underwater, in an area populated by mudcrabs."}
-
 }
 
 for _, data in ipairs(tooltipData) do

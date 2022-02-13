@@ -62,7 +62,9 @@ this.warmth = {
             ['flame'] = 100,
             ['frost'] = 0,
             ['cloak'] = 60,
-            ["backpack"] = 0,
+            ['backpack: nordic'] = 100,
+            ['backpack: traveller'] = 0,
+            ['backpack: survivalist'] = 0,
         }
     },
 }
@@ -78,7 +80,7 @@ this.bodyParts = {
     chest = 0.20,
     legs = 0.20,
     feet = 0.10,
-    back = 0.05
+    back = 0.10
 }
 
 this.armorPartMapping = {
