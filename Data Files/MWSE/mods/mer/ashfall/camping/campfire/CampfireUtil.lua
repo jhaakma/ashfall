@@ -207,10 +207,10 @@ function CampfireUtil.updateWaterHeat(refData, capacity, reference)
     CampfireUtil.setHeat(refData, newHeat, reference)
 end
 
----@param object tes3object
+
 function CampfireUtil.isUtensil(ref)
     return common.staticConfigs.utensils[ref.object.id:lower()] ~= nil
-        or ref.data.utensil ~= nil
+        or ( ref.data and ref.data.utensil ~= nil)
 end
 
 ---@class AshfallAddIngredToStewType
