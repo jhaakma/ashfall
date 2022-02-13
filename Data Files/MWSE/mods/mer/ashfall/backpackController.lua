@@ -13,6 +13,7 @@ local backpacks = {
     ashfall_pack_03 = true,
     ashfall_pack_04 = true,
     ashfall_pack_05 = true,
+    ashfall_pack_06 = true,
 }
 local strapsPath = "ashfall\\pack_straps.nif"
 
@@ -129,6 +130,26 @@ local function setSwitchNodes(e)
     --ref:updateEquipment()
 end
 
+
+local function adjustBodyWeight(ref, node)
+    local weight = ref.object.race.weight.male
+    local height = ref.object.race.height.male
+    if ref.object.female then
+        weight = ref.object.race.weight.female
+        height = ref.object.race.height.female
+    end
+
+    --scale by weight, but only so much
+    local heightScale = math.min(1, height)
+
+    local weightMod = 1 / weight * heightScale
+    local heightMod = 1 / height * heightScale
+
+    local r = node.rotation
+    local scale = tes3vector3.new(heightMod, weightMod, weightMod)
+    node.rotation = tes3matrix33.new(r.x * scale, r.y * scale, r.z * scale)
+end
+
 local function attachBackpack(parent, fileName, ref)
     if not config.showBackpacks then return end
     local node = common.loadMesh(fileName)
@@ -143,19 +164,7 @@ local function attachBackpack(parent, fileName, ref)
         node.scale = backpackOffset.scale
         parent:attachChild(node, true)
 
-        local weight = ref.object.race.weight.male
-        local height = ref.object.race.height.male
-        if ref.object.female then
-            weight = ref.object.race.weight.female
-            height = ref.object.race.height.female
-        end
-
-        local weightMod = 1 / weight
-        local heightMod = 1 / height
-
-        local r = node.rotation
-        local scale = tes3vector3.new(heightMod, weightMod, weightMod)
-        node.rotation = tes3matrix33.new(r.x * scale, r.y * scale, r.z * scale)
+        adjustBodyWeight(ref, node)
     end
 end
 
