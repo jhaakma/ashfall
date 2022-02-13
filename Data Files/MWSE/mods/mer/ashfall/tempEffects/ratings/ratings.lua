@@ -112,11 +112,18 @@ function this.getTotalWarmth()
     end
     local backpack = tes3.getEquippedItem{
         actor = tes3.player,
+        objectType = tes3.objectType.clothing,
+        slot = 11
+    } or tes3.getEquippedItem{
+        actor = tes3.player,
         objectType = tes3.objectType.armor,
         slot = 11
     }
     if backpack then
+        common.log:debug("Adding backpack warmth")
         warmth = warmth + this.getItemWarmth(backpack.object)
+    else
+        common.log:debug("No backpack found")
     end
 
     return warmth * ratingsConfig.warmth.multiplier
