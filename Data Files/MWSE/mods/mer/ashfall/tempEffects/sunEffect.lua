@@ -27,14 +27,16 @@ local sunWeatherMapping = {
 local function getWearingShade()
     for id, _ in pairs(common.staticConfigs.shadeEquipment ) do
         local obj = tes3.getObject(id)
-        local equippedStack = tes3.getEquippedItem{
-            actor = tes3.player,
-            objectType = obj.objectType,
-            slot = obj.slot,
-            type = obj.type
-        }
-        if equippedStack and equippedStack.object == obj then
-            return true
+        if obj then
+            local equippedStack = tes3.getEquippedItem{
+                actor = tes3.player,
+                objectType = obj.objectType,
+                slot = obj.slot,
+                type = obj.type
+            }
+            if equippedStack and equippedStack.object == obj then
+                return true
+            end
         end
     end
     return false
