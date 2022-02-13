@@ -48,8 +48,6 @@ local function callUpdates()
     end
     statsEffect.calculate()
 
-    -- --Heavy scripts
-
     -- --temp effects
     raceEffects.calculateRaceEffects()
     torch.calculateTorchTemp()
@@ -60,7 +58,6 @@ local function callUpdates()
     conditions.updateConditions() --1fps
 
     --visuals
-
     frostBreath.doFrostBreath()
 
     tes3.player.data.Ashfall.valuesInitialised = true
@@ -99,7 +96,7 @@ local function resetTime()
     lastTime = nil
     timer.start{
         duration = 0.1,
-        type = timer.simulate,
+        type = timer.real,
         iterations = -1,
         callback = function()
             activators.callRayTest()
