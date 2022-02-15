@@ -126,6 +126,12 @@ this.placementConfig = {
     ashfall_kettle_07 = { maxSteepness = 0.05 },
 
     ashfall_misc_stove_01 = { maxSteepness = 0.05 },
+
+    ashfall_table_sml = {maxSteepness = 0, drop = 10 },
+
+    ashfall_supports_01 = { maxSteepness = 0, drop = 20 },
+    ashfall_supports_02 = { maxSteepness = 0,  drop = 20 },
+    ashfall_supports_03 = { maxSteepness = 0, drop = 10 },
 }
 
 this.capacities = {

@@ -64,7 +64,8 @@ this.recipes = {
         id = "ashfall_chest_01_m",
         description = "A large wooden chest that can be placed on the ground and used as storage.",
         materials = {
-            { material = this.materials.wood, count = 8 }
+            { material = this.materials.wood, count = 8 },
+            { material = this.materials.rope, count = 4 }
         }
     },
     {
@@ -134,6 +135,16 @@ this.recipes = {
         description = "Wooden supports in a square shape. Attach to a campfire so you can attach kettles and cooking pots.",
         materials = {
             { material = this.materials.wood, count = 3}
+        }
+    },
+
+    --Small table of wood and rope
+    {
+        id = "ashfall_table_sml",
+        description = "A crudely made wooden table",
+        materials = {
+            { material = this.materials.wood, count = 6 },
+            { material = this.materials.rope, count = 2 }
         }
     }
 }

@@ -2,6 +2,7 @@ local common = require ("mer.ashfall.common.common")
 local this = {}
 
 local selectedRecipe
+local selectedRecipeList
 
 local menuConfig = {
     menuWidth = 500,
@@ -84,6 +85,7 @@ local function craftItem()
         tes3.messageBox("You successfully crafted %s.", item.name)
     end
     closeMenu()
+    this.openMenu(selectedRecipeList)
 end
 
 local menuButtons = {
@@ -302,6 +304,19 @@ local function updateMenu(recipe)
     updateButtons()
 end
 
+local function getSortedRecipeList(recipeList)
+    local alphabetSort = function(a, b)
+        return string.lower(a.name) < string.lower(b.name)
+    end
+    local sortedList = {}
+    for _, recipe in pairs(recipeList) do
+        local item = tes3.getObject(recipe.id)
+        recipe.name = item.name
+        table.insert(sortedList, recipe)
+    end
+    table.sort(sortedList, alphabetSort)
+    return sortedList
+end
 
 
 local function populateRecipeList(recipeList)
@@ -309,8 +324,10 @@ local function populateRecipeList(recipeList)
     if not craftingMenu then return end
 
     local list = craftingMenu:findChild(uiids.recipeListPane)
+
     list:getContentElement():destroyChildren()
-    for _, recipe in pairs(recipeList) do
+    local sortedRecipeList = getSortedRecipeList(recipeList)
+    for _, recipe in pairs(sortedRecipeList) do
         local item = tes3.getObject(recipe.id)
         local button = list:createTextSelect()
         button.borderAllSides = 2
@@ -485,6 +502,7 @@ local function addMenuButtons(parent)
 end
 
 function this.openMenu(recipeList)
+    selectedRecipeList = recipeList
     tes3.playSound{sound="Menu Click", reference=tes3.player}
     local craftingMenu = tes3ui.findMenu(uiids.craftingMenu)
     if craftingMenu then craftingMenu:destroy() end
@@ -521,6 +539,10 @@ function this.openMenu(recipeList)
 
     craftingMenu:updateLayout()
     tes3ui.enterMenuMode(uiids.craftingMenu)
+
+    event.unregister("enterFrame", rotateNif)
     event.register("enterFrame", rotateNif)
 end
+
+
 return this

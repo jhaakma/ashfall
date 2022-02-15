@@ -59,7 +59,7 @@ local function getRawItemWarmth(object)
                 return value
             end
         end
-        common.log:debug("Couldn't find a value for %s", id)
+        common.log:trace("Couldn't find a value for %s", id)
     end
 
     --No pattern found in name, get default value
