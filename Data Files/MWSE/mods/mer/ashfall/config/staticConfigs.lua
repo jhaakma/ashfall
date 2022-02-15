@@ -808,13 +808,13 @@ this.utensils = {
 table.copy(this.utensils, this.bottleList)
 
 this.dynamicCampfireKettles = {
-    ashfall_klettle_01 = true,
-    ashfall_klettle_02 = true,
-    ashfall_klettle_03 = true,
-    ashfall_klettle_04 = true,
-    ashfall_klettle_05 = true,
-    ashfall_klettle_06 = true,
-    ashfall_klettle_07 = true,
+    ashfall_kettle_01 = true,
+    ashfall_kettle_02 = true,
+    ashfall_kettle_03 = true,
+    ashfall_kettle_04 = true,
+    ashfall_kettle_05 = true,
+    ashfall_kettle_06 = true,
+    ashfall_kettle_07 = true,
 }
 
 this.kettles = {}

@@ -149,16 +149,19 @@ local ignorePatterns = {
     'sound_'
 }
 
-local function getRandomItem(list)
-    local item = table.choice(table.keys(list))
-    local attempts = 0
-    while not tes3.getObject(item) and attempts < 10 do
-        common.log:debug("Found invalid item %s, trying again", item)
-        item = table.choice(table.keys(list))
-        attempts = attempts + 1
-    end
 
-    common.log:debug("returning randomg item: %s", item)
+local function getRandomItem(list)
+    local attempts = 0
+    while attempts < 10 do
+        local item = table.choice(table.keys(list))
+        if tes3.getObject(item) then
+            common.log:debug("returning random item: %s", item)
+            return item
+        else
+            attempts = attempts + 1
+        end
+    end
+    common.log:error("getRandomItem(): No valid item found")
     return item
 end
 
@@ -201,19 +204,25 @@ local function addWater(campfire)
 end
 
 local function addCookingPot(campfire)
-    campfire.data.utensil = "cookingPot"
-    campfire.data.utensilId = getRandomItem(common.staticConfigs.cookingPots)
-    campfire.data.waterCapacity = common.staticConfigs.utensils[campfire.data.utensilId].capacity
-    campfire.data.dynamicConfig.cookingPot = "static"
-    addWater(campfire)
+    local cookingPot = getRandomItem(common.staticConfigs.cookingPots)
+    if cookingPot then
+        campfire.data.utensil = "cookingPot"
+        campfire.data.utensilId = cookingPot
+        campfire.data.waterCapacity = common.staticConfigs.utensils[campfire.data.utensilId].capacity
+        campfire.data.dynamicConfig.cookingPot = "static"
+        addWater(campfire)
+    end
 end
 
 local function addKettle(campfire)
-    campfire.data.dynamicConfig.kettle = "static"
-    campfire.data.utensil = "kettle"
-    campfire.data.utensilId = getRandomItem(common.staticConfigs.dynamicCampfireKettles)
-    campfire.data.waterCapacity = common.staticConfigs.utensils[campfire.data.utensilId].capacity
-    addWater(campfire)
+    local kettle = getRandomItem(common.staticConfigs.dynamicCampfireKettles)
+    if kettle then
+        campfire.data.dynamicConfig.kettle = "static"
+        campfire.data.utensil = "kettle"
+        campfire.data.utensilId = kettle
+        campfire.data.waterCapacity = common.staticConfigs.utensils[campfire.data.utensilId].capacity
+        addWater(campfire)
+    end
 end
 
 local function addSupports(campfire, vanillaConfig)
@@ -258,7 +267,6 @@ local function attachRandomStuff(campfire, vanillaConfig)
     if campfire.data.supportsId then
         if campfire.data.utensil == nil and math.random() < randomStuffChances.utensil then
             if math.random() < 0.5 then addKettle(campfire) else addCookingPot(campfire) end
-
         end
     end
 
