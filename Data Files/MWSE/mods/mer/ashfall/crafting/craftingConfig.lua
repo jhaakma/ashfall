@@ -27,6 +27,10 @@ this.materials = {
     rope = {
         name = "Rope",
         ids = { "ashfall_rope" }
+    },
+    sack = {
+        name = "Sack",
+        ids = { "ashfall_sack_01" }
     }
 }
 this.ingredMaterials = {}
@@ -55,9 +59,10 @@ this.recipes = {
     },
     {
         id = "ashfall_sack_01",
-        description = "A sack made of animal hides that can be placed on the ground and used as storage.",
+        description = "A sack that can be placed on the ground and used as storage.",
         materials = {
-            { material = this.materials.leather, count = 2 }
+            { material = this.materials.rope, count = 1 },
+            { material = this.materials.fibre, count = 10 },
         }
     },
     {
@@ -141,10 +146,29 @@ this.recipes = {
     --Small table of wood and rope
     {
         id = "ashfall_table_sml",
-        description = "A crudely made wooden table",
+        description = "A small, crudely made wooden table",
         materials = {
             { material = this.materials.wood, count = 6 },
             { material = this.materials.rope, count = 2 }
+        }
+    },
+    {
+        id = "ashfall_table_sml_2",
+        description = "A long, crudely made wooden table",
+        materials = {
+            { material = this.materials.wood, count = 8 },
+            { material = this.materials.rope, count = 2 }
+        }
+    },
+
+    {
+        id = "ashfall_pack_04",
+        description = "A large wooden backpack.",
+        materials = {
+            { material = this.materials.wood, count = 8 },
+            { material = this.materials.rope, count = 4 },
+            { material = this.materials.sack, count = 1 },
+            { material = this.materials.leather, count = 1}
         }
     }
 }
