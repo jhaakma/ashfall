@@ -163,12 +163,12 @@ this.recipes = {
 
     {
         id = "ashfall_pack_04",
-        description = "A large wooden backpack.",
+        description = "A heavy wooden backpack.",
         materials = {
             { material = this.materials.wood, count = 8 },
             { material = this.materials.rope, count = 4 },
             { material = this.materials.sack, count = 1 },
-            { material = this.materials.leather, count = 1}
+            { material = this.materials.leather, count = 2 }
         }
     }
 }
