@@ -22,7 +22,7 @@ local function initialized()
         require("mer.ashfall.needs.diseasedMeat")
 
         require("mer.ashfall.camping.camping")
-        require("mer.ashfall.items.items")
+        require("mer.ashfall.items")
         require("mer.ashfall.effects.frostbreath")
         require("mer.ashfall.effects.keybinds")
         require("mer.ashfall.ui.hud")
@@ -32,8 +32,6 @@ local function initialized()
         require("mer.ashfall.quickKeys")
         require("mer.ashfall.activators.activationEvent")
 
-        require("mer.ashfall.bedrollController")
-        require("mer.ashfall.backpackController")
         require("mer.ashfall.merchants.merchantController")
         require("mer.ashfall.merchants.priceController")
         require("mer.ashfall.merchants.waterMerchant")
@@ -41,6 +39,8 @@ local function initialized()
         require("mer.ashfall.branch.branches")
 
         require("mer.ashfall.crafting.controllers")
+        require("mer.ashfall.bushcrafting")
+
         require('mer.ashfall.harvest.harvestController')
 
         require("mer.ashfall.ui.sephInterop")

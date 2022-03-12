@@ -5,25 +5,37 @@ local teaConfig = common.staticConfigs.teaConfig
 
 return  {
     text = "Fill Container",
-    showRequirements = function(campfire)
-        local hasWaterAmount = campfire.data.waterAmount and campfire.data.waterAmount > 0
-        local hasJustWater = (not teaConfig.teaTypes[campfire.data.waterType]) and ( not campfire.data.stewLevels )
-        local hasBrewedTea = campfire.data.teaProgress and campfire.data.teaProgress >= 100
-        local hasCookedStew = campfire.data.stewProgress and campfire.data.stewProgress >= 100
-        return hasWaterAmount and (hasJustWater or hasBrewedTea or hasCookedStew)
+    showRequirements = function(reference)
+        ---@type AshfallLiquidContainer
+        local source = LiquidContainer.createFromReference(reference)
+        local hasWaterAmount = source.waterAmount > 0
+        local isWater = source:isWater()
+        local isTea = source:isBrewedTea()
+        local isStew = source:isCookedStew()
+
+        return hasWaterAmount and (isWater or isTea or isStew)
     end,
-    callback = function(campfire)
+    enableRequirements = function(reference)
+        ---@type AshfallLiquidContainer
+        local source = LiquidContainer.createFromReference(reference)
+        local playerHasEmpties = thirstController.playerHasEmpties(source)
+        return playerHasEmpties
+    end,
+    tooltipDisabled = {
+        text = common.messages.noContainersToFill
+    },
+    callback = function(reference)
         thirstController.fillContainer{
-            source = LiquidContainer.createFromReference(campfire),
+            source = LiquidContainer.createFromReference(reference),
             callback = function()
-                if (not campfire.data.waterAmount) or campfire.data.waterAmount <= 0 then
+                if (not reference.data.waterAmount) or reference.data.waterAmount <= 0 then
                     common.log:debug("FILLCONTAINER Clearing utensil data")
-                    event.trigger("Ashfall:Campfire_clear_utensils", { campfire = campfire})
+                    event.trigger("Ashfall:Campfire_clear_utensils", { campfire = reference})
                 end
             end
         }
         timer.delayOneFrame(function()
-            event.trigger("Ashfall:UpdateAttachNodes", {campfire = campfire,})
+            event.trigger("Ashfall:UpdateAttachNodes", {campfire = reference,})
         end)
 
     end

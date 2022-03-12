@@ -2,7 +2,7 @@
     Iterates over objects that  and updates their fuel level
 ]]
 local common = require ("mer.ashfall.common.common")
-
+local LiquidContainer = require("mer.ashfall.objects.LiquidContainer")
 local foodConfig = common.staticConfigs.foodConfig
 local hungerController = require("mer.ashfall.needs.hungerController")
 local thirstController = require("mer.ashfall.needs.thirstController")
@@ -94,11 +94,9 @@ end
 
 local function eatStew(e)
     local stewBuffs = foodConfig.getStewBuffList()
-    --remove old buffs
-    for foodType, buff in pairs(stewBuffs) do
-        if e.data.stewLevels[foodType] == nil then
-            mwscript.removeSpell{ reference = tes3.player, spell = buff.id }
-        end
+
+    if (not e.data.stewProgress) or e.data.stewProgress < 100 then
+        return
     end
 
     --add up ingredients, mulitplying nutrition by % in the pot
@@ -111,14 +109,29 @@ local function eatStew(e)
     end
     local foodRatio = nutritionLevel / maxNutritionLevel
 
-    local highestNeed = math.max(common.staticConfigs.conditionConfig.hunger:getValue() / foodRatio, common.staticConfigs.conditionConfig.thirst:getValue())
-    local maxDrinkAmount = math.min(e.data.waterAmount, 50, highestNeed )
+    local hunger = common.staticConfigs.conditionConfig.hunger:getValue()
+    local thirst = common.staticConfigs.conditionConfig.thirst:getValue()
+    common.log:debug("hunger: %s", hunger)
+    common.log:debug("thirst: %s", thirst)
 
-    local amountAte = hungerController.eatAmount(maxDrinkAmount * foodRatio)
-    local amountDrank = thirstController.drinkAmount{amount = maxDrinkAmount, waterType = e.data.waterType}
+    local highestNeed = math.max(
+        hunger / foodRatio,
+        thirst
+    )
+    common.log:debug("highestNeed: %s", highestNeed)
+    local maxAmount = math.min(e.data.waterAmount, 50, highestNeed )
 
-    local highestAmount = amountAte > amountDrank and amountAte or amountDrank
+    local amountAte = hungerController.eatAmount(maxAmount)
+    local amountDrank = thirstController.drinkAmount{amount = maxAmount, waterType = e.data.waterType}
+
+    local highestAmount = math.max(amountAte, amountDrank)
     if highestAmount >= 1 then
+        --remove old buffs
+        for foodType, buff in pairs(stewBuffs) do
+            if e.data.stewLevels[foodType] == nil then
+                mwscript.removeSpell{ reference = tes3.player, spell = buff.id }
+            end
+        end
         tes3.playSound{ reference = tes3.player, sound = "Swallow" }
         e.data.waterAmount = math.max( (e.data.waterAmount - highestAmount), 0)
 
@@ -148,12 +161,12 @@ local function eatStew(e)
                 end)
             end
         end
-        if e.data.waterAmount < 1 then
-            event.trigger("Ashfall:Campfire_clear_water_data", { data = e.data } )
-        end
-
     else
         tes3.messageBox("You are full.")
+    end
+    if e.data.waterAmount and e.data.waterAmount < 1 then
+        common.log:debug("Clearing data after eating stew")
+        LiquidContainer.createFromData(e.data):clearData()
     end
 end
 event.register("Ashfall:eatStew", eatStew)

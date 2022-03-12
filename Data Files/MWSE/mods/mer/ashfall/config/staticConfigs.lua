@@ -46,21 +46,12 @@ this.maxWoodInFire = 15
 
 
 
-this.bedrolls = {
-    ashfall_bedroll_ashl = true,
-    ashfall_bedroll = true,
-    ashfall_cbroll_misc = true,
-    ashfall_strawbed = true
-}
-this.coveredBedrolls = {
-    ashfall_cbroll_misc = true,
-}
 
 --For placement magic
 this.placementConfig = {
     ashfall_bedroll_ashl = { maxSteepness = 0, drop = 10 },
-    ashfall_bedroll = { maxSteepness = 0, drop = 25 },
-    ashfall_cbroll_misc = { maxSteepness = 0, drop = 10 },
+    ashfall_bedroll = { maxSteepness = 0, },
+    ashfall_cbroll_misc = { maxSteepness = 0 },
     ashfall_strawbed = { maxSteepness = 0, drop = 5  },
 
     ashfall_tent_misc = { maxSteepness = 0.4},
@@ -96,6 +87,7 @@ this.placementConfig = {
     ashfall_cushion_05 = { maxSteepness = 0.2, drop = 5 },
     ashfall_cushion_06 = { maxSteepness = 0.2, drop = 5 },
     ashfall_cushion_07 = { maxSteepness = 0.2, drop = 5 },
+
     ashfall_cushion_sq_01 = { maxSteepness = 0.2, drop = 5 },
     ashfall_cushion_sq_02 = { maxSteepness = 0.2, drop = 5 },
     ashfall_cushion_sq_03 = { maxSteepness = 0.2, drop = 5 },
@@ -104,10 +96,13 @@ this.placementConfig = {
     ashfall_cushion_sq_06 = { maxSteepness = 0.2, drop = 5 },
     ashfall_cushion_sq_07 = { maxSteepness = 0.2, drop = 5 },
 
+    ashfall_cush_crft_01 = { maxSteepness = 0.2, drop = 0 },
+
     ashfall_rug_01 = { maxSteepness = 1, drop = -2 },
     ashfall_rug_02 = { maxSteepness = 1, drop = -2 },
     ashfall_rug_03 = { maxSteepness = 1, drop = -2 },
     ashfall_rug_04 = { maxSteepness = 1, drop = -2 },
+    ashfall_rug_crft_01 = { maxSteepness = 1, drop = -2 },
 
     ashfall_crabpot_01_m = { maxSteepness = 1, drop = 25 },
 
@@ -124,6 +119,7 @@ this.placementConfig = {
     ashfall_kettle_05 = { maxSteepness = 0.05 },
     ashfall_kettle_06 = { maxSteepness = 0.05 },
     ashfall_kettle_07 = { maxSteepness = 0.05 },
+    ashfall_kettle_08 = { maxSteepness = 0.05 },
 
     ashfall_misc_stove_01 = { maxSteepness = 0.05 },
 

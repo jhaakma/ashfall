@@ -48,6 +48,11 @@ function HarvestService.getWeaponHarvestData(weapon, harvestConfig)
     end
 end
 
+function HarvestService.validAttackDirection(harvestConfig)
+    local attackDirection = tes3.mobilePlayer.actionData.attackDirection
+    return harvestConfig.attackDirections[attackDirection]
+end
+
 ---@param weapon tes3equipmentStack
 ---@return number damageEffect
 function HarvestService.getDamageEffect(weapon)
@@ -160,7 +165,7 @@ function HarvestService.addItems(harvestConfig)
             common.log:debug("Adding %s", harvestable.id)
             tes3.playSound({reference=tes3.player, sound="Item Misc Up"})
             local numHarvested = HarvestService.calcNumHarvested(harvestable)
-            tes3.addItem{reference=tes3.player, item= harvestable.id, count=numHarvested}
+            tes3.addItem{reference=tes3.player, item= harvestable.id, count=numHarvested, playSound = false}
             HarvestService.showHarvestedMessage(numHarvested, tes3.getObject(harvestable.id).name)
             event.trigger("Ashfall:triggerPackUpdate")
             return

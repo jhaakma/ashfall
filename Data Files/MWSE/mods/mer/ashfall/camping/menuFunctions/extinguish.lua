@@ -19,7 +19,7 @@ return {
         timer.delayOneFrame(function()
             common.log:debug("Opening Inventory Select Menu")
             tes3ui.showInventorySelectMenu{
-                title = "Select Firestarter",
+                title = "Select Water",
                 noResultsText = "You do not have any water to douse the fire.",
                 filter = filterWaterContainer,
                 callback = function(e)

@@ -8,6 +8,7 @@ local randomStuffChances = {
     tea = 0.7,
     stew = 0.7
 }
+local SCALE_MAX = 1.3
 
 local vanillaCampfires = {
     mr_light_pitfire = { replacement = "ashfall_campfire", supports = true, rootHeight = 5, squareSupports = true, infinite = true},
@@ -477,7 +478,7 @@ end
 local function replaceCampfire(e)
     local vanillaConfig = vanillaCampfires[e.reference.object.id:lower()]
     local campfireReplaced = e.reference.data and e.reference.data.campfireReplaced
-    if vanillaConfig then
+    if vanillaConfig and e.reference.scale < SCALE_MAX then
         if not campfireReplaced then
             common.log:debug("replaceCampfire() %s", e.reference.object.id)
 
@@ -541,7 +542,8 @@ local function replaceCampfire(e)
 
                 --For stuff inside platforms, let the scale get smaller
                 local minScale = data.hasPlatform and 0.6 or 0.75
-                campfire.scale = math.clamp(campfire.scale, minScale, 1.3)
+
+                campfire.scale = math.clamp(campfire.scale, minScale, SCALE_MAX)
                 common.log:debug("setting scale to %s", campfire.scale)
 
                 table.insert(data.ignoreList, campfire)

@@ -29,14 +29,15 @@ local soakedHeight = 110
 
 --How Cold 100% wetness is
 local wetTempMax = -35
-function this.checkForShelter()
+function this.checkForShelter(e)
+    local ref = e and e.reference or tes3.player
     common.log:trace("Checking for Shelter")
     if common.helper.getInTent() then
         common.data.isSheltered = true
         return
     end
 
-    local sheltered = common.helper.checkRefSheltered()
+    local sheltered = common.helper.checkRefSheltered(ref)
     if sheltered ~= nil then
         common.data.isSheltered = sheltered
     end

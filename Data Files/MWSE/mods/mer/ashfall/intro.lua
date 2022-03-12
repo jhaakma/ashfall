@@ -173,8 +173,7 @@ local function checkCharGen()
         }
         if config.startingEquipment then
             mwscript.addItem{reference=tes3.player, item="ashfall_cooking_pot"}
-            --mwscript.addItem{reference=tes3.player, item="misc_com_bottle_10" }
-            mwscript.addItem{reference=tes3.player, item="ashfall_bedroll"}
+            mwscript.addItem{reference=tes3.player, item="misc_com_iron_ladle" }
             mwscript.addItem{reference=tes3.player, item="ashfall_woodaxe"}
         end
     end
@@ -183,6 +182,9 @@ end
 local legacyItemMapping = {
     ashfall_tent_ashl_misc = "ashfall_tent_ashl_m",
     ashfall_tent_misc = "ashfall_tent_base_m",
+    ashfall_backpack_b = "ashfall_pack_01",
+    ashfall_backpack_w = "ashfall_pack_02",
+    ashfall_backpack_n = "ashfall_pack_03",
 }
 
 

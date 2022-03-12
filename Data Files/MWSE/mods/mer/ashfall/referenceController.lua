@@ -63,9 +63,9 @@ this.controllers = {
 
     stewer = ReferenceController:new{
         requirements = function(_, ref)
-            return ref.data
+            return (ref.data
                 and ref.data.utensil == "cookingPot"
-                or staticConfigs.cookingPots[ref.object.id:lower()]
+                or staticConfigs.cookingPots[ref.object.id:lower()])
         end
     },
 
@@ -94,7 +94,6 @@ this.controllers = {
             return staticConfigs.heatSourceValues[ref.object.id:lower()]
         end
     },
-
 
     waterContainer = ReferenceController:new{
         requirements = function(_, ref)

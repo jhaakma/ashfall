@@ -15,6 +15,7 @@ local DropConfig = {
             "groundUtensil",
             "supports",
             "heatWater",
+            "salt",
         },
         DROP_HANG_UTENSIL = {
             "hangUtensil"

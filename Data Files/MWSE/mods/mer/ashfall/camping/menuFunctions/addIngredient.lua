@@ -1,6 +1,7 @@
 local common = require ("mer.ashfall.common.common")
 local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 local foodConfig = common.staticConfigs.foodConfig
+local LiquidContainer = require("mer.ashfall.objects.LiquidContainer")
 
 local foodTypes = {
     foodConfig.type.meat,
@@ -63,11 +64,10 @@ local function ingredientSelect(campfire, foodType)
                 common.data.inventorySelectStew = nil
                 if e.item then
                     common.log:debug("Selecting ingredient amount for stew")
-                    local capacity = CampfireUtil.getStewCapacity{
-                        campfire = campfire, foodType = foodType
-                    }
+                    local liquidContainer = LiquidContainer.createFromReference(campfire)
+                    local capacity = liquidContainer:getStewCapacity(foodType)
                     local max = math.min(
-                        mwscript.getItemCount{ reference = tes3.player, item = e.item },
+                        tes3.getItemCount{ reference = tes3.player, item = e.item },
                         capacity
                     )
                     common.log:debug("max: %s", max)

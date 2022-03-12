@@ -257,6 +257,9 @@ this.list.vegetation = Activator:new{
         t_sky_flora_bushplain1_03 = true,
     }
 }
+
+
+
 this.list.tree = Activator:new{
     name = "Tree",
     type = this.types.resinSource,

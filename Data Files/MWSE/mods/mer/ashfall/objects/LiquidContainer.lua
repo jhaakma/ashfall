@@ -18,15 +18,21 @@ local teaConfig = require "mer.ashfall.config.teaConfig"
 
 --Types
 ---@class AshfallLiquidContainerData
----@field waterAmount number
----@field waterHeat number
----@field stewProgress number
----@field teaProgress number
----@field stewLevels table
----@field waterType string
----@field lastWaterUpdated number
+---@field waterAmount number Amount of water in container. Maps to data.waterAmount
+---@field waterHeat number How hot the water is out of 100. Maps to data.waterHeat
+---@field stewProgress number How far the stew has cooked
+---@field teaProgress number How far the tea has brewed
+---@field waterType string Is either the id of the tea used or "dirty"
+---@field stewLevels table Data containing stew data
+---@field lastWaterUpdated number The last time the water was updated
+---@field lastStewUpdated number The last time the stew was updated
+---@field lastBrewUpdated number The last time the tea was updated
+---@field lastWaterHeatUpdated number The last time the water heat was updated
+---@field stewBuffs table The stew buffs
+
 
 ---@class AshfallLiquidContainer
+---@field new function constructor
 ---@field data AshfallLiquidContainerData The Reference.data or itemData.data
 ---@field itemId string The id of the item
 ---@field reference tes3reference (Optional) if there is a reference, we need it for updating nodes
@@ -36,15 +42,30 @@ local teaConfig = require "mer.ashfall.config.teaConfig"
 ---@field teaProgress number How far the tea has brewed
 ---@field waterType string Is either the id of the tea used or "dirty"
 ---@field stewLevels table Data containing stew data
+---@field lastWaterUpdated number The last time the water was updated
+---@field lastStewUpdated number The last time the stew was updated
+---@field lastBrewUpdated number The last time the tea was updated
+---@field lastWaterHeatUpdated number The last time the water heat was updated
+---@field stewBuffs table The stew buffs
 ---@field capacity number Maximum water capacity of container
 ---@field holdsStew boolean Flag whether container is able to hold stew. If it can hold stew, it can't hold tea.
----@field new function constructor
 ---@field createFromReference function Create a new LiquidContainer from an in-world reference
 ---@field createFromInventory function Create a new LiquidContainer from an item in the player's inventory
 ---@field createInfiniteWaterSource function Create a liquidContainer with an infinite water source, such as a well.
 ---@field transferLiquid function Transfer liquid from one liquidContainer to another
 ---@field updateHeat function Updates the heat and triggers node updates for steam etc
+---@field clearData function Resets the data of the liquid container to their default values
+---@field getHeat function Gets the heat of the liquid
 ---@field getLiquidName function Get's a user-facing string for the type of liquid in the container
+---@field getLiquidType function Get the type of liquid in the container. Return values: "clean", "dirty", "tea", "stew"
+---@field getWaterRatio function Gets the ratio of water in the container
+---@field getStewLevel function Gets the % filled for a given foodType in the stew
+---@field getStewCapacity function returns how many ingredients of the given food type can still be added to the stew
+---@field isBoiling function Returns whether the water is boiling
+---@field isWater function Returns true if the liquid is clean or dirty water, but not if it's stew or tea
+---@field isInfinite function Returns true if the liquid is infinite, such as a well
+---@field isCookedStew function Returns true if the liquid is stew and it is fulled cooked
+---@field isBrewedTea function Returns true if the liquid is tea and it is fulled brewed
 ---@field canTransfer function Returns true if it is possible to transfer liquids between two liquid containers.
 
 local LiquidContainer = {}
@@ -56,6 +77,10 @@ local dataValues = {
     waterType = {default = nil},
     teaProgress = {default = 0},
     lastWaterUpdated = {default = nil},
+    lastStewUpdated = {default = nil},
+    lastBrewUpdated = {default = nil},
+    lastWaterHeatUpdated = {default = nil},
+    stewBuffs = {default = nil},
 }
 
 local meta = {
@@ -92,7 +117,6 @@ local meta = {
 function LiquidContainer.new(id, dataHolder, reference)
     local bottleData = common.staticConfigs.bottleList[id:lower()]
     if bottleData then
-
         ---@type AshfallLiquidContainer
         local liquidContainer = {}
 
@@ -124,6 +148,12 @@ function LiquidContainer.createFromInventory(item, itemData)
     return LiquidContainer.new(item.id, itemData)
 end
 
+---@param data table
+---@return AshfallLiquidContainer liquidContainer
+function LiquidContainer.createFromData(data)
+    return LiquidContainer.new('_infinite_water_source', { data = data} )
+end
+
 function LiquidContainer.createInfiniteWaterSource(data, reference)
     data = data or {}
     data.waterAmount = data.waterAmount or math.huge
@@ -134,6 +164,11 @@ end
 ---@param from AshfallLiquidContainer
 ---@param to AshfallLiquidContainer
 function LiquidContainer.canTransfer(from, to)
+    --Can't transfer to itself
+    if from.data == to.data then
+        return false
+    end
+
     --If to is a reference stack, then can't transfer
     if to.reference and to.reference.attachments.variables.count > 1 then
         common.log:debug("tried transfering to ref stack")
@@ -267,10 +302,7 @@ function LiquidContainer.transferLiquid(from, to, amount)
     to.lastWaterHeatUpdated = nil
     --Clear empty from
     if from.waterAmount < 1 then
-        for key, _ in pairs(dataValues) do
-            from[key] = nil
-        end
-        from:updateHeat(0)
+        from:clearData()
     end
     --Trigger node updates
     if from.reference then
@@ -292,17 +324,82 @@ function LiquidContainer.transferLiquid(from, to, amount)
     return fillAmount
 end
 
+function LiquidContainer.clearData(self)
+    self:updateHeat(0)
+    for k, _ in pairs(dataValues) do
+        self.data[k] = nil
+    end
+end
+
 ---@param self AshfallLiquidContainer
 function LiquidContainer.getLiquidName(self)
     if self.waterType == "dirty" then
-        return "dirty water"
+        return "Dirty water"
     elseif teaConfig.teaTypes[self.waterType] then
         return teaConfig.teaTypes[self.waterType].teaName
     elseif self.stewLevels then
-        return foodConfig.isStewNotSoup(self.stewLevels) and "stew" or "soup"
+        return foodConfig.isStewNotSoup(self.stewLevels) and "Stew" or "Soup"
     else
-        return "water"
+        return "Water"
     end
+end
+
+function LiquidContainer.getLiquidType(self)
+    if self.waterType == "dirty" then
+        return "dirty"
+    elseif teaConfig.teaTypes[self.waterType] then
+        return "tea"
+    elseif self.stewLevels then
+        return "stew"
+    else
+        return "clean"
+    end
+end
+
+---@return number heat
+function LiquidContainer.getHeat(self)
+    return self.data.waterHeat or 0
+end
+
+function LiquidContainer.getWaterRatio(self)
+    return self.waterAmount / self.capacity
+end
+
+function LiquidContainer.getStewLevel(self, foodType)
+    if not self.stewLevels then return 0 end
+    return self.stewLevels[foodType] or 0
+end
+
+function LiquidContainer.getStewCapacity(self, foodType)
+    local waterRatio = self:getWaterRatio()
+    local stewLevel = self:getStewLevel(foodType)
+    local adjustedIngredAmount = common.staticConfigs.stewIngredAddAmount / waterRatio
+    local rawCapacity = 100 - stewLevel
+    local capacity = math.ceil(rawCapacity / adjustedIngredAmount)
+    return capacity
+end
+
+function LiquidContainer.isWater(self)
+    local liquidType = self:getLiquidType()
+    return liquidType == "clean" or liquidType == "dirty"
+end
+
+function LiquidContainer.isInfinite(self)
+    return self.itemId == '_infinite_water_source'
+end
+
+function LiquidContainer.isCookedStew(self)
+    return self:getLiquidType() == "stew"
+        and self.stewProgress >= 100
+end
+
+function LiquidContainer.isBrewedTea(self)
+    return self:getLiquidType() == "tea"
+        and self.teaProgress >= 100
+end
+
+function LiquidContainer.isBoiling(self)
+    return self.waterHeat > common.staticConfigs.hotWaterHeatValue
 end
 
 ---Updates the heat of a liquid container, triggering any node updates and sounds if necessary

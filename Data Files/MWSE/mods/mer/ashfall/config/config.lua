@@ -7,7 +7,6 @@ local inMemConfig = mwse.loadConfig(this.configPath, this.defaultConfig)
 
 this.config = setmetatable({
     save = function()
-        mwse.log("[Ashfall] saving config to json")
         mwse.saveConfig(this.configPath, inMemConfig)
     end
 }, {

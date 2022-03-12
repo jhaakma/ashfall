@@ -26,14 +26,15 @@ local animConfig = {
         mesh = "ashfall\\anim\\VA_sitting.nif",
         group = tes3.animationGroup.idle4
     },
+    laySide = {
+        mesh = "ashfall\\anim\\VA_sitting.nif",
+        group = tes3.animationGroup.idle8,
+    },
     layBack = {
         mesh = "ashfall\\anim\\VA_sitting.nif",
         group = tes3.animationGroup.idle9,
     },
-    laySide = {
-        mesh = "ashfall\\anim\\VA_sitting.nif",
-        group = tes3.animationGroup.idle8,
-    }
+
 }
 
 function this.sitDown(e)
@@ -55,10 +56,10 @@ function this.hasAnimFile(animFile)
     return fileExists
 end
 
+
 local function onTabUp()
     common.log:debug("Tab pressed up, back to vanity mode")
     timer.delayOneFrame(function()
-        tes3.mobilePlayer.controlsDisabled = true
         tes3.setVanityMode({ enabled = true })
     end)
 end
@@ -66,7 +67,6 @@ end
 local function onTabDown()
     common.log:debug("Tab pressed down, allowing mouse look")
     timer.delayOneFrame(function()
-        tes3.mobilePlayer.controlsDisabled = false
         tes3.setVanityMode({ enabled = false })
     end)
 end
@@ -74,17 +74,14 @@ end
 
 --handle keypress to cancel animation
 local function checkKeyPress(e)
+    if tes3ui.menuMode() then return end
     if e.keyCode == 183 then return end --allow screenshots
     --If this is tab being pressed down --only for non-location, moving messing up camera
-    local inputController = tes3.worldController.inputController
     local togglePovKey = tes3.getInputBinding(tes3.keybind.togglePOV).code
 
     if e.keyCode == togglePovKey then
         common.log:debug("Pressed toggle POV key")
         onTabDown()
-        return
-    end
-    if inputController:isKeyDown(togglePovKey) then
         return
     end
     common.log:debug("Detected Key Press, cancelling")
@@ -192,13 +189,13 @@ function this.doAnimation(e)
             orientation = tes3.player.orientation:copy(),
             cell = tes3.player.cell
         }
-        event.trigger("Ashfall:ToggleTentCollision", {collision = false })
         timer.delayOneFrame(function()
             if not data then
                 --may have cancelled immediately
                 return
             end
             common.log:debug("found location, moving to %s", data.location.position)
+            common.helper.togglePlayerCollision(false)
             common.helper.movePlayer(data.location)
         end)
     end
@@ -221,6 +218,9 @@ function this.doAnimation(e)
 
     tes3.setVanityMode({ enabled = true })
     helper.disableControls()
+    --allow menu access
+    tes3.mobilePlayer.controlsDisabled = false
+
     event.register("save", blockSave)
     event.register("keyUp", onTabUp, { filter = tes3.getInputBinding(tes3.keybind.togglePOV).code })
     event.register("keyDown", checkKeyPress)
@@ -236,59 +236,61 @@ function this.doAnimation(e)
 end
 
 function this.cancel()
-    common.log:debug("Cancelling")
-    tes3.runLegacyScript({command = 'DisablePlayerLooking'});
-    event.trigger("Ashfall:ToggleTentCollision", {collision = true })
-    if data.usingBed then
-        event.trigger("Ashfall:SetBedTemp", { isUsingBed = false })
-    end
-    if data.covered then
-        common.log:debug("Setting InsideCoveredBedroll to false")
-        common.data.insideCoveredBedroll = false
-    end
-    if data.mesh then
-        common.log:debug("Stopping animation")
-        stopAnimation()
-    end
-    if data.speed then
-        common.log:debug("Stopping fast time")
-        stopFastTime()
-    end
-    if data.previousLocation then
-        common.log:debug("Returning to previous location")
-        common.helper.movePlayer(data.previousLocation)
-    end
-    if data.recovering then
-        common.log:debug("Removing recovery")
-        common.data.recoveringFatigue = false
-        data.statRecoveryTimer:cancel()
-    end
-    if data.sleeping then
-        common.log:debug("disabling isSleeping")
-        common.data.isSleeping = false
-    else
-        common.data.isWaiting = false
-    end
-    if data.collisionRef then
-        if data.collisionRef and data.collisionRef:valid() then
-            common.log:debug("Has Collision Ref, setting hasNoCollision to false")
-            data.collisionRef:getObject().hasNoCollision = false
+    timer.delayOneFrame(function()
+        common.log:debug("Cancelling")
+        tes3.runLegacyScript({command = 'DisablePlayerLooking'});
+        if data.usingBed then
+            event.trigger("Ashfall:SetBedTemp", { isUsingBed = false })
         end
-    end
-    common.log:debug("Enabling controls and setting vanity to false, unregistering events")
-    helper.enableControls()
-    tes3.setVanityMode({ enabled = false })
-    event.unregister("save", blockSave)
-    event.unregister("keyDown", checkKeyPress)
-    event.unregister("keyUp", onTabUp, { filter = tes3.getInputBinding(tes3.keybind.togglePOV).code })
-    event.unregister("Ashfall:WakeUp", this.cancel)
+        if data.covered then
+            common.log:debug("Setting InsideCoveredBedroll to false")
+            common.data.insideCoveredBedroll = false
+        end
+        if data.mesh then
+            common.log:debug("Stopping animation")
+            stopAnimation()
+        end
+        if data.speed then
+            common.log:debug("Stopping fast time")
+            stopFastTime()
+        end
+        if data.previousLocation then
+            common.log:debug("Returning to previous location")
+            common.helper.movePlayer(data.previousLocation)
+            common.helper.togglePlayerCollision(true)
+        end
+        if data.recovering then
+            common.log:debug("Removing recovery")
+            common.data.recoveringFatigue = false
+            data.statRecoveryTimer:cancel()
+        end
+        if data.sleeping then
+            common.log:debug("disabling isSleeping")
+            common.data.isSleeping = false
+        else
+            common.data.isWaiting = false
+        end
+        if data.collisionRef then
+            if data.collisionRef and data.collisionRef:valid() then
+                common.log:debug("Has Collision Ref, setting hasNoCollision to false")
+                data.collisionRef:getObject().hasNoCollision = false
+            end
+        end
+        common.log:debug("Enabling controls and setting vanity to false, unregistering events")
+        helper.enableControls()
+        tes3.setVanityMode({ enabled = false })
+        event.unregister("save", blockSave)
+        event.unregister("keyDown", checkKeyPress)
+        event.unregister("keyUp", onTabUp, { filter = tes3.getInputBinding(tes3.keybind.togglePOV).code })
+        event.unregister("Ashfall:WakeUp", this.cancel)
 
-    if data.callback then
-        common.log:debug("Callback")
-        data.callback()
-    end
-    data = nil
-    tes3.runLegacyScript({command = 'EnablePlayerLooking'});
+        if data.callback then
+            common.log:debug("Callback")
+            data.callback()
+        end
+        data = nil
+        tes3.runLegacyScript({command = 'EnablePlayerLooking'});
+    end)
 end
 
 

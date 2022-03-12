@@ -66,6 +66,11 @@ local function harvestOnAttack(e)
         return
     end
 
+    if not service.validAttackDirection(harvestConfig) then
+    common.log:debug("Harvest: Invalid attack direction")
+        return
+    end
+
     --CHECKS PASS, we are swinging at something
     service.playSound(harvestConfig)
 

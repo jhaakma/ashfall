@@ -1,6 +1,6 @@
 local common = require("mer.ashfall.common.common")
 local config = require("mer.ashfall.config.config")
-local animCtrl = require("mer.ashfall.effects.animationController")
+local animCtrl = require("mer.ashfall.animation.animationController")
 local skipActivate
 
 local cushions = {
@@ -19,6 +19,7 @@ local cushions = {
     ashfall_cushion_sq_06 = { height = 10 },
     ashfall_cushion_sq_07 = { height = 10 },
 
+    ashfall_cush_crft_01 = { height = 5 },
 }
 
 local function canRest()

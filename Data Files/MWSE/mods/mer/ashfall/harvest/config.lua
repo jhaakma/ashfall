@@ -53,10 +53,10 @@ return {
             },
             weaponIds = woodaxes,
             items = {
-                { id = "ashfall_firewood", count = 6, chance = 1.0 },
+                { id = "ashfall_firewood", count = 10, chance = 1.0 },
             },
             sound = "ashfall\\chopshort.wav",
-            swingsNeeded = 4
+            swingsNeeded = 3
         },
         resinSource = {
             attackDirections = {
@@ -72,12 +72,11 @@ return {
             },
             weaponIds = woodaxes,
             items = {
-
-                { id = "ashfall_firewood", count = 6, chance = 0.8 },
-                { id = "ingred_resin_01", count = 3, chance = 0.2 },
+                { id = "ashfall_firewood", count = 10, chance = 0.7 },
+                { id = "ingred_resin_01", count = 3, chance = 0.3 },
             },
             sound = "ashfall\\chopshort.wav",
-            swingsNeeded = 5
+            swingsNeeded = 3
         },
         vegetation = {
             attackDirections = {
@@ -102,26 +101,26 @@ return {
                 },
             },
             items = {
-                { id = "ashfall_plant_fibre", count = 6, chance = 1.0 },
+                { id = "ashfall_plant_fibre", count = 15, chance = 1.0 },
             },
             sound ="ashfall\\chopveg.wav",
-            swingsNeeded = 2
+            swingsNeeded = 1
         },
-        stoneSource = {
-            attackDirections = {
-                [attackDirection.chop] = true
-            },
-            weaponNamePatterns = {
-                ["pick"] = {
-                    effectiveness = 1.0,
-                    degradeMulti = 1.0,
-                }
-            },
-            items = {
-                { id = "ashfall_flint", count = 1, chance = 1.0 }
-            },
-            sound = "Fx\\Heavy Armor Hit.wav",
-            swingsNeeded = 6
-        }
+        -- stoneSource = {
+        --     attackDirections = {
+        --         [attackDirection.chop] = true
+        --     },
+        --     weaponNamePatterns = {
+        --         ["pick"] = {
+        --             effectiveness = 1.0,
+        --             degradeMulti = 1.0,
+        --         }
+        --     },
+        --     items = {
+        --         { id = "ashfall_flint", count = 1, chance = 1.0 }
+        --     },
+        --     sound = "Fx\\Heavy Armor Hit.wav",
+        --     swingsNeeded = 6
+        -- }
     }
 }

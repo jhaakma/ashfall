@@ -49,9 +49,20 @@ local function placeCampfire(e)
         cell = e.target.cell
     }
     tes3.playSound{ sound = "Item Misc Down" }
-    common.helper.yeet(e.target)
     campfire:deleteDynamicLightAttachment()
-    campfire.data.fuelLevel = e.target.stackSize or 1
+
+    local stackSize = e.target.stackSize or 1
+    local max = 10
+    local remaining = common.helper.reduceReferenceStack(e.target, math.min(stackSize, max))
+    if remaining > 0 then
+        local safeRef = tes3.makeSafeObjectHandle(e.target)
+        timer.delayOneFrame(function()
+            if safeRef:valid() then
+                common.helper.pickUp(safeRef:getObject())
+            end
+        end)
+    end
+    campfire.data.fuelLevel = stackSize - remaining
     event.trigger("Ashfall:UpdateAttachNodes", { campfire = campfire})
 end
 
@@ -78,8 +89,7 @@ local function onActivateFirewood(e)
         local isModifierKeyPressed = common.helper.isModifierKeyPressed()
 
         if isModifierKeyPressed then
-            placeCampfire(e)
-            return true
+            return
         else
             common.helper.messageBox({
                 message = string.format("You have %d %s.", e.target.stackSize, e.target.object.name),

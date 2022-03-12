@@ -16,4 +16,8 @@ return {
     fuelMsg = "Fuel: %.1f hours",
     waterMsg = "Water: %d/%d %s| Heat: %d/100",
     dirtyBrackets = "(Dirty) ", -- don't forget the space at the end
+
+
+    --DisabledTooltips
+    noContainersToFill = "You have no containers to fill"
 }

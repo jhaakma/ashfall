@@ -2,10 +2,12 @@
 local common = require ("mer.ashfall.common.common")
 return {
     dropText = function(campfire, item, data)
-        if itemData and itemData.data.teaProgress and itemData.data.teaProgress > 0 then
-            return "Heat Tea"
-        else
-            return "Heat Water"
+        if campfire.data.isLit then
+            if itemData and itemData.data.teaProgress and itemData.data.teaProgress > 0 then
+                return "Heat Tea"
+            else
+                return "Heat Water"
+            end
         end
     end,
     canDrop = function(ref, item, itemData)
@@ -19,11 +21,6 @@ return {
         and itemData.data.waterAmount > 0
         if not hasWater then
             return false
-        end
-
-        local isLit = ref.data.isLit
-        if not isLit then
-            return false, "Campfire is not lit."
         end
 
         return true

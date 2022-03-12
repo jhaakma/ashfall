@@ -1,11 +1,10 @@
 local common = require("mer.ashfall.common.common")
-local config = require("mer.ashfall.config.config").config
 local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 local teaConfig = common.staticConfigs.teaConfig
-local hungerController = require('mer.ashfall.needs.hungerController')
 local thirstController = require('mer.ashfall.needs.thirstController')
 local foodConfig = common.staticConfigs.foodConfig
 local itemTooltips = require("mer.ashfall.ui.itemTooltips")
+local LiquidContainer = require("mer.ashfall.objects.LiquidContainer")
 
 local function updateFoodTile(e)
     if foodConfig.getGrillValues(e.item) then
@@ -46,53 +45,54 @@ end
 
 local function updateWaterTile(e)
    --bottles show water amount
-   local bottleData = thirstController.getBottleData(e.item.id)
-   if bottleData then
-       local liquidLevel = e.itemData and e.itemData.data.waterAmount or 0
-       local capacity = bottleData.capacity
-       local maxHeight = 32 * math.max(0.33, capacity / common.staticConfigs.capacities.MAX)
+   local liquidContainer = LiquidContainer.createFromInventory(e.item, e.itemData)
+   if liquidContainer then
 
-       local indicatorBlock = e.element:createThinBorder()
-       indicatorBlock.consumeMouseEvents = false
-       indicatorBlock.absolutePosAlignX = 0.1
-       indicatorBlock.absolutePosAlignY = 1.0
-       indicatorBlock.width = 8
-       indicatorBlock.height = maxHeight
-       indicatorBlock.paddingAllSides = 2
+        common.log:trace("Updating bottle data tile")
+        local maxHeight = 32 * math.max(0.33, liquidContainer.capacity / common.staticConfigs.capacities.MAX)
 
-       local levelIndicator = indicatorBlock:createImage({ path = "textures/menu_bar_blue.dds" })
+        local indicatorBlock = e.element:createThinBorder()
+        indicatorBlock.consumeMouseEvents = false
+        indicatorBlock.absolutePosAlignX = 0.1
+        indicatorBlock.absolutePosAlignY = 1.0
+        indicatorBlock.width = 8
+        indicatorBlock.height = maxHeight
+        indicatorBlock.paddingAllSides = 2
 
-       --Add brown tinge to dirty water
-       if e.itemData then
-           if e.itemData.data.waterType == "dirty" then
-               levelIndicator.color = { 0.8, 0.6, 0.5 }
-           elseif teaConfig.teaTypes[e.itemData.data.waterType] then
-               levelIndicator.color = teaConfig.tooltipColor
-           elseif e.itemData.data.stewLevels then
-               levelIndicator.color = { 0.9, 0.7, 0.4 }
-           end
-           --Make the icon more red if it's hot
-           if e.itemData.data.waterHeat and e.itemData.data.waterHeat > common.staticConfigs.hotWaterHeatValue then
-               indicatorBlock.color = {1, 0, 0}
-           end
-       end
+        local levelIndicator = indicatorBlock:createImage({ path = "textures/menu_bar_blue.dds" })
 
-       levelIndicator.consumeMouseEvents = false
-       levelIndicator.width = 6
-       levelIndicator.height = maxHeight * (liquidLevel / capacity )
-       levelIndicator.scaleMode = true
-       levelIndicator.absolutePosAlignY = 1.0
+        --Add brown tinge to dirty water
+        local colors = {
+            dirty = { 0.7, 0.7, 0.5 },
+            tea = teaConfig.tooltipColor,
+            stew =  { 1.0, 0.8, 0.4 }
+        }
+
+        local liquidType = liquidContainer:getLiquidType()
+        local color = colors[liquidType]
+        if color then
+            levelIndicator.color = color
+        end
+
+        levelIndicator.consumeMouseEvents = false
+        levelIndicator.width = 6
+        levelIndicator.height = maxHeight * (liquidContainer.waterAmount / liquidContainer.capacity )
+        levelIndicator.scaleMode = true
+        levelIndicator.absolutePosAlignY = 1.0
    end
 end
 
 --Adds fillbar showing how much water is left in a bottle.
 --Height of fillbar border based on capacity of bottle.
 local function updateFoodAndWaterTile(e)
-    if not common.data then return end
-    updateFoodTile(e)
-    updateWaterTile(e)
+        if not common.data then
+            return
+        end
+        updateFoodTile(e)
+        updateWaterTile(e)
 end
 event.register( "itemTileUpdated", updateFoodAndWaterTile )
+
 
 local function onMenuInventorySelectMenu(e)
     local scrollpane = e.menu:findChild(tes3ui.registerID("MenuInventorySelect_scrollpane"))
@@ -124,11 +124,10 @@ local function onMenuInventorySelectMenu(e)
         -- end
 
     end
-    --timer.frame.delayOneFrame(function()
-        e.menu:updateLayout()
-    --end)
+    e.menu:updateLayout()
+
 end
-event.register("menuEnter", onMenuInventorySelectMenu, { filter = "MenuInventorySelect"})
+event.register("menuEnter", onMenuInventorySelectMenu, { priority = -10, filter = "MenuInventorySelect"})
 
 local function createNeedsTooltip(e)
     local tooltip = e.tooltip

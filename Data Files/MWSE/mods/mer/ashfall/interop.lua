@@ -142,6 +142,7 @@ local function registerWaterContainers(e)
                 value = data.value,
                 holdsStew = data.holdsStew
             }
+            staticConfigs.activatorConfig.list.waterContainer:addId(id)
             common.log:debug("    %s: { capacity: %d%s%s%s }",
                 id,
                 data.capacity,
@@ -152,6 +153,7 @@ local function registerWaterContainers(e)
         elseif type(data) == "number" then
             --Number for just setting a capacity
             staticConfigs.bottleList[id] = { capacity = data }
+            staticConfigs.activatorConfig.list.waterContainer:addId(id)
             common.log:debug("    %s: { capacity: %s }", id, data)
         elseif type(data) == "string" then
             --String for using existing bottle type
@@ -170,7 +172,7 @@ local function registerWaterContainers(e)
                 value = includeOverrides and thisBottleConfig.value or nil,
                 weight = includeOverrides and thisBottleConfig.weight or nil,
             }
-
+            staticConfigs.activatorConfig.list.waterContainer:addId(id)
             local finalConfig = staticConfigs.bottleList[id]
             common.log:debug("    %s: { capacity: %d%s%s }",
                 id,

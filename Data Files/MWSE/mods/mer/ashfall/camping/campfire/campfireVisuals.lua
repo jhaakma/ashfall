@@ -7,74 +7,74 @@ local referenceController = require("mer.ashfall.referenceController")
 ]]
 local switchNodeValues = {
     SWITCH_BASE = function(campfire)
-        local state = { OFF = 0, LIT = 1, UNLIT = 2 }
-        return campfire.data.isLit and state.LIT or state.UNLIT
+        local isCold = campfire.data.hasColdFlame
+        local isLit = campfire.data.isLit
+        if not isLit then
+            return "UNLIT"
+        else
+            return isCold and "COLD" or "LIT"
+        end
     end,
     SWITCH_FIRE = function(campfire)
-        local state = { OFF = 0, LIT = 1, UNLIT = 2 }
-        return campfire.data.isLit and state.LIT or state.UNLIT
+        local isLit = campfire.data.isLit
+        local isCold = campfire.data.hasColdFlame
+        if not isLit then
+            return "UNLIT"
+        else
+            return isCold and "COLD" or "LIT"
+        end
     end,
     SWITCH_CANDLELIGHT = function(campfire)
-        local state = { OFF = 0, LIT = 1, UNLIT = 2 }
-        return campfire.data.isLit and state.LIT or state.UNLIT
+        return campfire.data.isLit and "LIT" or "UNLIT"
     end,
     SWITCH_WOOD = function(campfire)
-        local state = { OFF = 0, UNBURNED = 1, BURNED = 2 }
-        if campfire.data.fuelLevel and campfire.data.fuelLevel > 0 then
-            return campfire.data.burned and state.BURNED or state.UNBURNED
+        if campfire.data.fuelLevel and campfire.data.fuelLevel ~= 0 then
+            return campfire.data.burned and "BURNED" or "UNBURNED"
         else
-            return state.OFF
+            return "OFF"
         end
     end,
     SWITCH_SUPPORTS = function(campfire)
-        local state = { OFF = 0, ON = 1 }
-        return campfire.data.supportsId and state.ON or state.OFF
+
+        return campfire.data.supportsId and "ON" or "OFF"
     end,
     SWITCH_GRILL = function(campfire)
-        local state = { OFF = 0, ON = 1 }
-        return campfire.data.hasGrill and state.ON or state.OFF
+        return campfire.data.hasGrill and "ON" or "OFF"
     end,
     SWITCH_COOKING_POT = function(campfire)
-        local state = { OFF = 0, ON = 1 }
-        return campfire.data.utensil == "cookingPot" and state.ON or state.OFF
+        return campfire.data.utensil == "cookingPot" and "ON" or "OFF"
     end,
     SWITCH_LADLE = function(campfire)
-        local state = { OFF = 0, ON = 1 }
-        return campfire.data.ladle == true and state.ON or state.OFF
+        return campfire.data.ladle == true and "ON" or "OFF"
     end,
     SWITCH_KETTLE = function(campfire)
-        local state = { OFF = 0, ON = 1 }
-        return campfire.data.utensil == "kettle" and state.ON or state.OFF
+        return campfire.data.utensil == "kettle" and "ON" or "OFF"
     end,
     SWITCH_POT_STEAM = function(campfire)
-        local state = { OFF = 0, ON = 1 }
-        if campfire.data.utensil and campfire.data.utensil ~= "cookingPot" then return state.OFF end
+        if campfire.data.utensil and campfire.data.utensil ~= "cookingPot" then return "OFF" end
         local showSteam = (
             campfire.data.waterHeat and
             campfire.data.waterHeat >= common.staticConfigs.hotWaterHeatValue
         )
-        return showSteam and state.ON or state.OFF
+        return showSteam and "ON" or "OFF"
     end,
     SWITCH_KETTLE_STEAM = function(campfire)
-        local state = { OFF = 0, ON = 1 }
-        if campfire.data.utensil and campfire.data.utensil ~= "kettle" then return state.OFF end
+        if campfire.data.utensil and campfire.data.utensil ~= "kettle" then return "OFF" end
         local showSteam = (
             campfire.data.waterHeat and
             campfire.data.waterHeat >= common.staticConfigs.hotWaterHeatValue
         )
-        return showSteam and state.ON or state.OFF
+        return showSteam and "ON" or "OFF"
     end,
     SWITCH_STEW = function(campfire)
-        local state = { OFF = 0, WATER = 1, STEW = 2}
-        if campfire.data.utensil and campfire.data.utensil ~= "cookingPot" then return state.OFF end
-        return campfire.data.stewLevels and state.STEW or state.WATER
+        if campfire.data.utensil and campfire.data.utensil ~= "cookingPot" then return "OFF" end
+        return campfire.data.stewLevels and "STEW" or "WATER"
     end,
     SWITCH_TEA = function(campfire)
         common.log:debug("Found tea switch")
-        local state = { OFF = 0, WATER = 1, TEA = 2 }
         local hasTea = campfire.data.waterType ~= nil
             and campfire.data.waterType ~= "dirty"
-        local thisState = hasTea and state.TEA or state.WATER
+        local thisState = hasTea and "TEA" or "WATER"
         common.log:debug("Tea switch state: " .. thisState)
         return thisState
     end,
@@ -92,24 +92,33 @@ local supportMapping = {
     }
 }
 
+local function getChildIndexByName(collection, name)
+	for i, child in ipairs(collection) do
+		if (child and child.name and child.name:lower() == name:lower()) then
+			return i - 1
+		end
+	end
+end
+
 --Iterate over switch nodes and update them based on the current state of the campfire
 local function updateSwitchNodes(campfire)
     local sceneNode = campfire.sceneNode
     local switchNode
-
     if campfire.data and campfire.data.destroyed then
         for nodeName, _ in pairs(switchNodeValues) do
             switchNode = sceneNode:getObjectByName(nodeName)
             if switchNode then
-                switchNode.switchIndex = 0
+                local offIndex = getChildIndexByName(switchNode.children, "OFF")
+                switchNode.switchIndex = offIndex or 0
             end
         end
     else
-        for nodeName, getIndex in pairs(switchNodeValues) do
+        for nodeName, childNameCallback in pairs(switchNodeValues) do
             switchNode = sceneNode:getObjectByName(nodeName)
             if switchNode then
-                local index = getIndex(campfire)
-                switchNode.switchIndex = index
+                local childName = childNameCallback(campfire)
+                local childIndex = getChildIndexByName(switchNode.children, childName)
+                switchNode.switchIndex = childIndex or 0
             end
         end
     end
@@ -122,7 +131,7 @@ local function updateLightingRadius(campfire)
         if not campfire.data.isLit then
             campfire.light:setAttenuationForRadius(0)
         else
-            local heatLevel = CampfireUtil.getHeat(campfire)
+            local heatLevel = math.abs(CampfireUtil.getHeat(campfire))
             local newRadius = math.clamp( ( heatLevel / 10 ), 0.1, 1) * radius
             campfire.light:setAttenuationForRadius(newRadius)
         end
@@ -131,11 +140,14 @@ end
 
 --As fuel levels change, update the size of the flame
 local function updateFireScale(campfire)
-    local fireNode = campfire.sceneNode:getObjectByName("FIRE_PARTICLE_NODE")
-    if fireNode then
-        local fuelLevel = CampfireUtil.getHeat(campfire)
-        local multiplier = 1 + ( fuelLevel * 0.05 )
-        multiplier = math.clamp( multiplier, 0.5, 1.5)
+    local fireNodes = {
+        campfire.sceneNode:getObjectByName("FIRE_PARTICLE_NODE"),
+        campfire.sceneNode:getObjectByName("COLD_PARTICLE_NODE"),
+    }
+    for _, fireNode in ipairs(fireNodes) do
+        local fuelLevel = math.abs(CampfireUtil.getHeat(campfire))
+        local multiplier = 1 + ( fuelLevel * 0.1 )
+        multiplier = math.clamp( multiplier, 1.0, 10.0)
         fireNode.scale = multiplier
     end
 end

@@ -8,11 +8,12 @@ local interruptText = ""
 local isUsingBed
 local mustWait
 local werewolfSleepMulti = 0.6
-local bedTempMulti = 0.8
 
 local temperatureController = require("mer.ashfall.temperatureController")
 --temperatureController.registerInternalHeatSource({ id = "bedTemp", coldOnly = true })
 temperatureController.registerBaseTempMultiplier{ id = "bedTempMulti"}
+temperatureController.registerExternalHeatSource{ id = "bedWarmth" }
+
 
 local conditionConfig = common.staticConfigs.conditionConfig
 local coldRestLimit = conditionConfig.temp.states.veryCold.min
@@ -21,10 +22,21 @@ local hunger = conditionConfig.hunger
 local thirst = conditionConfig.thirst
 local tiredness = conditionConfig.tiredness
 
+
 local function setBedTemp(e)
     common.data.usingBed = e.isUsingBed
     common.log:debug("===========================Checking Bed Temp: %s", common.data.usingBed)
-    common.data.bedTempMulti = common.data.usingBed and bedTempMulti or 1.0
+    local bedData = common.data.currentBedData
+    if e.isUsingBed and bedData then
+        common.log:debug("Setting bedTempMulti: %s", bedData.tempMulti)
+        common.data.bedTempMulti = bedData.tempMulti
+        common.log:debug("Setting bedWarmth: %s", bedData.warmth)
+        common.data.bedWarmth = bedData.warmth
+    else
+        common.log:debug("Not using a bed, setting default")
+        common.data.bedTempMulti = 1.0
+        common.data.bedWarmth = 0
+    end
 end
 event.register("Ashfall:SetBedTemp", setBedTemp)
 
@@ -61,6 +73,7 @@ local function checkStatsMax()
 end
 
 
+---@param e uiShowRestMenuEventData
 local function setRestValues(e)
     if not common.data then return end
     --scripted means the player has activated a bed or bedroll
@@ -72,7 +85,8 @@ local function setRestValues(e)
     local restText = ( e.allowRest ) and "rest" or "wait"
 
     interruptText = string.format("It is too %s to %s, you must find shelter!", tempText, restText)
-
+    event.trigger("Ashfall:CheckForShelter")
+    event.trigger("Ashfall:UpdateHud")
 end
 event.register("uiShowRestMenu", setRestValues )
 
@@ -85,9 +99,6 @@ local function activateRestMenu (e)
 
     if isUsingBed then
         --manually update tempLimit so you can see what it will be with the bedTemp added
-
-        --common.data.bedTemp = bedWarmth
-        common.data.bedTempMulti = bedTempMulti
         --common.data.tempLimit = common.data.tempLimit + bedWarmth
         event.trigger("Ashfall:updateTemperature", { source = "activateRestMenu"})
         common.log:debug("Is Scripted: adding warmth")
@@ -134,7 +145,6 @@ local function activateRestMenu (e)
         common.log:debug("Resting until healed = true")
         common.data.restingUntilHealed = true
     end)
-
 
     needsUI.addNeedsBlockToMenu(e, "tiredness")
     restMenu:updateLayout()

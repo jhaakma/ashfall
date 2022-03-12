@@ -40,9 +40,10 @@ local function createRatingsUI()
         local coverageText = "Coverage: "
         outerBlock:createLabel({ id = tes3ui.registerID("Ashfall:CoverageRating"), text = "" })
         inventoryMenu:updateLayout()
+        this.updateRatingsUI()
     end
 end
-event.register("uiCreated", createRatingsUI, { filter = "MenuInventory" } )
+event.register("menuEnter", createRatingsUI )
 
 --[[
     Update the warmth/coverage ratings in character box
@@ -53,6 +54,7 @@ function this.updateRatingsUI()
     local inventoryMenu = tes3ui.findMenu(tes3ui.registerID("MenuInventory"))
     if inventoryMenu then
         local warmthLabel = inventoryMenu:findChild(tes3ui.registerID("Ashfall:WarmthRating"))
+        if not warmthLabel then return end
         local warmthValue = ratingsCommon.getAdjustedWarmth(common.data.warmthRating)
         warmthLabel.text = string.format("Warmth: %d    " , warmthValue)
 

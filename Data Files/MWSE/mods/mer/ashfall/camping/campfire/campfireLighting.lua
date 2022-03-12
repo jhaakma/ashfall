@@ -112,6 +112,7 @@ local function extinguish(e)
     end
     campfire.data.isLit = false
     campfire.data.burned = true
+    campfire.data.hasColdFlame = nil
     if campfire.data.fuelLevel then
         --Reduce fuel level by 0.5, min of 0
         campfire.data.fuelLevel = math.max(0, campfire.data.fuelLevel - 0.5)

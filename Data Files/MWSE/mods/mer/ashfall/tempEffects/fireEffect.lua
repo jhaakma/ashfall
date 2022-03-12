@@ -14,15 +14,15 @@ local refController = require("mer.ashfall.referenceController")
 --max distance where fire has an effect
 
 local fireValues = {
-    light_6th_brazier = 18,
+    light_6th_brazier = 10,
     lantern = 3,
     lamp = 1,
     candle = 1,
     chandelier = 1,
     sconce = 5,
-    torch = 12,
-    fire = 18,
-    flame = 20,
+    torch = 5,
+    fire = 10,
+    flame = 10,
     mc_campfire = 18,
     mc_logfire = 18,
 }
@@ -132,12 +132,17 @@ function this.calculateFireEffect()
             --For survival skill
             common.data.nearCampfire = true
             local fuel = CampfireUtil.getHeat(ref)
+            local isNegativeHeat = fuel < 0
+            fuel = math.abs(fuel)
             local heatAtMaxDistance = math.clamp(math.remap(fuel, 0, 10, 0, 60), 0, 60)
             checkWarmHands()
             if warmingHands then
                 heatAtMaxDistance = heatAtMaxDistance * warmHandsBonus
             end
             local heatAtThisDistance = getHeatAtDistance(heatAtMaxDistance, distance)
+            if isNegativeHeat then
+                heatAtThisDistance = -heatAtThisDistance
+            end
             totalHeat = totalHeat + heatAtThisDistance
 
             closeEnough = true

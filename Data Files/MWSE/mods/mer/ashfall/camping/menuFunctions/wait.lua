@@ -1,4 +1,4 @@
-local animCtrl = require("mer.ashfall.effects.animationController")
+local animCtrl = require("mer.ashfall.animation.animationController")
 local config = require("mer.ashfall.config.config").config
 return {
     text = "Sit Down",

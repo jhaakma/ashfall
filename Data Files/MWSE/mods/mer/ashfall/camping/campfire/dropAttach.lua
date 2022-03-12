@@ -4,10 +4,6 @@
 ]]
 local CampfireUtil = require "mer.ashfall.camping.campfire.CampfireUtil"
 local activatorController = require "mer.ashfall.activators.activatorController"
-local LiquidContainer = require "mer.ashfall.objects.LiquidContainer"
-local dropTea = require("mer.ashfall.camping.dropConfigs.tea")
-local dropIngredient = require("mer.ashfall.camping.dropConfigs.ingredient")
-local dropLadle = require("mer.ashfall.camping.dropConfigs.ladle")
 local common = require("mer.ashfall.common.common")
 
 local function onDrop(e)

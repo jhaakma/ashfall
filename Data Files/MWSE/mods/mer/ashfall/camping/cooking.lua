@@ -1,4 +1,5 @@
 local common = require ("mer.ashfall.common.common")
+local LiquidContainer = require("mer.ashfall.objects.LiquidContainer")
 local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 local foodConfig = common.staticConfigs.foodConfig
 local hungerController = require("mer.ashfall.needs.hungerController")
@@ -12,7 +13,7 @@ local patinaController = require("mer.ashfall.camping.patinaController")
 
 --How much fuel level affects grill cook speed
 local function calculateCookMultiplier(heatLevel)
-    return 350 * math.min(math.remap(heatLevel, 0, 10, 0.5, 2.5), 2.5)
+    return 350 * math.min(math.remap(heatLevel, 0, 10, 0, 2.5), 2.5)
 end
 
 --How much ingredient weight affects grill cook speed
@@ -30,9 +31,11 @@ local function startCookingIngredient(ingredient, timestamp)
 
     --If you placed a stack, return all but one to the player
     if common.helper.isStack(ingredient) then
+        common.log:debug("Returning grill food stack to player")
         local count = ingredient.attachments.variables.count
         mwscript.addItem{ reference = tes3.player, item = ingredient.object, count = (count - 1) }
         ingredient.attachments.variables.count = 1
+        tes3ui.forcePlayerInventoryUpdate()
     else
         --only check data for non-stack I guess?
         if ingredient.data.grillState == "burnt" then
@@ -124,9 +127,14 @@ local function grillFoodItem(ingredReference, timestamp)
                 addGrillPatina(campfire, difference)
                 ingredReference.data.lastCookUpdated = timestamp
 
-                local thisCookMulti = calculateCookMultiplier(CampfireUtil.getHeat(campfire))
+                local heat = math.max(0, CampfireUtil.getHeat(campfire))
+                common.log:debug("Cooking heat: %s", heat)
+                local thisCookMulti = calculateCookMultiplier(heat)
+                common.log:debug("Cooking multiplier: %s", thisCookMulti)
                 local weightMulti = calculateCookWeightModifier(ingredReference.object)
-                ingredReference.data.cookedAmount = ingredReference.data.cookedAmount + ( difference * thisCookMulti * weightMulti)
+                local thisCookedAmount = difference * thisCookMulti * weightMulti
+                common.log:debug("Cooked amount: %s", thisCookedAmount)
+                ingredReference.data.cookedAmount = ingredReference.data.cookedAmount + thisCookedAmount
                 local cookedAmount = ingredReference.data.cookedAmount
 
                 local burnLimit = hungerController.getBurnLimit()
@@ -247,34 +255,20 @@ local function foodPlaced(e)
                         doAddingredToStew(campfire, e.reference)
                     end
                 end
-            elseif foodConfig.getGrillValues(e.reference.object) and not common.helper.isStack(e.reference) then
+            elseif foodConfig.getGrillValues(e.reference.object) then
                 local timestamp = tes3.getSimulationTimestamp()
                 local ingredReference = e.reference
-                --Reset grill time for meat and veges
-                ingredReference.data.preventBurning = nil
-                resetCookingTime(ingredReference)
+                if ingredReference.data then
+                    --Reset grill time for meat and veges
+                    ingredReference.data.preventBurning = nil
+                    resetCookingTime(ingredReference)
+                end
                 grillFoodItem(ingredReference, timestamp)
             end
         end)
     end
 end
 event.register("referenceSceneNodeCreated" , foodPlaced)
-
-
-local function clearWaterData(e)
-    e.data.waterType = nil
-    e.data.waterAmount = nil
-    e.data.stewLevels = nil
-    e.data.stewProgress = nil
-    e.data.teaProgress = nil
-    e.data.stewBuffs = nil
-    e.data.waterHeat = nil
-    e.data.lastWaterUpdated = nil
-    e.data.lastBrewUpdated = nil
-    e.data.lastStewUpdated = nil
-    e.data.lastWaterHeatUpdated = nil
-end
-event.register("Ashfall:Campfire_clear_water_data", clearWaterData)
 
 local function clearUtensilData(e)
     e.utensil = nil
@@ -290,7 +284,7 @@ local function clearCampfireUtensilData(e)
 
     common.log:debug("Clearing Utensil Data")
     local campfire = e.campfire
-    clearWaterData{data = campfire.data}
+    LiquidContainer.createFromReference(campfire):clearData()
 
     if e.removeUtensil then
         clearUtensilData(campfire.data)

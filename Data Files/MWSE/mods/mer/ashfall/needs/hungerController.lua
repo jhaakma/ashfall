@@ -26,7 +26,7 @@ function this.getBurnLimit()
         return 150
     end
 
-    local burnLimit = math.remap(survival, common.skillStartValue, 100, 120, 160)
+    local burnLimit = math.remap(survival, 10, 100, 120, 160)
     return burnLimit
 end
 
@@ -43,7 +43,7 @@ function this.getNutrition(object, itemData)
         local survival = common.skills.survival.value
         local survivalEffect = math.remap(
             survival,
-            common.skillStartValue, 100,
+            10, 100,
             foodData.grillValues.min, foodData.grillValues.max
         )
 

@@ -3,6 +3,7 @@
 ]]
 local common = require ("mer.ashfall.common.common")
 local teaConfig = common.staticConfigs.teaConfig
+local LiquidContainer = require("mer.ashfall.objects.LiquidContainer")
 --Tea resist
 local temperatureController = require("mer.ashfall.temperatureController")
 temperatureController.registerBaseTempMultiplier({ id = "firePetalTeaEffect", coldOnly = true })
@@ -118,31 +119,32 @@ end
 event.register("Ashfall:DrinkTea", onDrinkTea)
 
 local function updateBrewers(e)
-    local function doUpdate(brewerRef)
-        brewerRef.data.lastBrewUpdated = brewerRef.data.lastBrewUpdated or e.timestamp
-        local difference = e.timestamp - brewerRef.data.lastBrewUpdated
+    local function doUpdate(brewerRef_)
+        ---@type AshfallLiquidContainer
+        local liquidContainer = LiquidContainer.createFromReference(brewerRef_)
+        liquidContainer.data.lastBrewUpdated = liquidContainer.data.lastBrewUpdated or e.timestamp
+        local difference = e.timestamp - liquidContainer.data.lastBrewUpdated
 
         if difference < 0 then
-            common.log:error("BREWER brewerRef.data.lastBrewUpdated(%.4f) is ahead of e.timestamp(%.4f).",
-                brewerRef.data.lastBrewUpdated, e.timestamp)
+            common.log:error("BREWER liquidContainer.data.lastBrewUpdated(%.4f) is ahead of e.timestamp(%.4f).",
+                liquidContainer.data.lastBrewUpdated, e.timestamp)
             --something fucky happened
-            brewerRef.data.lastBrewUpdated = e.timestamp
+            liquidContainer.data.lastBrewUpdated = e.timestamp
         end
 
         if difference > BREWER_UPDATE_INTERVAL then
-            brewerRef.data.lastBrewUpdated = e.timestamp
-            local hasWater = brewerRef.data.waterAmount and brewerRef.data.waterAmount > 0
+            liquidContainer.lastBrewUpdated = e.timestamp
+            local hasWater = liquidContainer.waterAmount and liquidContainer.waterAmount > 0
             if hasWater then
-                brewerRef.data.waterHeat =  brewerRef.data.waterHeat  or 0
-                local waterIsBoiling = brewerRef.data.waterHeat >= common.staticConfigs.hotWaterHeatValue
-                local hasTea = teaConfig.teaTypes[brewerRef.data.waterType]
+                liquidContainer.waterHeat =  liquidContainer.waterHeat  or 0
+                local waterIsBoiling = liquidContainer.waterHeat >= common.staticConfigs.hotWaterHeatValue
+                local hasTea = liquidContainer:getLiquidType() == "tea"
                 if waterIsBoiling and hasTea then
                     --Brew the Tea
-                    brewerRef.data.teaProgress = brewerRef.data.teaProgress or 0
-                    local waterHeatEffect = common.helper.calculateWaterHeatEffect(brewerRef.data.waterHeat)
-                    brewerRef.data.teaProgress = math.clamp((brewerRef.data.teaProgress + ( difference * brewRate * waterHeatEffect )), 0, 100)
+                    local waterHeatEffect = common.helper.calculateWaterHeatEffect(liquidContainer.waterHeat)
+                    liquidContainer.teaProgress = math.clamp((liquidContainer.teaProgress + ( difference * brewRate * waterHeatEffect )), 0, 100)
                 else
-                    brewerRef.data.lastBrewUpdated = nil
+                    liquidContainer.data.lastBrewUpdated = nil
                 end
             end
         end

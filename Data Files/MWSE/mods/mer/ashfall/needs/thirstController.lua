@@ -21,7 +21,7 @@ function this.handleEmpties(data)
     common.log:trace("handleEmpties")
     if data.waterAmount and data.waterAmount < 1 then
         common.log:debug("handleEmpties: waterAmount < 1, clearing water data")
-        event.trigger("Ashfall:Campfire_clear_water_data", {data = data})
+        LiquidContainer.createFromData(data):clearData()
         --restack / remove sound
         tes3ui.updateInventoryTiles()
     end
@@ -77,8 +77,8 @@ function this.getBottleData(id)
     return common.staticConfigs.bottleList[id and string.lower(id)]
 end
 
-
-function this.playerHasEmpties()
+function this.playerHasEmpties(source)
+    source = source or LiquidContainer.createInfiniteWaterSource()
     for stack in tes3.iterate(tes3.player.object.inventory.iterator) do
         local bottleData = this.getBottleData(stack.object.id)
         if bottleData then
@@ -91,23 +91,8 @@ function this.playerHasEmpties()
                 end
 
                 for _, itemData in pairs(stack.variables) do
-                    if itemData then
-                        common.log:trace("itemData: %s", itemData)
-                        common.log:trace("waterAmount: %s", itemData and itemData.data.waterAmount )
-                        if itemData.data.waterAmount then
-                            if itemData.data.waterAmount < bottleData.capacity then
-                                if not itemData.data.stewLevels and not itemData.data.waterType then
-                                    --at least one bottle can be filled
-                                    common.log:trace("below capacity")
-                                    return true
-                                end
-                            end
-                        else
-                            --no itemData means empty bottle
-                            common.log:trace("no waterAmount")
-                            return true
-                        end
-                    end
+                    local target = LiquidContainer.createFromInventory(stack.object, itemData)
+                    if source:canTransfer(target) then return true end
                 end
             else
                 --no itemData means empty bottle
@@ -219,7 +204,7 @@ function this.fillContainer(params)
     local source = params.source or LiquidContainer.createInfiniteWaterSource()
     local callback = params.callback
     timer.delayOneFrame(function()
-        local noResultsText =  "You have no containers to fill."
+        local noResultsText =  common.messages.noContainersToFill
         tes3ui.showInventorySelectMenu{
             title = "Select Water Container",
             noResultsText = noResultsText,
@@ -229,11 +214,17 @@ function this.fillContainer(params)
             end,
             callback = function(e)
                 if e.item then
+                    local to = LiquidContainer.createFromInventory(e.item, e.itemData)
                     this.callWaterMenuAction(function()
                         if not e.itemData then
                             e.itemData = tes3.addItemData{ item = e.item, to = tes3.player, updateGUI = true}
                         end
-                        local to = LiquidContainer.createFromInventory(e.item, e.itemData)
+
+                        --Empty dirty water first if filling from infinite water source
+                        if source:isInfinite() and to:getLiquidType() == "dirty" then
+                            common.log:debug("Removing dirty water when filling from infinite clean source")
+                            e.itemData.data.waterType = nil
+                        end
                         source:transferLiquid(to)
                         --add callback
                         if callback then callback() end

@@ -5,6 +5,7 @@ local function populateButtons(e)
     local menu = e.menu
     local startIndex = e.startIndex
     local endIndex = e.endIndex
+    local callbackParams = e.callbackParams
 
     buttonsBlock:destroyChildren()
 
@@ -34,7 +35,7 @@ local function populateButtons(e)
             else
                 button:register( "mouseClick", function()
                     if data.callback then
-                        data.callback()
+                        data.callback(callbackParams)
                     end
                     tes3ui.leaveMenuMode()
                     menu:destroy()
@@ -87,8 +88,6 @@ end
 
 --- @param params AshfallMessageBoxData
 local function messageBox(params)
-
-
     --create menu
     local menu = tes3ui.createMenu{ id = messageBoxId, fixedFrame = true }
     menu:getContentElement().maxWidth = 400
@@ -123,7 +122,16 @@ local function messageBox(params)
     local buttons = params.buttons
     local maxButtonsPerColumn = params.maxButtons or 30
     local startIndex, endIndex = 1, maxButtonsPerColumn
-    populateButtons{ buttons= buttons, menu = menu, buttonsBlock = buttonsBlock, startIndex = startIndex, endIndex = endIndex}
+    local callbackParams = params.callbackParams
+
+    populateButtons{
+        buttons= buttons,
+        menu = menu,
+        buttonsBlock = buttonsBlock,
+        startIndex = startIndex,
+        endIndex = endIndex,
+        callbackParams = callbackParams
+    }
 
     --add next/previous buttons
     if #buttons > maxButtonsPerColumn then
@@ -150,7 +158,14 @@ local function messageBox(params)
                 enable(nextButton)
             end
 
-            populateButtons{ buttons= buttons, menu = menu, buttonsBlock = buttonsBlock, startIndex = startIndex, endIndex = endIndex}
+            populateButtons{
+        buttons= buttons,
+        menu = menu,
+        buttonsBlock = buttonsBlock,
+        startIndex = startIndex,
+        endIndex = endIndex,
+        callbackParams = callbackParams
+    }
         end)
 
         nextButton:register("mouseClick", function()
@@ -166,7 +181,14 @@ local function messageBox(params)
                 disable(nextButton)
             end
 
-            populateButtons{ buttons= buttons, menu = menu, buttonsBlock = buttonsBlock, startIndex = startIndex, endIndex = endIndex}
+            populateButtons{
+        buttons= buttons,
+        menu = menu,
+        buttonsBlock = buttonsBlock,
+        startIndex = startIndex,
+        endIndex = endIndex,
+        callbackParams = callbackParams
+    }
         end)
     end
 
@@ -175,11 +197,11 @@ local function messageBox(params)
         local buttonId = tes3ui.registerID("CustomMessageBox_CancelButton")
         local cancelButton = menu:createButton{ id = buttonId, text = tes3.findGMST(tes3.gmst.sCancel).value }
         cancelButton:register( "mouseClick", function()
+            if params.cancelCallback then
+                params.cancelCallback(callbackParams)
+            end
             tes3ui.leaveMenuMode()
             menu:destroy()
-            if params.cancelCallback then
-                timer.frame.delayOneFrame(params.cancelCallback)
-            end
         end)
     end
     menu:updateLayout()

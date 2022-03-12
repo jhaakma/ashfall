@@ -97,7 +97,7 @@ function this.checkRefSheltered(reference)
         position = {
             reference.position.x,
             reference.position.y,
-            reference.position.z + height
+            reference.position.z + (height/2)
         },
         direction = {0, 0, 1},
         findAll = true,
@@ -170,7 +170,11 @@ function this.movePlayer(e)
         tes3.positionCell{
             reference = tes3.player,
             position = e.position,
-            orientation = orientation,
+            orientation = {
+                0,
+                0,
+                orientation.z
+            },
             cell = e.cell,
             teleportCompanions = false
         }
@@ -178,6 +182,7 @@ function this.movePlayer(e)
         tes3.player.position = e.position
         tes3.player.orientation = orientation
     end
+
 end
 
 function this.isStack(reference)
@@ -308,6 +313,11 @@ function this.getCollisionNode(rootNode)
             return node
         end
     end
+end
+
+function this.togglePlayerCollision(collisionState)
+    tes3.mobilePlayer.mobToMobCollision = collisionState
+    tes3.mobilePlayer.movementCollision = collisionState
 end
 
 --[[

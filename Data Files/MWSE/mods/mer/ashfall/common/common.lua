@@ -17,6 +17,13 @@ this.log = logger.new{
     logLevel = logLevel,
 }
 
+this.createLogger = function(serviceName)
+    return logger.new{
+        name = string.format("Ashfall - %s", serviceName),
+        logLevel = logLevel
+    }
+end
+
 function this.loadMesh(mesh)
     local useCache = not config.debugMode
     return tes3.loadMesh(mesh, useCache):clone()
@@ -45,7 +52,6 @@ end
 local skillModule = include("OtherSkills.skillModule")
 this.skills = {}
 --INITIALISE SKILLS--
-this.skillStartValue = 10
 local function onSkillsReady()
     if not skillModule then
         timer.start({
@@ -68,24 +74,35 @@ local function onSkillsReady()
         })
     end
 
-    skillModule.registerSkill(
-        "Ashfall:Survival",
-        {
+    local skills = {
+        survival = {
+            id = "Ashfall:Survival",
             name = "Survival",
             icon = "Icons/ashfall/survival.dds",
-            value = this.skillStartValue,
+            value = 10,
             attribute = tes3.attribute.endurance,
             description = "The Survival skill determines your ability to deal with harsh weather conditions and perform actions such as creating campfires effectively and cooking food with them. A higher survival skill also reduces the chance of getting food poisoning or dysentery from drinking dirty water.",
             specialization = tes3.specialization.stealth
+        },
+        bushcrafting = {
+            id = "Bushcrafting",
+            name = "Bushcrafting",
+            icon = "Icons/ashfall/bushcrafting.dds",
+            value = 10,
+            attribute = tes3.attribute.intelligence,
+            description = "The Bushcrafting skill determines your ability to craft items from materials gathered in the wilderness. A higher bushcrafting skill unlocks more crafting recipes.",
+            specialization = tes3.specialization.combat
         }
-    )
-
-    this.skills.survival = skillModule.getSkill("Ashfall:Survival")
-    --this.skills.cooking = skillModule.getSkill("Ashfall:Cooking")
-
+    }
+    for skill, data in pairs(skills) do
+        this.log:debug("Registering %s skill", skill)
+        skillModule.registerSkill(data.id, data)
+        this.skills[skill] = skillModule.getSkill(data.id)
+    end
     this.log:info("Ashfall skills registered")
 end
 event.register("OtherSkills:Ready", onSkillsReady)
+
 
 
 local function checkSkillModule()
@@ -153,6 +170,7 @@ local function doUpgrades()
     --this.log:debug("Doing upgrades from previous version")
 end
 
+
 --INITIALISE COMMON--
 local dataLoadedOnce = false
 local function onLoaded()
@@ -169,6 +187,8 @@ local function onLoaded()
         dataLoadedOnce = true
         event.trigger("Ashfall:dataLoadedOnce")
     end
+    --Now that the data is loaded, we need to update the food/water tiles
+    tes3ui.updateInventoryTiles()
 end
 event.register("loaded", onLoaded)
 

@@ -1,6 +1,6 @@
 local common = require ("mer.ashfall.common.common")
 local config = require("mer.ashfall.config.config").config
-local animCtrl = require("mer.ashfall.effects.animationController")
+local animCtrl = require("mer.ashfall.animation.animationController")
 
 return {
     text = "Sit Down",

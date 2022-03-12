@@ -16,3 +16,4 @@
 ---@field doesCancel boolean (optional) When set to true, a cancel button is automatically added to the buttom of the list, even when paginated.
 ---@field cancelCallback function (optional) function to call when the user clicks the cancel button.
 ---@field buttons AshfallMessageBoxButton[] List of buttons
+---@field calbackParams table (optional) table of parameters to pass to the callback function.

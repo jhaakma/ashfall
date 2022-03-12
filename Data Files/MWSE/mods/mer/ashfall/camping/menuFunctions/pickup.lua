@@ -7,8 +7,11 @@ return {
             and common.staticConfigs.bottleList[campfire.object.id:lower()] ~= nil
     end,
     callback = function(reference)
+        local safeRef = tes3.makeSafeObjectHandle(reference)
         timer.delayOneFrame(function()
-            common.helper.pickUp(reference)
+            if safeRef:valid() then
+                common.helper.pickUp(reference)
+            end
         end)
     end
 }

@@ -8,7 +8,8 @@ local temperatureController = require("mer.ashfall.temperatureController")
 --temperatureController.registerExternalHeatSource{ id = "tentTemp" }
 temperatureController.registerBaseTempMultiplier{ id = "tentTempMulti"}
 local skipActivate
-
+---@type
+local currentTent
 
 
 local function getActiveFromMisc(miscRef)
@@ -229,17 +230,7 @@ local function activateTent(e)
 end
 event.register("activate", activateTent)
 
-
-
-local currentTent --not on data because it's not json serialisable
-local function checkTentRef()
-    if currentTent and not currentTent:valid() then
-        common.log:debug("tent has become invalid")
-        currentTent = nil
-    end
-end
 local function setTentTempMulti()
-    checkTentRef()
     local tempMulti
     if (not common.data.insideTent)  or ( not currentTent ) then
         --not in a tent, no multiplier
@@ -266,7 +257,6 @@ local function setTentCoverage()
 end
 
 local function setTentSwitchNodes()
-    checkTentRef()
     if currentTent then
         local onIndex = config.seeThroughTents and 1 or 0
         --switch base tent
@@ -274,7 +264,6 @@ local function setTentSwitchNodes()
         if tentNode then
             local canvasNode = tentNode:getObjectByName("SWITCH_CANVAS")
             if canvasNode then
-
                 canvasNode.switchIndex = common.data.insideTent and onIndex or 0
             end
         end
@@ -288,29 +277,6 @@ local function setTentSwitchNodes()
         end
     end
 end
-
-
-local function toggleTentCollision(e)
-    common.log:debug("toggleTentCollision")
-    checkTentRef()
-    if currentTent and currentTent.sceneNode then
-        local collisionNode = common.helper.getCollisionNode(currentTent.sceneNode)
-
-        if collisionNode then
-            common.log:debug("setting tent collision to %s", e.collision)
-            if e.collision == true then
-                collisionNode.scale = 1.0
-            else
-                collisionNode.scale = 0.0
-            end
-            tes3.player:updateSceneGraph()
-            rawget(currentTent, "_object"):updateSceneGraph()
-        else
-            common.log:debug("tent has no collision node")
-        end
-    end
-end
-event.register("Ashfall:ToggleTentCollision", toggleTentCollision)
 
 
 --If in tent, enemies outside won't prevent rest
@@ -337,10 +303,9 @@ end
 event.register("calcRestInterrupt", calcRestInterrupt)
 
 local function setTent(e)
-    checkTentRef()
     local insideTent = e.insideTent
     if e.tent then currentTent = e.tent end
-    if (not currentTent) or (not currentTent.sceneNode) then currentTent = nil end
+    if (not currentTent) or (not currentTent:valid()) or (not currentTent.sceneNode) then currentTent = nil end
     common.data.insideTent = insideTent
     common.data.hasTentCover = coverController.tentHasCover(currentTent)
     setTentTempMulti()
@@ -378,10 +343,16 @@ end
 --Must be done each frame to remove the particles as they get added
 local function tentSimulate(e)
     if config.disableRainInTents then
-        if currentTent then
+        if currentTent and currentTent:valid() then
             local position = currentTent.position:copy()
             cullRain(position)
         end
     end
 end
 event.register("simulate", tentSimulate)
+
+event.register("objectInvalidated", function(e)
+    if currentTent and e.object == currentTent:getObject() then
+        currentTent = nil
+    end
+end)

@@ -99,7 +99,6 @@ local AttachConfig = {
             "destroy",
 
         },
-        shiftCommand = "destroy",
         tooltipExtra = function(campfire, tooltip)
                 local fuelLevel = campfire.data.fuelLevel or 0
                 if fuelLevel > 0 then
@@ -129,7 +128,6 @@ local AttachConfig = {
             "destroy",
 
         },
-        shiftCommand = "destroy",
         tooltipExtra = function(campfire, tooltip)
             local fuelLevel = campfire.data.fuelLevel or 0
             if fuelLevel > 0 then

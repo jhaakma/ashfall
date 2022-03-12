@@ -102,12 +102,16 @@ function this.callRayTest()
     local eyeVec
 
 
-    --While in the menu, the target is based on cursor position
+    --While in the menu, the target is based on cursor position (but only for inventory menu
     --Outside of the menu, the target is based on the player's viewpoint
     if tes3ui.menuMode() then
-        local cursor = tes3.getCursorPosition()
-        local camera = tes3.worldController.worldCamera.camera
-        eyePos, eyeVec = camera:windowPointToRay{cursor.x, cursor.y}
+        local inventory = tes3ui.findMenu("MenuInventory")
+        local inventoryVisible = inventory and inventory.visible == true
+        if inventoryVisible then
+            local cursor = tes3.getCursorPosition()
+            local camera = tes3.worldController.worldCamera.camera
+            eyePos, eyeVec = camera:windowPointToRay{cursor.x, cursor.y}
+        end
     else
         eyePos = tes3.getPlayerEyePosition()
         eyeVec = tes3.getPlayerEyeVector()
@@ -183,33 +187,16 @@ end
 event.register("Ashfall:ActivateButtonPressed", onActivateKeyPressed)
 
 
-local function onLeftClickInMenuPressed(e)
-    --block if not in menu mode
-    if not tes3ui.menuMode() then return end
-    --block if holding something
-    local cursor = tes3ui.findHelpLayerMenu("CursorIcon")
-    if cursor then return end
-
-    --block if not clicking the left button
-    if not (e.button == 0) then return end
-
-    --Trigger activate
-    timer.frame.delayOneFrame(function()
-        --block if another menu is sitting on top
-        local topMenu = tes3ui.getMenuOnTop()
-        local acceptableMenus = {
-            [tes3ui.registerID("MenuMulti")] = true,
-            [tes3ui.registerID("MenuStat")] = true,
-            [tes3ui.registerID("MenuMagic")] = true,
-            [tes3ui.registerID("MenuMap")] = true,
-            [tes3ui.registerID("MenuInventory")] = true,
-        }
-        local topMenuIsAcceptable = acceptableMenus[topMenu.id]
-        if not topMenuIsAcceptable then return end
-        doTriggerActivate()
-    end)
+--Register container flora as vegetation
+common.log:debug("Adding flora containers as vegetation")
+for k, obj in pairs(tes3.dataHandler.nonDynamicData.objects) do
+    if obj.objectType == tes3.objectType.container then
+        if obj.id:startswith("flora_") then
+            common.log:debug("Adding %s as vegetation", obj.id)
+            this.list.vegetation:addId(obj.id)
+        end
+    end
 end
---Too buggy
---event.register("mouseButtonUp", onLeftClickInMenuPressed)
+
 
 return this
