@@ -29,6 +29,7 @@ local teaConfig = require "mer.ashfall.config.teaConfig"
 ---@field lastBrewUpdated number The last time the tea was updated
 ---@field lastWaterHeatUpdated number The last time the water heat was updated
 ---@field stewBuffs table The stew buffs
+---@field ladle boolean A ladle is attached to the cooking pot
 
 
 ---@class AshfallLiquidContainer
@@ -119,15 +120,14 @@ function LiquidContainer.new(id, dataHolder, reference)
     if bottleData then
         ---@type AshfallLiquidContainer
         local liquidContainer = {}
-
-        setmetatable(liquidContainer, meta )
-
+        liquidContainer.dataHolder = dataHolder --if null, an item with no itemData
         ---@type AshfallLiquidContainerData
         liquidContainer.data = dataHolder and dataHolder.data or {}
         liquidContainer.capacity = bottleData.capacity
         liquidContainer.holdsStew = bottleData.holdsStew == true
         liquidContainer.reference = reference
         liquidContainer.itemId = id
+        setmetatable(liquidContainer, meta )
         if liquidContainer.stewLevels then liquidContainer.waterType = "stew" end
         return liquidContainer
     end
@@ -145,6 +145,16 @@ end
 ---@param itemData tes3itemData
 ---@return AshfallLiquidContainer liquidContainer
 function LiquidContainer.createFromInventory(item, itemData)
+    return LiquidContainer.new(item.id, itemData)
+end
+
+function LiquidContainer.createFromInventoryInitItemData(item, itemData)
+    if not itemData then
+        itemData = tes3.addItemData{
+            to = tes3.player,
+            item = item.id
+        }
+    end
     return LiquidContainer.new(item.id, itemData)
 end
 
@@ -201,15 +211,6 @@ function LiquidContainer.canTransfer(from, to)
         return false, "Target can not hold stew."
     end
 
-    -- --If mixing stew with water, must be attached to campfire
-    -- if from.stewLevels or to.stewLevels then
-    --     if (not from.stewLevels) or (not to.stewLevels) then
-    --         if to.data.waterCapacity == nil and to.waterAmount and to.waterAmount > 0 then
-    --             return false
-    --         end
-    --     end
-    -- end
-
     --If transferring tea, target must NOT have holdsStew flag
     local fromIsTea = teaConfig.teaTypes[from.waterType]
     local toIsTea = teaConfig.teaTypes[to.waterType]
@@ -224,7 +225,7 @@ function LiquidContainer.canTransfer(from, to)
             end
         end
     end
-    common.log:debug("Can transfer from %s to %s", from, to)
+    common.log:trace("Can transfer from %s to %s", from, to)
     return true
 end
 

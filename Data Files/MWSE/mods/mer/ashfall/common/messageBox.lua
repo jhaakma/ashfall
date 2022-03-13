@@ -42,8 +42,8 @@ local function populateButtons(e)
                 end)
             end
 
-            if not disabled and data.tooltip then
-                local tooltip = data.toltip
+            if (not disabled) and data.tooltip then
+                local tooltip = data.tooltip
                 if type(data.tooltip) == "function" then
                     tooltip = data.tooltip()
                 end

@@ -37,7 +37,7 @@ return {
 
 
         --If utensil has water, initialise the campfire with it
-        if reference.data and reference.data.waterAmount then
+        if reference.data then
             campfire.data.waterAmount =  reference.data.waterAmount
             campfire.data.stewLevels =  reference.data.stewLevels
             campfire.data.stewProgress = reference.data.stewProgress

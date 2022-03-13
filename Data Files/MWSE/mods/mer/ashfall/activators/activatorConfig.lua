@@ -291,6 +291,7 @@ this.list.tree = Activator:new{
         ['floravm_tree'] = true, --TR
         ['floraww_tree'] = true, --TR
         ['mdbc_treehuge'] = true, -- Mels Graht trees
+        ['ex_t_root_'] = true,
     },
 }
 this.list.wood = Activator:new{

@@ -92,7 +92,8 @@ this.materials = {
             "ingred_guar_hide_01",
             "ingred_kagouti_hide_01",
             "ingred_netch_leather_01",
-            "ingred_boar_leather"
+            "ingred_boar_leather",
+            "ingred_scamp_skin_01",
         }
     },
     {

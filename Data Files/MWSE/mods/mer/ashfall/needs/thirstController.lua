@@ -214,7 +214,7 @@ function this.fillContainer(params)
             end,
             callback = function(e)
                 if e.item then
-                    local to = LiquidContainer.createFromInventory(e.item, e.itemData)
+                    local to = LiquidContainer.createFromInventoryInitItemData(e.item, e.itemData)
                     this.callWaterMenuAction(function()
                         if not e.itemData then
                             e.itemData = tes3.addItemData{ item = e.item, to = tes3.player, updateGUI = true}

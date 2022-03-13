@@ -33,11 +33,13 @@ local function stewSelectMenu()
         table.insert(buttons, {
             text = string.format("%s %s", spell.name, stewName),
             callback = function()
+                common.log:debug("Triggering EatStew")
                 event.trigger("Ashfall:eatStew", {
                     data = {
                         stewLevels = {
                             [stewType] = 100
                         },
+                        stewProgress = 100,
                         waterAmount = 100,
                         waterHeat = 100
                     }
