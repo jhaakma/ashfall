@@ -1,4 +1,5 @@
 local common = require ("mer.ashfall.common.common")
+local logger = common.createLogger("hangUtensil")
 local CampfireUtil = require ("mer.ashfall.camping.campfire.CampfireUtil")
 
 local function addUtensil(item, campfire, itemData)
@@ -32,9 +33,9 @@ local function addUtensil(item, campfire, itemData)
         campfire.data.lastWaterUpdated = nil
     end
 
-    common.log:debug("Set water capacity to %s", campfire.data.waterCapacity)
-    common.log:debug("Set water heat to %s", campfire.data.waterHeat)
-    common.log:debug("Set lastWaterUpdated to %s", campfire.data.lastWaterUpdated)
+    logger:debug("Set water capacity to %s", campfire.data.waterCapacity)
+    logger:debug("Set water heat to %s", campfire.data.waterHeat)
+    logger:debug("Set lastWaterUpdated to %s", campfire.data.lastWaterUpdated)
     event.trigger("Ashfall:registerReference", { reference = campfire})
     event.trigger("Ashfall:UpdateAttachNodes", {campfire = campfire})
     --event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})

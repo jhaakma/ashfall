@@ -1,4 +1,5 @@
 local common = require ("mer.ashfall.common.common")
+local logger = common.createLogger("douse")
 local LiquidContainer = require("mer.ashfall.objects.LiquidContainer")
 return {
     dropText = function(campfire, item, itemData)
@@ -41,7 +42,7 @@ return {
             tes3.playSound{ reference = tes3.player, sound = "Swim Left" }
             common.helper.pickUp(reference)
         else
-            common.log:error("Not a liquid container somehow")
+            logger:error("Not a liquid container somehow")
         end
     end
 }

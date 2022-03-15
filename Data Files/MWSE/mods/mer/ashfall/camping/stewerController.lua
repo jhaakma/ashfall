@@ -2,6 +2,7 @@
     Iterates over objects that  and updates their fuel level
 ]]
 local common = require ("mer.ashfall.common.common")
+local logger = common.createLogger("stewerController")
 local LiquidContainer = require("mer.ashfall.objects.LiquidContainer")
 local foodConfig = common.staticConfigs.foodConfig
 local hungerController = require("mer.ashfall.needs.hungerController")
@@ -59,7 +60,7 @@ local function updateStewers(e)
         local difference = e.timestamp - stewerRef.data.lastStewUpdated
 
         if difference < 0 then
-            common.log:error("STEWER stewerRef.data.lastStewUpdated(%.4f) is ahead of e.timestamp(%.4f).",
+            logger:error("STEWER stewerRef.data.lastStewUpdated(%.4f) is ahead of e.timestamp(%.4f).",
                 stewerRef.data.lastStewUpdated, e.timestamp)
             --something fucky happened
             stewerRef.data.lastStewUpdated = e.timestamp
@@ -111,14 +112,14 @@ local function eatStew(e)
 
     local hunger = common.staticConfigs.conditionConfig.hunger:getValue()
     local thirst = common.staticConfigs.conditionConfig.thirst:getValue()
-    common.log:debug("hunger: %s", hunger)
-    common.log:debug("thirst: %s", thirst)
+    logger:debug("hunger: %s", hunger)
+    logger:debug("thirst: %s", thirst)
 
     local highestNeed = math.max(
         hunger / foodRatio,
         thirst
     )
-    common.log:debug("highestNeed: %s", highestNeed)
+    logger:debug("highestNeed: %s", highestNeed)
     local maxAmount = math.min(e.data.waterAmount, 50, highestNeed )
 
     local amountAte = hungerController.eatAmount(maxAmount)
@@ -152,11 +153,11 @@ local function eatStew(e)
                     mwscript.addSpell{ reference = tes3.player, spell = spell }
                     --Effect maxes out at 10 units, then divide remaining 10 by 10 to get normalised effect
                     local ateAmountMulti = math.min(highestAmount, 10) / 10
-                    common.log:debug("ateAmountMulti %s", ateAmountMulti)
+                    logger:debug("ateAmountMulti %s", ateAmountMulti)
                     --Give at least half an hour when drinking a small amount
                     local timeLeft = math.max(0.5, common.helper.calculateStewBuffDuration(e.data.waterHeat) * ateAmountMulti)
                     tes3.player.data.stewBuffTimeLeft = timeLeft
-                    common.log:debug("Set stew duration to %s", tes3.player.data.stewBuffTimeLeft)
+                    logger:debug("Set stew duration to %s", tes3.player.data.stewBuffTimeLeft)
                     event.trigger("Ashfall:registerReference", { reference = tes3.player})
                 end)
             end
@@ -165,7 +166,7 @@ local function eatStew(e)
         tes3.messageBox("You are full.")
     end
     if e.data.waterAmount and e.data.waterAmount < 1 then
-        common.log:debug("Clearing data after eating stew")
+        logger:debug("Clearing data after eating stew")
         LiquidContainer.createFromData(e.data):clearData()
     end
 end

@@ -1,4 +1,5 @@
 local common = require ("mer.ashfall.common.common")
+local logger = common.createLogger("campfireVisuals")
 local patinaController = require("mer.ashfall.camping.patinaController")
 local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 local referenceController = require("mer.ashfall.referenceController")
@@ -71,11 +72,11 @@ local switchNodeValues = {
         return campfire.data.stewLevels and "STEW" or "WATER"
     end,
     SWITCH_TEA = function(campfire)
-        common.log:debug("Found tea switch")
+        logger:trace("Found tea switch")
         local hasTea = campfire.data.waterType ~= nil
             and campfire.data.waterType ~= "dirty"
         local thisState = hasTea and "TEA" or "WATER"
-        common.log:debug("Tea switch state: " .. thisState)
+        logger:trace("Tea switch state: " .. thisState)
         return thisState
     end,
 }
@@ -170,7 +171,7 @@ local function updateWaterHeight(ref)
 
     local waterNode = ref.sceneNode:getObjectByName("POT_WATER")
     if waterNode then
-        common.log:debug("Found Water Node! Setting height to %s and scale to %s", height, scale)
+        logger:debug("Found Water Node! Setting height to %s and scale to %s", height, scale)
         waterNode.translation.z = height
         waterNode.scale = scale
     end
@@ -181,7 +182,7 @@ local function updateWaterHeight(ref)
     end
     local teaNode = ref.sceneNode:getObjectByName("POT_TEA")
     if teaNode then
-        common.log:debug("Found Tea Node! Setting height to %s and scale to %s", height, scale)
+        logger:debug("Found Tea Node! Setting height to %s and scale to %s", height, scale)
         teaNode.translation.z = height
         teaNode.scale = scale
     end
@@ -251,7 +252,7 @@ local function updateSounds(campfire)
             loop = true
         }
     else
-        common.log:trace("campfireVisuals: removing boil sound")
+        logger:trace("campfireVisuals: removing boil sound")
         tes3.removeSound{
             reference = campfire,
             sound = "ashfall_boil"
@@ -282,7 +283,7 @@ event.register("simulate", updateVisuals)
 local function moveOriginToAttachPoint(node)
     local attachPoint = node:getObjectByName("ATTACH_POINT")
     if attachPoint then
-        common.log:trace("Found attach point located at %s", attachPoint.translation)
+        logger:trace("Found attach point located at %s", attachPoint.translation)
         node.rotation = attachPoint.rotation:copy()
         node.translation.x = node.translation.x - attachPoint.translation.x
         node.translation.y = node.translation.y - attachPoint.translation.y
@@ -298,7 +299,7 @@ local attachNodes = {
         end,
         getAttachMesh = function(campfire)
             --TODO - different flame colors?
-            return common.loadMesh("ashfall\\cf\\flame_01.nif")
+            return common.helper.loadMesh("ashfall\\cf\\flame_01.nif")
         end,
     },
     {
@@ -315,7 +316,7 @@ local attachNodes = {
             else
                 firewoodMesh = "ashfall\\cf\\Firewood_01.nif"
             end
-            return common.loadMesh(firewoodMesh)
+            return common.helper.loadMesh(firewoodMesh)
         end
     },
     {
@@ -326,7 +327,7 @@ local attachNodes = {
         getAttachMesh = function(campfire)
             local supportsItem = tes3.getObject(campfire.data.supportsId)
             if supportsItem then
-                local mesh = common.loadMesh(supportsItem.mesh)
+                local mesh = common.helper.loadMesh(supportsItem.mesh)
                 mesh.appCulled = false
                 return mesh
             end
@@ -342,13 +343,13 @@ local attachNodes = {
             local utensilID = campfire.data.utensilId
             local utensilObj = tes3.getObject(utensilID)
             if utensilObj then
-                common.log:trace("utensil is a valid object")
+                logger:trace("utensil is a valid object")
                 local utensilData = common.staticConfigs.utensils[utensilID:lower()]
                 if not utensilData then
-                    common.log:error("%s is not a valid utensil, but was set to campfire.data.utensilId", utensilID)
+                    logger:error("%s is not a valid utensil, but was set to campfire.data.utensilId", utensilID)
                 end
                 local meshId = utensilData and utensilData.meshOverride or utensilObj.mesh
-                local mesh = common.loadMesh(meshId)
+                local mesh = common.helper.loadMesh(meshId)
                 local idToNameMappings = {
                     kettle = "KETTLE",
                     cookingPot = "COOKING_POT",
@@ -360,7 +361,7 @@ local attachNodes = {
         end,
         postAttach = function(campfire, attachNode)
             local patinaAmount = campfire.data.utensilPatinaAmount
-            common.log:trace("hangNode updateAttachNodes add patina amount: %s", patinaAmount)
+            logger:trace("hangNode updateAttachNodes add patina amount: %s", patinaAmount)
             patinaController.addPatina(attachNode, patinaAmount)
         end
     },
@@ -375,10 +376,10 @@ local attachNodes = {
             if grillObj then
                 local data = common.staticConfigs.grills[grillId:lower()]
                 if not data then
-                    common.log:error("%s is not a valid grill, but was set to campfire.data.grillId")
+                    logger:error("%s is not a valid grill, but was set to campfire.data.grillId")
                 end
                 local meshId = data and data.meshOverride or grillObj.mesh
-                local mesh = common.loadMesh(meshId)
+                local mesh = common.helper.loadMesh(meshId)
                 mesh.name = "Grill"
                 return mesh
             end
@@ -394,13 +395,13 @@ local attachNodes = {
             if grillId then
                 local grillObj = tes3.getObject(grillId)
                 if grillObj then
-                    return common.loadMesh(grillObj.mesh)
+                    return common.helper.loadMesh(grillObj.mesh)
                 end
             end
         end,
         postAttach = function(campfire, attachNode)
             local patinaAmount = campfire.data.grillPatinaAmount
-            common.log:trace("grillNode updateAttachNodes add patina amount: %s", patinaAmount)
+            logger:trace("grillNode updateAttachNodes add patina amount: %s", patinaAmount)
             patinaController.addPatina(attachNode, patinaAmount)
         end
     },
@@ -414,7 +415,7 @@ local attachNodes = {
             if bellowsId then
                 local bellowsMesh = tes3.getObject(bellowsId)
                 if bellowsMesh then
-                    return common.loadMesh(bellowsMesh.mesh)
+                    return common.helper.loadMesh(bellowsMesh.mesh)
                 end
             end
         end,
@@ -422,40 +423,40 @@ local attachNodes = {
 }
 
 local function updateAttachNodes(e)
-    common.log:trace("Ashfall:UpdateAttachNodes: %s", e.campfire.object.id)
+    logger:trace("Ashfall:UpdateAttachNodes: %s", e.campfire.object.id)
     local campfire = e.campfire
     local sceneNode = campfire.sceneNode
 
     if not campfire.data then return end
     if not sceneNode then return end
     for _, attachData in ipairs(attachNodes) do
-        common.log:trace("++++ATTACH NODE: %s+++++++", attachData.attachNodeName)
+        logger:trace("++++ATTACH NODE: %s+++++++", attachData.attachNodeName)
         local attachNode = sceneNode:getObjectByName(attachData.attachNodeName)
         if attachNode then
-            common.log:trace("found attach node")
+            logger:trace("found attach node")
             --remove children
             for i, childNode in ipairs(attachNode.children) do
                 if childNode then
-                    common.log:trace("removed %s children", attachData.attachNodeName)
+                    logger:trace("removed %s children", attachData.attachNodeName)
                     attachNode:detachChildAt(i)
                 end
             end
             if attachData.getDoAttach(campfire) then
-                common.log:trace("Do attach: tru, getting mesh")
+                logger:trace("Do attach: tru, getting mesh")
                 local mesh = attachData.getAttachMesh(campfire)
                 if mesh then
-                    common.log:trace("Mesh succeed, attaching")
+                    logger:trace("Mesh succeed, attaching")
                     attachNode:attachChild(mesh)
                 else
-                    common.log:trace("Failed to retrieve mesh")
+                    logger:trace("Failed to retrieve mesh")
                 end
             else
-                common.log:trace("Do attach: false, removing mesh")
+                logger:trace("Do attach: false, removing mesh")
             end
             if attachData.postAttach then
                 local attachNode = sceneNode:getObjectByName(attachData.attachNodeName)
                 if attachNode then
-                    common.log:trace("Running Post attach for %s", attachData.attachNodeName)
+                    logger:trace("Running Post attach for %s", attachData.attachNodeName)
                     attachData.postAttach(campfire, attachNode)
                 end
             end

@@ -1,5 +1,6 @@
 local common = require("mer.ashfall.common.common")
-local config = require("mer.ashfall.config.config").config
+local logger = common.createLogger("intro")
+local config = require("mer.ashfall.config").config
 local overrides = require("mer.ashfall.config.overrides")
 local this = {}
 local newGame
@@ -12,7 +13,7 @@ local charGenValues = {
 
 function this.doNeeds(needs)
     for setting, value in pairs(needs) do
-        common.log:debug("Setting %s to %s", setting, value)
+        logger:debug("Setting %s to %s", setting, value)
         config[setting] = value
     end
     event.trigger("Ashfall:UpdateHud")
@@ -27,12 +28,12 @@ function this.doOverrides()
     for id, override in pairs(overrides) do
         local item = tes3.getObject(id)
         if item then
-            common.log:trace("Overriding values for %s", item.id)
+            logger:trace("Overriding values for %s", item.id)
             item.name = override.name or item.name
             item.value = override.value or item.value
             item.weight = override.weight or item.weight
         else
-            common.log:trace("%s not found", id)
+            logger:trace("%s not found", id)
         end
     end
 end
@@ -152,7 +153,7 @@ function this.startAshfall()
         end
         local doOverrideFood = config.overrideFood
         if doOverrideFood then
-            common.log:debug("Overriding ingredient values")
+            logger:debug("Overriding ingredient values")
             this.doOverrides()
         end
 
@@ -192,7 +193,7 @@ local function replaceLegacyItems()
     for stack in tes3.iterate(tes3.player.object.inventory.iterator) do
         local newItem = legacyItemMapping[stack.object.id:lower()]
         if newItem then
-            common.log:debug("Found %s, replacing with a shiny new one: %s", stack.object.id, newItem)
+            logger:debug("Found %s, replacing with a shiny new one: %s", stack.object.id, newItem)
             tes3.removeItem{ reference = tes3.player, item = stack.object, count = stack.count, playSound = false }
             tes3.addItem{ reference = tes3.player, item = newItem, count = stack.count, updateGUI = true, playSound = false }
         end

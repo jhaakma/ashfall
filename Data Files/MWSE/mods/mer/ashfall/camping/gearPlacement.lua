@@ -1,5 +1,5 @@
 local common = require("mer.ashfall.common.common")
-
+local logger = common.createLogger("gearPlacement")
 --[[
     Orients a placed object and lowers it into the ground so it lays flat against the terrain,
 ]]
@@ -12,7 +12,7 @@ local function onDropGear(e)
             common.helper.orientRefToGround{ ref = e.reference, maxSteepness = gearValues.maxSteepness }
         end
         if gearValues.drop then
-            common.log:debug("Dropping %s by %s", e.reference.object.name, gearValues.drop)
+            logger:debug("Dropping %s by %s", e.reference.object.name, gearValues.drop)
             e.reference.position = {
                 e.reference.position.x,
                 e.reference.position.y,
@@ -41,14 +41,14 @@ end
 local function verticaliseNode(e)
     local vertNode = e.node:getObjectByName("ALIGN_VERTICAL")
     if vertNode then
-        common.log:debug("Verticalising node")
+        logger:debug("Verticalising node")
         verticalise{ node = vertNode }
     else
-        common.log:debug("no ALIGN_VERTICAL node found")
+        logger:debug("no ALIGN_VERTICAL node found")
     end
     local collisionNode = e.node:getObjectByName("COLLISION_VERTICAL")
     if collisionNode then
-        common.log:debug("Verticalising collision node")
+        logger:debug("Verticalising collision node")
         verticalise{ node = collisionNode }
     end
 end
@@ -62,7 +62,7 @@ local function verticaliseNodes(e)
         local safeRef = tes3.makeSafeObjectHandle(e.reference)
         local function f()
             if not safeRef:valid() then return end
-            common.log:debug("Verticalising %s", e.reference.object.id)
+            logger:debug("Verticalising %s", e.reference.object.id)
             verticaliseNode{ node = e.reference.sceneNode }
         end
         event.register("enterFrame", f, {doOnce=true})

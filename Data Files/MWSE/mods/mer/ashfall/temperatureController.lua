@@ -1,7 +1,8 @@
 --move to common---------------------------------
 --Also... refactor all temps to point to this----
 local common = require("mer.ashfall.common.common")
-local config = require("mer.ashfall.config.config").config
+local logger = common.createLogger("temperatureController")
+local config = require("mer.ashfall.config").config
 -------------------------------------------------
 --Move to Config file
 local INT_MULTI = 100 --Rate of change for player temp
@@ -30,7 +31,7 @@ function this.registerExternalHeatSource(heatSource)
             }
         )
     else
-        common.log:error("Incorrect formatting of externalHeatSource")
+        logger:error("Incorrect formatting of externalHeatSource")
     end
 end
 
@@ -47,7 +48,7 @@ function this.registerInternalHeatSource(heatSource)
             }
         )
     else
-        common.log:error("Incorrect formatting of internalHeatSource")
+        logger:error("Incorrect formatting of internalHeatSource")
 
     end
 end
@@ -65,7 +66,7 @@ function this.registerBaseTempMultiplier(multiplier)
         }
     )
     else
-        common.log:error("Incorrect formatting of baseTempMultiplier: %s", multiplier and multiplier.id or multiplier)
+        logger:error("Incorrect formatting of baseTempMultiplier: %s", multiplier and multiplier.id or multiplier)
     end
 end
 
@@ -83,7 +84,7 @@ function this.registerRateMultiplier(multiplier)
          }
      )
      else
-        common.log:error("Incorrect formatting of rateMultiplier: %s", multiplier and multiplier.id or multiplier)
+        logger:error("Incorrect formatting of rateMultiplier: %s", multiplier and multiplier.id or multiplier)
      end
 end
 
@@ -123,7 +124,7 @@ local function getExternalHeat()
         -- )
         if addHeatSource then
             if not common.data[heatSource.id] then
-                --common.log:error("common.data.%s not found", heatSource.id)
+                --logger:error("common.data.%s not found", heatSource.id)
             else
                 result = result + common.data[heatSource.id]
             end
@@ -159,7 +160,7 @@ local function getInternalHeat()
         -- )
         if addHeatSource then
             if not common.data[heatSource.id] then
-                --common.log:error("common.data.%s not found", heatSource.id)
+                --logger:error("common.data.%s not found", heatSource.id)
             else
                 result = result + common.data[heatSource.id]
             end
@@ -210,7 +211,7 @@ local function getBaseTempMultiplier()
         )
         if addMultiplier then
             if not common.data[multiplier.id] then
-                --common.log:error("common.data.%s not found", multiplier.id)
+                --logger:error("common.data.%s not found", multiplier.id)
             else
                 result = result * common.data[multiplier.id]
             end
@@ -234,7 +235,7 @@ local function getInternalChangeMultiplier(interval)
         if addMultiplier then
 
             if not common.data[multiplier.id] then
-                --common.log:error("common.data.%s not found", multiplier.id)
+                --logger:error("common.data.%s not found", multiplier.id)
             else
                 result = result * common.data[multiplier.id]
             end
@@ -297,7 +298,7 @@ end
 local function update(e)
 
     if e.source then
-        common.log:debug(e.source)
+        logger:debug(e.source)
     end
     if common.data.valuesInitialised then
         this.calculate(0, true)

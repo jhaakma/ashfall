@@ -1,5 +1,5 @@
 local animCtrl = require("mer.ashfall.animation.animationController")
-local config = require("mer.ashfall.config.config").config
+local config = require("mer.ashfall.config").config
 return {
     text = "Sit Down",
     enableRequirements = function()

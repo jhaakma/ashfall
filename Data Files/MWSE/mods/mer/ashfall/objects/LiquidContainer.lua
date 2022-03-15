@@ -13,6 +13,7 @@
 
 
 local common = require("mer.ashfall.common.common")
+local logger = common.createLogger("LiquidContainer")
 local foodConfig = require "mer.ashfall.config.foodConfig"
 local teaConfig = require "mer.ashfall.config.teaConfig"
 
@@ -181,7 +182,7 @@ function LiquidContainer.canTransfer(from, to)
 
     --If to is a reference stack, then can't transfer
     if to.reference and to.reference.attachments.variables.count > 1 then
-        common.log:debug("tried transfering to ref stack")
+        logger:debug("tried transfering to ref stack")
         return false, "Can not transfer to a stack."
     end
 
@@ -225,7 +226,7 @@ function LiquidContainer.canTransfer(from, to)
             end
         end
     end
-    common.log:trace("Can transfer from %s to %s", from, to)
+    logger:trace("Can transfer from %s to %s", from, to)
     return true
 end
 
@@ -233,11 +234,11 @@ end
 ---@param to AshfallLiquidContainer
 ---@param amount number
 function LiquidContainer.transferLiquid(from, to, amount)
-    common.log:debug("Transferring %s from %s to %s", amount or "[infinite]", from, to)
+    logger:debug("Transferring %s from %s to %s", amount or "[infinite]", from, to)
 
     local canTransfer, errorMsg = from:canTransfer(to)
     if not canTransfer then
-        common.log:debug("Failed to transfer: %s", errorMsg)
+        logger:debug("Failed to transfer: %s", errorMsg)
         return 0, errorMsg
     end
     amount = amount or math.huge
@@ -246,6 +247,13 @@ function LiquidContainer.transferLiquid(from, to, amount)
     local fillAmount = math.min(from.waterAmount, targetRemainingCapacity, amount)
     --Early exit if there's nothing to fill
     if fillAmount < 1 then return 0 end
+
+    --Show message
+    local item =  tes3.getObject(to.itemId)
+    if item and item.name then
+        tes3.messageBox('%s filled with %s.', common.helper.getGenericUtensilName(item), from:getLiquidName())
+    end
+
     -- waterHeat
     local fromHeat = from.waterHeat or 0
     local toHeat = to.waterHeat or 0
@@ -262,10 +270,10 @@ function LiquidContainer.transferLiquid(from, to, amount)
     --tea progress
     to.teaProgress = (from.teaProgress*fillAmount + to.teaProgress*to.waterAmount)
         / (fillAmount + to.waterAmount)
-    common.log:trace("from.teaProgress: %s", from.teaProgress)
-    common.log:trace("fillAmount: %s", fillAmount)
-    common.log:trace("to.teaProgress: %s", to.teaProgress)
-    common.log:trace("to.waterAmount: %s", to.waterAmount)
+    logger:trace("from.teaProgress: %s", from.teaProgress)
+    logger:trace("fillAmount: %s", fillAmount)
+    logger:trace("to.teaProgress: %s", to.teaProgress)
+    logger:trace("to.waterAmount: %s", to.waterAmount)
 
     -- waterAmount
     local targetWaterBefore = to.waterAmount
@@ -315,13 +323,8 @@ function LiquidContainer.transferLiquid(from, to, amount)
     end
     tes3ui.updateInventoryTiles()
     tes3.playSound({reference = tes3.player, sound = "Swim Left", volume = 2.0})
-    --Show message
-    local item =  tes3.getObject(to.itemId)
-    if item and item.name then
-        tes3.messageBox('%s filled with %s.', common.helper.getGenericUtensilName(item), to:getLiquidName())
-    end
-    common.log:debug("Transferred %s", fillAmount)
-    common.log:debug("New water amount: %s", to.waterAmount)
+    logger:debug("Transferred %s", fillAmount)
+    logger:debug("New water amount: %s", to.waterAmount)
     return fillAmount
 end
 
@@ -416,7 +419,7 @@ function LiquidContainer.updateHeat(self, newHeat)
             event.trigger("Ashfall:UpdateAttachNodes", {campfire = self.reference})
         end
         if heatBefore > common.staticConfigs.hotWaterHeatValue and heatAfter < common.staticConfigs.hotWaterHeatValue then
-            common.log:debug("No longer hot")
+            logger:debug("No longer hot")
             event.trigger("Ashfall:UpdateAttachNodes", {campfire = self.reference})
         end
     end

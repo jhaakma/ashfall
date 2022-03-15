@@ -3,7 +3,8 @@ local LiquidContainer = require "mer.ashfall.objects.LiquidContainer"
 
 local this = {}
 local common = require("mer.ashfall.common.common")
-local config = require("mer.ashfall.config.config").config
+local logger = common.createLogger("thirstController")
+local config = require("mer.ashfall.config").config
 local conditionsCommon = require("mer.ashfall.conditionController")
 local statsEffect = require("mer.ashfall.needs.statsEffect")
 local temperatureController = require("mer.ashfall.temperatureController")
@@ -18,9 +19,9 @@ local conditionConfig = common.staticConfigs.conditionConfig
 local thirst = conditionConfig.thirst
 
 function this.handleEmpties(data)
-    common.log:trace("handleEmpties")
+    logger:trace("handleEmpties")
     if data.waterAmount and data.waterAmount < 1 then
-        common.log:debug("handleEmpties: waterAmount < 1, clearing water data")
+        logger:debug("handleEmpties: waterAmount < 1, clearing water data")
         LiquidContainer.createFromData(data):clearData()
         --restack / remove sound
         tes3ui.updateInventoryTiles()
@@ -56,7 +57,7 @@ function this.calculate(scriptInterval, forceUpdate)
     if common.helper.getIsSleeping() then
         currentThirst = currentThirst + ( scriptInterval * thirstRate * heatEffect * dysentryEffect * config.restingNeedsMultiplier )
     elseif common.helper.getIsTraveling() then
-        common.log:debug("Traveling, adding travelling multiplier to thirst")
+        logger:debug("Traveling, adding travelling multiplier to thirst")
         currentThirst = currentThirst + ( scriptInterval * thirstRate * heatEffect * dysentryEffect * config.travelingNeedsMultiplier)
     else
         currentThirst = currentThirst + ( scriptInterval * thirstRate * heatEffect * dysentryEffect )
@@ -82,11 +83,11 @@ function this.playerHasEmpties(source)
     for stack in tes3.iterate(tes3.player.object.inventory.iterator) do
         local bottleData = this.getBottleData(stack.object.id)
         if bottleData then
-            common.log:trace("Found a bottle")
+            logger:trace("Found a bottle")
             if stack.variables then
-                common.log:trace("Has data")
+                logger:trace("Has data")
                 if #stack.variables < stack.count then
-                    common.log:trace("Some bottles have no data")
+                    logger:trace("Some bottles have no data")
                     return true
                 end
 
@@ -96,7 +97,7 @@ function this.playerHasEmpties(source)
                 end
             else
                 --no itemData means empty bottle
-                common.log:trace("no variables")
+                logger:trace("no variables")
                 return true
             end
         end
@@ -109,7 +110,7 @@ local function addDysentry(amountDrank)
     local survival = common.skills.survival.value
     local survivalRoll = math.random(100)
     if survivalRoll < survival then
-        common.log:debug("Survival Effect of %s bypassed dysentery with a roll of %s", survival, survivalRoll)
+        logger:debug("Survival Effect of %s bypassed dysentery with a roll of %s", survival, survivalRoll)
         return
     end
 
@@ -119,18 +120,18 @@ local function addDysentry(amountDrank)
 
     local dysentery = common.staticConfigs.conditionConfig.dysentery
     local dysentryAmount = math.random(minDysentery, maxDysentery)
-    common.log:debug("Adding %s dysentery. Max was %s", dysentryAmount, maxDysentery)
+    logger:debug("Adding %s dysentery. Max was %s", dysentryAmount, maxDysentery)
     dysentery:setValue(dysentery:getValue() + dysentryAmount)
-    common.log:debug("New dysentery amount is %s", dysentery:getValue())
+    logger:debug("New dysentery amount is %s", dysentery:getValue())
 end
 
 
 local function blockMagickaAtronach()
-    common.log:trace("Checking atronach settings")
+    logger:trace("Checking atronach settings")
     if tes3.isAffectedBy{ reference = tes3.player, effect = tes3.effect.stuntedMagicka} then
-        common.log:debug("Is an atronach")
+        logger:debug("Is an atronach")
         if config.atronachRecoverMagickaDrinking ~= true then
-            common.log:debug("blockMagickaAtronach: Blocking atronach from gaining magicka")
+            logger:debug("blockMagickaAtronach: Blocking atronach from gaining magicka")
             return true
         end
     end
@@ -139,7 +140,7 @@ end
 
 
 function this.drinkAmount(e)
-    common.log:debug("drinkAmount. WaterType: %s", e.waterType)
+    logger:debug("drinkAmount. WaterType: %s", e.waterType)
     local amount = e.amount or 100
     local waterType = e.waterType
     if not conditionConfig.thirst:isActive() then
@@ -183,13 +184,13 @@ end
 event.register("Ashfall:Drink", this.drinkAmount, {reference = tes3.player})
 
 function this.callWaterMenuAction(callback)
-    common.log:debug("calling water menu action")
+    logger:debug("calling water menu action")
     if common.data.drinkingRain == true then
-        common.log:debug("Drinking rain is true")
+        logger:debug("Drinking rain is true")
         common.data.drinkingRain = nil
         common.helper.fadeTimeOut( 0.25, 2, callback )
     else
-        common.log:debug("Drinking rain is false")
+        logger:debug("Drinking rain is false")
         callback()
     end
     common.data.drinkingWaterType = nil
@@ -222,7 +223,7 @@ function this.fillContainer(params)
 
                         --Empty dirty water first if filling from infinite water source
                         if source:isInfinite() and to:getLiquidType() == "dirty" then
-                            common.log:debug("Removing dirty water when filling from infinite clean source")
+                            logger:debug("Removing dirty water when filling from infinite clean source")
                             e.itemData.data.waterType = nil
                         end
                         source:transferLiquid(to)
@@ -240,7 +241,7 @@ function this.fillContainer(params)
             end
         }
         timer.delayOneFrame(function()
-            common.log:debug("common.data.drinkingRain = false fill")
+            logger:debug("common.data.drinkingRain = false fill")
             common.data.drinkingRain = false
             common.data.drinkingWaterType = nil
         end)

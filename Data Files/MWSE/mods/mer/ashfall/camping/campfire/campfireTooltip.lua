@@ -1,4 +1,5 @@
 local common = require ("mer.ashfall.common.common")
+local logger = common.createLogger("campfireTooltip")
 local uiCommon = require("mer.ashfall.ui.uiCommon")
 local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 
@@ -6,7 +7,7 @@ local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
     Adds additional tooltips based on what node the player is looking at
 ]]
 local function addAdditionalTooltip(e)
-    common.log:trace("Campfire tooltip")
+    logger:trace("Campfire tooltip")
     local campfire = e.reference
     local parentNode = e.parentNode
     if campfire then

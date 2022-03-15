@@ -1,6 +1,7 @@
 local this = {}
 local common = require("mer.ashfall.common.common")
-local config = require("mer.ashfall.config.config").config
+local logger = common.createLogger("hungerController")
+local config = require("mer.ashfall.config").config
 local conditionsCommon = require("mer.ashfall.conditionController")
 
 local statsEffect = require("mer.ashfall.needs.statsEffect")
@@ -22,7 +23,7 @@ function this.getBurnLimit()
     --TODO: Use survival skill to determine
     local survival = common.skills.survival.value
     if not survival then
-        common.log:error("No survival skill found")
+        logger:error("No survival skill found")
         return 150
     end
 
@@ -54,13 +55,13 @@ function this.getNutrition(object, itemData)
         --value based on how cooked it is
         cookedAmount = math.min(cookedAmount, 100)
         foodValue = math.remap(cookedAmount, 0, 100, min, max)
-        common.log:trace("foodValue %s", foodValue)
+        logger:trace("foodValue %s", foodValue)
         if itemData.data.grillState == "cooked" then
             foodValue = foodValue * foodConfig.cookedMulti
-            common.log:trace("Food is cooked, new foodValue %s", foodValue)
+            logger:trace("Food is cooked, new foodValue %s", foodValue)
         elseif itemData.data.grillState == "burnt" then
             foodValue = foodValue * foodConfig.burntMulti
-            common.log:trace("Food is burnt, new foodValue %s", foodValue)
+            logger:trace("Food is burnt, new foodValue %s", foodValue)
         end
 
     end
@@ -156,7 +157,7 @@ function this.calculate(scriptInterval, forceUpdate)
     if common.helper.getIsSleeping() then
         newHunger = newHunger + ( scriptInterval * hungerRate * coldEffect * foodPoisonEffect * config.restingNeedsMultiplier )
     elseif common.helper.getIsTraveling() then
-        common.log:debug("Travelling, adding travel multiplier to hunger")
+        logger:debug("Travelling, adding travel multiplier to hunger")
         newHunger = newHunger + ( scriptInterval * hungerRate * coldEffect * foodPoisonEffect * config.travelingNeedsMultiplier )
     else
         newHunger = newHunger + ( scriptInterval * hungerRate * coldEffect * foodPoisonEffect )
@@ -179,7 +180,7 @@ local function addFoodPoisoning(e)
         local survival = common.skills.survival.value
         local survivalRoll = math.random(100)
         if survivalRoll < survival then
-            common.log:debug("Survival Effect of %s bypassed food poisoning with a roll of %s",survival, survivalRoll)
+            logger:debug("Survival Effect of %s bypassed food poisoning with a roll of %s",survival, survivalRoll)
             return
         end
 
@@ -193,19 +194,19 @@ local function addFoodPoisoning(e)
         local minPoison = 50
         local maxPoison = 120
         local poisonAmount = math.random(minPoison, maxPoison) * cookedEffect
-        common.log:debug("Adding %s food poisoning. Min/Max: %s/%s", poisonAmount, minPoison, maxPoison)
+        logger:debug("Adding %s food poisoning. Min/Max: %s/%s", poisonAmount, minPoison, maxPoison)
         foodPoison:setValue(foodPoison:getValue() + poisonAmount)
     end
 end
 
 local function addDisease(e)
     if config.enableDiseasedMeat then
-        common.log:debug("addDisease()")
+        logger:debug("addDisease()")
         if e.itemData then
-            common.log:debug("has data")
+            logger:debug("has data")
             local diseaseData = e.itemData.data.mer_disease
             if diseaseData ~= nil then
-                common.log:debug("Trying to contract %s", diseaseData.id)
+                logger:debug("Trying to contract %s", diseaseData.id)
                 common.helper.tryContractDisease(diseaseData.id)
             end
         end
@@ -213,14 +214,14 @@ local function addDisease(e)
 end
 
 local function onEquipFood(e)
-    common.log:trace("onEquipFood")
-    if common.getIsBlocked(e.item) then
-        common.log:debug("onEquipFood: Is Blocked")
+    logger:trace("onEquipFood")
+    if common.helper.getIsBlocked(e.item) then
+        logger:debug("onEquipFood: Is Blocked")
         return
     end
     local nutrition = this.getNutrition(e.item, e.itemData)
     if nutrition then
-        common.log:debug("onEquipFood: Is ingredient")
+        logger:debug("onEquipFood: Is ingredient")
         this.eatAmount(nutrition)
         addFoodPoisoning(e)
         addDisease(e)
@@ -239,7 +240,7 @@ local function onShiftActivateFood(e)
         )
         local hasAccess = tes3.hasOwnershipAccess{ target = e.target }
         if hasAccess and isModifierKeyPressed then
-            common.log:debug("Shift Activated %s has nutrition of %s", e.target, nutrition)
+            logger:debug("Shift Activated %s has nutrition of %s", e.target, nutrition)
             local eventData = {
                 item = e.target.object,
                 itemData = e.target.itemData,

@@ -1,5 +1,5 @@
 local common = require("mer.ashfall.common.common")
-local config = require("mer.ashfall.config.config").config
+local config = require("mer.ashfall.config").config
 local miscToContainerMapping = {
     ashfall_sack_01 = "ashfall_sack_c",
     ashfall_chest_01_m = "ashfall_chest_01_c"

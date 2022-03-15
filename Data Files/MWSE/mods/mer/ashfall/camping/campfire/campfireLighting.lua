@@ -6,13 +6,9 @@
 
 ]]
 local common = require ("mer.ashfall.common.common")
+local logger = common.createLogger("campfireLighting")
 local referenceController = require("mer.ashfall.referenceController")
 local skillSurvivalLightFireIncrement = 5
-
-
-
-
-
 
 local function initialiseCampfireSoundAndFlame()
     local function doUpdate(campfire)
@@ -39,7 +35,7 @@ local function initialiseCampfireSoundAndFlame()
         timer.delayOneFrame(function()
             local isCampfire = referenceController.controllers.campfire:isReference(campfire)
             if isCampfire and campfire.data.isLit then
-                common.log:debug("initilaliseCampfire: playing sound on %s", campfire.object.id)
+                logger:debug("initilaliseCampfire: playing sound on %s", campfire.object.id)
                 tes3.playSound{
                     sound = "Fire",
                     reference = campfire,
@@ -132,7 +128,7 @@ end
 local function lightFire(e)
     local fuelConsumer = e.fuelConsumer
     local lighterData = e.lighterData
-    common.log:debug("Lighting Fire %s", fuelConsumer.object.id)
+    logger:debug("Lighting Fire %s", fuelConsumer.object.id)
     tes3.playSound{ reference = tes3.player, sound = "ashfall_light_fire"  }
 
     fuelConsumer.data.isLit = true

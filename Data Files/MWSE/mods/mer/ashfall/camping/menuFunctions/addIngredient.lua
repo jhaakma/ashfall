@@ -1,4 +1,5 @@
 local common = require ("mer.ashfall.common.common")
+local logger = common.createLogger("addIngredient")
 local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 local foodConfig = common.staticConfigs.foodConfig
 local LiquidContainer = require("mer.ashfall.objects.LiquidContainer")
@@ -50,7 +51,7 @@ end
 local function ingredientSelect(campfire, foodType)
     common.data.inventorySelectStew = true
     timer.delayOneFrame(function()
-        common.log:debug("ingedient select menu for stew")
+        logger:debug("ingedient select menu for stew")
         tes3ui.showInventorySelectMenu{
             title = "Select Ingredient:",
             noResultsText = string.format("You do not have any %ss.", string.lower(foodType)),
@@ -63,14 +64,14 @@ local function ingredientSelect(campfire, foodType)
             callback = function(e) --select how many
                 common.data.inventorySelectStew = nil
                 if e.item then
-                    common.log:debug("Selecting ingredient amount for stew")
+                    logger:debug("Selecting ingredient amount for stew")
                     local liquidContainer = LiquidContainer.createFromReference(campfire)
                     local capacity = liquidContainer:getStewCapacity(foodType)
                     local max = math.min(
                         tes3.getItemCount{ reference = tes3.player, item = e.item },
                         capacity
                     )
-                    common.log:debug("max: %s", max)
+                    logger:debug("max: %s", max)
                     e.amount = 1
                     e.campfire = campfire
                     e.foodType = foodType

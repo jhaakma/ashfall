@@ -1,7 +1,7 @@
 
 local https = require "ssl.https"
 local common = require("mer.ashfall.common.common")
-local config = require("mer.ashfall.config.config").config
+local config = require("mer.ashfall.config").config
 
 local this = {}
 

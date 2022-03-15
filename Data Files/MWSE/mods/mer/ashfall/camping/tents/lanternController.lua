@@ -1,8 +1,7 @@
 local this = {}
 
 local common = require("mer.ashfall.common.common")
-local config = require("mer.ashfall.config.config").config
-local tentConfig = require("mer.ashfall.camping.tents.tentConfig")
+local logger = common.createLogger("lanternController")
 
 local function getAttachLanternNode(node)
     return node and node:getObjectByName("ATTACH_LANTERN")
@@ -98,7 +97,7 @@ function this.selectLantern(tentRef)
             end,
             callback = function(e)
                 if e.item then
-                    common.log:debug("attaching lantern")
+                    logger:debug("attaching lantern")
                     this.attachLantern(tentRef, e.item, e.itemData)
                 end
             end
@@ -115,7 +114,7 @@ function this.tentHasLantern(ref)
 end
 
 local function attachLightToRef(tentRef, lanternItem)
-    local lanternMesh = common.loadMesh(lanternItem.mesh)
+    local lanternMesh = common.helper.loadMesh(lanternItem.mesh)
     lanternMesh:clearTransforms()
     local attachLanternNode = getAttachLanternNode(tentRef.sceneNode)
     attachLanternNode:attachChild(lanternMesh, true)
@@ -123,17 +122,17 @@ local function attachLightToRef(tentRef, lanternItem)
     attachLanternNode:update()
     attachLanternNode:updateNodeEffects()
     tentRef.modified = true
-    common.log:debug("lantern attached to %s", tentRef.object.id)
+    logger:debug("lantern attached to %s", tentRef.object.id)
 end
 
 function this.attachLantern(tentRef, lanternItem, lanternData)
-    common.log:debug("attachLantern: %s", lanternItem)
+    logger:debug("attachLantern: %s", lanternItem)
     local attachLanternNode = getAttachLanternNode(tentRef.sceneNode)
     if attachLanternNode then
-        common.log:debug("found lantern node for %s", tentRef.object.id)
+        logger:debug("found lantern node for %s", tentRef.object.id)
         --remove existing lantern
         if #attachLanternNode.children > 0 then
-            common.log:debug("Found existing child of lantern node, removing")
+            logger:debug("Found existing child of lantern node, removing")
             attachLanternNode:detachChildAt(1)
         end
         --attach mesh to tent
@@ -142,8 +141,8 @@ function this.attachLantern(tentRef, lanternItem, lanternData)
             data = lanternData
         }
         if lanternData then
-            common.log:debug("Printing lanternData.data")
-            common.log:debug(json.encode(lanternData.data))
+            logger:debug("Printing lanternData.data")
+            logger:debug(json.encode(lanternData.data))
             tentRef.data.lantern.data = {
                 timeLeft = lanternData.timeLeft,
                 data = lanternData.data
@@ -151,9 +150,9 @@ function this.attachLantern(tentRef, lanternItem, lanternData)
         end
         attachLightToRef(tentRef, lanternItem)
         tes3.removeItem{ reference = tes3.player, item = lanternItem, playSound = false}
-        common.log:debug("Registering tent with %s as a reference", lanternItem)
+        logger:debug("Registering tent with %s as a reference", lanternItem)
     else
-        common.log:error("%s does not have an ATTACH_LANTERN node.", tentRef.object.id)
+        logger:error("%s does not have an ATTACH_LANTERN node.", tentRef.object.id)
     end
 end
 
@@ -161,7 +160,7 @@ function this.removeLantern(tentRef)
     local attachLanternNode = getAttachLanternNode(tentRef.sceneNode)
     if attachLanternNode and tentRef.data.lantern then
         turnLanternOff(tentRef)
-        common.log:debug("found trinket node for %s", tentRef.object.id)
+        logger:debug("found trinket node for %s", tentRef.object.id)
         if #attachLanternNode.children > 0 then
             attachLanternNode:detachChildAt(1)
             attachLanternNode:update()
@@ -181,7 +180,7 @@ function this.removeLantern(tentRef)
             end
             tentRef.data.lantern = nil
         else
-            common.log:error("%s has no lantern to remove.", tentRef.object.id)
+            logger:error("%s has no lantern to remove.", tentRef.object.id)
         end
     end
 end

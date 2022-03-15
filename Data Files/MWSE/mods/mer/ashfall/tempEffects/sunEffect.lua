@@ -1,5 +1,6 @@
 local this = {}
 local common = require('mer.ashfall.common.common')
+local logger = common.createLogger('sunEffect')
 
 --Register heat source
 local temperatureController = require("mer.ashfall.temperatureController")
@@ -59,14 +60,14 @@ local function getInShade()
 end
 
 local function setInShade()
-    common.log:trace("Checking for Sun Shade")
+    logger:trace("Checking for Sun Shade")
     local inside = common.helper.getInside(tes3.player)
     local sunBlocked = getSunBlocked()
     local wearingShade = getWearingShade()
     common.data.sunShaded = inside or sunBlocked or wearingShade
 end
 event.register(tes3.event.loaded, function()
-    common.log:debug("Starting shade timer")
+    logger:debug("Starting shade timer")
     timer.start{
         duration = 1,
         iterations = -1,

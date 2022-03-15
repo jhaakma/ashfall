@@ -1,6 +1,6 @@
 local this = {}
 local staticConfigs = require("mer.ashfall.config.staticConfigs")
-local config = require("mer.ashfall.config.config").config
+local config = require("mer.ashfall.config").config
 local skillModule = include("OtherSkills.skillModule")
 local refController = require("mer.ashfall.referenceController")
 local tentConfig = require("mer.ashfall.camping.tents.tentConfig")
@@ -412,7 +412,27 @@ function this.getUniqueCellId(cell)
     end
 end
 
+function this.loadMesh(mesh)
+    local useCache = not config.debugMode
+    return tes3.loadMesh(mesh, useCache):clone()
+end
 
+function this.isInnkeeper(reference)
+    local obj = reference.baseObject or reference.object
+    local objId = obj.id:lower()
+    local classId = obj.class and reference.object.class.id:lower()
+    return ( classId and staticConfigs.innkeeperClasses[classId])
+        or config.foodWaterMerchants[objId]
+end
+
+--Returns if an object is blocked by the MCM
+function this.getIsBlocked(obj)
+    local mod = obj.sourceMod and obj.sourceMod:lower()
+    return (
+        config.blocked[obj.id] or
+        config.blocked[mod]
+    )
+end
 
 --[[
     Fades out, passes time then runs callback when finished

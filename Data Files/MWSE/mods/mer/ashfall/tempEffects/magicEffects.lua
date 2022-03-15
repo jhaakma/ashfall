@@ -6,6 +6,7 @@
 
 local this = {}
 local common = require("mer.ashfall.common.common")
+local logger = common.createLogger("magicEffects")
 
 --Register temp effect
 local temperatureController = require("mer.ashfall.temperatureController")
@@ -48,8 +49,8 @@ local function calculateDamageTemp(e)
     if e.target ~= tes3.player then return end
 
     if e.effectId == tes3.effect.fireDamage or e.effectId == tes3.effect.frostDamage then
-        common.log:trace("spell magnitude = %.4f", e.effectInstance.magnitude)
-        common.log:trace("e.effectInstance.resistedPercent: %s", e.effectInstance.resistedPercent)
+        logger:trace("spell magnitude = %.4f", e.effectInstance.magnitude)
+        logger:trace("e.effectInstance.resistedPercent: %s", e.effectInstance.resistedPercent)
         local damageTemp = 0
         if e.effectInstance.state == tes3.spellState.working then
             damageTemp = e.effectInstance.magnitude
@@ -57,13 +58,13 @@ local function calculateDamageTemp(e)
                 * spellDamageEffectMulti
             damageTemp = math.clamp(damageTemp, 0, 100)
 
-            common.log:trace("damageTemp: %s", damageTemp)
+            logger:trace("damageTemp: %s", damageTemp)
 
             if e.effectId == tes3.effect.fireDamage then
                 common.data.fireDamageEffect = common.data.fireDamageEffect or 0
                 common.data.fireDamageEffect = common.data.fireDamageEffect +
                 ((damageTemp - common.data.fireDamageEffect) * math.min(1, e.deltaTime))
-                common.log:trace("common.data.fireDamageEffect: %s", common.data.fireDamageEffect)
+                logger:trace("common.data.fireDamageEffect: %s", common.data.fireDamageEffect)
             elseif e.effectId == tes3.effect.frostDamage then
                 damageTemp = -damageTemp --because its cold
                 common.data.frostDamageEffect = common.data.frostDamageEffect or 0

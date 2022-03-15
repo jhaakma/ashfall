@@ -1,4 +1,5 @@
 local common = require ("mer.ashfall.common.common")
+local logger = common.createLogger("teaWarmer")
 local teaWarmerConfig = require("mer.ashfall.items.teaWarmer.config")
 local midnightOilInterop = include("mer.midnightOil.interop")
 local MAX_FUEL_LEVEL = 10
@@ -19,7 +20,7 @@ end
 ---@param e equipEventData
 local function preventEquippingTeaWarmer(e)
     if objectIsTeaWarmer(e.item) then
-        common.log:debug("Preventing tea warmer from being equipped")
+        logger:debug("Preventing tea warmer from being equipped")
         return false
     end
 end
@@ -71,7 +72,7 @@ end
 
 local function pickup(teaWarmer)
     timer.delayOneFrame(function()
-        common.log:debug("Picking up tea warmer")
+        logger:debug("Picking up tea warmer")
         common.helper.pickUp(teaWarmer)
     end)
 end
@@ -134,7 +135,7 @@ local function showMenuOnEquipTeaWarmer(e)
                                 and teaWarmer.data.isLit ~= true
                         end,
                         callback = function()
-                            common.log:debug("Lit tea warmer")
+                            logger:debug("Lit tea warmer")
                             doLight(teaWarmer)
                         end
                     },
@@ -144,7 +145,7 @@ local function showMenuOnEquipTeaWarmer(e)
                             return teaWarmer.data.isLit
                         end,
                         callback = function()
-                            common.log:debug("Extinguish tea warmer")
+                            logger:debug("Extinguish tea warmer")
                             event.trigger("Ashfall:fuelConsumer_Extinguish", { fuelConsumer = teaWarmer, playSound = false })
                         end
                     },

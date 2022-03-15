@@ -4,7 +4,7 @@ local CraftingFramework = include("CraftingFramework")
 if not CraftingFramework then
     logger:error("CraftingFramework not found")
 end
-local config = require("mer.ashfall.config.config").config
+local config = require("mer.ashfall.config").config
 local craftingConfig = require("mer.ashfall.bushcrafting.config")
 
 
@@ -56,3 +56,19 @@ local function createMaterialsTooltip(e)
 end
 
 event.register('uiObjectTooltip', createMaterialsTooltip)
+
+
+local function buildName(object, customName)
+    return string.format("%s: %s", object.name, customName)
+end
+local function customNameTooltip(e)
+    local name = e.itemData and e.itemData.data.customName
+    if name then
+        local label = e.tooltip:findChild(tes3ui.registerID('HelpMenu_name'))
+        if label then
+            label.text = buildName(e.object, name)
+        end
+    end
+end
+
+event.register("uiObjectTooltip", customNameTooltip)

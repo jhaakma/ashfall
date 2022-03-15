@@ -10,12 +10,12 @@
 ]]
 
 local common = require ("mer.ashfall.common.common")
-
+local logger = common.createLogger("campfireInit")
 local campfireConfig = common.staticConfigs.campfireConfig
 local activatorConfig = common.staticConfigs.activatorConfig
 
 local function registerDataValues(campfire)
-    common.log:debug("registerDataValues %s", campfire.object.id)
+    logger:debug("registerDataValues %s", campfire.object.id)
     campfire.data.fuelLevel = campfire.data.fuelLevel or 1
     event.trigger("Ashfall:registerReference", { reference = campfire})
 end
@@ -33,7 +33,7 @@ local function registerCampfire(e)
 
         --Legacy kettle Id
         if e.reference.data.kettleId then
-            common.log:info("Found campfire with kettleId, replacing with utensilId")
+            logger:info("Found campfire with kettleId, replacing with utensilId")
             e.reference.data.utensilId = e.reference.data.kettleId
             e.reference.data.kettleId = nil
         end
@@ -50,11 +50,11 @@ local function registerCampfire(e)
                 else
                     e.reference.data.utensilId = "ashfall_cooking_pot"
                 end
-                common.log:info("Found campfire with a utensil and no utensilId, setting to %s",
+                logger:info("Found campfire with a utensil and no utensilId, setting to %s",
                     e.reference.data.utensilId)
             elseif oldCookingPots[e.reference.data.utensilId] then
                 e.reference.data.utensilId = "ashfall_cooking_pot"
-                common.log:info("Found campfire with an invalid cooking pot, setting to %s",
+                logger:info("Found campfire with an invalid cooking pot, setting to %s",
                     e.reference.data.utensilId)
             end
         end
@@ -71,7 +71,7 @@ local function registerCampfire(e)
             local data = common.staticConfigs.utensils[e.reference.data.utensilId]
             local capacity = data and data.capacity or 100
             e.reference.data.waterCapacity = capacity
-            common.log:info("Found campfire with a utensil and no water capacity, setting to %s. utensilID: %s",
+            logger:info("Found campfire with a utensil and no water capacity, setting to %s. utensilID: %s",
                 capacity, e.reference.data.utensilId)
         end
     end
@@ -80,7 +80,7 @@ local function registerCampfire(e)
     local initialised = e.reference.data and e.reference.data.campfireInitialised
     if dynamicConfig and isActivator and not initialised then
         local campfire = e.reference
-        common.log:debug("registerCampfire %s", campfire.object.id)
+        logger:debug("registerCampfire %s", campfire.object.id)
         campfire.data.campfireInitialised = true
         campfire.data.dynamicConfig = dynamicConfig
 

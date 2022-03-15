@@ -1,4 +1,5 @@
 local common = require("mer.ashfall.common.common")
+local logger = common.createLogger("main")
 local Interop = require("mer.ashfall.interop")
 local versionController = require("mer.ashfall.versionController")
 --[[
@@ -45,7 +46,7 @@ local function initialized()
 
         require("mer.ashfall.ui.sephInterop")
         event.trigger("Ashfall:Interop", Interop)
-        common.log:info("%s Initialised", versionController.getVersion())
+        logger:info("%s Initialised", versionController.getVersion())
     end
 end
 

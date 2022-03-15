@@ -1,6 +1,7 @@
 local common = require("mer.ashfall.common.common")
+local logger = common.createLogger("waterMerchant")
 local merchantMenu = require('mer.ashfall.merchants.merchantMenu')
-local config = require("mer.ashfall.config.config").config
+local config = require("mer.ashfall.config").config
 local thirstController = require("mer.ashfall.needs.thirstController")
 
 
@@ -22,7 +23,7 @@ end
 
 
 local function onWaterServiceClick()
-    common.log:debug("Activating water menu")
+    logger:debug("Activating water menu")
     local menuDialog = merchantMenu.getDialogMenu()
     local merchant = menuDialog:getPropertyObject("PartHyperText_actor")
     local cost = getWaterCost(merchant.object)
@@ -92,16 +93,16 @@ end
 local function onMenuDialogActivated()
     if config.enableThirst ~= true then return end
 
-    common.log:debug("Dialog menu entered")
+    logger:debug("Dialog menu entered")
     local menuDialog = merchantMenu.getDialogMenu()
     -- Get the actor that we're talking with.
 	local mobileActor = menuDialog:getPropertyObject("PartHyperText_actor")
     local ref = mobileActor.reference
 
-    common.log:debug("Actor: %s", ref.object.name)
+    logger:debug("Actor: %s", ref.object.name)
 
-    if common.isInnkeeper(ref) then
-        common.log:debug("Actor is an innkeeper, adding Fill Water Service")
+    if common.helper.isInnkeeper(ref) then
+        logger:debug("Actor is an innkeeper, adding Fill Water Service")
         -- Create our new button.
         createWaterButton(menuDialog)
     end

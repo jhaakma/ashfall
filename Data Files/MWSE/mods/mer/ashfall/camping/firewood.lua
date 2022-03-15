@@ -7,7 +7,8 @@ local activatorController = require "mer.ashfall.activators.activatorController"
 ----------------------
 
 local common = require ("mer.ashfall.common.common")
-local config = require("mer.ashfall.config.config").config
+local logger = common.createLogger("firewood")
+local config = require("mer.ashfall.config").config
 local skipActivate
 local function pickupFirewood(ref)
     timer.delayOneFrame(function()
@@ -115,7 +116,7 @@ end
 local function onMagicCasted(e)
 
     if e.caster == tes3.player then
-        common.log:debug("Player magic casted")
+        logger:debug("Player magic casted")
         local isFireTouch
         local isFrostTouch
         for _, effect in ipairs(e.source.effects) do
@@ -131,10 +132,10 @@ local function onMagicCasted(e)
             end
         end
         if isFireTouch or isFrostTouch then
-            common.log:debug("%s", isFireTouch and "Cast fire" or "Cast frost")
+            logger:debug("%s", isFireTouch and "Cast fire" or "Cast frost")
             local campfire = activatorController.currentRef
             if campfire then
-                common.log:debug("Looking at campfire")
+                logger:debug("Looking at campfire")
                 local isLit = campfire.data.isLit
                 local hasFuel = campfire.data.fuelLevel and campfire.data.fuelLevel > 0
                 local doLight = hasFuel and isFireTouch and not isLit
@@ -142,12 +143,12 @@ local function onMagicCasted(e)
                 local isEnchant = e.sourceInstance.itemData
 
                 if isEnchant then --Is a ring, so mimic the fire effect
-                    common.log:debug("Is enchantment")
+                    logger:debug("Is enchantment")
                     local hasCharge = e.sourceInstance.itemData.charge >= e.source.chargeCost
                     if hasCharge and (doLight or doExtinguish) then
-                        common.log:debug("hasCharge and can light/extinguish")
+                        logger:debug("hasCharge and can light/extinguish")
                         local spell = isFireTouch and "fire bite" or "frostbite"
-                        common.log:debug("Casting %s", spell)
+                        logger:debug("Casting %s", spell)
                         mwscript.explodeSpell{ reference = campfire, spell = spell }
                         timer.start{
                             type = timer.simulate,
@@ -165,12 +166,12 @@ local function onMagicCasted(e)
 
                     end
                 else-- Is a spell, so no extra effects necessary
-                    common.log:debug("is spell")
+                    logger:debug("is spell")
                     if doLight then
-                        common.log:debug("Lighting fire")
+                        logger:debug("Lighting fire")
                         event.trigger("Ashfall:fuelConsumer_Alight", { fuelConsumer = campfire})
                     elseif doExtinguish then
-                        common.log:debug("extinguishing fire")
+                        logger:debug("extinguishing fire")
                         extinguishFire(campfire)
                     end
                 end
@@ -200,7 +201,7 @@ local function onSpellHit(e)
             end
         end
         if isFireSpell or isFrostSpell then
-            common.log:debug("on target %s spell expired", isFireSpell and "fire" or "frost")
+            logger:debug("on target %s spell expired", isFireSpell and "fire" or "frost")
             local spellRef = e.mobile.reference
             local result =  tes3.rayTest{
                 position = {spellRef.position.x, spellRef.position.y, spellRef.position.z},
@@ -209,18 +210,18 @@ local function onSpellHit(e)
                 useBackTriangles = true,
             }
             if result and result.reference then
-                common.log:debug("Found target")
+                logger:debug("Found target")
                 local campfire = result.reference
                 local hasFuel = campfire.data.fuelLevel and campfire.data.fuelLevel > 0
                 local isLit = campfire.data.isLit
                 if hasFuel then
-                    common.log:debug("Target has fuel")
+                    logger:debug("Target has fuel")
                     if isFireSpell and not isLit then
-                        common.log:debug("lighting fire on target")
+                        logger:debug("lighting fire on target")
                         event.trigger("Ashfall:fuelConsumer_Alight", { fuelConsumer = campfire})
                     end
                     if isLit and isFrostSpell then
-                        common.log:debug("Extinguishing fire on target")
+                        logger:debug("Extinguishing fire on target")
                         extinguishFire(campfire)
                     end
                 end

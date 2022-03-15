@@ -1,5 +1,6 @@
 local this = {}
 local common = require("mer.ashfall.common.common")
+local logger = common.createLogger("sicknessController")
 local foodPoison = common.staticConfigs.conditionConfig.foodPoison
 local dysentery = common.staticConfigs.conditionConfig.dysentery
 local blightness = common.staticConfigs.conditionConfig.blightness
@@ -18,31 +19,31 @@ local fluDecreaseRate = 200
 local function calculateFoodPoison(scriptInterval)
     local drainRate
     if foodPoison:getCurrentState() == foodPoison.default then
-        common.log:trace("calculateFoodPoison using healthy rate")
+        logger:trace("calculateFoodPoison using healthy rate")
         drainRate = drainRateHealthy
     else
-        common.log:trace("calculateFoodPoison using sick rate")
+        logger:trace("calculateFoodPoison using sick rate")
         drainRate = drainRateSick
     end
 
     local newVal = foodPoison:getValue() - ( scriptInterval * drainRate)
     foodPoison:setValue(newVal)
-    common.log:trace("new food poison value: %.f", newVal)
+    logger:trace("new food poison value: %.f", newVal)
 end
 
 local function calculateDysentry(scriptInterval)
     local drainRate
     if dysentery:getCurrentState() == dysentery.default then
-        common.log:trace("calculateDysentry using healthy rate")
+        logger:trace("calculateDysentry using healthy rate")
         drainRate = drainRateHealthy
     else
-        common.log:trace("calculateDysentry using sick rate")
+        logger:trace("calculateDysentry using sick rate")
         drainRate = drainRateSick
     end
 
     local newVal = dysentery:getValue() - ( scriptInterval * drainRate)
 
-    common.log:trace("New dysentery value: %s", newVal)
+    logger:trace("New dysentery value: %s", newVal)
     dysentery:setValue(newVal)
 end
 
@@ -53,7 +54,7 @@ local function calculateBlightness(scriptInterval)
     --already has blight, set to 0
     local hasBlight = blightness:hasSpell()
     if hasBlight then
-        common.log:trace("Already has blight, setting to 0")
+        logger:trace("Already has blight, setting to 0")
         blightness:setValue(0)
         return
     end
@@ -75,21 +76,21 @@ local function calculateBlightness(scriptInterval)
     )
 
     if exposedToBlight then
-        common.log:trace("In a blight storm")
+        logger:trace("In a blight storm")
 
         --half from coverage
         local coverage = common.data.coverageRating
         local coverageMulti = math.remap(coverage, 0.0, 1.0, 0.5, 0.0)
-        common.log:trace("coverageMulti : %s", coverageMulti)
+        logger:trace("coverageMulti : %s", coverageMulti)
 
         --half from face covered
         local faceMulti = common.data.faceCovered == true and 0.0 or 0.5
-        common.log:trace("faceMulti : %s", faceMulti)
+        logger:trace("faceMulti : %s", faceMulti)
         --add them up to 0-1.0
         local coveragePlusFaceMulti = coverageMulti + faceMulti
 
-        common.log:trace("----------------Blight coverage: %s", coveragePlusFaceMulti)
-        common.log:trace("----------------blight per hour: %s", blightGainRate * coveragePlusFaceMulti)
+        logger:trace("----------------Blight coverage: %s", coveragePlusFaceMulti)
+        logger:trace("----------------blight per hour: %s", blightGainRate * coveragePlusFaceMulti)
 
 
         local newVal = blightness:getValue() + (
@@ -100,12 +101,12 @@ local function calculateBlightness(scriptInterval)
         blightness:setValue(newVal)
     --not exposed to blight, reduce blightness
     else
-        common.log:trace("Not exposed to blight")
+        logger:trace("Not exposed to blight")
         local newVal = blightness:getValue() - ( scriptInterval * blightDrainRate )
         blightness:setValue(newVal)
     end
 
-    common.log:trace("New blightness value: %s", blightness:getValue() )
+    logger:trace("New blightness value: %s", blightness:getValue() )
 end
 
 
@@ -115,27 +116,27 @@ local function calculateFlu(scriptInterval)
     -- 40: 1.0x recovery
     local playerTemp = math.min(common.staticConfigs.conditionConfig.temp:getValue(), 40)
     local tempEffect = math.remap(playerTemp, -100, 0, 1.0, -0.5)
-    common.log:trace("tempEffect: %s", tempEffect)
+    logger:trace("tempEffect: %s", tempEffect)
 
     local wetness = common.data.wetness
     local wetEffect = math.remap(wetness, 0, 100, 0, 0.5)
-    common.log:trace("wetEffect: %s", wetEffect)
+    logger:trace("wetEffect: %s", wetEffect)
 
     local adjustedEffect = tempEffect + wetEffect
-    common.log:trace("adjustedEffect: %s", adjustedEffect)
+    logger:trace("adjustedEffect: %s", adjustedEffect)
 
-    common.log:trace("scriptInterval: %s", scriptInterval)
+    logger:trace("scriptInterval: %s", scriptInterval)
     local change = scriptInterval * adjustedEffect
-    common.log:trace("change: %s", change)
+    logger:trace("change: %s", change)
     if change > 0 then
         change = change * fluIncreaseRate
     else
         change = change * fluDecreaseRate
     end
-    common.log:trace("rate adjusted change: %s", change)
+    logger:trace("rate adjusted change: %s", change)
     local currentValue = flu:getValue()
     local newValue = currentValue + change
-    common.log:trace("Flu: Change: %s ; new Value: %s", change, newValue)
+    logger:trace("Flu: Change: %s ; new Value: %s", change, newValue)
     flu:setValue(newValue)
 end
 
@@ -163,7 +164,7 @@ local function getSneezeSound()
     else
         sneezePath = path .. "\\" .. defaultSneezes[sex]
     end
-    common.log:trace("Getting sneeze at: %s", sneezePath)
+    logger:trace("Getting sneeze at: %s", sneezePath)
 
     return sneezePath
 end
@@ -241,26 +242,26 @@ local function checkFaceCovered(e)
 
     if e.object then
         if e.object.objectType == tes3.objectType.armor and e.object.slot == tes3.armorSlot.helmet then
-            common.log:trace("is helmet")
-            common.log:trace("partType: %s", e.bodyPart.partType)
-            common.log:trace("part: %s", e.bodyPart.part)
+            logger:trace("is helmet")
+            logger:trace("partType: %s", e.bodyPart.partType)
+            logger:trace("part: %s", e.bodyPart.part)
             if e.bodyPart.part == parts.head then
-                common.log:trace("Face is covered")
+                logger:trace("Face is covered")
                 common.data.faceCovered = true
             else
-                common.log:trace("Helmet but is exposed")
+                logger:trace("Helmet but is exposed")
                 common.data.faceCovered = false
             end
         end
     else
-        common.log:trace("not an object")
+        logger:trace("not an object")
         if e.bodyPart.part == parts.head then
-            common.log:trace("e.bodyPart.part == parts.head ")
+            logger:trace("e.bodyPart.part == parts.head ")
             common.data.faceCovered = false
         end
 
         if e.bodyPart == tes3.mobilePlayer.head then
-            common.log:trace("no helmet, Face exposed")
+            logger:trace("no helmet, Face exposed")
             common.data.faceCovered = false
         end
     end

@@ -2,6 +2,7 @@
     Iterates over objects that  and updates their fuel level
 ]]
 local common = require ("mer.ashfall.common.common")
+local logger = common.createLogger("brewerController")
 local teaConfig = common.staticConfigs.teaConfig
 local LiquidContainer = require("mer.ashfall.objects.LiquidContainer")
 --Tea resist
@@ -13,7 +14,7 @@ local BREWER_UPDATE_INTERVAL = 0.001
 
 
 local function removeTeaEffect(teaData)
-    common.log:debug("onDrinkTea: removing previous effect")
+    logger:debug("onDrinkTea: removing previous effect")
     if teaData.spell then
         --DelayThreeFrames, to give the spell plenty of time to initialise if drinking multiple teas from inventory
         timer.delayOneFrame(function()timer.delayOneFrame(function()timer.delayOneFrame(function()
@@ -51,7 +52,7 @@ event.register("simulate", updateBuffs)
 
 
 local function onDrinkTea(e)
-    common.log:debug("onDrinkTea")
+    logger:debug("onDrinkTea")
     local teaType = e.teaType
     local teaData = teaConfig.teaTypes[teaType]
     local amount = e.amountDrank
@@ -70,14 +71,14 @@ local function onDrinkTea(e)
         local timeLeft = math.max(0.5, amountEffect * durationEffect)
         common.data.teaBuffTimeLeft = timeLeft
         common.data.teaDrank = teaType
-        common.log:debug("onDrinkTea: setting duration to %s", timeLeft)
+        logger:debug("onDrinkTea: setting duration to %s", timeLeft)
     end
 
     if teaData.spell then
 
         local teaSpell = tes3.getObject(teaData.spell.id)
         if not teaSpell then
-            common.log:debug("onDrinkTea: Creating new spell")
+            logger:debug("onDrinkTea: Creating new spell")
             teaSpell = tes3spell.create(teaData.spell.id, teaData.teaName)
         end
         teaSpell.castType = teaData.spell.spellType or tes3.spellType.ability
@@ -94,14 +95,14 @@ local function onDrinkTea(e)
             effect.radius = newEffect.radius
         end
 
-        common.log:debug("onDrinkTea: has spell: adding %s", teaData.spell.id)
+        logger:debug("onDrinkTea: has spell: adding %s", teaData.spell.id)
 
         --delay 3 frames to let the previous tea spell wear off
         if teaSpell.castType == tes3.spellType.ability then
-            common.log:debug("Applying tea effect as ability")
+            logger:debug("Applying tea effect as ability")
             mwscript.addSpell{ reference = tes3.player, spell = teaSpell }
         else
-            common.log:debug("Applying tea spell as magic source")
+            logger:debug("Applying tea spell as magic source")
             tes3.applyMagicSource{
                 reference = tes3.player,
                 source = teaSpell,
@@ -110,7 +111,7 @@ local function onDrinkTea(e)
             }
         end
     elseif teaData.onCallback then
-        common.log:debug("onDrinkTea: callback")
+        logger:debug("onDrinkTea: callback")
         teaData.onCallback()
     end
 
@@ -126,7 +127,7 @@ local function updateBrewers(e)
         local difference = e.timestamp - liquidContainer.data.lastBrewUpdated
 
         if difference < 0 then
-            common.log:error("BREWER liquidContainer.data.lastBrewUpdated(%.4f) is ahead of e.timestamp(%.4f).",
+            logger:error("BREWER liquidContainer.data.lastBrewUpdated(%.4f) is ahead of e.timestamp(%.4f).",
                 liquidContainer.data.lastBrewUpdated, e.timestamp)
             --something fucky happened
             liquidContainer.data.lastBrewUpdated = e.timestamp

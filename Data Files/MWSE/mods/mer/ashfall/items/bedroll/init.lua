@@ -1,13 +1,14 @@
 local BedRoll = {}
 local common = require("mer.ashfall.common.common")
+local logger = common.createLogger("bedroll")
 local bedConfig = require("mer.ashfall.items.bedroll.config")
-local config = require("mer.ashfall.config.config").config
+local config = require("mer.ashfall.config").config
 local animCtrl = require("mer.ashfall.animation.animationController")
 local skipActivate
 
 local function setBedTempValues(ref)
     common.data.currentBedData = bedConfig.beds[ref.object.id:lower()]
-    common.log:debug("Setting currentBedData to: %s", json.encode(common.data.currentBedData, { indent = true }))
+    logger:debug("Setting currentBedData to: %s", json.encode(common.data.currentBedData, { indent = true }))
 end
 
 local function canRest()
@@ -21,7 +22,7 @@ end
 local function doRestMenu(bedRef, isCoveredBedroll)
 
     if isCoveredBedroll then
-        common.log:debug("Setting inTent for covered bedroll to true")
+        logger:debug("Setting inTent for covered bedroll to true")
         common.data.insideCoveredBedroll = true
         event.trigger("Ashfall:SetBedTemp", { isUsingBed = true})
     end
@@ -30,7 +31,7 @@ local function doRestMenu(bedRef, isCoveredBedroll)
     tes3.showRestMenu{ checkSleepingIllegal = false, resting = canRest(), waiting = not canRest() }
     event.trigger("Ashfall:CheckForShelter", {reference = bedRef})
     timer.delayOneFrame(function()
-        common.log:debug("Setting inTent for covered bedroll to false")
+        logger:debug("Setting inTent for covered bedroll to false")
         common.data.insideCoveredBedroll = false
         event.trigger("Ashfall:SetBedTemp",  { isUsingBed = false })
     end)

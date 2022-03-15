@@ -1,4 +1,4 @@
-local config = require("mer.ashfall.config.config").config
+local config = require("mer.ashfall.config").config
 
 local bodyPartCoverages = {}
 do

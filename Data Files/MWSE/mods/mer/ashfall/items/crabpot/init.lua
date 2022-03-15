@@ -1,5 +1,6 @@
 local common = require ("mer.ashfall.common.common")
-local config = require("mer.ashfall.config.config").config
+local logger = common.createLogger("crabpot")
+local config = require("mer.ashfall.config").config
 local crabpotConfig = require("mer.ashfall.items.crabpot.config")
 
 local function getActiveFromMisc(miscRef)
@@ -18,7 +19,7 @@ event.trigger("Ashfall:RegisterReferenceController", {
 })
 
 local function playCrabSound(ref)
-    common.log:debug("playing a crab sound")
+    logger:debug("playing a crab sound")
     local crabSounds = {
         "mudcrab roar",
         "mudcrab scream",
@@ -34,7 +35,7 @@ local function updateSwitchNodes(ref)
     for _, crabSwitch in ipairs(crabSwitches.children) do
         local name = crabSwitch.name
         local num = tonumber(string.sub(name, string.find(name, '=')+1))
-        common.log:trace("switch num: %s", num)
+        logger:trace("switch num: %s", num)
         if crabCount >= num then
             crabSwitch.switchIndex = 1
         else
@@ -84,7 +85,7 @@ local function onActivate(e)
         return false
     end
     if tes3.worldController.inputController:isKeyDown(config.modifierHotKey.keyCode) then
-        common.log:debug("Shift activating")
+        logger:debug("Shift activating")
         collectCrabs(ref)
         return
     end
@@ -125,7 +126,7 @@ event.register("activate", onActivate)
 local function cellHasCrabs(crabpot)
     for ref in crabpot.cell:iterateReferences(tes3.objectType.creature) do
         if string.find(ref.baseObject.id:lower(), "mudcrab") then
-            common.log:debug("Cell has a mudcrab")
+            logger:debug("Cell has a mudcrab")
             return true
         end
     end
@@ -203,16 +204,16 @@ local function updatePots(e)
 
             local currentCrabCount = math.floor(crabPotRef.data.crabCount)
             if currentCrabCount ~= previousCrabCount then
-                common.log:debug("previousCrabCount = %s", previousCrabCount)
-                common.log:debug("currentCrabCount = %s", currentCrabCount)
-                common.log:debug("interval: %.4f", interval)
-                common.log:debug("crabCellEffect: %.4f", crabCellEffect)
-                common.log:debug("skillEffect: %.4f", skillEffect)
-                common.log:debug("waterDepth: %.4f", waterDepth)
-                common.log:debug("waterEffect: %.4f", waterEffect)
-                common.log:debug("perHourIncrease = %.4f", perHourIncrease)
-                common.log:debug("increase = %s\n", increase)
-                common.log:debug("New crab count: %s", crabPotRef.data.crabCount)
+                logger:debug("previousCrabCount = %s", previousCrabCount)
+                logger:debug("currentCrabCount = %s", currentCrabCount)
+                logger:debug("interval: %.4f", interval)
+                logger:debug("crabCellEffect: %.4f", crabCellEffect)
+                logger:debug("skillEffect: %.4f", skillEffect)
+                logger:debug("waterDepth: %.4f", waterDepth)
+                logger:debug("waterEffect: %.4f", waterEffect)
+                logger:debug("perHourIncrease = %.4f", perHourIncrease)
+                logger:debug("increase = %s\n", increase)
+                logger:debug("New crab count: %s", crabPotRef.data.crabCount)
                 playCrabSound(crabPotRef)
                 updateSwitchNodes(crabPotRef)
             end

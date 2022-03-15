@@ -1,4 +1,5 @@
 local common = require ("mer.ashfall.common.common")
+local logger = common.createLogger("removeSupports")
 return {
     text = "Remove Supports",
     showRequirements = function(campfire)
@@ -19,7 +20,7 @@ return {
         local supports = campfire.data.supportsId
         local data = common.staticConfigs.supports[supports:lower()]
 
-        common.log:debug("Removing supports %s", supports)
+        logger:debug("Removing supports %s", supports)
         if data.materials then
             for id, count in pairs(data.materials ) do
                 local item = tes3.getObject(id)

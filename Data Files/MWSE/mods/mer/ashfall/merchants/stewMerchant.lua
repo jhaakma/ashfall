@@ -1,5 +1,6 @@
 local common = require("mer.ashfall.common.common")
-local config = require("mer.ashfall.config.config").config
+local logger = common.createLogger("stewMerchant")
+local config = require("mer.ashfall.config").config
 local merchantMenu = require("mer.ashfall.merchants.merchantMenu")
 local foodConfig = common.staticConfigs.foodConfig
 
@@ -33,7 +34,7 @@ local function stewSelectMenu()
         table.insert(buttons, {
             text = string.format("%s %s", spell.name, stewName),
             callback = function()
-                common.log:debug("Triggering EatStew")
+                logger:debug("Triggering EatStew")
                 event.trigger("Ashfall:eatStew", {
                     data = {
                         stewLevels = {
@@ -64,7 +65,7 @@ local function stewSelectMenu()
 end
 
 local function onStewServiceClick()
-    common.log:debug("Activating stew menu")
+    logger:debug("Activating stew menu")
     stewSelectMenu()
 end
 
@@ -142,16 +143,16 @@ end
 local function onMenuDialogActivated()
     if config.enableThirst ~= true then return end
 
-    common.log:debug("Dialog menu entered")
+    logger:debug("Dialog menu entered")
     local menuDialog = merchantMenu.getDialogMenu()
     -- Get the actor that we're talking with.
 	local mobileActor = menuDialog:getPropertyObject("PartHyperText_actor")
     local ref = mobileActor.reference
 
-    common.log:debug("Actor: %s", ref.object.name)
+    logger:debug("Actor: %s", ref.object.name)
 
-    if common.isInnkeeper(ref) then
-        common.log:debug("Actor is an innkeeper, adding Fill Stew Service")
+    if common.helper.isInnkeeper(ref) then
+        logger:debug("Actor is an innkeeper, adding Fill Stew Service")
         -- Create our new button.
         createStewButton(menuDialog)
     end

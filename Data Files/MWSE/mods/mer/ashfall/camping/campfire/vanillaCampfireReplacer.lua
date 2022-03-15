@@ -1,4 +1,5 @@
 local common = require ("mer.ashfall.common.common")
+local logger = common.createLogger("vanillaCampfireReplacer")
 local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 local foodConfig = common.staticConfigs.foodConfig
 local campfireConfig = common.staticConfigs.campfireConfig
@@ -156,13 +157,13 @@ local function getRandomItem(list)
     while attempts < 10 do
         local item = table.choice(table.keys(list))
         if tes3.getObject(item) then
-            common.log:debug("returning random item: %s", item)
+            logger:debug("returning random item: %s", item)
             return item
         else
             attempts = attempts + 1
         end
     end
-    common.log:error("getRandomItem(): No valid item found")
+    logger:error("getRandomItem(): No valid item found")
     return item
 end
 
@@ -175,6 +176,7 @@ local function addWater(campfire)
     if math.random() < randomStuffChances.water then
         campfire.data.waterAmount = 10 + math.random(50)
         if campfire.data.isLit then
+            logger:debug("Setting heat to 100")
             CampfireUtil.setHeat(campfire.data, 100, campfire)
         end
         --add tea to kettleswaterHeat
@@ -227,7 +229,7 @@ local function addKettle(campfire)
 end
 
 local function addSupports(campfire, vanillaConfig)
-    common.log:debug("Setting supports")
+    logger:debug("Setting supports")
     local supportsId = "ashfall_supports_01" --Use teepee for vanilla ones because of things leaning on them etc
     if vanillaConfig.squareSupports then
         supportsId = "ashfall_supports_02" --Morrowind Rebirth ones
@@ -251,7 +253,7 @@ local function attachRandomStuff(campfire, vanillaConfig)
     if string.find(campfire.cell.id:lower(), "tomb") then return end
     if campfire.data.staticCampfireInitialised then return end
 
-    common.log:debug("Attaching random stuff")
+    logger:debug("Attaching random stuff")
     campfire.data.staticCampfireInitialised = true
 
 
@@ -271,7 +273,7 @@ local function attachRandomStuff(campfire, vanillaConfig)
         end
     end
 
-    common.log:debug("setting static fuel level")
+    logger:debug("setting static fuel level")
     campfire.data.fuelLevel = 2 + math.random(3)
 end
 
@@ -284,8 +286,22 @@ local function setInitialState(campfire, vanillaRef, data, vanillaConfig)
         addFryingPan(campfire)
     end
 
+    --fire is lit already?
+    local doLight = (
+        data.isLit or
+        vanillaRef.object.objectType == tes3.objectType.light
+    )
+    logger:debug("Campfire initial fireState: %s", (doLight and "lit" or "unlit") )
+    if doLight then
+        campfire.data.isLit = true
+        logger:debug("Playing Fire sound on %s", campfire.object.id)
+        tes3.playSound{ sound = "Fire", reference = campfire, loop = true }
+    else
+        campfire:deleteDynamicLightAttachment()
+    end
+
     if vanillaConfig.supports == true then
-        common.log:debug("setting dynamicConfig.supports to static")
+        logger:debug("setting dynamicConfig.supports to static")
         --prevent removal of supports for kitbashing reasons
         campfire.data.dynamicConfig.supports = "static"
         if data.hasCookingPot then
@@ -301,20 +317,6 @@ local function setInitialState(campfire, vanillaRef, data, vanillaConfig)
         end
     end
 
-    --fire is lit already?
-    local doLight = (
-        data.isLit or
-        vanillaRef.object.objectType == tes3.objectType.light
-    )
-    common.log:debug("Campfire initial fireState: %s", (doLight and "lit" or "unlit") )
-    if doLight then
-        campfire.data.isLit = true
-        common.log:debug("Playing Fire sound on %s", campfire.object.id)
-        tes3.playSound{ sound = "Fire", reference = campfire, loop = true }
-    else
-        campfire:deleteDynamicLightAttachment()
-    end
-
     timer.delayOneFrame(function()
         event.trigger("Ashfall:registerReference", { reference = campfire} )
     end)
@@ -327,7 +329,7 @@ end
     based on what was found
 ]]
 local function checkKitBashObjects(vanillaRef)
-    common.log:debug("Checking kit bash objects for %s", vanillaRef.object.id)
+    logger:debug("Checking kit bash objects for %s", vanillaRef.object.id)
     local result = {
         hasGrill = false,
         hasFryingPan = false,
@@ -339,14 +341,14 @@ local function checkKitBashObjects(vanillaRef)
     }
     for ref in vanillaRef.cell:iterateReferences() do
         if ref.disabled then
-            common.log:debug("%s is disabled, adding to ignore list", ref.object.id)
+            logger:debug("%s is disabled, adding to ignore list", ref.object.id)
             table.insert(result.ignoreList, ref)
         else
             if (ref.baseObject.objectType ~= tes3.objectType.static) then
-                common.log:debug("Raytest ignores all non statics: %s", ref)
+                logger:debug("Raytest ignores all non statics: %s", ref)
                 table.insert(result.ignoreList, ref)
             elseif common.helper.compareReferenceSize(vanillaRef, ref) then
-                common.log:debug("Ignoring reference %s because it is too small", ref.object.id)
+                logger:debug("Ignoring reference %s because it is too small", ref.object.id)
                 table.insert(result.ignoreList, ref)
             end
             local id = ref.object.id:lower()
@@ -357,17 +359,17 @@ local function checkKitBashObjects(vanillaRef)
                     local skipRef
                     for _, pattern in ipairs(ignorePatterns) do
                         if string.find(id, pattern) then
-                            common.log:debug("Skipping ref %s", id)
+                            logger:debug("Skipping ref %s", id)
                             skipRef = true
                         end
                     end
                     if string.find(id, "_unique") then
-                        common.log:debug("Found a unique mesh (%s), ignoring campfire replacement", id)
+                        logger:debug("Found a unique mesh (%s), ignoring campfire replacement", id)
                         skipRef = true
                     end
 
                     if ref.object.script then
-                        common.log:debug("Found a scripted mesh (%s), ignoring campfire replacement", id)
+                        logger:debug("Found a scripted mesh (%s), ignoring campfire replacement", id)
                         skipRef = true
                     end
 
@@ -375,50 +377,50 @@ local function checkKitBashObjects(vanillaRef)
 
 
                         if platforms[id] then
-                            common.log:debug("Has platform")
+                            logger:debug("Has platform")
                             result.hasPlatform = true
                         end
 
                         --if you find an existing campfire, get rid of it
                         if vanillaCampfires[id] then
-                            common.log:debug("removing existing replaced campfire %s", ref.object.id)
+                            logger:debug("removing existing replaced campfire %s", ref.object.id)
                             table.insert(result.ignoreList, ref)
                             common.helper.yeet(ref)
                         end
 
                         if vanillaCampfires[id] then
-                            common.log:debug("Found another campfire that wants to be replaced, yeeting now: %s", ref.object.id)
+                            logger:debug("Found another campfire that wants to be replaced, yeeting now: %s", ref.object.id)
                             table.insert(result.ignoreList, ref)
                             common.helper.yeet(ref)
                         end
 
                         if cauldrons[id] then
-                            common.log:debug("Found existing cooking pot")
+                            logger:debug("Found existing cooking pot")
                             table.insert(result.ignoreList, ref)
                             result.hasCookingPot = true
                             common.helper.yeet(ref)
                         end
                         if grills[id] then
-                            common.log:debug("Found existing grill")
+                            logger:debug("Found existing grill")
                             table.insert(result.ignoreList, ref)
                             result.hasGrill = true
                             common.helper.yeet(ref)
                         end
                         if fryingPans[id] then
-                            common.log:debug("Found existing frying pan")
+                            logger:debug("Found existing frying pan")
                             table.insert(result.ignoreList, ref)
                             result.hasFryingPan = true
                             common.helper.yeet(ref)
                         end
                         if kitBashObjects[id] then
-                            common.log:debug("Found existing kitbash %s", id)
+                            logger:debug("Found existing kitbash %s", id)
                             common.helper.yeet(ref)
                             table.insert(result.ignoreList, ref)
                         end
 
                         for _, pattern in ipairs(lightPatterns) do
                             if string.startswith(id, pattern)then
-                                common.log:debug("Found a fire: %s", id)
+                                logger:debug("Found a fire: %s", id)
                                 result.isLit = true
                                 table.insert(result.ignoreList, ref)
                                 common.helper.yeet(ref)
@@ -445,23 +447,23 @@ end
 ]]
 local function moveFood(campfire, foodList)
     for _, ref in ipairs(foodList) do
-        common.log:trace("Checking if %s is on a grill", ref.object.id)
+        logger:trace("Checking if %s is on a grill", ref.object.id)
         local grillNode = CampfireUtil.getFoodPlacedOnGrill(ref, campfire)
         if grillNode then
-            common.log:debug("%s is on a grill, moving it", ref.object.id)
+            logger:debug("%s is on a grill, moving it", ref.object.id)
             local campfireHeight = campfire.position.z
             local grillHeight = grillNode.translation.z * campfire.scale
             local ingredBottomDiff = ref.sceneNode:createBoundingBox().min.z
-            common.log:trace("campfireHeight: %s", campfireHeight)
-            common.log:trace("grillHeight: %s", grillHeight)
-            common.log:trace("ingredient bottom diff: %s", ingredBottomDiff)
-            common.log:trace("Old position: %s", ref.position)
+            logger:trace("campfireHeight: %s", campfireHeight)
+            logger:trace("grillHeight: %s", grillHeight)
+            logger:trace("ingredient bottom diff: %s", ingredBottomDiff)
+            logger:trace("Old position: %s", ref.position)
             ref.position = {
                 ref.position.x,
                 ref.position.y,
                 campfireHeight + grillHeight - ingredBottomDiff
             }
-            common.log:debug("New position: %s", ref.position)
+            logger:debug("New position: %s", ref.position)
 
             --Set cooked amount and prevent from getting burnt
             if foodConfig.getGrillValues(ref.object) then
@@ -480,10 +482,10 @@ local function replaceCampfire(e)
     local campfireReplaced = e.reference.data and e.reference.data.campfireReplaced
     if vanillaConfig and e.reference.scale < SCALE_MAX then
         if not campfireReplaced then
-            common.log:debug("replaceCampfire() %s", e.reference.object.id)
+            logger:debug("replaceCampfire() %s", e.reference.object.id)
 
             if e.reference.disabled or e.reference.deleted then
-                common.log:debug("%s is disabled, not replacing", e.reference.object.id)
+                logger:debug("%s is disabled, not replacing", e.reference.object.id)
                 return
             end
             e.reference:disable()
@@ -493,10 +495,10 @@ local function replaceCampfire(e)
             if not data then return end
             local replacement = vanillaConfig.replacement or "ashfall_campfire"
 
-            common.log:debug("\n\nREPLACING %s with %s", e.reference.object.id, replacement)
-            common.log:debug("position %s", e.reference.position)
-            common.log:debug("orientation %s", e.reference.orientation)
-            common.log:debug("hasPlatform %s", data.hasPlatform)
+            logger:debug("\n\nREPLACING %s with %s", e.reference.object.id, replacement)
+            logger:debug("position %s", e.reference.position)
+            logger:debug("orientation %s", e.reference.orientation)
+            logger:debug("hasPlatform %s", data.hasPlatform)
 
             local campfire = tes3.createReference{
                 object = replacement,
@@ -524,7 +526,7 @@ local function replaceCampfire(e)
                 e.reference.orientation.z + math.rad(vanillaConfig.rotation or 0)
             }
 
-            common.log:debug("new orientation %s", campfire.orientation)
+            logger:debug("new orientation %s", campfire.orientation)
             campfire.data.dynamicConfig = campfireConfig.getConfig(campfire.object.id)
             campfire.data.dynamicConfig.campfire = "static"
             campfire.data.infinite = vanillaConfig.infinite
@@ -544,7 +546,7 @@ local function replaceCampfire(e)
                 local minScale = data.hasPlatform and 0.6 or 0.75
 
                 campfire.scale = math.clamp(campfire.scale, minScale, SCALE_MAX)
-                common.log:debug("setting scale to %s", campfire.scale)
+                logger:debug("setting scale to %s", campfire.scale)
 
                 table.insert(data.ignoreList, campfire)
                 local rootHeight = 0 -- vanillaConfig.rootHeight * campfire.scale
@@ -565,7 +567,7 @@ local function replaceCampfire(e)
                     local vanillaHeight = vanillaBB.min.z
                     local campfireHeight = campfire.position.z - rootHeight
                     local heightDiff = campfireHeight - vanillaHeight
-                    common.log:debug("Failed to orient, setting height based on bounding box")
+                    logger:debug("Failed to orient, setting height based on bounding box")
                     campfire.position = {
                         campfire.position.x,
                         campfire.position.y,
@@ -577,10 +579,10 @@ local function replaceCampfire(e)
             common.helper.yeet(e.reference)
 
 
-            common.log:debug("------------------moving food")
+            logger:debug("------------------moving food")
             moveFood(campfire, data.foodList)
 
-            common.log:debug("Campfire final supports: %s\n\n", campfire.data.dynamicConfig.supports)
+            logger:debug("Campfire final supports: %s\n\n", campfire.data.dynamicConfig.supports)
         end
     end
 end

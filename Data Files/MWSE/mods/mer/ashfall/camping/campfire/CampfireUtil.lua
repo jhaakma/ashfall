@@ -7,7 +7,7 @@ local LiquidContainer = require("mer.ashfall.objects.LiquidContainer")
 local AttachConfig = require "mer.ashfall.camping.campfire.config.AttachConfig"
 local CampfireUtil = {}
 local common = require ("mer.ashfall.common.common")
-
+local logger = common.createLogger("campfireUtil")
 --[[
     Get heat based on fuel level and modifiers
 ]]
@@ -138,7 +138,7 @@ function CampfireUtil.getDataFromUtensilOrCampfire(e)
 end
 
 function CampfireUtil.setHeat(refData, newHeat, reference)
-    common.log:trace("Setting heat of %s to %s", reference or "[unknown]", newHeat)
+    logger:trace("Setting heat of %s to %s", reference or "[unknown]", newHeat)
     local heatBefore = refData.waterHeat or 0
     refData.waterHeat = math.clamp(newHeat, 0, 100)
     local heatAfter = refData.waterHeat
@@ -149,7 +149,7 @@ function CampfireUtil.setHeat(refData, newHeat, reference)
         end
         --remove boiling sound
         if heatBefore > common.staticConfigs.hotWaterHeatValue and heatAfter < common.staticConfigs.hotWaterHeatValue then
-            common.log:debug("No longer hot")
+            logger:debug("No longer hot")
             event.trigger("Ashfall:UpdateAttachNodes", {campfire = reference})
         end
     end
@@ -176,15 +176,15 @@ function CampfireUtil.updateWaterHeat(refData, capacity, reference)
     --
     local isNegativeHeat
 
-    common.log:trace("Water heat: %s", oldHeat)
+    logger:trace("Water heat: %s", oldHeat)
     if refData.isLit and reference then--based on fuel if heating up
         local heat = CampfireUtil.getHeat(reference)
         isNegativeHeat = heat < 0
         heat = math.abs(heat)
         heatEffect = math.remap(heat, 0, common.staticConfigs.maxWoodInFire, minFuelWaterHeat, maxFuelWaterHeat)
-        common.log:trace("BOILER heatEffect: %s", heatEffect)
+        logger:trace("BOILER heatEffect: %s", heatEffect)
     else
-        common.log:trace("Looking for heat source underneath. Strong heat only heats utensils, weak heat doesn't work on pots")
+        logger:trace("Looking for heat source underneath. Strong heat only heats utensils, weak heat doesn't work on pots")
         local heater, heatType = common.helper.getHeatFromBelow(reference)
         local heaterIsLit = heater and heater.data.isLit
         if heaterIsLit then
@@ -209,9 +209,9 @@ function CampfireUtil.updateWaterHeat(refData, capacity, reference)
 
     --We use a hardcoded value instead of capacity because it doesn't make sense to heat up slower when the container is smaller
     local filledAmount = math.min(refData.waterAmount / 100, 1)
-    common.log:trace("BOILER filledAmount: %s", filledAmount)
+    logger:trace("BOILER filledAmount: %s", filledAmount)
     local filledAmountEffect = math.remap(filledAmount, 0.0, 1.0, heatLossAtMinCapacity, heatLossAtMaxCapacity)
-    common.log:trace("BOILER filledAmountEffect: %s", filledAmountEffect)
+    logger:trace("BOILER filledAmountEffect: %s", filledAmountEffect)
 
     --Calculate change
     local heatChange = timeSinceLastUpdate * heatEffect * filledAmountEffect * waterHeatRate
@@ -252,15 +252,15 @@ function CampfireUtil.addIngredToStew(e)
     liquidContainer.data.stewLevels = liquidContainer.data.stewLevels or {}
     liquidContainer.data.stewLevels[foodType] = liquidContainer.data.stewLevels[foodType] or 0
     --Add ingredient to stew
-    common.log:debug("old stewLevel: %s", liquidContainer.data.stewLevels[foodType])
-    common.log:debug("getting capacity for %s", liquidContainer.itemId)
+    logger:debug("old stewLevel: %s", liquidContainer.data.stewLevels[foodType])
+    logger:debug("getting capacity for %s", liquidContainer.itemId)
     local waterRatio = liquidContainer.waterAmount / liquidContainer.capacity
-    common.log:debug("waterRatio: %s", waterRatio)
+    logger:debug("waterRatio: %s", waterRatio)
     local ingredAmountToAdd = amountToAdd * common.staticConfigs.stewIngredAddAmount / waterRatio
-    common.log:debug("ingredAmountToAdd: %s", ingredAmountToAdd)
+    logger:debug("ingredAmountToAdd: %s", ingredAmountToAdd)
     liquidContainer.stewLevels[foodType] = math.min(liquidContainer.stewLevels[foodType] + ingredAmountToAdd, 100)
     liquidContainer.waterType = "stew"
-    common.log:debug("new stewLevel: %s", liquidContainer.stewLevels[foodType])
+    logger:debug("new stewLevel: %s", liquidContainer.stewLevels[foodType])
 
     common.skills.survival:progressSkill(skillSurvivalStewIngredIncrement*amountToAdd)
 
@@ -301,7 +301,7 @@ function CampfireUtil.getPlacedOnContainer()
         --look for just a standalone cooking pot or container
         return common.staticConfigs.bottleList[reference.object.id:lower()] and reference or false
     else
-        common.log:trace("ray return nothing")
+        logger:trace("ray return nothing")
     end
     return false
 end

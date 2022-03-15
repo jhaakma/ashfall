@@ -2,7 +2,7 @@ local this = {}
 local tentConfig = require("mer.ashfall.camping.tents.tentConfig")
 local itemDescriptions = require("mer.ashfall.config.itemDescriptions")
 local BedRoll = require("mer.ashfall.items.bedroll")
-local config = require("mer.ashfall.config.config").config
+local config = require("mer.ashfall.config").config
 
 local survivalTiers = {
     beginner = { skill = "Bushcrafting", requirement = 10 },
@@ -69,6 +69,35 @@ this.menuOptions = {
         text = "Craft",
         callback = function()
             event.trigger("Ashfall:ActivateTanningRack")
+        end
+    },
+    rename = {
+        text = "Rename",
+        callback = function(reference)
+            local menuID = "RenameMenu"
+            local menu = tes3ui.createMenu{ id = menuID, fixedFrame = true }
+            menu.minWidth = 400
+            menu.alignX = 0.5
+            menu.alignY = 0
+            menu.autoHeight = true
+            local textField = mwse.mcm.createTextField(
+                menu,
+                {
+                    label = string.format("Label %s:", reference.object.name),
+                    variable = mwse.mcm.createTableVariable{
+                        id = 'customName',
+                        table = reference.data
+                    },
+                    callback = function()
+                        reference.modified = true
+                        tes3ui.leaveMenuMode(menuID)
+                        tes3ui.findMenu(menuID):destroy()
+                        tes3.messageBox("Renamed to %s", reference.data.customName)
+                    end
+                }
+            )
+            tes3ui.acquireTextInput(textField.elements.inputField)
+            tes3ui.enterMenuMode(menuID)
         end
     }
 }
@@ -256,6 +285,19 @@ this.bushCraftingRecipes = {
 
     --Novice
     {
+        id = "ashfall_fab_cloak",
+        mesh = "ashfall\\craft\\cloak_fab_preview.nif",
+        description = itemDescriptions.ashfall_fab_cloak,
+        materials = {
+            { material = "fabric", count = 6 },
+        },
+        skillRequirements = {
+            survivalTiers.novice
+        },
+        category = this.categories.equipment,
+        soundType = "fabric",
+    },
+    {
         id = "ashfall_strawhat",
         description = itemDescriptions.ashfall_strawhat,
         materials = {
@@ -306,6 +348,9 @@ this.bushCraftingRecipes = {
         },
         category = this.categories.containers,
         soundType = "fabric",
+        additionalMenuOptions = {
+            this.menuOptions.rename
+        },
     },
     {
         id = "ashfall_rug_crft_01",
@@ -416,7 +461,10 @@ this.bushCraftingRecipes = {
         soundType = "wood",
         customRequirements = {
             customRequirements.wildernessOnly
-        }
+        },
+        additionalMenuOptions = {
+            this.menuOptions.rename
+        },
     },
     {
         id = "ashfall_cov_thatch",

@@ -1,5 +1,5 @@
 local common = require("mer.ashfall.common.common")
-local config = require("mer.ashfall.config.config").config
+local config = require("mer.ashfall.config").config
 local tentConfig = require("mer.ashfall.camping.tents.tentConfig")
 local coverController = require("mer.ashfall.camping.tents.coverController")
 local trinketController = require("mer.ashfall.camping.tents.trinkets.trinketController")

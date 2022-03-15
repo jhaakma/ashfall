@@ -1,7 +1,7 @@
 local craftingConfig = require("mer.ashfall.crafting.craftingConfig")
 local craftingMenu = require("mer.ashfall.crafting.craftingMenu")
 local common = require ("mer.ashfall.common.common")
-local config = require("mer.ashfall.config.config").config
+local config = require("mer.ashfall.config").config
 
 local function isMaterial(item)
     return craftingConfig.ingredMaterials[item.id:lower()]

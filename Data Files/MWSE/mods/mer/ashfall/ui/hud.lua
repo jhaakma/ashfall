@@ -1,6 +1,7 @@
 local this = {}
 
 local common = require("mer.ashfall.common.common")
+local logger = common.createLogger("hud")
 local statsEffect = require("mer.ashfall.needs.statsEffect")
 local tempUI = require("mer.ashfall.ui.tempUI")
 
@@ -32,7 +33,7 @@ local function findElementInMultiMenu(id, menu)
         if element then
             return element
         else
-            common.log:error("%s not found in menu", id)
+            logger:error("%s not found in menu", id)
         end
     end
 end

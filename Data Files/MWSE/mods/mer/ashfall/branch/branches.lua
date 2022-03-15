@@ -1,5 +1,6 @@
 local common = require("mer.ashfall.common.common")
-local config = require("mer.ashfall.config.config").config
+local logger = common.createLogger("branches")
+local config = require("mer.ashfall.config").config
 local branchConfig = require("mer.ashfall.branch.branchConfig")
 --Branch placement configs
 
@@ -26,26 +27,26 @@ end
 
 
 local function getBranchGroupFromRegion(tree)
-    common.log:debug("Attempting to get type from region of %s", tree.object.id)
+    logger:debug("Attempting to get type from region of %s", tree.object.id)
     local thisRegion = tree.cell.region and tree.cell.region.id:lower()
     local branchGroup = branchConfig.branchRegions[thisRegion]
     if branchGroup then
-        common.log:debug("Found from region\n")
+        logger:debug("Found from region\n")
         return branchGroup
     end
 end
 
 local function getBranchTypeFromTexture(tree)
-    common.log:debug("Attempting to get type from texture of %s", tree.object.id)
+    logger:debug("Attempting to get type from texture of %s", tree.object.id)
     for node in common.helper.traverseRoots{tree.sceneNode} do
         if node.RTTI.name == "NiTriShape" then
             local texturing_property = node:getProperty(0x4)
             if texturing_property then
                 local filePath = texturing_property.maps[1].texture.fileName
                 filePath = string.sub(filePath, 1, -5):lower()
-                common.log:debug(filePath)
+                logger:debug(filePath)
                 local branchGroup = branchConfig.textureMapping[filePath]
-                common.log:debug("Found from texture\n")
+                logger:debug("Found from texture\n")
                 return branchGroup
             end
         end
@@ -53,20 +54,20 @@ local function getBranchTypeFromTexture(tree)
 end
 
 local function getBranchTypeBytreeIdPattern(tree)
-    common.log:debug("Attempting to get type from pattern for id of %s", tree.object.id)
+    logger:debug("Attempting to get type from pattern for id of %s", tree.object.id)
     for pattern, group in pairs(branchConfig.patternMapping) do
         if string.find(tree.object.id:lower(), pattern) then
-            common.log:debug("Found from Tree ID\n")
+            logger:debug("Found from Tree ID\n")
             return group
         end
     end
 end
 
 local function getBranchTypeBytreeId(tree)
-    common.log:debug("Attempting to get type from ID of %s", tree.object.id)
+    logger:debug("Attempting to get type from ID of %s", tree.object.id)
     local group = branchConfig.idMapping[tree.object.id:lower()]
     if group then
-        common.log:debug("Found mapping for id")
+        logger:debug("Found mapping for id")
         return group
     end
 end
@@ -138,31 +139,31 @@ local function addBranchesToTree(tree)
         }
 
     end
-    common.log:debug("Done for Tree %s", tree.id)
+    logger:debug("Done for Tree %s", tree.id)
 end
 
 local function checkAndRestoreBranch(branch)
     if branch.disabled and branch.data.lastPickedUp then
         local now = getNow()
-        common.log:debug("Now: %s", now)
-        common.log:debug("branch was last picked up %s", branch.data.lastPickedUp )
-        common.log:debug("now - lastPickedup = %s", (now - branch.data.lastPickedUp))
-        common.log:debug("Seconds to refresh: %s", branchConfig.hoursToRefresh)
+        logger:debug("Now: %s", now)
+        logger:debug("branch was last picked up %s", branch.data.lastPickedUp )
+        logger:debug("now - lastPickedup = %s", (now - branch.data.lastPickedUp))
+        logger:debug("Seconds to refresh: %s", branchConfig.hoursToRefresh)
         if branch.data.lastPickedUp < now - branchConfig.hoursToRefresh then
-            common.log:debug("Re-enabling branch")
+            logger:debug("Re-enabling branch")
             branch:enable()
         end
     end
 end
 
 local function addBranchesToCell(cell)
-    common.log:debug("Adding branches to %s", cell.editorName)
+    logger:debug("Adding branches to %s", cell.editorName)
     --only add branches to cells we haven't added them to before
     if not cell_list[formatCellId(cell)] then
         --Find trees and add branches
         for reference in cell:iterateReferences(tes3.objectType.static) do
             if isTree(reference) then
-                common.log:debug("Adding branches to %s", reference.object.id)
+                logger:debug("Adding branches to %s", reference.object.id)
                 addBranchesToTree(reference)
             end
         end
@@ -181,13 +182,13 @@ end
 
 local function updateCells()
     if common.data and config.enableBranchPlacement then
-        common.log:debug("Branch placement enabled")
+        logger:debug("Branch placement enabled")
 
         for _, cell in ipairs(tes3.getActiveCells()) do
             if not cell.isInterior then
                 addBranchesToCell(cell)
             else
-                common.log:debug("Cell is an interior")
+                logger:debug("Cell is an interior")
             end
         end
     end
@@ -196,7 +197,7 @@ end
 event.register("cellChanged", updateCells)
 
 local function onLoad()
-    common.log:debug("data loaded branch placement commencing")
+    logger:debug("data loaded branch placement commencing")
     common.data.cellBranchList = common.data.cellBranchList or {}
     cell_list = common.data.cellBranchList
     updateCells()

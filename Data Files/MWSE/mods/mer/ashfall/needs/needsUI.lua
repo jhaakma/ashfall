@@ -3,7 +3,8 @@
 ]]--
 local this = {}
 local common = require("mer.ashfall.common.common")
-local config = require("mer.ashfall.config.config").config
+local logger = common.createLogger("needsUI")
+local config = require("mer.ashfall.config").config
 local conditionConfig = common.staticConfigs.conditionConfig
 
 local function rgbToColor(r, g, b)
@@ -221,7 +222,7 @@ function this.addNeedsBlockToMenu(e, needId)
     local data = this.UIData[needId]
     if not need:isActive() then
         --this need is disabled
-        common.log:debug("%s is disabled", needId)
+        logger:debug("%s is disabled", needId)
         return
     end
 

@@ -1,4 +1,5 @@
 local common = require ("mer.ashfall.common.common")
+local logger = common.createLogger("patinaController")
 local LiquidContainer = require("mer.ashfall.objects.LiquidContainer")
 local this = {}
 local metalPatterns = {
@@ -35,7 +36,7 @@ local function findLowestAndHighest(sceneNode)
 end
 
 local function colorFromLowToHigh(node, amount, low, high)
-    common.log:trace("amount: %s, low: %s, high: %s, ", amount, low, high)
+    logger:trace("amount: %s, low: %s, high: %s, ", amount, low, high)
 
 
     local maxBrightness = math.remap(amount, 0, 100, 255, 245)
@@ -69,7 +70,7 @@ end
 
 
 function this.addPatina(rootNode, amount)
-    --common.log:trace("+++++ADD PATINA")
+    --logger:trace("+++++ADD PATINA")
     if not rootNode then return end
     if not amount then return end
     local low, high = findLowestAndHighest(rootNode)
@@ -80,8 +81,8 @@ function this.addPatina(rootNode, amount)
             if texture then
                 for _, pattern in ipairs(metalPatterns) do
                     if string.find(texture.maps[1].texture.fileName:lower(), pattern) then
-                        common.log:trace("adding patina amount to %s", amount)
-                        common.log:trace(texture.maps[1].texture.fileName)
+                        logger:trace("adding patina amount to %s", amount)
+                        logger:trace(texture.maps[1].texture.fileName)
                         if colorFromLowToHigh(node, amount, low, high) then
                             appliedPatina = true
                         end
@@ -116,7 +117,7 @@ local function doPatinaDrop(e)
                 local showMessage = false
 
                 if patinaAmount and patinaAmount > 0 then
-                    common.log:debug("doPatinaDrop amount: %s", patinaAmount)
+                    logger:debug("doPatinaDrop amount: %s", patinaAmount)
                     data.patinaAmount = nil
 
                     showMessage = true

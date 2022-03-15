@@ -4,7 +4,7 @@
 --]]
 
 local common = require("mer.ashfall.common.common")
-local config = require("mer.ashfall.config.config").config
+local config = require("mer.ashfall.config").config
 local this = {}
 
 local coldLevelNeeded = common.staticConfigs.conditionConfig.temp.states.veryCold.max
@@ -16,7 +16,7 @@ end
 local function addBreath(node, x, y, z, scale)
     scale = scale or 1.0
     if not node:getObjectByName("smokepuffs.nif") then
-        local smokepuffs = common.loadMesh("ashfall\\smokepuffs.nif")
+        local smokepuffs = common.helper.loadMesh("ashfall\\smokepuffs.nif")
         node:attachChild(smokepuffs, true)
         smokepuffs.translation.x = x
         smokepuffs.translation.y = y

@@ -1,5 +1,5 @@
 local this = {}
-local config = require("mer.ashfall.config.config").config
+local config = require("mer.ashfall.config").config
 local conditions = require("mer.ashfall.config.conditionConfig")
 
 this.tooltipColor = {

@@ -8,8 +8,9 @@ local this = {}
 ]]--
 
 local activatorConfig = require("mer.ashfall.config.staticConfigs").activatorConfig
-local config = require("mer.ashfall.config.config").config
+local config = require("mer.ashfall.config").config
 local common = require("mer.ashfall.common.common")
+local logger = common.createLogger("activatorController")
 local uiCommon = require("mer.ashfall.ui.uiCommon")
 this.list = activatorConfig.list
 this.current = nil
@@ -51,13 +52,13 @@ local function getActivatorName()
     local activator = this.list[this.current]
     if activator then
         if activator.name and activator.name ~= "" then
-            common.log:trace("returning activator name: %s", activator.name)
+            logger:trace("returning activator name: %s", activator.name)
             return activator.name
         elseif this.currentRef then
-            common.log:trace("returning activator ref name: %s", this.currentRef.object.name)
+            logger:trace("returning activator ref name: %s", this.currentRef.object.name)
             return this.currentRef.object.name
         else
-            common.log:trace("No ref found for activator")
+            logger:trace("No ref found for activator")
         end
     end
 end
@@ -174,7 +175,7 @@ local function doTriggerActivate()
             ref = this.currentRef,
             node = this.parentNode
         }
-        common.log:debug("triggering activator filtering on %s", eventData.activator.type)
+        logger:debug("triggering activator filtering on %s", eventData.activator.type)
         event.trigger("Ashfall:ActivatorActivated", eventData, { filter = eventData.activator.type })
     end
 end
@@ -188,11 +189,11 @@ event.register("Ashfall:ActivateButtonPressed", onActivateKeyPressed)
 
 
 --Register container flora as vegetation
-common.log:debug("Adding flora containers as vegetation")
+logger:debug("Adding flora containers as vegetation")
 for k, obj in pairs(tes3.dataHandler.nonDynamicData.objects) do
     if obj.objectType == tes3.objectType.container then
         if obj.id:startswith("flora_") then
-            common.log:debug("Adding %s as vegetation", obj.id)
+            logger:debug("Adding %s as vegetation", obj.id)
             this.list.vegetation:addId(obj.id)
         end
     end

@@ -1,7 +1,7 @@
 local this = {}
 
 local common = require("mer.ashfall.common.common")
-local config = require("mer.ashfall.config.config").config
+local config = require("mer.ashfall.config").config
 local needsUI = require("mer.ashfall.needs.needsUI")
 
 local IDs = {

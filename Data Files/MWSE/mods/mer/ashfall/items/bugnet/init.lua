@@ -1,4 +1,5 @@
 local common = require("mer.ashfall.common.common")
+local logger = common.createLogger("bugnet")
 local bugConfig = require("mer.ashfall.items.bugnet.config")
 
 
@@ -35,48 +36,48 @@ local function getNearbyBug()
                     bugNode = bugNode:getObjectByName("ON").children[1].children[1]
                     local distance = checkPosition:distance(bugNode.worldTransform.translation)
                     if distance < bugConfig.maxRadius and distance < closestDistance then
-                        common.log:trace("Distance: %s. Required: %d", distance, bugConfig.maxRadius)
+                        logger:trace("Distance: %s. Required: %d", distance, bugConfig.maxRadius)
 
                         closestBug = container
                         closestDistance = distance
                     end
                 else
-                    common.log:trace("Valid bug missing NightDaySwitch")
+                    logger:trace("Valid bug missing NightDaySwitch")
                 end
             end
         end
     end
-    common.log:trace("Chosen Bug: %s", closestBug)
+    logger:trace("Chosen Bug: %s", closestBug)
     return closestBug
 end
 
 ---@param bug tes3reference
 local function catchBug(bug)
-    common.log:trace("Catching bug")
+    logger:trace("Catching bug")
     tes3.player.data.catchingBug = true
     tes3.player:activate(bug)
     tes3.player.data.catchingBug = nil
 end
 
 local function onAttack(e)
-    common.log:trace("attacking")
+    logger:trace("attacking")
     ---@type tes3mobilePlayer
     local mob = e.mobile
     ---@type tes3weapon
     local weapon = mob.readiedWeapon and mob.readiedWeapon.object
     if not weapon then
-        common.log:trace("Not using a weapon")
+        logger:trace("Not using a weapon")
         return
     end
 
 
     if not isBugNet(weapon) then
-        common.log:trace("Not a bug net")
+        logger:trace("Not a bug net")
         return
     end
     local bug = getNearbyBug()
     if not bug then
-        common.log:trace("No nearby bugs")
+        logger:trace("No nearby bugs")
         return
     end
     catchBug(bug)
@@ -85,14 +86,14 @@ event.register("attack", onAttack )
 
 local function onPickLeveledItem(e)
     if tes3.player.data.catchingBug then
-        common.log:trace("Activated while catching bug, manually setting pick")
+        logger:trace("Activated while catching bug, manually setting pick")
         tes3.player.data.catchingBug = nil
         ---@type tes3leveledItem
         local list = e.list
         local prevChance = list.chanceForNothing
         list.chanceForNothing = 0
         local newItem = list:pickFrom()
-        common.log:trace("Now picking %s", newItem)
+        logger:trace("Now picking %s", newItem)
         list.chanceForNothing = prevChance
         e.pick = newItem
     end

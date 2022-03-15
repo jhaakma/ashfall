@@ -3,18 +3,19 @@
     Doesn't deal with hunger because you just die.
 ]]
 local common = require("mer.ashfall.common.common")
-local config = require("mer.ashfall.config.config").config
+local logger = common.createLogger("extremeEffects")
+local config = require("mer.ashfall.config").config
 local thirst = common.staticConfigs.conditionConfig.thirst
 local tiredness = common.staticConfigs.conditionConfig.tiredness
 
 --Tired
 local passedOut
 local function passOut()
-    common.log:debug("extremeEffects - Passing out")
+    logger:debug("extremeEffects - Passing out")
     local hours = 2.5 + math.random(0.5)
     local secondsTaken = 5
     local function wakeUp(e)
-        common.log:debug("extremeEffects - Waking up")
+        logger:debug("extremeEffects - Waking up")
         tiredness:setValue(65)
         tes3.setStatistic{
             reference = tes3.mobilePlayer,
@@ -39,7 +40,7 @@ local function checkTired()
         passedOut ~= true
     )
     if isPassedOut then
-        common.log:debug("extremeEffects - passing out in 2 seconds")
+        logger:debug("extremeEffects - passing out in 2 seconds")
         passedOut = true
         --common.data.blockNeeds = true
         tes3.setStatistic({

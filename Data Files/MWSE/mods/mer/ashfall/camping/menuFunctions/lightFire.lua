@@ -1,4 +1,5 @@
 local common = require ("mer.ashfall.common.common")
+local logger = common.createLogger("lightFire")
 local DURATION_COST = 10
 
 local function isBlacklisted(e)
@@ -40,14 +41,14 @@ local menuConfig = {
     end,
     callback = function(campfire)
         timer.delayOneFrame(function()
-            common.log:debug("Opening Inventory Select Menu")
+            logger:debug("Opening Inventory Select Menu")
             tes3ui.showInventorySelectMenu{
                 title = "Select Firestarter",
                 noResultsText = "You do not have anything to light the fire.",
                 filter = filterFireStarter,
                 callback = function(e)
                     if e.item then
-                        common.log:debug("showInventorySelectMenu Callback")
+                        logger:debug("showInventorySelectMenu Callback")
                         event.trigger("Ashfall:fuelConsumer_Alight", { fuelConsumer = campfire, lighterData = e.itemData})
                     end
                 end,

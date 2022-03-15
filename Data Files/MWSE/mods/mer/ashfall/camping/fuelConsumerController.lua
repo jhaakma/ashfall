@@ -3,7 +3,7 @@
 ]]
 
 local common = require ("mer.ashfall.common.common")
-
+local logger = common.createLogger("fuelConsumerController")
 local fuelDecay = 1.0
 local fuelDecayRainEffect = 1.4
 local fuelDecayThunderEffect = 1.6
@@ -15,7 +15,7 @@ local function updateFuelConsumers(e)
         local difference = e.timestamp - fuelConsumer.data.lastFuelUpdated
 
         if difference < 0 then
-            common.log:error("FUELCONSUMER fuelConsumer.data.lastFuelUpdated(%.4f) is ahead of e.timestamp(%.4f).",
+            logger:error("FUELCONSUMER fuelConsumer.data.lastFuelUpdated(%.4f) is ahead of e.timestamp(%.4f).",
                 fuelConsumer.data.lastFuelUpdated, e.timestamp)
             --something fucky happened
             fuelConsumer.data.lastFuelUpdated = e.timestamp

@@ -1,13 +1,14 @@
 local common = require("mer.ashfall.common.common")
+local logger = common.createLogger("bouquet")
 local statsEffect = require("mer.ashfall.needs.statsEffect")
 local function activateBouquet()
-    common.log:debug("activate bouquet")
+    logger:debug("activate bouquet")
     common.data.bouquetActive = true
 end
 event.register("Ashfall:ActivateBouquet", activateBouquet)
 
 local function deactivateBouquet()
-    common.log:debug("deactivate bouquet")
+    logger:debug("deactivate bouquet")
     common.data.bouquetActive = nil
 end
 event.register("Ashfall:DeactivateBouquet", deactivateBouquet)
@@ -25,8 +26,8 @@ local function doBouquetEffect(e)
     --filters
     if not common.data.bouquetActive then return end
     --Add Fatigue Regen
-    common.log:trace("Adding fatigue recovery")
-    common.log:trace("interval: %s", interval)
+    logger:trace("Adding fatigue recovery")
+    logger:trace("interval: %s", interval)
     --[[
         from openmw research
         x = fFatigueReturnBase + fFatigueReturnMult * (1 - normalizedEncumbrance)
@@ -42,13 +43,13 @@ local function doBouquetEffect(e)
     local x = fFatigueReturnBase + fFatigueReturnMult * (1 - normalizedEncumbrance)
     x = x * fEndFatigueMult * endurance
     local recoveryPerHour = x * 600
-    common.log:trace("recoveryPerHour: %s", recoveryPerHour)
+    logger:trace("recoveryPerHour: %s", recoveryPerHour)
     local fatigueRecovery = recoveryPerHour * interval
-    common.log:trace("fatigueRecovery: %s", fatigueRecovery)
+    logger:trace("fatigueRecovery: %s", fatigueRecovery)
     local remaining = math.max(statsEffect.getMaxStat("fatigue") - tes3.mobilePlayer.fatigue.current, 0)
-    common.log:trace("remaining: %s", remaining)
+    logger:trace("remaining: %s", remaining)
     fatigueRecovery = math.min(fatigueRecovery, remaining)
-    common.log:trace("clamped fatigueRecovery: %s", fatigueRecovery)
+    logger:trace("clamped fatigueRecovery: %s", fatigueRecovery)
     tes3.modStatistic{ reference = tes3.player, name = "fatigue", current = fatigueRecovery }
 end
 event.register("enterFrame", doBouquetEffect)

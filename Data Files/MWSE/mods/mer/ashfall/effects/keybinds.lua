@@ -1,5 +1,5 @@
 local common = require("mer.ashfall.common.common")
-local config = require("mer.ashfall.config.config").config
+local config = require("mer.ashfall.config").config
 local function makeAxe()
     tes3.messageBox("Making Stone axe")
 end

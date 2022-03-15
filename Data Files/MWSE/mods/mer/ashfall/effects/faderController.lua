@@ -1,5 +1,6 @@
 local this = {}
 local common = require("mer.ashfall.common.common")
+local logger = common.createLogger("faderController")
 local conditionConfig = common.staticConfigs.conditionConfig
 local fadeTime = 1.5
 
@@ -40,7 +41,7 @@ local function setFading(faderConfig)
         type = timer.real,
         duration = fadeTime,
         callback = function()
-            common.log:trace("Setting isFading back to false")
+            logger:trace("Setting isFading back to false")
             faderConfig.isFading = false
         end
     }
@@ -70,7 +71,7 @@ end
 local function checkFaders()
     for _, faderConfig in pairs(faderConfigs) do
         if not faderConfig.isFading then
-            common.log:trace("Not already fading, checking fade values")
+            logger:trace("Not already fading, checking fade values")
             local condition = conditionConfig[faderConfig.condition]
             local currentValue = condition:getValue()
 
@@ -89,7 +90,7 @@ local function checkFaders()
                 fadeIn(faderConfig)
             end
         else
-            common.log:trace("wait until fader is finished")
+            logger:trace("wait until fader is finished")
         end
     end
 end

@@ -1,4 +1,5 @@
 local common = require("mer.ashfall.common.common")
+local logger = common.createLogger("trinketEffects")
 local tentConfig = require("mer.ashfall.camping.tents.tentConfig")
 
 event.trigger("Ashfall:RegisterReferenceController", {
@@ -39,7 +40,7 @@ local function enableTrinketEffect(trinket)
         tes3.messageBox(trinket.message)
     end
     common.data.trinketEffects[trinket.id] = true
-    common.log:debug("Enabled trinket effect for %s", trinket.id)
+    logger:debug("Enabled trinket effect for %s", trinket.id)
 end
 
 local function disableTrinketEffect(trinket)
@@ -51,7 +52,7 @@ local function disableTrinketEffect(trinket)
         trinket.offCallback()
     end
     common.data.trinketEffects[trinket.id] = nil
-    common.log:debug("Disabled trinket effect for %s", trinket.id)
+    logger:debug("Disabled trinket effect for %s", trinket.id)
 end
 event.register("Ashfall:DisableTrinketEffect", disableTrinketEffect)
 

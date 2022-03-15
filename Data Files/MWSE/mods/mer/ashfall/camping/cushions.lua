@@ -1,5 +1,4 @@
 local common = require("mer.ashfall.common.common")
-local config = require("mer.ashfall.config.config")
 local animCtrl = require("mer.ashfall.animation.animationController")
 local skipActivate
 
@@ -35,11 +34,6 @@ local function cushionMenu(e)
             text = "Sit Down",
             requirements = canRest,
             callback = function()
-                -- if (not cushions[ref.object.id:lower()]) and (activator and not activator.ids[ref.object.id:lower()]) then
-                --     common.log:error("Cushion menu called on cushion that isn't in config somehow.")
-                --     return
-                -- end
-
                 local location = {
                     position = tes3vector3.new(
                         ref.position.x,

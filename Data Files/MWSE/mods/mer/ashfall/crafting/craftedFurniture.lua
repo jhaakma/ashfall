@@ -1,5 +1,5 @@
 local common = require("mer.ashfall.common.common")
-local config = require("mer.ashfall.config.config").config
+local config = require("mer.ashfall.config").config
 local miscToStaticMapping = {
     ashfall_table_sml = "ashfall_table_sml_s",
     ashfall_table_sml_2 = "ashfall_table_sml_2_s",

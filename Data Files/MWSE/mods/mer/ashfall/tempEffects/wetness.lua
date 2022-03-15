@@ -3,7 +3,8 @@
 ]]--
 local this = {}
 local common = require("mer.ashfall.common.common")
-local config = require("mer.ashfall.config.config").config
+local logger = common.createLogger("wetness")
+local config = require("mer.ashfall.config").config
 local wetness = common.staticConfigs.conditionConfig.wetness
 
 --register temp effects
@@ -31,7 +32,7 @@ local soakedHeight = 110
 local wetTempMax = -35
 function this.checkForShelter(e)
     local ref = e and e.reference or tes3.player
-    common.log:trace("Checking for Shelter")
+    logger:trace("Checking for Shelter")
     if common.helper.getInTent() then
         common.data.isSheltered = true
         return
@@ -44,7 +45,7 @@ function this.checkForShelter(e)
 end
 event.register("Ashfall:CheckForShelter", this.checkForShelter)
 event.register(tes3.event.loaded, function()
-    common.log:debug("Starting shelter timer")
+    logger:debug("Starting shelter timer")
     timer.start{
         duration = 1,
         iterations = -1,

@@ -1,4 +1,5 @@
 local common = require ("mer.ashfall.common.common")
+local logger = common.createLogger("extinguish")
 local LiquidContainer = require "mer.ashfall.objects.LiquidContainer"
 local function filterWaterContainer(e)
     local liquidContainer = LiquidContainer.createFromInventory(e.item, e.itemData)
@@ -17,7 +18,7 @@ return {
     end,
     callback = function(campfire)
         timer.delayOneFrame(function()
-            common.log:debug("Opening Inventory Select Menu")
+            logger:debug("Opening Inventory Select Menu")
             tes3ui.showInventorySelectMenu{
                 title = "Select Water",
                 noResultsText = "You do not have any water to douse the fire.",
@@ -26,7 +27,7 @@ return {
                     if e.item then
                         local liquidContainer = LiquidContainer.createFromInventory(e.item, e.itemData)
                         if liquidContainer then
-                            common.log:debug("showInventorySelectMenu Callback")
+                            logger:debug("showInventorySelectMenu Callback")
                             event.trigger("Ashfall:fuelConsumer_Extinguish", {fuelConsumer = campfire, playSound = true})
                             liquidContainer:transferLiquid(LiquidContainer.createInfiniteWaterSource(), 10)
                             tes3.playSound{ reference = tes3.player, sound = "Swim Left" }

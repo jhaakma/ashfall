@@ -1,4 +1,5 @@
 local common = require ("mer.ashfall.common.common")
+local logger = common.createLogger("cooking")
 local LiquidContainer = require("mer.ashfall.objects.LiquidContainer")
 local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 local foodConfig = common.staticConfigs.foodConfig
@@ -31,7 +32,7 @@ local function startCookingIngredient(ingredient, timestamp)
 
     --If you placed a stack, return all but one to the player
     if common.helper.isStack(ingredient) then
-        common.log:debug("Returning grill food stack to player")
+        logger:debug("Returning grill food stack to player")
         local count = ingredient.attachments.variables.count
         mwscript.addItem{ reference = tes3.player, item = ingredient.object, count = (count - 1) }
         ingredient.attachments.variables.count = 1
@@ -39,11 +40,11 @@ local function startCookingIngredient(ingredient, timestamp)
     else
         --only check data for non-stack I guess?
         if ingredient.data.grillState == "burnt" then
-            common.log:trace("Already burnt")
+            logger:trace("Already burnt")
             return
         end
         if ingredient.data.preventBurning then
-            common.log:trace("Prevent burning")
+            logger:trace("Prevent burning")
             return
         end
     end
@@ -76,9 +77,9 @@ local function addGrillPatina(campfire,interval)
         local didAddPatina = patinaController.addPatina(grillNode, newAmount)
         if didAddPatina then
             campfire.data.grillPatinaAmount = newAmount
-            common.log:trace("Added patina to %s node, new amount: %s",grillNode, campfire.data.grillPatinaAmount)
+            logger:trace("Added patina to %s node, new amount: %s",grillNode, campfire.data.grillPatinaAmount)
         else
-            common.log:trace("Mesh incompatible with patina mechanic, did not apply")
+            logger:trace("Mesh incompatible with patina mechanic, did not apply")
         end
     end
 end
@@ -93,15 +94,15 @@ local function checkIfBurned(campfire)
     --Roll for burn chance
     local roll = math.random()
     local burnChance = burnChance * survivalEffect * grillEffect
-    common.log:trace("survivalEffect: %s", survivalEffect)
-    common.log:trace("grillEffect: %s", grillEffect)
-    common.log:debug("Burn chance: %s", burnChance)
-    common.log:debug("Roll: %s", roll)
+    logger:trace("survivalEffect: %s", survivalEffect)
+    logger:trace("grillEffect: %s", grillEffect)
+    logger:debug("Burn chance: %s", burnChance)
+    logger:debug("Roll: %s", roll)
     if roll < burnChance then
-        common.log:debug("Burned")
+        logger:debug("Burned")
         return true
     else
-        common.log:debug("Did not burn")
+        logger:debug("Did not burn")
         return false
     end
 end
@@ -128,12 +129,12 @@ local function grillFoodItem(ingredReference, timestamp)
                 ingredReference.data.lastCookUpdated = timestamp
 
                 local heat = math.max(0, CampfireUtil.getHeat(campfire))
-                common.log:debug("Cooking heat: %s", heat)
+                logger:debug("Cooking heat: %s", heat)
                 local thisCookMulti = calculateCookMultiplier(heat)
-                common.log:debug("Cooking multiplier: %s", thisCookMulti)
+                logger:debug("Cooking multiplier: %s", thisCookMulti)
                 local weightMulti = calculateCookWeightModifier(ingredReference.object)
                 local thisCookedAmount = difference * thisCookMulti * weightMulti
-                common.log:debug("Cooked amount: %s", thisCookedAmount)
+                logger:debug("Cooked amount: %s", thisCookedAmount)
                 ingredReference.data.cookedAmount = ingredReference.data.cookedAmount + thisCookedAmount
                 local cookedAmount = ingredReference.data.cookedAmount
 
@@ -215,7 +216,7 @@ local function doAddingredToStew(campfire, reference)
         item = reference.object
     }
 
-    common.log:debug("amountAdded: %s", amountAdded)
+    logger:debug("amountAdded: %s", amountAdded)
     if amountAdded < amount then
         reference.attachments.variables.count = reference.attachments.variables.count - amountAdded
 
@@ -282,7 +283,7 @@ end
 --Empty a cooking pot or kettle, reseting all data
 local function clearCampfireUtensilData(e)
 
-    common.log:debug("Clearing Utensil Data")
+    logger:debug("Clearing Utensil Data")
     local campfire = e.campfire
     LiquidContainer.createFromReference(campfire):clearData()
 

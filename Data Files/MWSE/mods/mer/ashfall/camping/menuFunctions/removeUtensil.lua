@@ -1,5 +1,5 @@
 local common = require ("mer.ashfall.common.common")
-local teaConfig = require("mer.ashfall.config.teaConfig")
+local logger = common.createLogger("removeUtensil")
 
 local function isStaticCampfire(campfire)
     return campfire.data.dynamicConfig and campfire.data.dynamicConfig[campfire.data.utensil] == "static"
@@ -9,14 +9,14 @@ return  {
     text = function(campfire)
         local utensilId = campfire.data.utensilId
         if utensilId then
-            common.log:debug("utensilId: %s", utensilId)
+            logger:debug("utensilId: %s", utensilId)
             local utensil = tes3.getObject(utensilId)
             return string.format("Remove %s", common.helper.getGenericUtensilName(utensil) or "Utensil")
         end
     end,
     showRequirements = function(campfire)
         if isStaticCampfire(campfire) then
-            common.log:debug("It's a static campfire, can not remove")
+            logger:debug("It's a static campfire, can not remove")
             return false
         else
             return  campfire.data.utensilId ~= nil

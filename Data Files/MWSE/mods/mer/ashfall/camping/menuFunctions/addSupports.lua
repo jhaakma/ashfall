@@ -1,10 +1,11 @@
 local common = require ("mer.ashfall.common.common")
+local logger = common.createLogger("addSupports")
 
 local function playerHasMaterials(materials)
     if not materials then return false end
     local hasMaterials = true
     for mat, count in pairs(materials) do
-        common.log:debug("Count: %s ID: %s", count, mat)
+        logger:debug("Count: %s ID: %s", count, mat)
         if tes3.getItemCount{ reference = tes3.player, item = mat } < count then
             hasMaterials =  false
         end
@@ -13,18 +14,17 @@ local function playerHasMaterials(materials)
 end
 
 local function addSupports(item, campfire, addedItems, itemData)
-
     local supportsData = common.staticConfigs.supports[item.id:lower()]
 
     if addedItems[item.id:lower()] then
-        common.log:debug("Removing materials for %s", item.id)
+        logger:debug("Removing materials for %s", item.id)
         for material, count in pairs(supportsData.materials) do
             if tes3.getItemCount{ reference = tes3.player, item = material} >= count then
                 tes3.removeItem{ reference = tes3.player, item = material, count = count, playSound = false}
             end
         end
     else
-        common.log:debug("Removing supports: %s", item.id)
+        logger:debug("Removing supports: %s", item.id)
         tes3.removeItem{ reference = tes3.player, item = item, itemData = itemData, playSound = false }
     end
     campfire.data.supportsId = item.id:lower()
@@ -38,7 +38,7 @@ local function supportsSelect(campfire)
     for supportId, data in pairs(common.staticConfigs.supports) do
         local hasInInventory = tes3.getItemCount{ item = supportId, reference = tes3.player } > 0
         if playerHasMaterials(data.materials) and not hasInInventory then
-            common.log:debug("Adding support to inventory: %s", supportId)
+            logger:debug("Adding support to inventory: %s", supportId)
             addedItems[supportId:lower()] = true
             tes3.addItem{ reference = tes3.player, item = supportId, count = 1, playSound = false }
         end
@@ -78,10 +78,10 @@ return {
     enableRequirements = function()
         for item, data in pairs(common.staticConfigs.supports) do
             if data.materials then
-                common.log:debug("Has materials")
+                logger:debug("Has materials")
                 if playerHasMaterials(data.materials) then return true end
             end
-            common.log:debug("Checking if has item")
+            logger:debug("Checking if has item")
             if tes3.getItemCount{ reference = tes3.player, item = item } > 0 then
                 return true
             end

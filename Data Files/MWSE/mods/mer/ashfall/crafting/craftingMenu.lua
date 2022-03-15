@@ -1,4 +1,5 @@
 local common = require ("mer.ashfall.common.common")
+local logger = common.createLogger("craftingMenu")
 local this = {}
 
 local selectedRecipe
@@ -38,18 +39,18 @@ local m2 = tes3matrix33.new()
 
 
 local function hasIngredient(ingred)
-    common.log:debug("asdfasdfasdf")
+    logger:debug("asdfasdfasdf")
     local count = 0
     for _, id in ipairs(ingred.material.ids) do
-        common.log:debug("id: %s", id)
-        count = count + mwscript.getItemCount{ reference = tes3.player, item = id }
+        logger:debug("id: %s", id)
+        count = count + tes3.getItemCount{ reference = tes3.player, item = id }
     end
-    common.log:debug('count: %G', count)
+    logger:debug('count: %G', count)
     return count >= ingred.count
 end
 
 local function checkHasIngredients(recipe)
-    common.log:debug('checking has ingredients')
+    logger:debug('checking has ingredients')
     for _, ingred in ipairs(recipe.materials) do
         if not hasIngredient(ingred) then return false end
     end
@@ -71,7 +72,7 @@ local function craftItem()
     for _, ingredient in ipairs(selectedRecipe.materials) do
         local remaining = ingredient.count
         for _, id in ipairs(ingredient.material.ids) do
-            local inInventory = mwscript.getItemCount{ reference = tes3.player, item = id}
+            local inInventory = tes3.getItemCount{ reference = tes3.player, item = id}
             local numToRemove = math.min(inInventory, remaining)
             tes3.removeItem{ reference = tes3.player, item = id, playSound = false, count = numToRemove}
             remaining = remaining - numToRemove
@@ -166,7 +167,7 @@ local function updateRequirementsPane(recipe)
             for _, id in ipairs(ingredData.material.ids) do
                 local item = tes3.getObject(id)
                 if item then
-                    local itemCount = mwscript.getItemCount{ reference = tes3.player, item = item }
+                    local itemCount = tes3.getItemCount{ reference = tes3.player, item = item }
                     local block = outerBlock:createBlock{}
                     block.flowDirection = "left_to_right"
                     block.autoHeight = true
@@ -202,7 +203,7 @@ local function updateDescriptionPane(recipe)
     label.text = tes3.getObject(recipe.id).name
 
     local description = craftingMenu:findChild(uiids.previewDescription)
-    common.log:debug("Updating Descriptiong for %s to %s", recipe.id, recipe.description)
+    logger:debug("Updating Descriptiong for %s to %s", recipe.id, recipe.description)
     description.text = recipe.description
 
 
@@ -226,8 +227,8 @@ local function updatePreviewPane(recipe)
             craftingMenu:updateLayout()
 
 
-            common.log:debug("mesh: %s", mesh)
-            common.log:debug(nif.sceneNode.name)
+            logger:debug("mesh: %s", mesh)
+            logger:debug(nif.sceneNode.name)
 
             local node = nif.sceneNode
             common.helper.removeLight(node)
@@ -245,15 +246,15 @@ local function updatePreviewPane(recipe)
 
             maxDimension = math.max(width, depth, height)
             --local maxDimension = node.worldBoundRadius
-            common.log:debug("bb min: %s, max: %s", bb.min, bb.max)
-            common.log:debug("height: %s", height)
-            common.log:debug("worldBoundRadius: %s", node.worldBoundRadius)
+            logger:debug("bb min: %s, max: %s", bb.min, bb.max)
+            logger:debug("height: %s", height)
+            logger:debug("worldBoundRadius: %s", node.worldBoundRadius)
 
             local targetHeight = 150
             node.scale = targetHeight / maxDimension
 
             local lowestPoint = bb.min.z
-            common.log:debug("lowestPoint = %s", lowestPoint)
+            logger:debug("lowestPoint = %s", lowestPoint)
             node.translation.z = node.translation.z - lowestPoint*node.scale
 
             do --add properties

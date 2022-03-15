@@ -1,4 +1,5 @@
 local common = require ("mer.ashfall.common.common")
+local logger = common.createLogger("tea")
 local teaConfig       = require("mer.ashfall.config.teaConfig")
 local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 return {
@@ -35,11 +36,11 @@ return {
         campfire.data.teaProgress = 0
 
         local currentHeat = campfire.data.waterHeat or 0
-        common.log:debug("currentHeat: %s", currentHeat)
+        logger:debug("currentHeat: %s", currentHeat)
         local newHeat = math.max(0, (campfire.data.waterHeat - 10))
-        common.log:debug("newHeat: %s", newHeat)
+        logger:debug("newHeat: %s", newHeat)
         CampfireUtil.setHeat(campfire.data, newHeat, campfire)
-        common.log:debug("campfire.data.waterHeat: %s", campfire.data.waterHeat)
+        logger:debug("campfire.data.waterHeat: %s", campfire.data.waterHeat)
 
         local skillSurvivalTeaBrewIncrement = 5
         common.skills.survival:progressSkill(skillSurvivalTeaBrewIncrement)

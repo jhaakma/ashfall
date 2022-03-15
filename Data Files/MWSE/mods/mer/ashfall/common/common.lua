@@ -4,7 +4,7 @@ this.staticConfigs = require("mer.ashfall.config.staticConfigs")
 this.helper = require("mer.ashfall.common.helperFunctions")
 this.defaultValues = require ("mer.ashfall.MCM.defaultConfig")
 this.messages = require("mer.ashfall.messages.messages")
-local config = require("mer.ashfall.config.config").config
+local config = require("mer.ashfall.config").config
 --set up logger
 local logLevel = config.logLevel
 
@@ -22,28 +22,6 @@ this.createLogger = function(serviceName)
         name = string.format("Ashfall - %s", serviceName),
         logLevel = logLevel
     }
-end
-
-function this.loadMesh(mesh)
-    local useCache = not config.debugMode
-    return tes3.loadMesh(mesh, useCache):clone()
-end
-
---Returns if an object is blocked by the MCM
-function this.getIsBlocked(obj)
-    local mod = obj.sourceMod and obj.sourceMod:lower()
-    return (
-        config.blocked[obj.id] or
-        config.blocked[mod]
-    )
-end
-
-function this.isInnkeeper(reference)
-    local obj = reference.baseObject or reference.object
-    local objId = obj.id:lower()
-    local classId = obj.class and reference.object.class.id:lower()
-    return ( classId and this.staticConfigs.innkeeperClasses[classId])
-        or config.foodWaterMerchants[objId]
 end
 
 --[[
@@ -144,26 +122,18 @@ local function checkSkillModule()
     end
 end
 
--- local function initialiseLocalSettings()
---     --this.log:info("initialising category %s", category.id)
---     for setting, value in pairs(this.defaultValues) do
---         if config[setting] == nil then
---             config[setting] = value
---             this.log:info( "Initialising local data %s to %s", setting, value )
---         end
---     end
--- end
-
 local function initData()
-        --Persistent data stored on player reference
+    --Persistent data stored on player reference
     -- ensure data table exists
     local data = tes3.player.data
     data.Ashfall = data.Ashfall or {}
     -- create a public shortcut
     this.data = data.Ashfall
+    -- initialise empty subtables
     this.data.currentStates = this.data.currentStates or {}
     this.data.wateredCells = this.data.wateredCells or {}
     this.data.trinketEffects = this.data.trinketEffects or {}
+    this.data.bandages = this.data.bandages or {}
 end
 
 local function doUpgrades()
@@ -174,15 +144,11 @@ end
 --INITIALISE COMMON--
 local dataLoadedOnce = false
 local function onLoaded()
-
     checkSkillModule()
-    --initialiseLocalSettings()
     initData()
     doUpgrades()
-
     this.log:info("Common Data loaded successfully")
     event.trigger("Ashfall:dataLoaded")
-
     if not dataLoadedOnce then
         dataLoadedOnce = true
         event.trigger("Ashfall:dataLoadedOnce")

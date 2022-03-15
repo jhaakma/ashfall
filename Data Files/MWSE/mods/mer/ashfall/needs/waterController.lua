@@ -4,16 +4,11 @@
     a tooltip will display, and pressing the activate button will bring up
     a menu that allows the player to drink or fill up a container with water.
 ]]--
-
-
-local activatorController = require "mer.ashfall.activators.activatorController"
 local LiquidContainer = require "mer.ashfall.objects.LiquidContainer"
-local CampfireUtil = require "mer.ashfall.camping.campfire.CampfireUtil"
 local thirstController = require("mer.ashfall.needs.thirstController")
 local common = require("mer.ashfall.common.common")
-local config = require("mer.ashfall.config.config").config
-local brewTea = require("mer.ashfall.camping.menuFunctions.brewTea")
-local addIngredient = require("mer.ashfall.camping.menuFunctions.addIngredient")
+local logger = common.createLogger("waterController")
+local config = require("mer.ashfall.config").config
 local foodConfig = common.staticConfigs.foodConfig
 local teaConfig = common.staticConfigs.teaConfig
 local activatorConfig = common.staticConfigs.activatorConfig
@@ -25,18 +20,18 @@ local wetness = common.staticConfigs.conditionConfig.wetness
 local wetnessPerWater = 5
 local function douse(bottleData)
     local amount =  bottleData and bottleData.waterAmount or 1000
-    common.log:debug("Douse: amount = %s", amount)
+    logger:debug("Douse: amount = %s", amount)
     local currentDryness = 100 - common.data.wetness
-    common.log:debug("Douse: currentDryness = %s", currentDryness)
+    logger:debug("Douse: currentDryness = %s", currentDryness)
     local waterUsed = math.min(currentDryness/wetnessPerWater, amount)
-    common.log:debug("Douse: waterUsed = %s", waterUsed)
+    logger:debug("Douse: waterUsed = %s", waterUsed)
     common.data.wetness = common.data.wetness + waterUsed*wetnessPerWater
     event.trigger("Ashfall:updateCondition", { id = "wetness" })
 
 
     --handle bottleData if provided
     if bottleData then
-        common.log:debug("Douse: Reducing amount in bottle by %s", math.ceil(waterUsed))
+        logger:debug("Douse: Reducing amount in bottle by %s", math.ceil(waterUsed))
         --Reduce liquid in bottleData
         bottleData.waterAmount = bottleData.waterAmount - math.ceil(waterUsed)
         thirstController.handleEmpties(bottleData)
@@ -55,7 +50,7 @@ end)
 --Create messageBox for water menu
 local function callWaterMenu(e)
     e = e or {}
-    common.log:debug("callWaterMenu: Water Type: %s", e.waterType)
+    logger:debug("callWaterMenu: Water Type: %s", e.waterType)
     common.data.drinkingWaterType = e.waterType
     common.data.drinkingRain = e.rain
 
@@ -118,7 +113,7 @@ local function callWaterMenu(e)
     }
     --triple delay frame...
     timer.delayOneFrame(function()timer.delayOneFrame(function()timer.delayOneFrame(function()timer.delayOneFrame(function()
-        common.log:debug("common.data.drinkingRain = false drink")
+        logger:debug("common.data.drinkingRain = false drink")
         common.data.drinkingRain = nil
         common.data.drinkingWaterType = nil
     end)end)end)end)
@@ -127,7 +122,7 @@ event.register("Ashfall:WaterMenu", callWaterMenu)
 
 local function findInnkeeperInCell(cell)
     for ref in cell:iterateReferences(tes3.objectType.npc) do
-        if common.isInnkeeper(ref) and ref.mobile and not ref.mobile.isDead then
+        if common.helper.isInnkeeper(ref) and ref.mobile and not ref.mobile.isDead then
             return ref
         end
     end
@@ -217,7 +212,7 @@ end
 
 local function drinkFromContainer(e)
 
-    if common.getIsBlocked(e.item) then return end
+    if common.helper.getIsBlocked(e.item) then return end
     if not config.enableThirst then return end
     --First check potions, gives a little hydration
     if getIsPotion(e) and config.potionsHydrate then

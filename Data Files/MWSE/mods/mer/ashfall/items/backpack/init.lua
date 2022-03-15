@@ -1,5 +1,6 @@
 local common = require("mer.ashfall.common.common")
-local config = require("mer.ashfall.config.config").config
+local logger = common.createLogger("backpack")
+local config = require("mer.ashfall.config").config
 local tentConfig = require("mer.ashfall.camping.tents.tentConfig")
 local backpackSlot = 11
 local backpacks = {
@@ -78,7 +79,7 @@ local function attachItem(item, parent)
     if existingMesh then
         parent:detachChild(existingMesh)
     end
-    local mesh = common.loadMesh(tes3.getObject(item).mesh)
+    local mesh = common.helper.loadMesh(tes3.getObject(item).mesh)
     mesh:clearTransforms()
     mesh.name = "AttachedMesh"
     mesh.appCulled = false
@@ -86,7 +87,7 @@ local function attachItem(item, parent)
 end
 
 local function setSwitchNodes(e)
-    common.log:trace("backpack setting switch nodes")
+    logger:trace("backpack setting switch nodes")
     local ref = e.reference
     for switch, data in pairs(switchNodes) do
         local switchNode = ref.sceneNode:getObjectByName(switch)
@@ -117,7 +118,7 @@ local function setSwitchNodes(e)
             --Attach item meshes if necessary, or remove if none equipped
             if data.attachMesh then
                 if itemToAttach then
-                    common.log:trace("attaching item")
+                    logger:trace("attaching item")
                     attachItem(itemToAttach, switchNode.children[1]:getObjectByName("ATTACH_NODE"))
                 else
                     detachMesh(switchNode.children[1])
@@ -152,7 +153,7 @@ end
 
 local function attachBackpack(parent, fileName, ref)
     if not config.showBackpacks then return end
-    local node = common.loadMesh(fileName)
+    local node = common.helper.loadMesh(fileName)
     if node then
         node = node:clone()
         node:clearTransforms()
@@ -247,14 +248,14 @@ event.register("mobileActivated", onMobileActivated)
 event.register("activate", function(e)
     if e.activator == tes3.player then
         timer.delayOneFrame(function()
-            common.log:trace("activate")
+            logger:trace("activate")
             setSwitchNodes{ reference = e.activator }
         end)
     end
 end)
 
 local function updatePlayer()
-    common.log:trace("updating player backpack")
+    logger:trace("updating player backpack")
     if tes3.player and tes3.player.mobile then
         --check for existing backpack and equip it
         local equippedBackpack = tes3.getEquippedItem{
@@ -263,7 +264,7 @@ local function updatePlayer()
             slot = backpackSlot
         }
         if equippedBackpack then
-            common.log:trace("re-equipping %s", equippedBackpack.object.name)
+            logger:trace("re-equipping %s", equippedBackpack.object.name)
             onEquipped{reference = tes3.player, item = equippedBackpack.object}
         end
 
@@ -273,11 +274,11 @@ local function updatePlayer()
             slot = backpackSlot
         }
         if equippedBackpack then
-            common.log:trace("re-equipping %s", equippedBackpack.object.name)
+            logger:trace("re-equipping %s", equippedBackpack.object.name)
             onEquipped{reference = tes3.player, item = equippedBackpack.object}
         end
     else
-        common.log:trace("player doesn't exist")
+        logger:trace("player doesn't exist")
     end
 end
 

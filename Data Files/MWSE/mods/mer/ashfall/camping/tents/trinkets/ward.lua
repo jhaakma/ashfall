@@ -2,6 +2,7 @@
     When in the vicinity of a ward, nearby enemies will flee
 ]]
 local common = require("mer.ashfall.common.common")
+local logger = common.createLogger("ward")
 
 local fleeIncrease = 50
 
@@ -22,18 +23,18 @@ local function doWardEffect(e)
                     if closeEnough and not previousFlee then
                         reference.data.ashfallWardedPrevFlee = mobile.flee
                         mobile.flee = math.min(100, mobile.flee + fleeIncrease)
-                        common.log:debug("Making %s flee", reference.object.id)
+                        logger:debug("Making %s flee", reference.object.id)
                     end
 
                     if previousFlee and not closeEnough then
                         mobile.flee = previousFlee
                         reference.data.ashfallWardedPrevFlee = nil
-                        common.log:debug("%s no longer fleeing: not close enough", reference.object.id)
+                        logger:debug("%s no longer fleeing: not close enough", reference.object.id)
                     end
                 elseif previousFlee then
                     mobile.flee = previousFlee
                     reference.data.ashfallWardedPrevFlee = nil
-                    common.log:debug("%s no longer fleeing: no ward effect", reference.object.id)
+                    logger:debug("%s no longer fleeing: no ward effect", reference.object.id)
                 end
             end
         end

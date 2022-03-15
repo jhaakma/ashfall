@@ -1,5 +1,6 @@
 local common = require("mer.ashfall.common.common")
-local config = require("mer.ashfall.config.config").config
+local logger = common.createLogger("sleepController")
+local config = require("mer.ashfall.config").config
 local needsUI = require("mer.ashfall.needs.needsUI")
 local this = {}
 local statsEffect = require("mer.ashfall.needs.statsEffect")
@@ -25,15 +26,15 @@ local tiredness = conditionConfig.tiredness
 
 local function setBedTemp(e)
     common.data.usingBed = e.isUsingBed
-    common.log:debug("===========================Checking Bed Temp: %s", common.data.usingBed)
+    logger:debug("===========================Checking Bed Temp: %s", common.data.usingBed)
     local bedData = common.data.currentBedData
     if e.isUsingBed and bedData then
-        common.log:debug("Setting bedTempMulti: %s", bedData.tempMulti)
+        logger:debug("Setting bedTempMulti: %s", bedData.tempMulti)
         common.data.bedTempMulti = bedData.tempMulti
-        common.log:debug("Setting bedWarmth: %s", bedData.warmth)
+        logger:debug("Setting bedWarmth: %s", bedData.warmth)
         common.data.bedWarmth = bedData.warmth
     else
-        common.log:debug("Not using a bed, setting default")
+        logger:debug("Not using a bed, setting default")
         common.data.bedTempMulti = 1.0
         common.data.bedWarmth = 0
     end
@@ -94,14 +95,14 @@ event.register("uiShowRestMenu", setRestValues )
 --We do this by tapping into the Rest Menu,
 --replacing the text and removing rest/wait buttons
 local function activateRestMenu (e)
-    common.log:debug("activateRestMenu")
+    logger:debug("activateRestMenu")
     if not common.data then return end
 
     if isUsingBed then
         --manually update tempLimit so you can see what it will be with the bedTemp added
         --common.data.tempLimit = common.data.tempLimit + bedWarmth
         event.trigger("Ashfall:updateTemperature", { source = "activateRestMenu"})
-        common.log:debug("Is Scripted: adding warmth")
+        logger:debug("Is Scripted: adding warmth")
     end
 
     local tempLimit = common.data.tempLimit
@@ -142,7 +143,7 @@ local function activateRestMenu (e)
     end
 
     restUntilHealedButton:registerBefore("mouseClick", function()
-        common.log:debug("Resting until healed = true")
+        logger:debug("Resting until healed = true")
         common.data.restingUntilHealed = true
     end)
 
@@ -204,7 +205,7 @@ local function checkInterruptSleep()
 
         if tes3.mobilePlayer.sleeping and isUsingBed then
             if not common.data.usingBed then
-                common.log:debug("setting inBed to true")
+                logger:debug("setting inBed to true")
                 event.trigger("Ashfall:SetBedTemp", { isUsingBed = true})
             end
         end
@@ -220,7 +221,7 @@ local function checkInterruptSleep()
         common.data.restingUntilHealed = nil
         --Reset the bedTemp when player wakes up
         if common.data.usingBed then
-            common.log:debug("setting inBed to false")
+            logger:debug("setting inBed to false")
             event.trigger("Ashfall:SetBedTemp", { isUsingBed = false})
         end
      end
@@ -232,16 +233,16 @@ function this.calculate(scriptInterval, forceUpdate)
 
     if scriptInterval == 0 and not forceUpdate then return end
     if not tiredness:isActive() then
-        common.log:trace("tiredness is not active")
+        logger:trace("tiredness is not active")
         tiredness:setValue(0)
         return
     end
     if common.data.blockNeeds == true then
-        common.log:trace("blockNeeds is true")
+        logger:trace("blockNeeds is true")
         return
     end
     if common.data.blockSleepLoss == true then
-        common.log:trace("blockSleepLoss is true")
+        logger:trace("blockSleepLoss is true")
         return
     end
 
@@ -260,13 +261,13 @@ function this.calculate(scriptInterval, forceUpdate)
     --If player is traveling, return if tiredness is below rested
     if common.helper.getIsTraveling() then
         if currentTiredness < tiredness.states.rested.min then
-            common.log:trace("Player is traveling, returning")
+            logger:trace("Player is traveling, returning")
             return
         end
     end
 
     if common.helper.getIsSleeping() then
-        common.log:trace("Sleeping")
+        logger:trace("Sleeping")
         local usingBed = common.data.usingBed or common.data.isSleeping or false
         if usingBed then
             currentTiredness = currentTiredness - ( scriptInterval * gainSleepBed * tramaRootTeaEffect )
@@ -279,7 +280,7 @@ function this.calculate(scriptInterval, forceUpdate)
         end
     --TODO: traveling isn't working for some reason
     elseif common.data.playerIsTraveling  then
-        common.log:trace("Player is traveling, getting some rest but can't get below 'Rested'")
+        logger:trace("Player is traveling, getting some rest but can't get below 'Rested'")
         --Traveling: getting some rest but can't get below "Rested"
         if currentTiredness > tiredness.states.rested.min then
             currentTiredness = currentTiredness - ( scriptInterval * gainSleepRate )
@@ -304,10 +305,10 @@ end
 ]]
 local function travelingLength(e)
     timer.delayOneFrame(function()
-        common.log:debug("Travel is ending, setting playerIsTraveling to false")
+        logger:debug("Travel is ending, setting playerIsTraveling to false")
         common.data.playerIsTraveling = false
     end)
-    common.log:debug("Calculating travel price, setting playerIsTraveling to true")
+    logger:debug("Calculating travel price, setting playerIsTraveling to true")
     common.data.playerIsTraveling = true
 end
 

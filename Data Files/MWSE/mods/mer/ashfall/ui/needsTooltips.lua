@@ -1,4 +1,5 @@
 local common = require("mer.ashfall.common.common")
+local logger = common.createLogger("needsTooltips")
 local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 local teaConfig = common.staticConfigs.teaConfig
 local thirstController = require('mer.ashfall.needs.thirstController')
@@ -48,7 +49,7 @@ local function updateWaterTile(e)
    local liquidContainer = LiquidContainer.createFromInventory(e.item, e.itemData)
    if liquidContainer then
 
-        common.log:trace("Updating bottle data tile")
+        logger:trace("Updating bottle data tile")
         local maxHeight = 32 * math.max(0.33, liquidContainer.capacity / common.staticConfigs.capacities.MAX)
 
         local indicatorBlock = e.element:createThinBorder()

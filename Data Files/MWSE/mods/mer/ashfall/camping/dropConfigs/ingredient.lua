@@ -1,6 +1,7 @@
 local common = require ("mer.ashfall.common.common")
-local foodConfig      = require("mer.ashfall.config.foodConfig")
-local CampfireUtil    = require("mer.ashfall.camping.campfire.CampfireUtil")
+local logger = common.createLogger("ingredient")
+local foodConfig = require("mer.ashfall.config.foodConfig")
+local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 
 return {
     dropText = function(campfire, item, itemData)
@@ -40,7 +41,7 @@ return {
             item = reference.object
         }
 
-        common.log:debug("amountAdded: %s", amountAdded)
+        logger:debug("amountAdded: %s", amountAdded)
         local remaining = common.helper.reduceReferenceStack(reference, amountAdded)
         if remaining > 0 then
             common.helper.pickUp(reference)

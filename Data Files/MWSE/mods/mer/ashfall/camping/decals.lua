@@ -1,5 +1,5 @@
 local common = require ("mer.ashfall.common.common")
-
+local logger = common.createLogger("decals")
 local decalStates = {
     cooked = {texPath = "textures\\Ashfall\\grill\\cooked.dds"},
     burnt = {texPath = "textures\\Ashfall\\grill\\burnt.dds"},
@@ -24,7 +24,7 @@ end
 
 --pre-load textures
 local function preloadTextures()
-    common.log:trace("Preloading Grill textures")
+    logger:trace("Preloading Grill textures")
     for _, decalState in pairs(decalStates) do
         local texture = niSourceTexture.createFromPath(decalState.texPath)
         decalState.texture = texture
@@ -45,14 +45,14 @@ local function addDecal(property, decalState)
         local fileName = texture and texture.fileName
 
         if fileName then
-            common.log:trace("fileName: %s", fileName)
+            logger:trace("fileName: %s", fileName)
             for _, state in pairs(decalStates) do
                 if fileName == state.texPath then
                     if decal then
-                        common.log:trace("Found existing decal, replacing with %s", decal.fileName)
+                        logger:trace("Found existing decal, replacing with %s", decal.fileName)
                         map.texture = decal
                     else
-                        common.log:trace("Removing existing decal")
+                        logger:trace("Removing existing decal")
                         property:removeDecalMap(index)
                     end
                     return
@@ -65,7 +65,7 @@ local function addDecal(property, decalState)
         --Add new decal
         if property.canAddDecal then
             property:addDecalMap(decal)
-            common.log:trace("Adding new decal")
+            logger:trace("Adding new decal")
         end
     end
 end
@@ -77,7 +77,7 @@ local function updateIngredient(e)
         decalState = e.reference.data.mer_disease.spellType == tes3.spellType.disease and "diseased" or "blighted"
     end
 
-    common.log:trace("Updating %s decal for %s",
+    logger:trace("Updating %s decal for %s",
         decalState or "(removing)",
         reference.id
     )
@@ -106,7 +106,7 @@ local function ingredPlaced(e)
             e.reference.baseObject.objectType == tes3.objectType.ingredient)
         )
         if isIngredient then
-            common.log:debug("Updating decals for %s", e.reference.object.id)
+            logger:debug("Updating decals for %s", e.reference.object.id)
             updateIngredient{ reference = e.reference}
         end
     -- end

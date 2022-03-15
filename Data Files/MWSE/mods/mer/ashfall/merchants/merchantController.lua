@@ -9,7 +9,8 @@ local function setGearAdedd(reference)
 end
 
 local common = require("mer.ashfall.common.common")
-local config = require("mer.ashfall.config.config").config
+local logger = common.createLogger("merchantController")
+local config = require("mer.ashfall.config").config
 --Place an invisible, appCulled container at the feet of a merchant and assign ownership
 --This is how we add stock to merchants without editing the cell in the CS
 
@@ -29,17 +30,17 @@ local function removeOldContainers(ref)
 
             local owner = tes3.getOwner(container)
             if owner.id:lower() == ref.baseObject.id:lower() then
-                common.log:debug("Found old container %s, removing", container.object.id)
+                logger:debug("Found old container %s, removing", container.object.id)
                 common.helper.yeet(container)
             else
-                common.log:debug("Owner check failed")
+                logger:debug("Owner check failed")
             end
         end
     end
 end
 
 local function placeContainer(merchant, containerId)
-    common.log:debug("Adding container %s to %s", containerId, merchant.object.name)
+    logger:debug("Adding container %s to %s", containerId, merchant.object.name)
     local container = tes3.createReference{
         object = containerId,
         position = merchant.position:copy(),
@@ -96,7 +97,7 @@ local function onMobileActivated(e)
         end
     end
     --Publicans get food
-    if common.isInnkeeper(e.reference) then
+    if common.helper.isInnkeeper(e.reference) then
         local hasFoodAlready = e.reference.data.ashfallFoodAdded == true
         if not hasFoodAlready then
             e.reference.data.ashfallFoodAdded = true

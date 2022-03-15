@@ -1,6 +1,6 @@
 local Parent = require("mer.ashfall.objects.Object")
 local Condition = Parent:new()
-local config = require("mer.ashfall.config.config").config
+local config = require("mer.ashfall.config").config
 Condition.type = "Condition"
 Condition.fields = {
     id = true,
@@ -132,11 +132,11 @@ function Condition:updateConditionEffects(currentState)
             if isCurrentState and self:isActive() then
                 self:scaleSpellValues()
                 --if not hasCondition then
-                    mwscript.addSpell({ reference = tes3.player, spell = spell })
+                    tes3.addSpell({ reference = tes3.player, spell = spell })
                 --end
             else
                 --if hasCondition then
-                    mwscript.removeSpell({ reference = tes3.player, spell = spell })
+                    tes3.removeSpell({ reference = tes3.player, spell = spell })
                 --end
             end
         end
@@ -145,7 +145,6 @@ end
 
 function Condition:getValue()
     if not tes3.player or not tes3.player.data.Ashfall then
-        --common.log:error("trying to get condition value %s before player was loaded", self.id)
         return 0
     end
     return tes3.player.data.Ashfall[self.id] or 0
@@ -154,7 +153,6 @@ end
 
 function Condition:setValue(newVal)
     if not tes3.player or not tes3.player.data.Ashfall then
-        --log:error("trying to set condition value %s before player was loaded", self.id)
         return false
     end
     tes3.player.data.Ashfall[self.id] = math.clamp(newVal, self.min, self.max)
@@ -166,8 +164,6 @@ function Condition:getStatMultiplier()
         local minVal =  self.states[self.minDebuffState].min
         local value = math.max(self:getValue(), minVal)
         return math.remap(value, minVal, 100, 1.0, 0.0)
-    else
-        --common.log:error("getStatMultiplier(): %s does not have a debuffState", self.id)
     end
 end
 

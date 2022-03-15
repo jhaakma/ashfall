@@ -1,6 +1,7 @@
 --Updates condition spell effect strength based on player stats
 --Uses base version of spell as a reference to get attribute  values without multiplier
 local common = require("mer.ashfall.common.common")
+local logger = common.createLogger("conditionController")
 local conditionConfig = common.staticConfigs.conditionConfig
 local this = {}
 
@@ -105,10 +106,10 @@ end
 local function clearConditionsEffectsOnLvlUp(e)
     local isLevelingUp = tes3.mobilePlayer.levelUpProgress >= 10
     if isLevelingUp then
-        common.log:debug("Removing condition effects before level up")
+        logger:debug("Removing condition effects before level up")
         removeConditionEffects()
         timer.delayOneFrame(function()
-            common.log:debug("Restoring condition effects after level up")
+            logger:debug("Restoring condition effects after level up")
             restoreConditionEffects()
         end)
     end

@@ -1,4 +1,5 @@
 local common = require ("mer.ashfall.common.common")
+local logger = common.createLogger("removeGrill")
 return {
     text = function(campfire)
         local grillId = campfire.data.grillId
@@ -33,17 +34,17 @@ return {
         campfire.data.grillPatinaAmount = nil
         event.trigger("Ashfall:UpdateAttachNodes", {campfire = campfire,})
         --drop any cooking ingredients
-        common.log:debug("Finding ingredients to drop")
+        logger:debug("Finding ingredients to drop")
         for _, cell in pairs( tes3.getActiveCells() ) do
             for ingredient in cell:iterateReferences(tes3.objectType.ingredient) do
-                common.log:debug("ingredient: %s", ingredient.object.id)
+                logger:debug("ingredient: %s", ingredient.object.id)
                 if common.helper.getCloseEnough{
                     --TODO: Implement using grill position
                     ref1 = campfire, ref2 = ingredient,
                     distVertical = 300,
                     distHorizontal = 50
                 } then
-                    common.log:debug("Dropping %s to ground", ingredient.object.id)
+                    logger:debug("Dropping %s to ground", ingredient.object.id)
                     common.helper.orientRefToGround{ ref = ingredient}
                 end
             end

@@ -1,6 +1,7 @@
 local common = require("mer.ashfall.common.common")
+local logger = common.createLogger("mcm")
 local versionController = require("mer.ashfall.versionController")
-local config = require("mer.ashfall.config.config").config
+local config = require("mer.ashfall.config").config
 
 local LINKS_LIST = {
     {
@@ -721,7 +722,7 @@ local function registerModConfig()
             },
             variable = mwse.mcm.createTableVariable{ id = "logLevel", table = config },
             callback = function(self)
-                common.log:setLogLevel(self.variable.value)
+                logger:setLogLevel(self.variable.value)
             end
         }
 

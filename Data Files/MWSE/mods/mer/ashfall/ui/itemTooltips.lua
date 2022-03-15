@@ -1,5 +1,6 @@
 local common = require ("mer.ashfall.common.common")
-local config = require("mer.ashfall.config.config").config
+local logger = common.createLogger("itemTooltips")
+local config = require("mer.ashfall.config").config
 local teaConfig   = require("mer.ashfall.config.teaConfig")
 local foodConfig = require("mer.ashfall.config.foodConfig")
 local hungerController = require("mer.ashfall.needs.hungerController")
@@ -194,13 +195,13 @@ local function addStewTooltips(item, itemData, tooltip)
                 outerBlock.childAlignX = 0.5
                 outerBlock.flowDirection = "top_to_bottom"
 
-        common.log:trace("Stew Tooltips")
+        logger:trace("Stew Tooltips")
         local stewName = foodConfig.isStewNotSoup(itemData.data.stewLevels) and "Stew" or "Soup"
 
         local progress = ( itemData.data.stewProgress or 0 )
         local progressText
 
-        common.log:trace("progress: %d", progress)
+        logger:trace("progress: %d", progress)
         if progress < 100 then
             progressText = string.format("%s (%d%% Cooked)", stewName, progress )
         elseif itemData.data.waterHeat < common.staticConfigs.hotWaterHeatValue then

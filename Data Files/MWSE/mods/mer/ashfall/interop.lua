@@ -2,6 +2,7 @@
 local branchInterop = require "mer.ashfall.branch.branchInterop"
 
 local common = require("mer.ashfall.common.common")
+local logger = common.createLogger("interop")
 local staticConfigs = common.staticConfigs
 local activatorConfig = staticConfigs.activatorConfig
 local foodConfig = staticConfigs.foodConfig
@@ -53,10 +54,10 @@ local function registerActivatorType(e)
     if e.patterns then
         assert(type(e.patterns) == 'table')
     end
-    common.log:debug("Registering '%s' as a new Activator Type", e.type)
+    logger:debug("Registering '%s' as a new Activator Type", e.type)
 
     if not activatorConfig.types[e.type] then
-        common.log:debug('Type "%s" does not exist, creating', e.type)
+        logger:debug('Type "%s" does not exist, creating', e.type)
         activatorConfig.types[e.type] = e.type
     end
     local idList = {}
@@ -87,7 +88,7 @@ local function registerActivatorType(e)
 end
 
 local function registerActivators(e)
-    common.log:debug("Registering the following activator %s: ", (e.usePatterns and "patterns" or "ids"))
+    logger:debug("Registering the following activator %s: ", (e.usePatterns and "patterns" or "ids"))
     for id, activatorType in pairs(e.data) do
 
         assert(type(id) == 'string', "registerActivator(): Invalid id. Must be a string.")
@@ -102,7 +103,7 @@ local function registerActivators(e)
             activator:addId(id)
         end
 
-        common.log:debug("    %s as %s", id, activatorType)
+        logger:debug("    %s as %s", id, activatorType)
     end
     return true
 end
@@ -127,7 +128,7 @@ end
 
 local function registerWaterContainers(e)
     local includeOverrides = e.includeOverrides
-    common.log:debug("Registering the following water containers:")
+    logger:debug("Registering the following water containers:")
     for id, data in pairs(e.data) do
         assert(type(id) == "string", "Water container ID must be a string.")
         id = id:lower()
@@ -143,7 +144,7 @@ local function registerWaterContainers(e)
                 holdsStew = data.holdsStew
             }
             staticConfigs.activatorConfig.list.waterContainer:addId(id)
-            common.log:debug("    %s: { capacity: %d%s%s%s }",
+            logger:debug("    %s: { capacity: %d%s%s%s }",
                 id,
                 data.capacity,
                 data.weight and string.format(", weight: %s", data.weight) or "",
@@ -154,7 +155,7 @@ local function registerWaterContainers(e)
             --Number for just setting a capacity
             staticConfigs.bottleList[id] = { capacity = data }
             staticConfigs.activatorConfig.list.waterContainer:addId(id)
-            common.log:debug("    %s: { capacity: %s }", id, data)
+            logger:debug("    %s: { capacity: %s }", id, data)
         elseif type(data) == "string" then
             --String for using existing bottle type
             local thisBottleConfig = staticConfigs.bottleConfig[data]
@@ -174,7 +175,7 @@ local function registerWaterContainers(e)
             }
             staticConfigs.activatorConfig.list.waterContainer:addId(id)
             local finalConfig = staticConfigs.bottleList[id]
-            common.log:debug("    %s: { capacity: %d%s%s }",
+            logger:debug("    %s: { capacity: %d%s%s }",
                 id,
                 finalConfig.capacity,
                 finalConfig.weight and string.format(", weight: %s", finalConfig.weight) or "",
@@ -188,25 +189,25 @@ end
 event.register("Ashfall:RegisterWaterContainers", registerWaterContainers)
 
 local function registerFoods(e)
-    common.log:debug("Registering the following food items: ")
+    logger:debug("Registering the following food items: ")
     for id, foodType in pairs(e.data) do
         assert(type(id) == "string", "Water container ID must be a string.")
         assert(foodConfig.type[foodType], string.format("%s is not a valid food type. Valid types include: %s", foodType, listValidFoodTypes() ))
 
         foodConfig.addFood(id, foodType)
-        common.log:debug("    %s: %s", id, foodType)
+        logger:debug("    %s: %s", id, foodType)
     end
     return true
 end
 event.register("Ashfall:RegisterFoods", registerFoods)
 
 local function registerHeatSources(e)
-    common.log:debug("Registering the following heat sources: ")
+    logger:debug("Registering the following heat sources: ")
     for id, temp in pairs(e.data) do
         assert(type(id) == "string", "RegisterHeatSources: id must be a string")
         assert(type(temp) == "number", "RegisterHeatSources: temp value must be a number")
         staticConfigs.heatSourceValues[id:lower()] = temp
-        common.log:debug("    %s: %s", id, temp)
+        logger:debug("    %s: %s", id, temp)
     end
     return true
 end
@@ -238,37 +239,37 @@ end
 
 
 local function registerClothings(e)
-    common.log:debug("Registering warmth values the following clothing: ")
+    logger:debug("Registering warmth values the following clothing: ")
     for id, warmth in pairs(e.data) do
         registerClothingOrArmor(id, warmth, "clothing")
-        common.log:debug("   %s: %s", id, warmth)
+        logger:debug("   %s: %s", id, warmth)
     end
     return true
 end
 
 local function registerArmors(e)
-    common.log:debug("Registering warmth values for the following armor: ")
+    logger:debug("Registering warmth values for the following armor: ")
     for id, warmth in pairs(e.data) do
         registerClothingOrArmor(id, warmth, "armor")
-        common.log:debug("   %s: %s", id, warmth)
+        logger:debug("   %s: %s", id, warmth)
     end
     return true
 end
 
 local function registerClimates(e)
-    common.log:debug("Registering climate data for the following regions: ")
+    logger:debug("Registering climate data for the following regions: ")
     for id, data in pairs(e.data) do
         id = id:lower()
         if type(data) == 'table' then
             assert(data.min, "Missing min climate value.")
             assert(data.max, "Missing max climate value.")
             climateConfig.regions[id] = data
-            common.log:debug("    %s: { min: %d, max: %d }", id, data.min, data.max)
+            logger:debug("    %s: { min: %d, max: %d }", id, data.min, data.max)
         elseif type(data) == 'string' then
             local climateData = climateConfig.CLIMATE[data]
             assert(climateData, string.format("Invalid Climate type. Must be ones of the following: %s", listValidClimateTypes()))
             climateConfig.regions[id] = climateData
-            common.log:debug("    %s: { min: %d, max: %d }", id, climateData.min, climateData.max)
+            logger:debug("    %s: { min: %d, max: %d }", id, climateData.min, climateData.max)
         else
             mwse.error("Invalid climate data. Must be a table with min/max values, a string matching the following: " .. listValidClimateTypes())
         end
@@ -279,10 +280,10 @@ end
 local function registerWoodAxes(data)
     local woodAxeConfig = require("mer.ashfall.harvest.woodaxes")
     assert(type(data) == 'table', "registerWoodAxes: data must be a table of axe ids")
-    common.log:debug("Registering wood axes: ")
+    logger:debug("Registering wood axes: ")
     for _, id in ipairs(data) do
         assert(type(id) == 'string', "registerWoodAxes: id must be a string")
-        common.log:debug(id)
+        logger:debug(id)
         woodAxeConfig[id:lower()] = {
             effectiveness = 1.5,
             degradeMulti = 0.5,
@@ -406,14 +407,14 @@ local Interop = {
         if common.skills.survival then
             common.skills.survival:progressSkill(amount)
             assert(type(amount) == 'number', "progressSurvivalSkill: amount must be a number")
-            common.log:debug("Progressing skill by %s points", amount)
+            logger:debug("Progressing skill by %s points", amount)
             return true
         end
     end,
     getSurvivalSkill = function()
         if common.skills.survival then
             local skillValue = common.skills.survival.value
-            common.log:debug("getSurvivalSkill: Getting survival skill: %s", skillValue)
+            logger:debug("getSurvivalSkill: Getting survival skill: %s", skillValue)
             return skillValue
         end
     end,
@@ -456,7 +457,7 @@ local Interop = {
             if type(override) == 'table' then
                 --check override has a weight or value field
                 assert(override.weight or override.value, "Override must have a weight or value field")
-                common.log:debug("Registering override for %s", id)
+                logger:debug("Registering override for %s", id)
                 overrides[id] = override
 
             else

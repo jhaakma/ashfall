@@ -1,7 +1,7 @@
 local this = {}
 
 local common = require("mer.ashfall.common.common")
-local config = require("mer.ashfall.config.config").config
+local logger = common.createLogger("ratings")
 local ratingsConfig = require("mer.ashfall.tempEffects.ratings.ratingsConfig")
 
 
@@ -39,14 +39,14 @@ local function getRawItemWarmth(object)
     elseif object.objectType == tes3.objectType.clothing then
         objType = "clothing"
     else
-        common.log:error("Tried to get warmth value of incompatabile item type %s" .. object.objectType )
+        logger:error("Tried to get warmth value of incompatabile item type %s" .. object.objectType )
         return
     end
 
 
     --Find in cache
     if warmthCache[objType][id] then
-        common.log:debug("Found %s in cache", id)
+        logger:debug("Found %s in cache", id)
         return warmthCache[objType][id]
 
     --Not in cache, generate from name and save to cache
@@ -59,7 +59,7 @@ local function getRawItemWarmth(object)
                 return value
             end
         end
-        common.log:trace("Couldn't find a value for %s", id)
+        logger:trace("Couldn't find a value for %s", id)
     end
 
     --No pattern found in name, get default value
@@ -72,7 +72,7 @@ local function getRawItemWarmth(object)
     end
 
     if not value then
-        common.log:error("No warmth value found for %s!", object.name)
+        logger:error("No warmth value found for %s!", object.name)
         value = 0
     end
     return value
@@ -120,10 +120,10 @@ function this.getTotalWarmth()
         slot = 11
     }
     if backpack then
-        common.log:debug("Adding backpack warmth")
+        logger:debug("Adding backpack warmth")
         warmth = warmth + this.getItemWarmth(backpack.object)
     else
-        common.log:debug("No backpack found")
+        logger:debug("No backpack found")
     end
 
     return warmth * ratingsConfig.warmth.multiplier
@@ -155,7 +155,7 @@ local function getItemBodyParts(object)
     elseif object.objectType == tes3.objectType.clothing then
         mapper = ratingsConfig.clothingPartMapping
     else
-        common.log:error("getItemBodyParts: Not a clothing or armor piece. ")
+        logger:error("getItemBodyParts: Not a clothing or armor piece. ")
         return
     end
 

@@ -1,5 +1,6 @@
 local common = require("mer.ashfall.common.common")
-local config = require("mer.ashfall.config.config").config
+local logger = common.createLogger("harvestService")
+local config = require("mer.ashfall.config").config
 local harvestConfigs = require("mer.ashfall.harvest.config")
 local HarvestService = {}
 
@@ -59,9 +60,9 @@ function HarvestService.getDamageEffect(weapon)
     local attackDirection = tes3.mobilePlayer.actionData.attackDirection
     local maxField = harvestConfigs.attackDirectionMapping[attackDirection].max
     local maxDamage = weapon.object[maxField]
-    common.log:debug("maxDamage: %s", maxDamage)
+    logger:debug("maxDamage: %s", maxDamage)
     local cappedDamage = math.min(maxDamage, MAX_WEAPON_DAMAGE)
-    common.log:debug("cappedDamage: %s", cappedDamage)
+    logger:debug("cappedDamage: %s", cappedDamage)
     return 1 + (cappedDamage / MAX_WEAPON_DAMAGE)
 end
 
@@ -70,14 +71,14 @@ end
 ---@return number
 function HarvestService.getSwingStrength(weapon, weaponData)
     local attackSwing = tes3.player.mobile.actionData.attackSwing
-    common.log:debug("attackSwing: %s", attackSwing)
+    logger:debug("attackSwing: %s", attackSwing)
     local effectiveness = weaponData.effectiveness or 1.0
-    common.log:debug("effectiveness: %s", effectiveness)
+    logger:debug("effectiveness: %s", effectiveness)
     local damageEffect = HarvestService.getDamageEffect(weapon)
-    common.log:debug("damageEffect: %s", damageEffect)
+    logger:debug("damageEffect: %s", damageEffect)
     --Calculate Swing Strength
     local swingStrength = attackSwing * effectiveness * damageEffect
-    common.log:debug("swingStrength: %s", swingStrength)
+    logger:debug("swingStrength: %s", swingStrength)
     return swingStrength
 end
 
@@ -102,12 +103,12 @@ function HarvestService.attemptSwing(swingStrength, reference, harvestConfig)
     local swingsNeeded = HarvestService.getSwingsNeeded(reference, harvestConfig)
     reference.tempData.ashfallHarvestSwings = reference.tempData.ashfallHarvestSwings or 0
     local swings = reference.tempData.ashfallHarvestSwings + swingStrength
-    common.log:debug("swings before: %s", reference.tempData.ashfallHarvestSwings)
-    common.log:debug("swingStrength: %s", swingStrength)
-    common.log:debug("swings after: %s", swings)
+    logger:debug("swings before: %s", reference.tempData.ashfallHarvestSwings)
+    logger:debug("swingStrength: %s", swingStrength)
+    logger:debug("swings after: %s", swings)
     reference.tempData.ashfallHarvestSwings = swings
     local isHarvested = swings > swingsNeeded
-    common.log:debug("isHarvested: %s", isHarvested)
+    logger:debug("isHarvested: %s", isHarvested)
     return isHarvested
 end
 
@@ -122,7 +123,7 @@ end
 ---@param weaponData AshfallHarvestWeaponData
 function HarvestService.degradeWeapon(weapon, swingStrength, weaponData)
     local degradeMulti = weaponData.degradeMulti or 1.0
-    common.log:debug("degrade multiplier: %s", degradeMulti)
+    logger:debug("degrade multiplier: %s", degradeMulti)
     --Weapon degradation
     weapon.variables.condition = weapon.variables.condition - (2 * swingStrength * degradeMulti)
     --weapon is broken, unequip
@@ -157,12 +158,12 @@ end
 ---@param harvestConfig AshfallHarvestConfig
 function HarvestService.addItems(harvestConfig)
     local roll = math.random()
-    common.log:debug("Roll: %s", roll)
+    logger:debug("Roll: %s", roll)
     for _, harvestable in ipairs(harvestConfig.items) do
         local chance = harvestable.chance
-        common.log:debug("Chance: %s", chance)
+        logger:debug("Chance: %s", chance)
         if roll <= chance then
-            common.log:debug("Adding %s", harvestable.id)
+            logger:debug("Adding %s", harvestable.id)
             tes3.playSound({reference=tes3.player, sound="Item Misc Up"})
             local numHarvested = HarvestService.calcNumHarvested(harvestable)
             tes3.addItem{reference=tes3.player, item= harvestable.id, count=numHarvested, playSound = false}

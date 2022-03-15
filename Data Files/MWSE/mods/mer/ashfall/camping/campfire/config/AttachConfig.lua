@@ -1,4 +1,5 @@
 local common = require ("mer.ashfall.common.common")
+local logger = common.createLogger("attachConfig")
 local itemTooltips = require("mer.ashfall.ui.itemTooltips")
 local function centerText(element)
     element.autoHeight = true
@@ -36,10 +37,10 @@ local AttachConfig = {
     ACTIVATE_DOOR = {
         name = "Door",
         command = function(ref)
-            common.log:debug("Activating Door")
+            logger:debug("Activating Door")
             local isOpen = ref.data and ref.data.ashfallDoorIsOpen
             if isOpen then
-                common.log:trace("Door is open, closing")
+                logger:trace("Door is open, closing")
                 tes3.playSound{
                     sound = "ashfall_door_close",
                     reference = tes3.player,
@@ -53,7 +54,7 @@ local AttachConfig = {
                 }
                 ref.data.ashfallDoorIsOpen = false
             else
-                common.log:trace("Door is closed, opening")
+                logger:trace("Door is closed, opening")
                 tes3.playSound{
                     sound = "ashfall_door_open",
                     reference = tes3.player,

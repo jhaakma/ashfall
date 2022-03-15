@@ -1,10 +1,11 @@
 local common = require("mer.ashfall.common.common")
-local config = require("mer.ashfall.config.config").config
+local logger = common.createLogger("diseasedMeat")
+local config = require("mer.ashfall.config").config
 local foodConfig = common.staticConfigs.foodConfig
 --check that the creature is diseased
 local function getDiseaseFromCreature(creatureRef)
     for spell in tes3.iterate(creatureRef.spells.iterator) do
-        common.log:debug("Spell: %s", spell.id)
+        logger:debug("Spell: %s", spell.id)
         if spell.castType == tes3.spellType.disease or spell.castType == tes3.spellType.blight then
             return spell
         end
@@ -15,7 +16,7 @@ local function addDiseaseToMeat(reference, disease)
     local obj = reference.object
     for stack in tes3.iterate(obj.inventory.iterator) do
         if foodConfig.getFoodType(stack.object) == foodConfig.type.meat then
-            common.log:trace("Found %s, adding disease", stack.object.id)
+            logger:trace("Found %s, adding disease", stack.object.id)
             local count = stack.count
             --First itemData items
             if stack.variables then
@@ -46,7 +47,7 @@ local function addDiseaseOnDeath(e)
 
             local disease = getDiseaseFromCreature(e.reference.object)
             if disease then
-                common.log:debug("addDiseaseOnDeath() - Creature %s has %s", baseObj.name, disease.name)
+                logger:debug("addDiseaseOnDeath() - Creature %s has %s", baseObj.name, disease.name)
                 addDiseaseToMeat(e.reference, disease)
             end
         end

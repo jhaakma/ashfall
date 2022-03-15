@@ -1,7 +1,7 @@
 local thirstController = require("mer.ashfall.needs.thirstController")
 local common = require("mer.ashfall.common.common")
+local logger = common.createLogger("fillContainer")
 local LiquidContainer = require("mer.ashfall.objects.LiquidContainer")
-local teaConfig = common.staticConfigs.teaConfig
 
 return  {
     text = "Fill Container",
@@ -29,7 +29,7 @@ return  {
             source = LiquidContainer.createFromReference(reference),
             callback = function()
                 if (not reference.data.waterAmount) or reference.data.waterAmount <= 0 then
-                    common.log:debug("FILLCONTAINER Clearing utensil data")
+                    logger:debug("FILLCONTAINER Clearing utensil data")
                     event.trigger("Ashfall:Campfire_clear_utensils", { campfire = reference})
                 end
             end

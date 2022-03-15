@@ -3,6 +3,7 @@ local cookedMulti = 1.5
 local stewMulti = 2.0
 local dirtyMulti = 0.2
 local common = require ("mer.ashfall.common.common")
+local logger = common.createLogger("priceController")
 local teaConfig = common.staticConfigs.teaConfig
 
 local function calcItemDataPrice(e)
@@ -41,7 +42,7 @@ local function calcItemDataPrice(e)
             itemPrice = itemPrice * multi
         end
 
-        common.log:debug("priceController.lua - Water Price: %s", itemPrice)
+        logger:debug("priceController.lua - Water Price: %s", itemPrice)
         e.price = e.price + math.max(1, itemPrice)
     end
 end
