@@ -3,17 +3,12 @@ local common = require("mer.ashfall.common.common")
 local config = require("mer.ashfall.config").config
 local ratingsCommon = require("mer.ashfall.tempEffects.ratings.ratings")
 
-
 local function quickFormat(element, padding)
     element.paddingAllSides = padding
     element.autoHeight = true
     element.autoWidth = true
     return element
 end
-
-
-
-
 
 --[[
     Create warmth and coverage ratings inside the Character Box in the inventory menu
@@ -193,8 +188,10 @@ event.register("uiObjectTooltip", insertRatingsTooltips )
 local function checkAshfallEnabled()
     local inventoryMenu = tes3ui.findMenu(tes3ui.registerID("MenuInventory"))
     if inventoryMenu then
-        local outerBlock = inventoryMenu:findChild(tes3ui.registerID("Ashfall:armorRatings"))
-        outerBlock.visible = config.enableTemperatureEffects
+        local armorUI = inventoryMenu:findChild(tes3ui.registerID("Ashfall:armorRatings"))
+        if armorUI then
+            armorUI.visible = config.enableTemperatureEffects
+        end
     end
 end
 
