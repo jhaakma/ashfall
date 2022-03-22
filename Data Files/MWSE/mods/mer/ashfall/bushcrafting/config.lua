@@ -158,6 +158,13 @@ this.materials = {
         }
     },
     {
+        id = "flint",
+        name = "Flint",
+        ids = {
+            "ashfall_flint",
+        },
+    },
+    {
         id = "fur",
         name = "Fur",
         ids = {
@@ -282,6 +289,34 @@ this.bushCraftingRecipes = {
             customRequirements.wildernessOnly
         }
     },
+    {
+        id = "ashfall_knife_flint",
+        description = "A simple dagger made of flint. Useful for skinning animals and harvesting plant fibres.",
+        materials = {
+            { material = "flint", count = 1 },
+            { material = "wood", count = 1 },
+            { material = "rope", count = 1 },
+        },
+        skillRequirements = {
+            survivalTiers.beginner
+        },
+        category = this.categories.equipment,
+        soundType = "wood",
+    },
+    {
+        id = "ashfall_woodaxe_flint",
+        description = "A woodaxe made with flint. Can be used to harvest firewood.",
+        materials = {
+            { material = "flint", count = 2 },
+            { material = "wood", count = 1 },
+            { material = "rope", count = 1 },
+        },
+        skillRequirements = {
+            survivalTiers.beginner
+        },
+        category = this.categories.equipment,
+        soundType = "wood",
+    },
 
     --Novice
     {
@@ -364,6 +399,21 @@ this.bushCraftingRecipes = {
         category = this.categories.other,
         soundType = "fabric",
     },
+    {
+        id = "ashfall_spear_flint",
+        description = "A wooden spear with a flint tip. Useful for hunting game.",
+        materials = {
+            { material = "flint", count = 1 },
+            { material = "wood", count = 2 },
+            { material = "rope", count = 1 },
+        },
+        skillRequirements = {
+            survivalTiers.novice
+        },
+        category = this.categories.equipment,
+        soundType = "wood",
+    },
+
 
     --Apprentice
     {
@@ -444,6 +494,20 @@ this.bushCraftingRecipes = {
         customRequirements = {
             customRequirements.wildernessOnly
         }
+    },
+    {
+        id = "ashfall_pickaxe_flint",
+        description = "A pickaxe made with flint. Can be used to harvest stone.",
+        materials = {
+            { material = "flint", count = 1 },
+            { material = "wood", count = 1 },
+            { material = "rope", count = 2 },
+        },
+        skillRequirements = {
+            survivalTiers.apprentice
+        },
+        category = this.categories.equipment,
+        soundType = "wood",
     },
 
     --Journeyman

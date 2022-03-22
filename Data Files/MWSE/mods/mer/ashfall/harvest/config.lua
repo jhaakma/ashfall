@@ -12,6 +12,7 @@
 ---@field weaponTypes table<number, AshfallHarvestWeaponData> Key: tes3.weaponType
 ---@field weaponIds table<number, AshfallHarvestWeaponData> Key: tes3.weaponType
 ---@field weaponNamePatterns table<string, AshfallHarvestWeaponData> Key: String pattern to search in object name
+---@field requirements function (weapon: tes3equipmentStack) -> boolean Returns true if the weapon meets the requirements
 ---@field items AshfallHarvestConfigHarvestable[] Array of harvestables
 ---@field sound string
 ---@field swingsNeeded number
@@ -52,6 +53,12 @@ return {
                 },
             },
             weaponIds = woodaxes,
+            requirements = function(weapon)
+                local isAxe = weapon.object.type == tes3.weaponType.axeOneHand
+                    or weapon.object.type == tes3.weaponType.axeTwoHand
+                local isPick = string.find(weapon.object.id:lower(), "pick")
+                return isAxe and not isPick
+            end,
             items = {
                 { id = "ashfall_firewood", count = 10, chance = 1.0 },
             },
@@ -71,6 +78,12 @@ return {
                 },
             },
             weaponIds = woodaxes,
+            requirements = function(weapon)
+                local isAxe = weapon.object.type == tes3.weaponType.axeOneHand
+                    or weapon.object.type == tes3.weaponType.axeTwoHand
+                local isPick = string.find(weapon.object.id:lower(), "pick")
+                return isAxe and not isPick
+            end,
             items = {
                 { id = "ashfall_firewood", count = 10, chance = 0.7 },
                 { id = "ingred_resin_01", count = 3, chance = 0.3 },
@@ -106,21 +119,25 @@ return {
             sound ="ashfall\\chopveg.wav",
             swingsNeeded = 1
         },
-        -- stoneSource = {
-        --     attackDirections = {
-        --         [attackDirection.chop] = true
-        --     },
-        --     weaponNamePatterns = {
-        --         ["pick"] = {
-        --             effectiveness = 1.0,
-        --             degradeMulti = 1.0,
-        --         }
-        --     },
-        --     items = {
-        --         { id = "ashfall_flint", count = 1, chance = 1.0 }
-        --     },
-        --     sound = "Fx\\Heavy Armor Hit.wav",
-        --     swingsNeeded = 6
-        -- }
+        stoneSource = {
+            attackDirections = {
+                [attackDirection.chop] = true
+            },
+            weaponNamePatterns = {
+                ["pick"] = {
+                    effectiveness = 1.0,
+                    degradeMulti = 1.0,
+                }
+            },
+            requirements = function(weapon)
+                local isPick = string.find(weapon.object.id:lower(), "pick")
+                return isPick
+            end,
+            items = {
+                { id = "ashfall_flint", count = 1, chance = 1.0 }
+            },
+            sound = "Fx\\Heavy Armor Hit.wav",
+            swingsNeeded = 6
+        }
     }
 }

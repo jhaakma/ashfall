@@ -20,6 +20,14 @@ end
 ---@param harvestConfig AshfallHarvestConfig
 ---@return AshfallHarvestWeaponData | nil
 function HarvestService.getWeaponHarvestData(weapon, harvestConfig)
+
+    --check requirements
+    if harvestConfig.requirements then
+        if not harvestConfig.requirements(weapon) then
+            return
+        end
+    end
+
     --Exact IDs
     local weaponDataFromId = harvestConfig.weaponIds
         and harvestConfig.weaponIds[weapon.object.id:lower()]
