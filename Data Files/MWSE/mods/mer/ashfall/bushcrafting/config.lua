@@ -413,7 +413,34 @@ this.bushCraftingRecipes = {
         category = this.categories.equipment,
         soundType = "wood",
     },
-
+    {
+        id = "ashfall_bow_wood",
+        description = "A simple bow made of wood.",
+        materials = {
+            { material = "wood", count = 1 },
+            { material = "rope", count = 1 },
+        },
+        skillRequirements = {
+            survivalTiers.novice
+        },
+        category = this.categories.equipment,
+        soundType = "wood",
+    },
+    {
+        id = "ashfall_arrow_flint",
+        description = "A simple arrow with a flint head.",
+        materials = {
+            { material = "flint", count = 1 },
+            { material = "wood", count = 1 },
+            { material = "ingred_racer_plumes_01", count = 1 },
+        },
+        skillRequirements = {
+            survivalTiers.novice
+        },
+        category = this.categories.equipment,
+        soundType = "wood",
+        resultAmount = 20,
+    },
 
     --Apprentice
     {
