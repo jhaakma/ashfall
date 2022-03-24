@@ -73,7 +73,7 @@ this.menuOptions = {
     },
     rename = {
         text = "Rename",
-        callback = function(reference)
+        callback = function(e)
             local menuID = "RenameMenu"
             local menu = tes3ui.createMenu{ id = menuID, fixedFrame = true }
             menu.minWidth = 400
@@ -83,16 +83,16 @@ this.menuOptions = {
             local textField = mwse.mcm.createTextField(
                 menu,
                 {
-                    label = string.format("Label %s:", reference.object.name),
+                    label = string.format("Label %s:", e.reference.object.name),
                     variable = mwse.mcm.createTableVariable{
                         id = 'customName',
-                        table = reference.data
+                        table = e.reference.data
                     },
                     callback = function()
-                        reference.modified = true
+                        e.reference.modified = true
                         tes3ui.leaveMenuMode(menuID)
                         tes3ui.findMenu(menuID):destroy()
-                        tes3.messageBox("Renamed to %s", reference.data.customName)
+                        tes3.messageBox("Renamed to %s", e.reference.data.customName)
                     end
                 }
             )
