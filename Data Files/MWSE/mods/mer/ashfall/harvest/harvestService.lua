@@ -151,8 +151,10 @@ end
 function HarvestService.calcNumHarvested(harvestable)
     --if skills are implemented, use Survival Skill
     local survivalSkill = math.clamp(common.skills.survival.value or 30, 0, 100)
-    local survivalMulti = math.remap(survivalSkill, 0, 100, 0.5, 1)
-    local numHarvested = math.ceil(math.random(1, harvestable.count) * survivalMulti)
+    local survivalMulti = math.remap(survivalSkill, 10, 100, 0.25, 1)
+    local min = 1
+    local max = math.ceil(harvestable.count * survivalMulti)
+    local numHarvested = math.random(min, max)
     return numHarvested
 end
 
