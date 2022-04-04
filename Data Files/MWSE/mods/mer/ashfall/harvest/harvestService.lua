@@ -133,7 +133,7 @@ function HarvestService.degradeWeapon(weapon, swingStrength, weaponData)
     local degradeMulti = weaponData.degradeMulti or 1.0
     logger:debug("degrade multiplier: %s", degradeMulti)
     --Weapon degradation
-    weapon.variables.condition = weapon.variables.condition - (2 * swingStrength * degradeMulti)
+    weapon.variables.condition = weapon.variables.condition - (5 * swingStrength * degradeMulti)
     --weapon is broken, unequip
     if weapon.variables.condition <= 0 then
         weapon.variables.condition = 0
