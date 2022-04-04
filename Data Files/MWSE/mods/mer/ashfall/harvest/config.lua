@@ -26,11 +26,11 @@ local config = {}
 config.woodaxes = {
     ashfall_woodaxe_flint = {
         effectiveness = 1.4,
-        degradeMulti = 0.70,
+        degradeMulti = 0.50,
     },
     ashfall_woodaxe = {
         effectiveness = 1.5,
-        degradeMulti = 0.60,
+        degradeMulti = 0.50,
     },
     ashfall_woodaxe_steel = {
         effectiveness = 1.8,
