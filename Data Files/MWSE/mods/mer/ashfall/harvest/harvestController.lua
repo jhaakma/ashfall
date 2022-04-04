@@ -11,7 +11,7 @@ local function harvestOnAttack(e)
     --Get the necessary objects and check conditions--
 
     --Filter to player
-    if not e.mobile.reference == tes3.player then
+    if e.mobile.reference ~= tes3.player then
         logger:debug("Harvest: Not player")
         return
     end
