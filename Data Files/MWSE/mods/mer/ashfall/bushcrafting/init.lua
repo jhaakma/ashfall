@@ -1,5 +1,5 @@
 local common = require ("mer.ashfall.common.common")
-local logger = common.createLogger("registerCrafting")
+local logger = common.createLogger("Bushcrafting")
 local CraftingFramework = include("CraftingFramework")
 if not CraftingFramework then
     logger:error("CraftingFramework not found")

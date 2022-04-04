@@ -302,6 +302,7 @@ this.bushCraftingRecipes = {
         },
         category = this.categories.equipment,
         soundType = "wood",
+        recoverEquipmentMaterials = true,
     },
     {
         id = "ashfall_woodaxe_flint",
@@ -316,6 +317,7 @@ this.bushCraftingRecipes = {
         },
         category = this.categories.equipment,
         soundType = "wood",
+        recoverEquipmentMaterials = true,
     },
 
     --Novice
@@ -331,6 +333,7 @@ this.bushCraftingRecipes = {
         },
         category = this.categories.equipment,
         soundType = "fabric",
+        recoverEquipmentMaterials = true,
     },
     {
         id = "ashfall_strawhat",
@@ -343,6 +346,7 @@ this.bushCraftingRecipes = {
         },
         category = this.categories.equipment,
         soundType = "straw",
+        recoverEquipmentMaterials = true,
     },
     {
         id = "ashfall_fabric",
@@ -412,6 +416,7 @@ this.bushCraftingRecipes = {
         },
         category = this.categories.equipment,
         soundType = "wood",
+        recoverEquipmentMaterials = true,
     },
     {
         id = "ashfall_bow_wood",
@@ -425,6 +430,7 @@ this.bushCraftingRecipes = {
         },
         category = this.categories.equipment,
         soundType = "wood",
+        recoverEquipmentMaterials = true,
     },
     {
         id = "ashfall_arrow_flint",
@@ -535,6 +541,7 @@ this.bushCraftingRecipes = {
         },
         category = this.categories.equipment,
         soundType = "wood",
+        recoverEquipmentMaterials = true,
     },
 
     --Journeyman
