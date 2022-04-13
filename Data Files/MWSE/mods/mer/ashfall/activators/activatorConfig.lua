@@ -229,6 +229,7 @@ this.list.vegetation = Activator:new{
         ["_kelp_"] = true,
         ["_fern_"] = true,
         ["_vine_"] = true,
+        ["_shrub"] = true,
     },
     ids = {
         t_sky_flora_bushpine4dry_01 = true,
