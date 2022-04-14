@@ -128,7 +128,7 @@ function Condition:updateConditionEffects(currentState)
         local isCurrentState = ( currentState == state )
         local spell = self:getCurrentSpellObj(stateData)
         if spell then
-            local hasCondition = self:isAffected(stateData)
+            --local hasCondition = self:isAffected(stateData)
             if isCurrentState and self:isActive() then
                 self:scaleSpellValues()
                 --if not hasCondition then

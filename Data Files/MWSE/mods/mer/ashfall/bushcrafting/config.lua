@@ -190,7 +190,6 @@ for name, ingredient in pairs(this.materials) do
 end
 
 
-
 this.bushCraftingRecipes = {
     --Beginner
     {

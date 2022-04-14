@@ -348,7 +348,6 @@ conditions.blightness = Condition:new{
             return string.format("You have contracted %s.", spell.name)
         end
     end,
-    updateConditionEffects = function() return end,
     hasSpell = function(self)
         if not self.blights then
             self.blights = self:getBlights()
@@ -371,7 +370,7 @@ conditions.blightness = Condition:new{
     end
 }
 
-local fluDiseaseChance = 10
+local fluDiseaseChance = 100
 conditions.flu = Condition:new{
     id = "flu",
     default = "noFlu",
@@ -397,7 +396,6 @@ conditions.flu = Condition:new{
         if stateData.spell then
             if not self:hasSpell() then
                 local doAddFlu = false
-
                 local rollForDisease = math.random(100)
                 if rollForDisease < fluDiseaseChance then
                     local rollForResist = math.random(100)
@@ -422,7 +420,6 @@ conditions.flu = Condition:new{
             end
         end
     end,
-    updateConditionEffects = function() return end,
     hasSpell = function(self)
         return self:isAffected(self.states.hasFlu)
     end,

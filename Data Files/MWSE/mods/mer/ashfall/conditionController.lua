@@ -7,7 +7,6 @@ local this = {}
 
 
 --Update the spell strength to scale with player attributes/level
-
 function this.updateCondition(id)
 
     if not common.data then return end
@@ -67,7 +66,7 @@ event.register("spellTick", refreshConditions)
 
 local function restoreConditionEffects()
     for _, condition in pairs(conditionConfig) do
-        condition:updateConditionEffects()
+        condition:scaleSpellValues()
     end
 end
 event.register("Ashfall:restoreConditionEffects", restoreConditionEffects)
