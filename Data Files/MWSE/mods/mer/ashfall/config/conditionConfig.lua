@@ -370,7 +370,7 @@ conditions.blightness = Condition:new{
     end
 }
 
-local fluDiseaseChance = 100
+local fluDiseaseChance = 5
 conditions.flu = Condition:new{
     id = "flu",
     default = "noFlu",
