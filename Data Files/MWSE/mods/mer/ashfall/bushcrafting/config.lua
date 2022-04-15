@@ -48,6 +48,17 @@ local customRequirements = {
     }
 }
 
+this.tools = {
+    {
+        id = "knife",
+        name = "Knife",
+        ---@param itemStack tes3itemStack
+        requirement = function(itemStack)
+            return itemStack.object.objectType == tes3.objectType.weapon
+            and itemStack.object.type == tes3.weaponType.shortBladeOneHand
+        end,
+    }
+}
 
 
 this.categories = {
@@ -98,6 +109,12 @@ this.menuOptions = {
             )
             tes3ui.acquireTextInput(textField.elements.inputField)
             tes3ui.enterMenuMode(menuID)
+        end
+    },
+    filterWater = {
+        text = "Filter Water",
+        callback = function()
+            event.trigger("Ashfall:ActivateWaterFilter")
         end
     }
 }
@@ -179,6 +196,13 @@ this.materials = {
             "ashfall_cush_crft_01",
             "ab_misc_depillowl_02",
             "misc_uni_pillow_02",
+        }
+    },
+    {
+        id = "coal",
+        name = "Coal",
+        ids = {
+            "ashfall_ingred_coal_01"
         }
     }
 }
@@ -318,8 +342,60 @@ this.bushCraftingRecipes = {
         soundType = "wood",
         recoverEquipmentMaterials = true,
     },
+    {
+        id = "ashfall_bowl_01",
+        description = "A handcarved wooden bowl. Can be used to store water or stew.",
+        materials = {
+            { material = "wood", count = 1},
+        },
+        toolRequirements = {
+            {
+                tool = "knife",
+                equipped = true,
+                conditionPerUse = 5
+            }
+        }
+    },
+    {
+        id = "ashfall_cup_01",
+        description = "A handcarved wooden cup. Can be used to store water or tea.",
+        materials = {
+            { material = "wood", count = 1},
+        },
+        toolRequirements = {
+            {
+                tool = "knife",
+                equipped = true,
+                conditionPerUse = 5
+            }
+        }
+    },
 
     --Novice
+    {
+        id = "ashfall_water_filter",
+        description = "A simple water filter. Can be used to make water safe to drink.",
+        materials = {
+            { material = "fibre", count = 4 },
+            { material = "coal", count = 4 },
+            { material = "rope", count = 2 },
+            { material = "wood", count = 3 },
+            { material = "ashfall_bowl_01", count = 1}
+
+        },
+        skillRequirements = {
+            survivalTiers.novice
+        },
+        category = this.categories.structures,
+        soundType = "wood",
+        customRequirements = {
+            customRequirements.wildernessOnly
+        },
+        maxSteepness = 0,
+        additionalMenuOptions = {
+            this.menuOptions.filterWater
+        }
+    },
     {
         id = "ashfall_fab_cloak",
         mesh = "ashfall\\craft\\cloak_fab_preview.nif",

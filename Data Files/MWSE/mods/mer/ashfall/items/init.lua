@@ -6,5 +6,5 @@ require("mer.ashfall.items.bugnet")
 require("mer.ashfall.items.door")
 require("mer.ashfall.items.dummy")
 require("mer.ashfall.items.teaWarmer")
-
+require("mer.ashfall.items.waterFilter")
 

@@ -121,6 +121,8 @@ this.placementConfig = {
     ashfall_kettle_07 = { maxSteepness = 0.05 },
     ashfall_kettle_08 = { maxSteepness = 0.05 },
 
+    ashfall_bowl_01 = { maxSteepness = 0.05 },
+
     ashfall_misc_stove_01 = { maxSteepness = 0.05 },
 
     ashfall_table_sml = {maxSteepness = 0, drop = 10 },
@@ -462,6 +464,20 @@ this.bottleList = {
         capacity = 25,
         waterMaxScale = 1.9,
         waterMaxHeight = 2.5,
+    },
+
+    --bushcrafting
+    ashfall_bowl_01 = {
+        capacity = 60,
+        waterMaxHeight = 4,
+        waterMaxScale = 1.8,
+        holdsStew = true,
+    },
+
+    ashfall_cup_01 = {
+        capacity = 25,
+        waterMaxScale = 1.3,
+        waterMaxHeight = 3.3,
     },
 }
 for id, _ in pairs(this.bottleList) do
@@ -809,6 +825,8 @@ this.utensils = {
         meshOverride = "ashfall\\cooking_pot_iron.nif",
         holdsStew = true,
     },
+
+
 }
 table.copy(this.utensils, this.bottleList)
 

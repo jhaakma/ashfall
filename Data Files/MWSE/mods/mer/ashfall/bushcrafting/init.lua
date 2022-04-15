@@ -9,6 +9,10 @@ local craftingConfig = require("mer.ashfall.bushcrafting.config")
 
 
 do -- initialise crafting
+    for _, tool in ipairs(craftingConfig.tools) do
+        logger:debug("Registering Tool: %s", tool.id)
+        CraftingFramework.Tool:new(tool)
+    end
     for _, menuActivator in ipairs(craftingConfig.menuActivators) do
         logger:debug("Registering Menu Activator: %s", menuActivator)
         CraftingFramework.MenuActivator:new(menuActivator)
