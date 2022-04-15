@@ -42,7 +42,10 @@ local function updateFuelConsumers(e)
                     end
                 end
 
-                fuelConsumer.data.fuelLevel = fuelConsumer.data.fuelLevel - ( difference * fuelDecay * rainEffect * bellowsEffect )
+                local fuelDifference =  ( difference * fuelDecay * rainEffect * bellowsEffect )
+                fuelConsumer.data.fuelLevel = fuelConsumer.data.fuelLevel - fuelDifference
+                fuelConsumer.data.charcoalLevel = fuelConsumer.data.charcoalLevel or 0
+                fuelConsumer.data.charcoalLevel = fuelConsumer.data.charcoalLevel + fuelDifference
 
                 --static campfires never go out
                 local isInfinite = fuelConsumer.data.staticCampfireInitialised
