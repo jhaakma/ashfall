@@ -7,15 +7,12 @@ local function getWoodFuel()
 end
 
 local function getFirewoodCount()
-    return mwscript.getItemCount{ reference = tes3.player, item = common.staticConfigs.objectIds.firewood }
+    return tes3.getItemCount{ reference = tes3.player, item = common.staticConfigs.objectIds.firewood }
 end
 
 local function canAddFireWoodToCampfire(campfire)
     local fuelLevel = campfire.data.fuelLevel or 0
-    return (
-        fuelLevel < common.staticConfigs.maxWoodInFire or
-        campfire.data.burned == true
-    )
+    return fuelLevel < common.staticConfigs.maxWoodInFire
 end
 
 local function getDisabledText(campfire)
@@ -41,7 +38,7 @@ return {
         }
         campfire.data.fuelLevel = (campfire.data.fuelLevel or 0) + getWoodFuel()
         campfire.data.burned = campfire.data.isLit == true
-        mwscript.removeItem{ reference = tes3.player, item = common.staticConfigs.objectIds.firewood }
+        tes3.removeItem{ reference = tes3.player, item = common.staticConfigs.objectIds.firewood, playSound = false }
         event.trigger("Ashfall:UpdateAttachNodes", { campfire = campfire})
     end,
 }

@@ -15,10 +15,9 @@ return {
     end,
     callback = function(campfire)
         campfire.data.destroyed = true
-        local recoveredFuel =  math.floor(campfire.data.fuelLevel / 2)
-        local charcoal = campfire.data.charcoalLevel or 0
-        local recoveredCoal = math.clamp(math.floor(charcoal / 2), 0, 10)
+
         if not campfire.data.isLit  then
+            local recoveredFuel =  math.floor(campfire.data.fuelLevel / 2)
             if recoveredFuel >= 1 then
                 local woodId = "ashfall_firewood"
                 tes3.addItem{
@@ -29,6 +28,9 @@ return {
                 }
                 tes3.messageBox(tes3.findGMST(tes3.gmst.sNotifyMessage61).value, recoveredFuel, tes3.getObject(woodId).name)
             end
+
+            local charcoal = campfire.data.charcoalLevel or 0
+            local recoveredCoal = math.clamp(math.floor(charcoal / 2), 0, common.staticConfigs.maxWoodInFire)
             if recoveredCoal > 1 then
                 local coalId = "ashfall_ingred_coal_01"
                 tes3.addItem{
