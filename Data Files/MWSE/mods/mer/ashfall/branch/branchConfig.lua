@@ -2,52 +2,108 @@ local this = {}
 
 local daysToRefresh = 3
 this.hoursToRefresh = 24 * daysToRefresh
-this.minBranchesPerTree = 0
-this.maxBranchesPerTree = 2
-this.minDistanceFromTree = 100
-this.maxDistanceFromTree = 350
 this.maxSteepness = 0.7
 --sort branches into general groups
 this.branchGroups = {
     azurasCoast = {
-        "ashfall_branch_ac_01",
-        "ashfall_branch_ac_02",
-        "ashfall_branch_ac_03",
+        ids = {
+            "ashfall_branch_ac_01",
+            "ashfall_branch_ac_02",
+            "ashfall_branch_ac_03",
+        },
+        chanceNone = 50,
+        minPlaced = 1,
+        maxPlaced = 2,
+        minDistance = 100,
+        maxDistance = 300,
     },
     ascadianIsles = {
-        "ashfall_branch_ai_01",
-        "ashfall_branch_ai_02",
-        "ashfall_branch_ai_03",
+        ids = {
+            "ashfall_branch_ai_01",
+            "ashfall_branch_ai_02",
+            "ashfall_branch_ai_03",
+        },
+        chanceNone = 50,
+        minPlaced = 1,
+        maxPlaced = 2,
+        minDistance = 100,
+        maxDistance = 300,
     },
     ashlands = {
-        "ashfall_branch_ash_01",
-        "ashfall_branch_ash_02",
-        "ashfall_branch_ash_03",
+        ids = {
+            "ashfall_branch_ash_01",
+            "ashfall_branch_ash_02",
+            "ashfall_branch_ash_03",
+        },
+        chanceNone = 65,
+        minPlaced = 1,
+        maxPlaced = 2,
+        minDistance = 100,
+        maxDistance = 300,
     },
     bitterCoast = {
-        "ashfall_branch_bc_01",
-        "ashfall_branch_bc_02",
-        "ashfall_branch_bc_03",
+        ids = {
+            "ashfall_branch_bc_01",
+            "ashfall_branch_bc_02",
+            "ashfall_branch_bc_03",
+        },
+        chanceNone = 50,
+        minPlaced = 1,
+        maxPlaced = 2,
+        minDistance = 100,
+        maxDistance = 300,
     },
     grazelands = {
-        "ashfall_branch_gl_01",
-        "ashfall_branch_gl_02",
-        "ashfall_branch_gl_03",
+        ids = {
+            "ashfall_branch_gl_01",
+            "ashfall_branch_gl_02",
+            "ashfall_branch_gl_03",
+        },
+        chanceNone = 65,
+        minPlaced = 1,
+        maxPlaced = 2,
+        minDistance = 100,
+        maxDistance = 300,
     },
     westGash = {
-        "ashfall_branch_wg_01",
-        "ashfall_branch_wg_02",
-        "ashfall_branch_wg_03",
+        ids = {
+            "ashfall_branch_wg_01",
+            "ashfall_branch_wg_02",
+            "ashfall_branch_wg_03",
+        },
+        chanceNone = 60,
+        minPlaced = 1,
+        maxPlaced = 2,
+        minDistance = 100,
+        maxDistance = 300,
     },
     flint = {
-        "ashfall_flint"
-    }
+        ids = {
+            "ashfall_flint",
+        },
+        chanceNone = 90,
+        minPlaced = 1,
+        maxPlaced = 1,
+        minDistance = 100,
+        maxDistance = 400,
+    },
+    --Spawns more, but over a wider area to hide that it came from kelp
+    flint_kelp = {
+        ids = {
+            "ashfall_flint",
+        },
+        chanceNone = 50,
+        minPlaced = 1,
+        maxPlaced = 4,
+        minDistance = 100,
+        maxDistance = 2000,
+    },
 }
 
 --Ids for various fallen branches
 this.branchIds = {}
-for _, ids in pairs(this.branchGroups) do
-    for _, id in ipairs(ids) do
+for _, branchGroup in pairs(this.branchGroups) do
+    for _, id in ipairs(branchGroup.ids) do
         this.branchIds[id] = true
     end
 end
@@ -101,9 +157,13 @@ this.patternMapping = {
     _al_ = this.branchGroups.ashlands,
     _gl_ = this.branchGroups.grazelands,
     _wg_ = this.branchGroups.westGash,
-    flora_kelp = this.branchGroups.flint,
+    terrain_rock = this.branchGroups.flint,
+    terrain_ashland_rock = this.branchGroups.flint,
+    _kelp_ = this.branchGroups.flint_kelp,
 }
 
-this.idMapping = {}
+this.idMapping = {
+
+}
 
 return this

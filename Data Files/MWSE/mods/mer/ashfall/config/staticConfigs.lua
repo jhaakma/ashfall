@@ -79,6 +79,7 @@ this.placementConfig = {
 
     ashfall_woodaxe = { maxSteepness = math.rad(50) },
     ashfall_sack_01 = { maxSteepness = math.rad(5) },
+    ashfall_sack_c = { maxSteepness = math.rad(5) },
 
     ashfall_cushion_01 = { maxSteepness = 0.2, drop = 5 },
     ashfall_cushion_02 = { maxSteepness = 0.2, drop = 5 },

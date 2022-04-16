@@ -21,6 +21,13 @@ local function isTree(reference)
     return common.staticConfigs.activatorConfig.list.tree:isActivator(reference.object.id)
 end
 
+local function isSource(reference)
+    return common.staticConfigs.activatorConfig.list.tree:isActivator(reference.object.id)
+        or common.staticConfigs.activatorConfig.list.deadTree:isActivator(reference.object.id)
+        or common.staticConfigs.activatorConfig.list.stoneSource:isActivator(reference.object.id)
+        or string.find(reference.object.id:lower(), "_kelp_")
+end
+
 local function formatCellId(cell)
     return cell.editorName:lower()
 end
@@ -31,7 +38,7 @@ local function getBranchGroupFromRegion(tree)
     local thisRegion = tree.cell.region and tree.cell.region.id:lower()
     local branchGroup = branchConfig.branchRegions[thisRegion]
     if branchGroup then
-        logger:debug("Found from region\n")
+        logger:debug("Found branch group from region: %s\n", json.encode(branchGroup, { indent = true }))
         return branchGroup
     end
 end
@@ -46,7 +53,7 @@ local function getBranchTypeFromTexture(tree)
                 filePath = string.sub(filePath, 1, -5):lower()
                 logger:debug(filePath)
                 local branchGroup = branchConfig.textureMapping[filePath]
-                logger:debug("Found from texture\n")
+                logger:debug("Found branch group from texture: %s\n", json.encode(branchGroup, { indent = true }))
                 return branchGroup
             end
         end
@@ -55,28 +62,30 @@ end
 
 local function getBranchTypeBytreeIdPattern(tree)
     logger:debug("Attempting to get type from pattern for id of %s", tree.object.id)
-    for pattern, group in pairs(branchConfig.patternMapping) do
-        if string.find(tree.object.id:lower(), pattern) then
-            logger:debug("Found from Tree ID\n")
-            return group
+    for pattern, branchGroup in pairs(branchConfig.patternMapping) do
+        local lowerId = tree.object.id:lower()
+        if string.find(lowerId, pattern) then
+            branchConfig.idMapping[lowerId] = branchGroup
+            logger:debug("Found branch group from pattern. Adding to id map: %s\n", json.encode(branchGroup, { indent = true }))
+            return branchGroup
         end
     end
 end
 
 local function getBranchTypeBytreeId(tree)
     logger:debug("Attempting to get type from ID of %s", tree.object.id)
-    local group = branchConfig.idMapping[tree.object.id:lower()]
-    if group then
-        logger:debug("Found mapping for id")
-        return group
+    local branchGroup = branchConfig.idMapping[tree.object.id:lower()]
+    if branchGroup then
+        logger:debug("Found branch group from id: %s\n", json.encode(branchGroup, { indent = true }))
+        return branchGroup
     end
 end
 
 local function getBranchGroup(tree)
     local branchGroup = getBranchTypeBytreeId(tree)
+                     or getBranchTypeBytreeIdPattern(tree)
                      or getBranchGroupFromRegion(tree)
                      or getBranchTypeFromTexture(tree)
-                     or getBranchTypeBytreeIdPattern(tree)
                      or branchConfig.defaultBranchGroup
     return branchGroup
 end
@@ -88,25 +97,30 @@ end
 local cell_list
 --local ignore_list
 local function addBranchesToTree(tree)
-    local numBranchesToPlace = math.random(branchConfig.minBranchesPerTree, branchConfig.maxBranchesPerTree)
-    if numBranchesToPlace == 0 then return end
-    for _ = 1, numBranchesToPlace do
+    --Select a branch mesh based on region
+    local branchGroup = getBranchGroup(tree)
+
+    local chanceNoneRoll = math.random(100)
+    if chanceNoneRoll < branchGroup.chanceNone then
+        common.log:debug("Chance none: %s, roll: %s, not placing debris", branchGroup.chanceNone, chanceNoneRoll)
+        return
+    end
+    local debrisNum = math.random(branchGroup.minPlaced, branchGroup.maxPlaced)
+    if debrisNum == 0 then return end
+
+    for _ = 1, debrisNum do
 
         --initial position is randomly near the tree, 500 units higher than the tree's origin
         local position = {
-            tree.position.x + ( math.random(branchConfig.minDistanceFromTree, branchConfig.maxDistanceFromTree) * (math.random() < 0.5 and 1 or -1) ),
-            tree.position.y + ( math.random(branchConfig.minDistanceFromTree, branchConfig.maxDistanceFromTree) * (math.random() < 0.5 and 1 or -1) ),
+            tree.position.x + ( math.random(branchGroup.minDistance, branchGroup.maxDistance) * (math.random() < 0.5 and 1 or -1) ),
+            tree.position.y + ( math.random(branchGroup.minDistance, branchGroup.maxDistance) * (math.random() < 0.5 and 1 or -1) ),
             tree.position.z + 500
         }
         --Branches are all of slightly different sizes
         local scale = math.random(80, 100) * 0.01
-
-        --Select a branch mesh based on region
-        local branchGroup = getBranchGroup(tree)
-
-        local choice = table.choice(branchGroup)
-
+        local choice = table.choice(branchGroup.ids)
         --Create the branch
+        common.log:debug("Creating debris (%s) to place at source (%s) at position (%s)", choice, tree, json.encode(position))
         local branch = tes3.createReference{
             object = choice,
             position = position,
@@ -114,8 +128,6 @@ local function addBranchesToTree(tree)
             cell = tree.cell,
             scale = scale
         }
-        --table.insert(ignore_list, branch)
-
         --Drop and orient the branch on the ground
         local didOrient = common.helper.orientRefToGround({ ref = branch, terrainOnly = true })
         --Check for fail conditions
@@ -126,6 +138,7 @@ local function addBranchesToTree(tree)
         --Too steep means it landed on a wall or something
         local tooSteep = math.abs(branch.orientation.x) > branchConfig.maxSteepness or math.abs(branch.orientation.y) > branchConfig.maxSteepness
         if tooSteep then
+            common.log:debug("Too steep, deleting debris")
             branch:disable()
             mwscript.setDelete{ reference = branch}
             return
@@ -137,9 +150,9 @@ local function addBranchesToTree(tree)
             branch.orientation.y,
             math.remap(math.random(), 0, 1, -math.pi, math.pi)
         }
-
+        logger:debug("Finished placing debris %s", choice)
     end
-    logger:debug("Done for Tree %s", tree.id)
+    logger:debug("Done for Tree %s\n", tree.id)
 end
 
 local function checkAndRestoreBranch(branch)
@@ -162,7 +175,7 @@ local function addBranchesToCell(cell)
     if not cell_list[formatCellId(cell)] then
         --Find trees and add branches
         for reference in cell:iterateReferences(tes3.objectType.static) do
-            if isTree(reference) then
+            if isSource(reference) then
                 logger:debug("Adding branches to %s", reference.object.id)
                 addBranchesToTree(reference)
             end
@@ -214,7 +227,7 @@ event.register("Ashfall:dataLoaded", onLoad)
 ]]
 local function onActivate(e)
     if not (e.activator == tes3.player) then return end
-    if isBranch(e.target) then
+    if string.startswith(e.target.object.id:lower(), "ashfall_branch_") then
         e.target.data.lastPickedUp = getNow()
         e.target:disable()
 

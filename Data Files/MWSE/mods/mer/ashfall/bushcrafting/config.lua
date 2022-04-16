@@ -318,7 +318,6 @@ this.bushCraftingRecipes = {
         materials = {
             { material = "flint", count = 1 },
             { material = "wood", count = 1 },
-            { material = "rope", count = 1 },
         },
         skillRequirements = {
             survivalTiers.beginner

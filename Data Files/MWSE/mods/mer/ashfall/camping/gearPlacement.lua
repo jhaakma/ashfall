@@ -24,7 +24,7 @@ local function onDropGear(e)
     end
 end
 
-event.register("itemDropped", onDropGear)
+event.register("itemDropped", onDropGear, { priority = 100})
 
 
 
