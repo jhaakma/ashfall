@@ -388,6 +388,37 @@ this.bushCraftingRecipes = {
         category = this.categories.cutlery,
         alternatePreviewPosition = true
     },
+    {
+        id = "ashfall_wood_fork",
+        description = "A handcarved wooden fork.",
+        materials = {
+            { material = "wood", count = 1},
+        },
+        toolRequirements = {
+            {
+                tool = "knife",
+                equipped = true,
+                conditionPerUse = 2
+            }
+        },
+        category = this.categories.cutlery,
+        alternatePreviewPosition = true
+    },
+    {
+        id = "ashfall_wood_plate",
+        description = "A handcarved wooden plate.",
+        materials = {
+            { material = "wood", count = 1},
+        },
+        toolRequirements = {
+            {
+                tool = "knife",
+                equipped = true,
+                conditionPerUse = 4
+            }
+        },
+        category = this.categories.cutlery,
+    },
 
     --Novice
     {
