@@ -2,7 +2,7 @@ local this = {}
 local common = require("mer.ashfall.common.common")
 local logger = common.createLogger("hungerController")
 local config = require("mer.ashfall.config").config
-local conditionsCommon = require("mer.ashfall.conditionController")
+local conditionsCommon = require("mer.ashfall.conditions.conditionController")
 
 local statsEffect = require("mer.ashfall.needs.statsEffect")
 

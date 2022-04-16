@@ -4,7 +4,7 @@ local temperatureController = require("mer.ashfall.temperatureController")
 
 local weather = require("mer.ashfall.tempEffects.weather")
 local wetness = require("mer.ashfall.tempEffects.wetness")
-local conditions = require("mer.ashfall.conditionController")
+local conditions = require("mer.ashfall.conditions.conditionController")
 local torch = require("mer.ashfall.tempEffects.torch")
 local raceEffects = require("mer.ashfall.tempEffects.raceEffects")
 local fireEffect = require("mer.ashfall.tempEffects.fireEffect")

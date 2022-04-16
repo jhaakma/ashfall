@@ -5,7 +5,7 @@ local this = {}
 local common = require("mer.ashfall.common.common")
 local logger = common.createLogger("thirstController")
 local config = require("mer.ashfall.config").config
-local conditionsCommon = require("mer.ashfall.conditionController")
+local conditionsCommon = require("mer.ashfall.conditions.conditionController")
 local statsEffect = require("mer.ashfall.needs.statsEffect")
 local temperatureController = require("mer.ashfall.temperatureController")
 temperatureController.registerBaseTempMultiplier({ id = "thirstEffect", warmOnly = true })

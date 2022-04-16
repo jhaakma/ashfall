@@ -69,7 +69,8 @@ this.categories = {
     other = "Other",
     survival = "Survival",
     structures = "Structures",
-    equipment = "Equipment"
+    equipment = "Equipment",
+    cutlery = "Cutlery",
 }
 
 --Do common ingred ids first so they have priority
@@ -353,7 +354,8 @@ this.bushCraftingRecipes = {
                 equipped = true,
                 conditionPerUse = 5
             }
-        }
+        },
+        category = this.categories.cutlery,
     },
     {
         id = "ashfall_cup_01",
@@ -367,7 +369,24 @@ this.bushCraftingRecipes = {
                 equipped = true,
                 conditionPerUse = 5
             }
-        }
+        },
+        category = this.categories.cutlery,
+    },
+    {
+        id = "ashfall_wood_knife",
+        description = "A handcarved wooden knife.",
+        materials = {
+            { material = "wood", count = 1},
+        },
+        toolRequirements = {
+            {
+                tool = "knife",
+                equipped = true,
+                conditionPerUse = 2
+            }
+        },
+        category = this.categories.cutlery,
+        alternatePreviewPosition = true
     },
 
     --Novice
@@ -433,6 +452,7 @@ this.bushCraftingRecipes = {
         },
         category = this.categories.materials,
         soundType = "fabric",
+        alternatePreviewPosition = true,
     },
     {
         --ashfall_cush_crft_01 cushion
@@ -476,6 +496,7 @@ this.bushCraftingRecipes = {
         },
         category = this.categories.other,
         soundType = "fabric",
+        alternatePreviewPosition = true,
     },
     {
         id = "ashfall_spear_flint",
@@ -555,6 +576,7 @@ this.bushCraftingRecipes = {
         },
         category = this.categories.survival,
         soundType = "leather",
+        alternatePreviewPosition = true,
     },
     {
         id = "ashfall_tent_leather_m",

@@ -1,4 +1,4 @@
-local Condition = require("mer.ashfall.objects.Condition")
+local Condition = require("mer.ashfall.conditions.Condition")
 local conditions = {}
 
 conditions.hunger = Condition:new{
@@ -37,10 +37,10 @@ conditions.hunger = Condition:new{
         peckish = {
             text = "Peckish",
             min = 20, max = 40,
-            --spell = "fw_h_peckish",
-            -- effects = {
-            --     { id = tes3.effect.drainAttribute, attribute = tes3.attribute.agility, amount = 0.1 }
-            -- }
+            spell = "fw_h_peckish",
+            effects = {
+                { id = tes3.effect.drainAttribute, attribute = tes3.attribute.agility, amount = 0.05 }
+            }
         },
         wellFed = {
             text = "Well Fed",

@@ -827,7 +827,7 @@ function this.calculateTeaBuffDuration(maxDuration, waterHeat)
     return maxDuration * skillMulti * coldEffect
 end
 
-function this.pickUp(reference)
+function this.pickUp(reference, playSound)
     local function stealActivateEvent(e)
         event.unregister("activate", stealActivateEvent)
         e.claim = true
@@ -840,7 +840,9 @@ function this.pickUp(reference)
 
     timer.frame.delayOneFrame(function()
         event.register("activate", stealActivateEvent, { priority = 1000000})
-        event.register("addSound", blockSound, { priority = 1000000})
+        if not playSound then
+            event.register("addSound", blockSound, { priority = 1000000})
+        end
         tes3.player:activate(reference)
     end)
 end

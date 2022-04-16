@@ -66,6 +66,7 @@ event.register("spellTick", refreshConditions)
 
 local function restoreConditionEffects()
     for _, condition in pairs(conditionConfig) do
+        condition:updateConditionEffects()
         condition:scaleSpellValues()
     end
 end

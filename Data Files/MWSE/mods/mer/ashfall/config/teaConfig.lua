@@ -1,6 +1,6 @@
 local this = {}
 local config = require("mer.ashfall.config").config
-local conditions = require("mer.ashfall.config.conditionConfig")
+local conditions = require("mer.ashfall.conditions.conditionConfig")
 
 this.tooltipColor = {
     138 / 255,

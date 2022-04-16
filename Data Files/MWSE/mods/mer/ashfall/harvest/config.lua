@@ -75,7 +75,7 @@ config.activatorHarvestData = {
             { id = "ashfall_firewood", count = 10, chance = 1.0 },
         },
         sound = "ashfall\\chopshort.wav",
-        swingsNeeded = 3
+        swingsNeeded = 2
     },
     resinSource = {
         attackDirections = {
@@ -101,7 +101,7 @@ config.activatorHarvestData = {
             { id = "ingred_resin_01", count = 3, chance = 0.3 },
         },
         sound = "ashfall\\chopshort.wav",
-        swingsNeeded = 3
+        swingsNeeded = 2
     },
     vegetation = {
         attackDirections = {
@@ -146,10 +146,10 @@ config.activatorHarvestData = {
             return isPick
         end,
         items = {
-            { id = "ashfall_flint", count = 1, chance = 1.0 }
+            { id = "ashfall_flint", count = 2, chance = 1.0 }
         },
         sound = "Fx\\Heavy Armor Hit.wav",
-        swingsNeeded = 6
+        swingsNeeded = 4
     }
 }
 

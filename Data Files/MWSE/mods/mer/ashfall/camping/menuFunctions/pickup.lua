@@ -10,7 +10,7 @@ return {
         local safeRef = tes3.makeSafeObjectHandle(reference)
         timer.delayOneFrame(function()
             if safeRef:valid() then
-                common.helper.pickUp(reference)
+                common.helper.pickUp(reference, true)
             end
         end)
     end
