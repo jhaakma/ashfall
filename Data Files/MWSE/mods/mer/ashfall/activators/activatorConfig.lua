@@ -294,14 +294,22 @@ this.list.tree = Activator:new{
         ['floraww_tree'] = true, --TR
         ['mdbc_treehuge'] = true, -- Mels Graht trees
         ['ex_t_root_'] = true,
+
     },
+}
+this.list.deadTree = Activator:new{
+    name = "Dead Tree",
+    type = this.types.woodSource,
+    mcmSetting = nil,
+    patterns = {
+        ["flora_ashtree"] = true,
+    }
 }
 this.list.wood = Activator:new{
     name = "Wood",
     type = this.types.woodSource,
     mcmSetting = nil,
     patterns = {
-        ["flora_ashtree"] = true,
         ["flora_ash_log"] = true,
         ["flora_bc_knee"] = true,
         ["flora_bc_log"] = true,
@@ -472,7 +480,8 @@ this.list.stoneSource = Activator:new{
     type = this.types.stoneSource,
     mcmSetting = nil,
     patterns = {
-        ["terrain_rock"] = true
+        ["terrain_rock"] = true,
+        ["terrain_ashland_rock"] = true,
     }
 }
 
