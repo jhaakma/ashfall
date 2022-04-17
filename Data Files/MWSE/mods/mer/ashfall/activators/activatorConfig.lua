@@ -328,6 +328,7 @@ this.list.wood = Activator:new{
         ['mdbc_treehugestump'] = true, -- Mels Graht trees
         ['mdbc_treehugelog'] = true, -- Mels Graht trees
         ['mdbc_treehugeloghollow'] = true, -- Mels Graht trees
+        ['ashtrunk'] = true, --oaab
     }
 }
 this.list.fire = Activator:new{
