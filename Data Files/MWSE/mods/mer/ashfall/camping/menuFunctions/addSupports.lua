@@ -1,17 +1,7 @@
 local common = require ("mer.ashfall.common.common")
 local logger = common.createLogger("addSupports")
 
-local function playerHasMaterials(materials)
-    if not materials then return false end
-    local hasMaterials = true
-    for mat, count in pairs(materials) do
-        logger:debug("Count: %s ID: %s", count, mat)
-        if tes3.getItemCount{ reference = tes3.player, item = mat } < count then
-            hasMaterials =  false
-        end
-    end
-    return hasMaterials
-end
+
 
 local function addSupports(item, campfire, addedItems, itemData)
     local supportsData = common.staticConfigs.supports[item.id:lower()]
@@ -36,11 +26,13 @@ local function supportsSelect(campfire)
     --Add constructed supports to inventory so they appear in select menu
     local addedItems = {}
     for supportId, data in pairs(common.staticConfigs.supports) do
-        local hasInInventory = tes3.getItemCount{ item = supportId, reference = tes3.player } > 0
-        if playerHasMaterials(data.materials) and not hasInInventory then
-            logger:debug("Adding support to inventory: %s", supportId)
-            addedItems[supportId:lower()] = true
-            tes3.addItem{ reference = tes3.player, item = supportId, count = 1, playSound = false }
+        if tes3.getObject(supportId) then
+            local hasInInventory = tes3.getItemCount{ item = supportId, reference = tes3.player } > 0
+            if common.helper.playerHasMaterials(data.materials) and not hasInInventory then
+                logger:debug("Adding support to inventory: %s", supportId)
+                addedItems[supportId:lower()] = true
+                tes3.addItem{ reference = tes3.player, item = supportId, count = 1, playSound = false }
+            end
         end
     end
 
@@ -79,7 +71,7 @@ return {
         for item, data in pairs(common.staticConfigs.supports) do
             if data.materials then
                 logger:debug("Has materials")
-                if playerHasMaterials(data.materials) then return true end
+                if common.helper.playerHasMaterials(data.materials) then return true end
             end
             logger:debug("Checking if has item")
             if tes3.getItemCount{ reference = tes3.player, item = item } > 0 then

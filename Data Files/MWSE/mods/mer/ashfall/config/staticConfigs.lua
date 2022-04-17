@@ -890,6 +890,12 @@ this.grills = {
         meshOverride = "ashfall\\fry_pan_tr_attach.nif"
     },
 
+    ashfall_grill_wood = {
+        type = "grill",
+        materials = {
+            ashfall_firewood = 3
+        }
+    }
 }
 
 this.bellows = {

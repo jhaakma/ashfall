@@ -883,4 +883,23 @@ function this.isModifierKeyPressed()
     return tes3.worldController.inputController:isKeyDown(config.modifierHotKey.keyCode)
 end
 
+function this.playerHasMaterials(materials)
+    if not materials then return false end
+    local hasMaterials = true
+    for mat, count in pairs(materials) do
+        if tes3.getItemCount{ reference = tes3.player, item = mat } < count then
+            hasMaterials =  false
+        end
+    end
+    return hasMaterials
+end
+
+function this.playDeconstructionSound(reference)
+    tes3.playSound{
+        reference = reference or tes3.player,
+        soundPath = "ashfall\\deconstruct.wav"
+    }
+end
+
+
 return this

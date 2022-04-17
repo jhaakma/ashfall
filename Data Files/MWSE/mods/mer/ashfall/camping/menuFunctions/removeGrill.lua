@@ -14,12 +14,29 @@ return {
         )
     end,
     callback = function(campfire)
-        --add grill
-        tes3.addItem{
-            reference = tes3.player,
-            item = campfire.data.grillId,
-            count = 1,
-        }
+        local grillId = campfire.data.grillId
+        local grillData = common.staticConfigs.grills[grillId:lower()]
+        if grillData and grillData.materials then
+            logger:debug("Grill was crafted, adding back .5 materials")
+            for id, count in pairs(grillData.materials ) do
+                local item = tes3.getObject(id)
+                count = math.floor(count / 2)
+                if count > 0 then
+                    tes3.addItem{ reference = tes3.player, item = item, count = count, playSound = false}
+                    tes3.messageBox(tes3.findGMST(tes3.gmst.sNotifyMessage61).value, count, item.name)
+                end
+                common.helper.playDeconstructionSound()
+            end
+        else
+            --add grill
+            tes3.addItem{
+                reference = tes3.player,
+                item = grillId,
+                count = 1,
+                playSound = false
+            }
+        end
+
         --add patina data
         if campfire.data.grillPatinaAmount then
             local itemData = tes3.addItemData{

@@ -91,11 +91,21 @@ local function checkIfBurned(campfire)
     local survivalEffect = math.remap(survivalSkill, 0, 100, 1.0, 0.5)
     --Chance to burn doubles if campfire has a grill
     local grillEffect = campfire.data.hasGrill and 0.25 or 1.0
+    --but wooden grills aren't as good
+    local grillId = campfire.data.grillId
+    if grillId then
+        logger:debug("grillId: %s", grillId)
+        local grillData = common.staticConfigs.grills[grillId:lower()]
+        if grillData and grillData.materials then
+            logger:debug("Using bushcrafted grill")
+            grillEffect = 0.5
+        end
+    end
     --Roll for burn chance
     local roll = math.random()
     local burnChance = burnChance * survivalEffect * grillEffect
-    logger:trace("survivalEffect: %s", survivalEffect)
-    logger:trace("grillEffect: %s", grillEffect)
+    logger:debug("survivalEffect: %s", survivalEffect)
+    logger:debug("grillEffect: %s", grillEffect)
     logger:debug("Burn chance: %s", burnChance)
     logger:debug("Roll: %s", roll)
     if roll < burnChance then

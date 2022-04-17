@@ -17,7 +17,7 @@ return {
         campfire.data.destroyed = true
 
         if not campfire.data.isLit  then
-            local recoveredFuel =  math.floor(campfire.data.fuelLevel / 2)
+            local recoveredFuel =  math.floor(campfire.data.fuelLevel * 0.5)
             if recoveredFuel >= 1 then
                 local woodId = "ashfall_firewood"
                 tes3.addItem{
@@ -30,7 +30,8 @@ return {
             end
 
             local charcoal = campfire.data.charcoalLevel or 0
-            local recoveredCoal = math.clamp(math.floor(charcoal / 2), 0, common.staticConfigs.maxWoodInFire)
+            local recoveredCoal = math.floor(charcoal * 0.75)
+            recoveredCoal = math.clamp(recoveredCoal, 0, common.staticConfigs.maxCoalInFire)
             if recoveredCoal > 1 then
                 local coalId = "ashfall_ingred_coal_01"
                 tes3.addItem{

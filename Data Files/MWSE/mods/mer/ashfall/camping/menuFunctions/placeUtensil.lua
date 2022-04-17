@@ -1,21 +1,47 @@
 local common = require ("mer.ashfall.common.common")
+local logger = common.createLogger("placeUtensil")
 
-local function addUtensil(item, campfire, itemData)
-    if common.staticConfigs.grills[item.id:lower()] then
+local function addUtensil(item, campfire, addedItems, itemData)
+
+    local grillData = common.staticConfigs.grills[item.id:lower()]
+    local bellowsData = common.staticConfigs.bellows[item.id:lower()]
+    if grillData then
         --local grillData = common.staticConfigs.grills[item.id:lower()]
         campfire.data.hasGrill = true
         campfire.data.grillId = item.id:lower()
         campfire.data.grillPatinaAmount = itemData and itemData.data.patinaAmount
-    elseif common.staticConfigs.bellows[item.id:lower()] then
+    elseif bellowsData then
         campfire.data.bellowsId = item.id:lower()
     end
 
-    tes3.removeItem{ reference = tes3.player, item = item, itemData = itemData, playSound = false }
+
+    if grillData and addedItems[item.id:lower()] then
+        for material, count in pairs(grillData.materials) do
+            if tes3.getItemCount{ reference = tes3.player, item = material} >= count then
+                tes3.removeItem{ reference = tes3.player, item = material, count = count, playSound = false}
+            end
+        end
+    else
+        tes3.removeItem{ reference = tes3.player, item = item, itemData = itemData, playSound = false }
+    end
     event.trigger("Ashfall:UpdateAttachNodes", {campfire = campfire})
     --event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})
 end
 
 local function utensilSelect(campfire)
+    local addedItems = {}
+
+    for grillId, data in pairs(common.staticConfigs.grills) do
+        if tes3.getObject(grillId) then
+            local hasInInventory = tes3.getItemCount{ item = grillId, reference = tes3.player } > 0
+            if common.helper.playerHasMaterials(data.materials) and not hasInInventory then
+                logger:debug("Adding grill to inventory: %s", grillId)
+                addedItems[grillId:lower()] = true
+                tes3.addItem{ reference = tes3.player, item = grillId, count = 1, playSound = false }
+            end
+        end
+    end
+
     local canAttachGrill = campfire.sceneNode:getObjectByName("ATTACH_GRILL") ~= nil
     local canAttachBellows = campfire.sceneNode:getObjectByName("ATTACH_BELLOWS") ~= nil
     timer.delayOneFrame(function()
@@ -33,10 +59,15 @@ local function utensilSelect(campfire)
                 end,
             callback = function(e)
                 if e.item then
-                    addUtensil(e.item, campfire, e.itemData)
+                    addUtensil(e.item, campfire, addedItems, e.itemData)
                 end
             end
         }
+        timer.delayOneFrame(function()
+            for id in pairs(addedItems) do
+                tes3.removeItem{ reference = tes3.player, item = id, count = 1, playSound = false}
+            end
+        end)
     end)
 end
 
@@ -48,7 +79,11 @@ return {
     end,
     enableRequirements = function(campfire)
         if campfire.sceneNode:getObjectByName("ATTACH_GRILL") and not campfire.data.grillId then
-            for id, _ in pairs(common.staticConfigs.grills) do
+            for id, data in pairs(common.staticConfigs.grills) do
+                if data.materials then
+                    logger:debug("Has Materials for %s", id)
+                    if common.helper.playerHasMaterials(data.materials) then return true end
+                end
                 if  mwscript.getItemCount{ reference = tes3.player, item = id} > 0 then
                     return true
                 end

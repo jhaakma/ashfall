@@ -221,7 +221,7 @@ event.register("Ashfall:dataLoaded", onLoad)
 
 
 --[[
-    When activating a branchk, pick up a firewood
+    When activating a branch, pick up a firewood
 
     Disable the branch but don't delete it: we will enable it again when enough time has passed
 ]]
