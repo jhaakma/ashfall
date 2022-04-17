@@ -1,5 +1,4 @@
 local common = require("mer.ashfall.common.common")
-local config = require("mer.ashfall.config").config
 local miscToCookerMapping = {
     ashfall_misc_stove_01 = "ashfall_stove_01",
 }

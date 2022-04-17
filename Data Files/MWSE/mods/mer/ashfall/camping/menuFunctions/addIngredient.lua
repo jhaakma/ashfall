@@ -107,7 +107,7 @@ return {
         return isCookingPot and hasWater
     end,
     enableRequirements = function(ref)
-        return  ref.data.ladle == true
+        return  ref.data.ladle
     end,
     tooltipDisabled = {
         text = "An Iron Ladle is required to make Stew."

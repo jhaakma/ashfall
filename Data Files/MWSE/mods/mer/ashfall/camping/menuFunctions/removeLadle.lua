@@ -8,7 +8,7 @@ return  {
                 (not campfire.data.dynamicConfig) or
                 (campfire.data.dynamicConfig.ladle ~= "static")
             )
-            and campfire.data.ladle == true
+            and campfire.data.ladle
         )
     end,
     enableRequirements = function(campfire)
@@ -18,8 +18,12 @@ return  {
         text = "Empty Stew before removing Ladle."
     },
     callback = function(campfire)
-        tes3.addItem{ reference = tes3.player, item = "misc_com_iron_ladle" }
-        campfire.data.ladle = false
+        local ladleId = "misc_com_iron_ladle" -- Default for legacy ladle boolean
+        if campfire.data.ladle then
+            ladleId = campfire.data.ladle
+        end
+        tes3.addItem{ reference = tes3.player, item = ladleId }
+        campfire.data.ladle = nil
         event.trigger("Ashfall:UpdateAttachNodes", { campfire = campfire})
     end
 }

@@ -39,7 +39,6 @@ local function initialized()
         require("mer.ashfall.merchants.stewMerchant")
         require("mer.ashfall.branch.branches")
 
-        require("mer.ashfall.crafting.controllers")
         require("mer.ashfall.bushcrafting")
 
         require('mer.ashfall.harvest.harvestController')

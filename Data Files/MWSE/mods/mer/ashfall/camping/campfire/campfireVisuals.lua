@@ -291,6 +291,7 @@ local function moveOriginToAttachPoint(node)
     end
 end
 
+--Note: these must be ordered correctly, for example, cooking pot comes before ladle
 local attachNodes = {
     {
         attachNodeName = "ATTACH_FLAME",
@@ -385,6 +386,7 @@ local attachNodes = {
             end
         end,
     },
+    --Comes after attach_grill because the grill gets attached to this after the stand was placed
     {
         attachNodeName = "ATTACH_STAND",
         getDoAttach = function(campfire)
@@ -419,44 +421,62 @@ local attachNodes = {
                 end
             end
         end,
-    }
+    },
+    {
+        attachNodeName = "ATTACH_LADLE",
+        getDoAttach = function(campfire)
+            logger:debug("Has attach_ladle, has ladle? %s", campfire.data.ladle)
+            return campfire.data.ladle
+        end,
+        getAttachMesh = function(campfire)
+            local ladleObject = tes3.getObject(campfire.data.ladle)
+            if ladleObject then
+                logger:debug("mesh: %s", ladleObject.mesh)
+                local mesh = common.helper.loadMesh(ladleObject.mesh)
+                mesh.appCulled = false
+                mesh.name = "Ladle"
+                return mesh
+            end
+        end
+    },
 }
 
 local function updateAttachNodes(e)
-    logger:trace("Ashfall:UpdateAttachNodes: %s", e.campfire.object.id)
+    logger:debug("Ashfall:UpdateAttachNodes: %s", e.campfire.object.id)
     local campfire = e.campfire
     local sceneNode = campfire.sceneNode
 
     if not campfire.data then return end
     if not sceneNode then return end
     for _, attachData in ipairs(attachNodes) do
-        logger:trace("++++ATTACH NODE: %s+++++++", attachData.attachNodeName)
+        logger:debug("++++ATTACH NODE: %s+++++++", attachData.attachNodeName)
         local attachNode = sceneNode:getObjectByName(attachData.attachNodeName)
         if attachNode then
-            logger:trace("found attach node")
+            logger:debug("found attach node")
             --remove children
             for i, childNode in ipairs(attachNode.children) do
                 if childNode then
-                    logger:trace("removed %s children", attachData.attachNodeName)
+                    logger:debug("removed %s children", attachData.attachNodeName)
                     attachNode:detachChildAt(i)
                 end
             end
             if attachData.getDoAttach(campfire) then
-                logger:trace("Do attach: tru, getting mesh")
+                logger:debug("Do attach: tru, getting mesh")
                 local mesh = attachData.getAttachMesh(campfire)
                 if mesh then
-                    logger:trace("Mesh succeed, attaching")
+                    mesh.appCulled = false
+                    logger:debug("Mesh succeed, attaching %s", mesh)
                     attachNode:attachChild(mesh)
                 else
-                    logger:trace("Failed to retrieve mesh")
+                    logger:debug("Failed to retrieve mesh")
                 end
             else
-                logger:trace("Do attach: false, removing mesh")
+                logger:debug("Do attach: false, removing mesh")
             end
             if attachData.postAttach then
                 local attachNode = sceneNode:getObjectByName(attachData.attachNodeName)
                 if attachNode then
-                    logger:trace("Running Post attach for %s", attachData.attachNodeName)
+                    logger:debug("Running Post attach for %s", attachData.attachNodeName)
                     attachData.postAttach(campfire, attachNode)
                 end
             end

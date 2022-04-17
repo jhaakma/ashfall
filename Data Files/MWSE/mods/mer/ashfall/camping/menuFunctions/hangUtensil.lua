@@ -16,9 +16,15 @@ local function addUtensil(item, campfire, itemData)
     campfire.data.ladle = itemData and itemData.data.ladle
 
     if utensilData.type == "cookingPot" and not campfire.data.ladle then
-        if mwscript.getItemCount{ reference = tes3.player, item = "misc_com_iron_ladle"} > 0 then
-            tes3.removeItem{ reference = tes3.player, item = "misc_com_iron_ladle", playSound = false }
-            campfire.data.ladle = true
+        for ladleId, _ in pairs(common.staticConfigs.ladles) do
+            if tes3.getObject(ladleId) then
+                if tes3.getItemCount{ reference = tes3.player, item = ladleId} > 0 then
+                    logger:debug("Found ladle in inventory, adding to campfire")
+                    tes3.removeItem{ reference = tes3.player, item = ladleId, playSound = false }
+                    campfire.data.ladle = ladleId:lower()
+                    break
+                end
+            end
         end
     end
 

@@ -38,7 +38,12 @@ local function registerCampfire(e)
             e.reference.data.kettleId = nil
         end
 
+        --Legacy Ladle
+        if e.reference.data.ladle then
+            e.reference.data.ladle = "misc_com_iron_ladle"
+        end
 
+        --Legacy Cooking Pots
         local oldCookingPots = {
             misc_com_bucket_metal = true,
             misc_com_bucket_01 = true

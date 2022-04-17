@@ -26,7 +26,7 @@ return {
             return false, "No water in pot."
         end
 
-        local hasLadle = campfire.data.ladle == true
+        local hasLadle = campfire.data.ladle
         if not hasLadle then
             return false, "No ladle in pot."
         end

@@ -26,9 +26,15 @@ return {
     onDrop = function(campfire, reference)
         local utensilData = common.staticConfigs.utensils[reference.object.id:lower()]
         if utensilData.type == "cookingPot" then
-            if tes3.getItemCount{ reference = tes3.player, item = "misc_com_iron_ladle"} > 0 then
-                tes3.removeItem{ reference = tes3.player, item = "misc_com_iron_ladle", playSound = false }
-                campfire.data.ladle = true
+            for ladleId, _ in pairs(common.staticConfigs.ladles) do
+                if tes3.getObject(ladleId) then
+                    if tes3.getItemCount{ reference = tes3.player, item = ladleId} > 0 then
+                        logger:debug("Found a ladle to attach to the cooking pot")
+                        tes3.removeItem{ reference = tes3.player, item = ladleId, playSound = false }
+                        campfire.data.ladle = ladleId:lower()
+                        break
+                    end
+                end
             end
         end
         campfire.data.utensil = utensilData.type
@@ -45,7 +51,7 @@ return {
             campfire.data.teaProgress = reference.data.teaProgress
             campfire.data.waterType =  reference.data.waterType
             campfire.data.waterHeat = reference.data.waterHeat or 0
-            campfire.data.ladle = reference.data.ladle
+            campfire.data.ladle = reference.data.ladle or campfire.data.ladle
             campfire.data.lastWaterUpdated = nil
             campfire.data.lastBrewUpdated = nil
             campfire.data.lastStewUpdated = nil

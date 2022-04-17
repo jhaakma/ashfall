@@ -31,7 +31,7 @@ return {
 
             local charcoal = campfire.data.charcoalLevel or 0
             local recoveredCoal = math.floor(charcoal * 0.75)
-            recoveredCoal = math.clamp(recoveredCoal, 0, common.staticConfigs.maxCoalInFire)
+            recoveredCoal = math.clamp(recoveredCoal, 0, common.staticConfigs.maxWoodInFire)
             if recoveredCoal > 1 then
                 local coalId = "ashfall_ingred_coal_01"
                 tes3.addItem{

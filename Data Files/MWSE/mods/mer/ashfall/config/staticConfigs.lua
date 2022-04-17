@@ -922,6 +922,10 @@ this.firestarters = {
     ashfall_flintsteel = true,
 }
 
+this.ladles = {
+    misc_com_iron_ladle = true,
+    ashfall_wood_ladle = true
+}
 
 this.lightFireBlacklist = {
     ashfall_teawarmer_01 = true,

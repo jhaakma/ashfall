@@ -168,7 +168,7 @@ local function getRandomItem(list)
 end
 
 local function addLadle(campfire)
-    campfire.data.ladle = true
+    campfire.data.ladle = getRandomItem(common.staticConfigs.ladles)
     campfire.data.dynamicConfig.ladle = "static"
 end
 
