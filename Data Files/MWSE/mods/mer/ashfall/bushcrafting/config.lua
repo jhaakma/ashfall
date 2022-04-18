@@ -294,7 +294,6 @@ this.bushCraftingRecipes = {
         customRequirements = {
             customRequirements.wildernessOnly
         },
-        previewScale = 3
     },
     {
         --Lean To
