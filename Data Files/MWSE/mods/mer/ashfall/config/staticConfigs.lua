@@ -923,8 +923,10 @@ this.firestarters = {
 }
 
 this.ladles = {
-    misc_com_iron_ladle = true,
-    ashfall_wood_ladle = true
+    misc_com_iron_ladle = {},
+    ashfall_wood_ladle = {
+        meshOverride = "ashfall\\craft\\wood_ladle_attach.nif",
+    }
 }
 
 this.lightFireBlacklist = {

@@ -71,6 +71,7 @@ this.categories = {
     structures = "Structures",
     equipment = "Equipment",
     cutlery = "Cutlery",
+    weapons = "Weapons",
 }
 
 --Do common ingred ids first so they have priority
@@ -214,7 +215,6 @@ for name, ingredient in pairs(this.materials) do
     end
 end
 
-
 this.bushCraftingRecipes = {
     --Beginner
     {
@@ -293,7 +293,8 @@ this.bushCraftingRecipes = {
         soundType = "straw",
         customRequirements = {
             customRequirements.wildernessOnly
-        }
+        },
+        previewScale = 3
     },
     {
         --Lean To
@@ -323,7 +324,7 @@ this.bushCraftingRecipes = {
         skillRequirements = {
             survivalTiers.beginner
         },
-        category = this.categories.equipment,
+        category = this.categories.weapons,
         soundType = "wood",
         recoverEquipmentMaterials = true,
     },
@@ -338,7 +339,7 @@ this.bushCraftingRecipes = {
         skillRequirements = {
             survivalTiers.beginner
         },
-        category = this.categories.equipment,
+        category = this.categories.weapons,
         soundType = "wood",
         recoverEquipmentMaterials = true,
     },
@@ -356,6 +357,8 @@ this.bushCraftingRecipes = {
             }
         },
         category = this.categories.cutlery,
+        previewScale = 4,
+        soundType = "carve",
     },
     {
         id = "ashfall_cup_01",
@@ -367,10 +370,12 @@ this.bushCraftingRecipes = {
             {
                 tool = "knife",
                 equipped = true,
-                conditionPerUse = 5
+                conditionPerUse = 4
             }
         },
         category = this.categories.cutlery,
+        previewScale = 4,
+        soundType = "carve",
     },
     {
         id = "ashfall_wood_knife",
@@ -386,7 +391,8 @@ this.bushCraftingRecipes = {
             }
         },
         category = this.categories.cutlery,
-        alternatePreviewPosition = true
+        rotationAxis = 'y',
+        soundType = "carve",
     },
     {
         id = "ashfall_wood_fork",
@@ -402,7 +408,25 @@ this.bushCraftingRecipes = {
             }
         },
         category = this.categories.cutlery,
-        alternatePreviewPosition = true
+        rotationAxis = 'y',
+        soundType = "carve",
+    },
+    {
+        id = "ashfall_wood_spoon",
+        description = "A handcarved wooden spoon.",
+        materials = {
+            { material = "wood", count = 1},
+        },
+        toolRequirements = {
+            {
+                tool = "knife",
+                equipped = true,
+                conditionPerUse = 2
+            }
+        },
+        category = this.categories.cutlery,
+        rotationAxis = 'y',
+        soundType = "carve",
     },
     {
         id = "ashfall_wood_plate",
@@ -418,6 +442,24 @@ this.bushCraftingRecipes = {
             }
         },
         category = this.categories.cutlery,
+        soundType = "carve",
+    },
+    {
+        id = "ashfall_wood_ladle",
+        description = "A handcarved wooden ladle. Can be added to cooking pots to make stews.",
+        materials = {
+            { material = "wood", count = 1},
+        },
+        toolRequirements = {
+            {
+                tool = "knife",
+                equipped = true,
+                conditionPerUse = 4
+            }
+        },
+        category = this.categories.cutlery,
+        mesh = "ashfall\\craft\\wood_ladle_attach.nif",
+        soundType = "carve",
     },
 
     --Novice
@@ -483,7 +525,7 @@ this.bushCraftingRecipes = {
         },
         category = this.categories.materials,
         soundType = "fabric",
-        alternatePreviewPosition = true,
+        rotationAxis = 'y',
     },
     {
         --ashfall_cush_crft_01 cushion
@@ -527,7 +569,7 @@ this.bushCraftingRecipes = {
         },
         category = this.categories.other,
         soundType = "fabric",
-        alternatePreviewPosition = true,
+        rotationAxis = 'y',
     },
     {
         id = "ashfall_spear_flint",
@@ -540,7 +582,7 @@ this.bushCraftingRecipes = {
         skillRequirements = {
             survivalTiers.novice
         },
-        category = this.categories.equipment,
+        category = this.categories.weapons,
         soundType = "wood",
         recoverEquipmentMaterials = true,
     },
@@ -554,7 +596,7 @@ this.bushCraftingRecipes = {
         skillRequirements = {
             survivalTiers.novice
         },
-        category = this.categories.equipment,
+        category = this.categories.weapons,
         soundType = "wood",
         recoverEquipmentMaterials = true,
     },
@@ -569,7 +611,7 @@ this.bushCraftingRecipes = {
         skillRequirements = {
             survivalTiers.novice
         },
-        category = this.categories.equipment,
+        category = this.categories.weapons,
         soundType = "wood",
         resultAmount = 20,
     },
@@ -607,7 +649,7 @@ this.bushCraftingRecipes = {
         },
         category = this.categories.survival,
         soundType = "leather",
-        alternatePreviewPosition = true,
+        rotationAxis = 'y',
     },
     {
         id = "ashfall_tent_leather_m",
@@ -622,6 +664,7 @@ this.bushCraftingRecipes = {
         },
         category = this.categories.survival,
         soundType = "leather",
+        mesh = "ashfall\\tent\\tent_leather.nif"
     },
     {
         id = "ashfall_table_sml_s",
@@ -666,7 +709,7 @@ this.bushCraftingRecipes = {
         skillRequirements = {
             survivalTiers.apprentice
         },
-        category = this.categories.equipment,
+        category = this.categories.weapons,
         soundType = "wood",
         recoverEquipmentMaterials = true,
     },

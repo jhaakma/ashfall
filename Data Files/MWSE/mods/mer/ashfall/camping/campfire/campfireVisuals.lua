@@ -431,8 +431,13 @@ local attachNodes = {
         getAttachMesh = function(campfire)
             local ladleObject = tes3.getObject(campfire.data.ladle)
             if ladleObject then
-                logger:debug("mesh: %s", ladleObject.mesh)
-                local mesh = common.helper.loadMesh(ladleObject.mesh)
+                local meshId = ladleObject.mesh
+                local data = common.staticConfigs.ladles[ladleObject.id:lower()]
+                if data and data.meshOverride then
+                    meshId = data.meshOverride
+                end
+                logger:debug("mesh: %s", meshId)
+                local mesh = common.helper.loadMesh(meshId)
                 mesh.appCulled = false
                 mesh.name = "Ladle"
                 return mesh
