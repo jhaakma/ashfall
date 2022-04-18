@@ -4,6 +4,9 @@ local DropConfig = {
         "tea"
     },
     node = {
+        FILTER_WATER = {
+            "filterWater"
+        },
         DROP_GROUND_UTENSIL = {
             "groundUtensil",
             "supports",

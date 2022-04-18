@@ -21,6 +21,7 @@ this.types = {
     cookingPot = "cookingPot",
     waterContainer = "waterContainer",
     stoneSource = "stoneSource",
+    waterFilter = "waterFilter",
 }
 
 this.list = {}
@@ -483,6 +484,14 @@ this.list.stoneSource = Activator:new{
     patterns = {
         ["terrain_rock"] = true,
         ["terrain_ashland_rock"] = true,
+    }
+}
+
+this.list.waterFilter = Activator:new{
+    name = "Water Filter",
+    type = this.types.waterFilter,
+    ids = {
+        ["ashfall_water_filter"] = true,
     }
 }
 
