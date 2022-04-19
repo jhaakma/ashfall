@@ -93,9 +93,9 @@ this.branchGroups = {
             "ashfall_flint",
         },
         chanceNone = 20,
-        minPlaced = 5,
-        maxPlaced = 10,
-        minDistance = 200,
+        minPlaced = 4,
+        maxPlaced = 8,
+        minDistance = 100,
         maxDistance = 2500,
     },
 }
@@ -159,7 +159,8 @@ this.patternMapping = {
     _wg_ = this.branchGroups.westGash,
     terrain_rock = this.branchGroups.flint,
     terrain_ashland_rock = this.branchGroups.flint,
-    _kelp_ = this.branchGroups.flint_kelp,
+    flora_kelp = this.branchGroups.flint_kelp,
+    in_cave_plant0 = this.branchGroups.flint_kelp,
 }
 
 this.idMapping = {

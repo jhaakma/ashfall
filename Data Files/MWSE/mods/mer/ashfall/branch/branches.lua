@@ -21,11 +21,25 @@ local function isTree(reference)
     return common.staticConfigs.activatorConfig.list.tree:isActivator(reference.object.id)
 end
 
+local function isWaterplant(reference)
+    local waterPlants = {
+        flora_kelp_01 = true,
+        flora_kelp_02 = true,
+        flora_kelp_03 = true,
+        flora_kelp_04 = true,
+        in_cave_plant00 = true,
+        in_cave_plant01 = true
+    }
+    return waterPlants[reference.object.id:lower()]
+end
+
+
+
 local function isSource(reference)
     return common.staticConfigs.activatorConfig.list.tree:isActivator(reference.object.id)
         or common.staticConfigs.activatorConfig.list.deadTree:isActivator(reference.object.id)
         or common.staticConfigs.activatorConfig.list.stoneSource:isActivator(reference.object.id)
-        or string.find(reference.object.id:lower(), "_kelp_")
+        or isWaterplant(reference)
 end
 
 local function formatCellId(cell)

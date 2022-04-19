@@ -64,10 +64,11 @@ end
 
 local function packTent(activeRef)
     timer.delayOneFrame(function()
-        mwscript.addItem{
+        tes3.addItem{
             reference = tes3.player,
             item = getMiscFromActive(activeRef),
-            count =  1
+            count =  1,
+            playSound = false,
         }
         if activeRef.data.trinket then
             trinketController.removeTrinket(activeRef)

@@ -188,16 +188,5 @@ end
 event.register("Ashfall:ActivateButtonPressed", onActivateKeyPressed)
 
 
---Register container flora as vegetation
-logger:debug("Adding flora containers as vegetation")
-for k, obj in pairs(tes3.dataHandler.nonDynamicData.objects) do
-    if obj.objectType == tes3.objectType.container then
-        if obj.id:startswith("flora_") then
-            logger:debug("Adding %s as vegetation", obj.id)
-            this.list.vegetation:addId(obj.id)
-        end
-    end
-end
-
 
 return this

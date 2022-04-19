@@ -9,7 +9,7 @@ local foodConfig = staticConfigs.foodConfig
 local ratingsConfig = require('mer.ashfall.tempEffects.ratings.ratingsConfig')
 local climateConfig = require('mer.ashfall.config.weatherRegionConfig')
 local teaConfig = require('mer.ashfall.config.teaConfig')
-local Activator = require("mer.ashfall.objects.Activator")
+local Activator = require("mer.ashfall.activators.Activator")
 local overrides = require("mer.ashfall.config.overrides")
 
 local function listValidActivatorTypes()
