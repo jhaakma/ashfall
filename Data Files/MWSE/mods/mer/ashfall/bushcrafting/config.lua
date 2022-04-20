@@ -858,8 +858,57 @@ this.bushCraftingRecipes = {
             customRequirements.wildernessOnly
         }
     },
+    {
+        id = "ashfall_bed_fur",
+        maxSteepness = 0,
+        additionalMenuOptions = {
+            this.menuOptions.restMenu,
+            this.menuOptions.layDown,
+        },
+        description = "A sturdy bed covered in warm furs.",
+        materials = {
+            { material = "wood", count = 6 },
+            { material = "rope", count = 1 },
+            { material = "fabric", count = 2 },
+            { material = "fur", count = 2 },
+            { material = "pillow", count = 1 },
+        },
+        skillRequirements = {
+            survivalTiers.expert
+        },
+        category = this.categories.beds,
+        soundType = "wood",
+        customRequirements = {
+            customRequirements.wildernessOnly
+        }
+    },
 
     --Master
+    {
+        id =  "ashfall_cbroll_active",
+        description = "A covered bedroll which provides protection from the elements while sleeping.",
+        additionalMenuOptions = {
+            this.menuOptions.restMenu,
+            this.menuOptions.layDown,
+        },
+        maxSteepness = 0,
+        materials = {
+            { material = "straw", count = 4 },
+            { material = "wood", count = 3 },
+            { material = "rope", count = 2 },
+            { material = "fabric", count = 4},
+            { material = "leather", count = 2 },
+        },
+        skillRequirements = {
+            survivalTiers.master
+        },
+        category = this.categories.beds,
+        soundType = "leather",
+        previewScale = 1.25,
+        customRequirements = {
+            customRequirements.wildernessOnly
+        }
+    },
     {
         --Nordic backpack
         id = "ashfall_pack_06",
@@ -889,30 +938,6 @@ this.bushCraftingRecipes = {
         },
         category = this.categories.equipment,
         soundType = "fabric",
-    },
-    {
-        id = "ashfall_bed_fur",
-        maxSteepness = 0,
-        additionalMenuOptions = {
-            this.menuOptions.restMenu,
-            this.menuOptions.layDown,
-        },
-        description = "A sturdy bed covered in warm furs.",
-        materials = {
-            { material = "wood", count = 6 },
-            { material = "rope", count = 1 },
-            { material = "fabric", count = 2 },
-            { material = "fur", count = 2 },
-            { material = "pillow", count = 1 },
-        },
-        skillRequirements = {
-            survivalTiers.master
-        },
-        category = this.categories.beds,
-        soundType = "wood",
-        customRequirements = {
-            customRequirements.wildernessOnly
-        }
     },
 }
 this.tanningRackRecipes = {
