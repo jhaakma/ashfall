@@ -4,7 +4,7 @@ return {
     text = "Add Ladle",
     showRequirements = function(campfire)
         local hasLadleNode = campfire.sceneNode:getObjectByName("SWITCH_LADLE")
-        local hasLadle =  campfire.data.ladle
+        local hasLadle =  not not campfire.data.ladle
         local hasStaticLadle = ( campfire.data.dynamicConfig and campfire.data.dynamicConfig.ladle == "static")
         return hasLadleNode
             and (not hasLadle)

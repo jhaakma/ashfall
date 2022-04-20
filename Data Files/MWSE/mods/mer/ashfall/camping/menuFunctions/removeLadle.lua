@@ -19,7 +19,7 @@ return  {
     },
     callback = function(campfire)
         local ladleId = "misc_com_iron_ladle" -- Default for legacy ladle boolean
-        if campfire.data.ladle then
+        if campfire.data.ladle and type(campfire.data.ladle) == "string" then
             ladleId = campfire.data.ladle
         end
         tes3.addItem{ reference = tes3.player, item = ladleId }

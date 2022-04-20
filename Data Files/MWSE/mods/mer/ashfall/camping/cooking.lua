@@ -257,7 +257,7 @@ local function foodPlaced(e)
                     object = campfire.object
                 }
                 local hasWater = campfire.data.waterAmount and campfire.data.waterAmount > 0
-                local hasLadle = campfire.data.ladle
+                local hasLadle = not not campfire.data.ladle
                 --ingredient placed on a cooking pot with water in it
                 if hasWater and utensilData and utensilData.holdsStew then
                     if not hasLadle then

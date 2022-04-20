@@ -195,7 +195,7 @@ function LiquidContainer.canTransfer(from, to)
 
     -- Target of stew must have a ladle
     local requiresLadle = common.staticConfigs.cookingPots[to.itemId:lower()]
-    local hasLadle = to.data.ladle
+    local hasLadle = not not to.data.ladle
     if from.stewLevels and requiresLadle and not hasLadle then
         return false, "Target must have a ladle."
     end

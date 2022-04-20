@@ -425,8 +425,9 @@ local attachNodes = {
     {
         attachNodeName = "ATTACH_LADLE",
         getDoAttach = function(campfire)
-            logger:debug("Has attach_ladle, has ladle? %s", campfire.data.ladle)
-            return campfire.data.ladle
+            local hasLadle = not not campfire.data.ladle
+            logger:debug("Has attach_ladle, has ladle? %s", hasLadle)
+            return hasLadle
         end,
         getAttachMesh = function(campfire)
             local ladleObject = tes3.getObject(campfire.data.ladle)

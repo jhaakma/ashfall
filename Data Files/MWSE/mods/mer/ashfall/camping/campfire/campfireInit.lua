@@ -39,7 +39,7 @@ local function registerCampfire(e)
         end
 
         --Legacy Ladle
-        if e.reference.data.ladle then
+        if e.reference.data.ladle == true then
             e.reference.data.ladle = "misc_com_iron_ladle"
         end
 
