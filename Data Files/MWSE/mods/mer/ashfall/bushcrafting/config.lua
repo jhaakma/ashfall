@@ -646,7 +646,7 @@ this.bushCraftingRecipes = {
         skillRequirements = {
             survivalTiers.apprentice
         },
-        category = this.categories.survival,
+        category = this.categories.other,
         soundType = "leather",
         rotationAxis = 'y',
     },
