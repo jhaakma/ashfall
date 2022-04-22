@@ -5,8 +5,8 @@ local WaterFilter = {}
 
 local config = {
     updateInterval = 0.001,
-    maxWaterAmount = 100,
-    waterFilteredPerHour = 100,
+    maxWaterAmount = common.staticConfigs.bottleList.ashfall_water_filter.capacity,
+    waterFilteredPerHour = 15,
 }
 
 function WaterFilter.refHasDirtyWater(e)
