@@ -483,7 +483,7 @@ this.bottleList = {
     ashfall_cup_01 = {
         capacity = 25,
         waterMaxScale = 1.3,
-        waterMaxHeight = 3.3,
+        waterMaxHeight = 4.0,
     },
 }
 for id, _ in pairs(this.bottleList) do
