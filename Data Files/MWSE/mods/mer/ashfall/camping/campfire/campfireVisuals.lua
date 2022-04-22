@@ -79,6 +79,14 @@ local switchNodeValues = {
         logger:trace("Tea switch state: " .. thisState)
         return thisState
     end,
+    SWITCH_WATER_FILTER = function(reference)
+        local unfilteredWater = reference.data.unfilteredWater or 0
+        local filteredWater = reference.data.waterAmount or 0
+        local capacity = common.staticConfigs.bottleList.ashfall_water_filter.capacity
+        local isDripping = filteredWater < capacity
+            and unfilteredWater > 0
+        return isDripping and "DRIPPING" or "OFF"
+    end
 }
 
 local supportMapping = {
@@ -494,21 +502,26 @@ local function updateAttachNodes(e)
 end
 event.register("Ashfall:UpdateAttachNodes", updateAttachNodes)
 
+
+local attachNodeRefTypes = {
+    "fuelConsumer",
+    "waterContainer",
+    "waterFilter",
+}
 local function initialiseAttachNodes()
-    common.helper.iterateRefType("fuelConsumer", function(ref)
-        updateAttachNodes{ campfire = ref }
-    end)
-    common.helper.iterateRefType("waterContainer", function(ref)
-        updateAttachNodes{ campfire = ref }
-    end)
+    for _, refType in ipairs(attachNodeRefTypes) do
+        common.helper.iterateRefType(refType, function(ref)
+            updateAttachNodes{ campfire = ref }
+        end)
+    end
 end
 event.register("cellChanged", initialiseAttachNodes)
 event.register("loaded", initialiseAttachNodes)
 
 event.register("referenceActivated", function(e)
-    local isFuelConsumer = referenceController.controllers.fuelConsumer:isReference(e.reference)
-    local isWaterContainer = referenceController.controllers.waterContainer:isReference(e.reference)
-    if isFuelConsumer or isWaterContainer then
-        updateAttachNodes{ campfire = e.reference }
+    for _, refType in ipairs(attachNodeRefTypes) do
+        if referenceController.controllers[refType]:isReference(e.reference) then
+            updateAttachNodes{ campfire = e.reference }
+        end
     end
 end)

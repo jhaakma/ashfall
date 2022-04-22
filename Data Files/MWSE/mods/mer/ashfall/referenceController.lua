@@ -122,6 +122,13 @@ this.controllers = {
             return staticConfigs.foodConfig.getGrillValues(ref.object)
         end
     },
+    waterFilter = ReferenceController:new{
+        requirements = function(_, ref)
+            local isWaterFilter = ref.sceneNode
+                and ref.sceneNode:getObjectByName("FILTER_WATER")
+            return isWaterFilter
+        end
+    }
 }
 
 local function onRefPlaced(e)

@@ -2,6 +2,7 @@ local this = {}
 local tentConfig = require("mer.ashfall.camping.tents.tentConfig")
 local itemDescriptions = require("mer.ashfall.config.itemDescriptions")
 local BedRoll = require("mer.ashfall.items.bedroll")
+local WaterFilter = require("mer.ashfall.items.waterFilter")
 local config = require("mer.ashfall.config").config
 
 local survivalTiers = {
@@ -113,12 +114,8 @@ this.menuOptions = {
             tes3ui.enterMenuMode(menuID)
         end
     },
-    filterWater = {
-        text = "Filter Water",
-        callback = function()
-            event.trigger("Ashfall:ActivateWaterFilter")
-        end
-    }
+    filterWater = WaterFilter.buttons.filterWater,
+    collectWater = WaterFilter.buttons.collectWater,
 }
 
 this.materials = {
@@ -483,7 +480,8 @@ this.bushCraftingRecipes = {
         },
         maxSteepness = 0,
         additionalMenuOptions = {
-            this.menuOptions.filterWater
+            this.menuOptions.filterWater,
+            this.menuOptions.collectWater,
         }
     },
     {

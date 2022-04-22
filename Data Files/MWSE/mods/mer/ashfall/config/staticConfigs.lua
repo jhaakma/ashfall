@@ -144,9 +144,6 @@ this.capacities = {
 }
 
 this.bottleConfig = {
-
-
-
     cup = { capacity = 25, weight = 2 },
     glass = { capacity = 25, weight = 2 },
     goblet = { capacity = 25, weight = 2 },
@@ -243,6 +240,14 @@ this.bottleConfig = {
 
 ---@type table<string, AshfallBottleData>
 this.bottleList = {
+
+    ashfall_water_filter = {
+        capacity = 60,--sync with wooden bowl
+        holdsStew = false,
+        waterMaxHeight = 4,
+        waterMaxScale = 1.8,
+    },
+
     _infinite_water_source = {
         capacity = math.huge,
         holdsStew = false
@@ -640,6 +645,9 @@ this.heatSourceValues = {
 
 
 this.utensils = {
+
+
+
     --iron
     ashfall_kettle = {
         type = "kettle",

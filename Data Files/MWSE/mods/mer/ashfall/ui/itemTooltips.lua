@@ -69,6 +69,13 @@ local function addWaterTooltips(item, itemData, tooltip)
             )
         )
     end
+
+    local unfilteredWater = data and data.unfilteredWater
+    if unfilteredWater and capacity then
+        common.helper.addLabelToTooltip(tooltip,
+            string.format("Unfiltered Water: %d/%d",
+                math.ceil(unfilteredWater), capacity))
+    end
 end
 
 local function addFoodTooltips(item, itemData, tooltip)
