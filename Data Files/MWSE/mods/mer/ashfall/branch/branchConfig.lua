@@ -92,9 +92,9 @@ this.branchGroups = {
         ids = {
             "ashfall_flint",
         },
-        chanceNone = 20,
-        minPlaced = 4,
-        maxPlaced = 8,
+        chanceNone = 50,
+        minPlaced = 2,
+        maxPlaced = 6,
         minDistance = 100,
         maxDistance = 2500,
     },
