@@ -62,7 +62,7 @@ return {
     enableEnvironmentSickness = true,
     enableBranchPlacement = true,
     enableCooking = false,--depreciated
-    enableBushcrafting = true,
+    bushcraftingEnabled = true,
 
     showTemp = true,
     showHunger = true,

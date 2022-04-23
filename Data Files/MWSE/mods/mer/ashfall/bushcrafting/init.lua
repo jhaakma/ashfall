@@ -30,7 +30,7 @@ end
 
 
 local function onActivateMaterial(e)
-    if not config.enableBushcrafting then
+    if not config.bushcraftingEnabled then
         return
     end
     --must be in menu
@@ -45,7 +45,7 @@ event.register("equip", onActivateMaterial, { filter = tes3.player, priority = -
 
 
 local function createMaterialsTooltip(e)
-    if not config.enableBushcrafting then return end
+    if not config.bushcraftingEnabled then return end
 
     if not e.tooltip then
         return
@@ -55,7 +55,7 @@ local function createMaterialsTooltip(e)
     end
 
     if isMaterial(e.object) then
-        common.helper.addLabelToTooltip(e.tooltip, "Crafting Material", {175/255, 129/255, 184/255})
+        common.helper.addLabelToTooltip(e.tooltip, "Bushcrafting Material", {175/255, 129/255, 184/255})
     end
 end
 

@@ -249,6 +249,12 @@ local function registerModConfig()
                 variable = mwse.mcm.createTableVariable{ id = "needsCanKill", table = config },
             }
 
+            categoryMisc:createOnOffButton{
+                label = "Enable Bushcrafting ",
+                description = "To activate the bushcrafting menu, equip any item that has 'Bushcrafting Material' in the tooltip.",
+                variable = mwse.mcm.createTableVariable{ id = "bushcraftingEnabled", table = config }
+            }
+
             categoryMisc:createYesNoButton{
                 label = "Enable Dynamic Branch Placement",
                 description = "Loose branches will spawn near trees, which can be picked up for firewood. May cause a slight delay on cell change on lower end systemss. Disable this if you experience performance issues.",
@@ -690,12 +696,6 @@ local function registerModConfig()
             description = "When enabled, you will be notified when a new version of Ashfall is available.",
             variable = mwse.mcm.createTableVariable{ id = "checkForUpdates", table = config },
             restartRequired = true,
-        }
-
-        pageDevOptions:createOnOffButton{
-            label = "Enable Bushcrafting (in development)",
-            description = "Get a sneak peak at the upcoming bushcrafting mechanics. Equip any item that has 'Crafting Material' in the tooltip to activate the bushcrafting menu.",
-            variable = mwse.mcm.createTableVariable{ id = "enableBushcrafting", table = config }
         }
 
         pageDevOptions:createYesNoButton{

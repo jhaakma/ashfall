@@ -223,7 +223,7 @@ this.list.keg = Activator:new{
 this.list.vegetation = Activator:new{
     name = "Vegetation",
     type = this.types.vegetation,
-    mcmSetting = "enableBushcrafting",
+    mcmSetting = "bushcraftingEnabled",
     patterns = {},
     ids = {
         --TR
