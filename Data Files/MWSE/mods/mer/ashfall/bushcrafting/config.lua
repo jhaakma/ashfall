@@ -276,7 +276,7 @@ this.bushCraftingRecipes = {
             this.menuOptions.layDown,
         },
         maxSteepness = 0,
-        description = "Straw bedding isn't the most comfortable but it beats sleeping on the ground.",
+        description = "A simple straw bed. Not very comfortable but it beats sleeping on the ground.",
         materials = {
             { material = "straw", count = 10 },
             { material = "wood", count = 4 },
@@ -461,7 +461,7 @@ this.bushCraftingRecipes = {
     --Novice
     {
         id = "ashfall_water_filter",
-        description = "A simple water filter. Can be used to make water safe to drink.",
+        description = "A water filter that uses plant fibre and coal to purify dirty water.",
         materials = {
             { material = "fibre", count = 4 },
             { material = "coal", count = 4 },
@@ -665,7 +665,7 @@ this.bushCraftingRecipes = {
     },
     {
         id = "ashfall_table_sml_s",
-        description = "A small, crudely made wooden table",
+        description = "A tall, crudely made wooden table",
         materials = {
             { material = "wood", count = 6 },
             { material = "rope", count = 2 }
