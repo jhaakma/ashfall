@@ -8,7 +8,6 @@ local temperatureController = require("mer.ashfall.temperatureController")
 --temperatureController.registerExternalHeatSource{ id = "tentTemp" }
 temperatureController.registerBaseTempMultiplier{ id = "tentTempMulti"}
 local skipActivate
----@type
 local currentTent
 
 
