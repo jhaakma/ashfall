@@ -21,8 +21,8 @@ return {
 
         local isModifierKeyPressed = common.helper.isModifierKeyPressed()
         if isModifierKeyPressed then --retrieving water from target
-            if not (target.data.waterAmount and target.data.waterAmount > 0) then
-                return false, "No water in campfire."
+            if targetLiquidContainer.waterAmount <= 0 then
+                return false, "No water to retrieve."
             end
             local canTransfer, errorMsg = targetLiquidContainer:canTransfer(itemLiquidContainer)
             if not canTransfer then
@@ -30,14 +30,13 @@ return {
             end
         else --adding water to target
             if not (itemLiquidContainer.waterAmount > 0) then
-                return false, "No water in item."
+                return false, "No water to pour."
             end
             local canTransfer, errorMsg = itemLiquidContainer:canTransfer(targetLiquidContainer)
             if not canTransfer then
                 return false, errorMsg
             end
         end
-
         return true
     end,
     onDrop = function(target, reference)
