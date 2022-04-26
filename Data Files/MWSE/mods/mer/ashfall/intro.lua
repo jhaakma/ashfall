@@ -29,9 +29,15 @@ function this.doOverrides()
         local item = tes3.getObject(id)
         if item then
             logger:trace("Overriding values for %s", item.id)
-            item.name = override.name or item.name
-            item.value = override.value or item.value
-            item.weight = override.weight or item.weight
+            if override.name then
+                item.name = override.name
+            end
+            if override.value then
+                item.value = override.value
+            end
+            if override.weight then
+                item.weight = override.weight
+            end
         else
             logger:trace("%s not found", id)
         end
