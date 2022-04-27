@@ -14,7 +14,7 @@ do -- initialise crafting
         CraftingFramework.Tool:new(tool)
     end
     for _, menuActivator in ipairs(craftingConfig.menuActivators) do
-        logger:debug("Registering Menu Activator: %s", menuActivator)
+        logger:debug("Registering Menu Activator: %s", menuActivator.name)
         CraftingFramework.MenuActivator:new(menuActivator)
     end
     for _, material in ipairs(craftingConfig.materials) do
