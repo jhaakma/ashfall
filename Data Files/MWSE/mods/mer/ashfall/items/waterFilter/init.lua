@@ -160,7 +160,7 @@ function WaterFilter.collectWaterCallback(e)
             end,
             callback = function(e)
                 if e.item then
-                    local liquidContainer = LiquidContainer.createFromInventory(e.item, e.itemData)
+                    local liquidContainer = LiquidContainer.createFromInventoryInitItemData(e.item, e.itemData)
                     local filterRefContainer = LiquidContainer.createFromReference(filterRef)
                     local amount, errorMsg = filterRefContainer:transferLiquid(liquidContainer, filterRefContainer.waterAmount)
                     if amount then
