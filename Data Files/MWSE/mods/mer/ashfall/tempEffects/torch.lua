@@ -16,7 +16,10 @@ function this.calculateTorchTemp()
     if torchStack and torchStack.object.name and string.find(torchStack.object.name:lower(), "torch") then
         local maxTime = torchStack.object.time
         local currentTime = torchStack.object:getTimeLeft(torchStack)
-        common.data.torchTemp =  math.ceil( math.remap( currentTime, 0, maxTime, minHeat, maxHeat ) )
+        local newTemp = math.remap(currentTime, 0, maxTime, minHeat, maxHeat)
+        newTemp = math.clamp(newTemp, minHeat, maxHeat)
+        newTemp = math.ceil(newTemp)
+        common.data.torchTemp = newTemp
     else
         common.data.torchTemp = 0
     end
