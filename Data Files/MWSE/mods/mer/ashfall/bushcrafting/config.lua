@@ -206,6 +206,13 @@ this.materials = {
         ids = {
             "ashfall_ingred_coal_01"
         }
+    },
+    {
+        id = "netting",
+        name = "Netting",
+        ids = {
+            "ashfall_netting"
+        }
     }
 }
 this.ingredMaterials = {}
@@ -475,7 +482,7 @@ this.bushCraftingRecipes = {
             }
         },
         category = this.categories.cutlery,
-        mesh = "ashfall\\craft\\wood_ladle_attach.nif",
+        previewMesh = "ashfall\\craft\\wood_ladle_attach.nif",
         soundType = "carve",
         skillRequirements = {
             survivalTiers.beginner
@@ -510,7 +517,7 @@ this.bushCraftingRecipes = {
     },
     {
         id = "ashfall_fab_cloak",
-        mesh = "ashfall\\craft\\cloak_fab_preview.nif",
+        previewMesh = "ashfall\\craft\\cloak_fab_preview.nif",
         description = itemDescriptions.ashfall_fab_cloak,
         materials = {
             { material = "fabric", count = 6 },
@@ -534,6 +541,7 @@ this.bushCraftingRecipes = {
         category = this.categories.equipment,
         soundType = "straw",
         recoverEquipmentMaterials = true,
+        previewMesh = "ashfall\\craft\\strawhat.nif",
     },
     {
         id = "ashfall_fabric",
@@ -609,10 +617,10 @@ this.bushCraftingRecipes = {
     },
     {
         id = "ashfall_bow_wood",
-        description = "A simple bow made of wood.",
+        description = "A simple bow and quiver made of wood.",
         materials = {
-            { material = "wood", count = 1 },
-            { material = "rope", count = 1 },
+            { material = "wood", count = 3 },
+            { material = "rope", count = 3 },
         },
         skillRequirements = {
             survivalTiers.novice
@@ -620,6 +628,7 @@ this.bushCraftingRecipes = {
         category = this.categories.weapons,
         soundType = "wood",
         recoverEquipmentMaterials = true,
+        previewScale = 1.2,
     },
     {
         id = "ashfall_arrow_flint",
@@ -627,14 +636,13 @@ this.bushCraftingRecipes = {
         materials = {
             { material = "flint", count = 1 },
             { material = "wood", count = 1 },
-            { material = "ingred_racer_plumes_01", count = 1 },
         },
         skillRequirements = {
             survivalTiers.novice
         },
         category = this.categories.weapons,
         soundType = "wood",
-        resultAmount = 20,
+        resultAmount = 10,
     },
 
     --Apprentice
@@ -685,7 +693,7 @@ this.bushCraftingRecipes = {
         },
         category = this.categories.survival,
         soundType = "leather",
-        mesh = "ashfall\\tent\\tent_leather.nif"
+        previewMesh = "ashfall\\tent\\tent_leather.nif"
     },
     {
         id = "ashfall_table_sml_s",
@@ -736,6 +744,19 @@ this.bushCraftingRecipes = {
     },
 
     --Journeyman
+    {
+        id = "ashfall_netting",
+        description = "a web of netting crafted from rope.",
+        materials = {
+            { material = "rope", count = 2 },
+        },
+        skillRequirements = {
+            survivalTiers.journeyman
+        },
+        rotationAxis = 'y',
+        category = this.categories.materials,
+        soundType = "rope",
+    },
     {
         id = "ashfall_chest_01_c",
         description = "A large wooden chest that can be placed on the ground and used as storage.",
@@ -800,9 +821,10 @@ this.bushCraftingRecipes = {
         description = itemDescriptions.ashfall_pack_04,
         materials = {
             { material = "wood", count = 2 },
-            { material = "rope", count = 2 },
+            { material = "rope", count = 1 },
             { material = "ashfall_sack_01", count = 1 },
-            { material = "leather", count = 2 }
+            { material = "leather", count = 1 },
+            { material = "netting", count = 1 },
         },
         skillRequirements = {
             survivalTiers.journeyman
@@ -815,12 +837,13 @@ this.bushCraftingRecipes = {
         description = itemDescriptions.ashfall_crabpot_01_m,
         materials = {
             { material = "wood", count = 4 },
-            { material = "rope", count = 6 },
+            { material = "rope", count = 1 },
+            { material = "netting", count = 2 },
         },
         skillRequirements = {
             survivalTiers.journeyman
         },
-        category = this.categories.survival,
+        category = this.categories.structures,
         soundType = "wood",
         additionalMenuOptions = {
             CrabPot.buttons.collect,
@@ -968,7 +991,7 @@ this.bushCraftingRecipes = {
     },
     {
         id = "ashfall_fur_cloak",
-        mesh = "ashfall\\craft\\cloak_fur_preview.nif",
+        previewMesh = "ashfall\\craft\\cloak_fur_preview.nif",
         description = itemDescriptions.ashfall_fur_cloak,
         materials = {
             { material = "fur", count = 4 },

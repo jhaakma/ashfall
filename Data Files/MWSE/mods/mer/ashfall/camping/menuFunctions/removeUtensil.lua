@@ -58,6 +58,12 @@ return  {
             itemData.data.lastWaterUpdated = campfire.data.lastWaterUpdated
             itemData.data.lastBrewUpdated = campfire.data.lastBrewUpdated
             itemData.data.lastStewUpdated = campfire.data.lastStewUpdated
+        end
+        if campfire.data.ladle then
+            itemData = itemData or tes3.addItemData{
+                to = tes3.player,
+                item = campfire.data.utensilId,
+            }
             itemData.data.ladle = campfire.data.ladle
         end
         --clear data and trigger updates
