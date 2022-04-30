@@ -89,13 +89,15 @@ event.register("simulate", function(e)
     end)
 end)
 
-function WaterFilter.hasRoomToFilter(reference)
+function WaterFilter.hasRoomToFilter(e)
+    local reference = e.reference
     local unfilteredWater = reference.data.unfilteredWater or 0
     log:debug("unfilteredWater: %s", unfilteredWater)
     return unfilteredWater < config.maxWaterAmount
 end
 
-function WaterFilter.hasWaterToCollect(reference)
+function WaterFilter.hasWaterToCollect(e)
+    local reference = e.reference
     local filteredWater = reference.data.waterAmount or 0
     return filteredWater > 0
 end

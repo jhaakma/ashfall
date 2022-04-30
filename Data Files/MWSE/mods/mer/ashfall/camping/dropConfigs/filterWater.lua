@@ -6,7 +6,7 @@ return {
         return WaterFilter.buttons.filterWater.text
     end,
     canDrop = function(filterRef, item, itemData)
-        local filterHasRoom = WaterFilter.hasRoomToFilter(filterRef)
+        local filterHasRoom = WaterFilter.hasRoomToFilter({ reference = filterRef})
         local refHasDirtyWater = WaterFilter.refHasDirtyWater{ item = item, itemData = itemData }
         return filterHasRoom and refHasDirtyWater
     end,

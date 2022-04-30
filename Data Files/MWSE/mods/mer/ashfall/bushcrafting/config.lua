@@ -3,7 +3,10 @@ local tentConfig = require("mer.ashfall.camping.tents.tentConfig")
 local itemDescriptions = require("mer.ashfall.config.itemDescriptions")
 local BedRoll = require("mer.ashfall.items.bedroll")
 local WaterFilter = require("mer.ashfall.items.waterFilter")
+local CrabPot = require("mer.ashfall.items.crabpot")
 local config = require("mer.ashfall.config").config
+
+
 
 local survivalTiers = {
     beginner = { skill = "Bushcrafting", requirement = 10 },
@@ -355,6 +358,9 @@ this.bushCraftingRecipes = {
         category = this.categories.cutlery,
         previewScale = 4,
         soundType = "carve",
+        skillRequirements = {
+            survivalTiers.beginner
+        },
     },
     {
         id = "ashfall_cup_01",
@@ -372,6 +378,9 @@ this.bushCraftingRecipes = {
         category = this.categories.cutlery,
         previewScale = 4,
         soundType = "carve",
+        skillRequirements = {
+            survivalTiers.beginner
+        },
     },
     {
         id = "ashfall_wood_knife",
@@ -389,6 +398,9 @@ this.bushCraftingRecipes = {
         category = this.categories.cutlery,
         rotationAxis = 'y',
         soundType = "carve",
+        skillRequirements = {
+            survivalTiers.beginner
+        },
     },
     {
         id = "ashfall_wood_fork",
@@ -406,6 +418,9 @@ this.bushCraftingRecipes = {
         category = this.categories.cutlery,
         rotationAxis = 'y',
         soundType = "carve",
+        skillRequirements = {
+            survivalTiers.beginner
+        },
     },
     {
         id = "ashfall_wood_spoon",
@@ -423,6 +438,9 @@ this.bushCraftingRecipes = {
         category = this.categories.cutlery,
         rotationAxis = 'y',
         soundType = "carve",
+        skillRequirements = {
+            survivalTiers.beginner
+        },
     },
     {
         id = "ashfall_wood_plate",
@@ -439,6 +457,9 @@ this.bushCraftingRecipes = {
         },
         category = this.categories.cutlery,
         soundType = "carve",
+        skillRequirements = {
+            survivalTiers.beginner
+        },
     },
     {
         id = "ashfall_wood_ladle",
@@ -456,6 +477,9 @@ this.bushCraftingRecipes = {
         category = this.categories.cutlery,
         mesh = "ashfall\\craft\\wood_ladle_attach.nif",
         soundType = "carve",
+        skillRequirements = {
+            survivalTiers.beginner
+        },
     },
 
     --Novice
@@ -785,6 +809,24 @@ this.bushCraftingRecipes = {
         },
         category = this.categories.equipment,
         soundType = "wood",
+    },
+    {
+        id = "ashfall_crabpot_02_a",
+        description = itemDescriptions.ashfall_crabpot_01_m,
+        materials = {
+            { material = "wood", count = 4 },
+            { material = "rope", count = 6 },
+        },
+        skillRequirements = {
+            survivalTiers.journeyman
+        },
+        category = this.categories.survival,
+        soundType = "wood",
+        additionalMenuOptions = {
+            CrabPot.buttons.collect,
+        },
+        previewScale = 4,
+        previewHeight = -80
     },
 
     --Expert

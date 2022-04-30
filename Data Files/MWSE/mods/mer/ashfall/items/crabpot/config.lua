@@ -16,6 +16,7 @@ local crabpotConfig = {
 
 crabpotConfig.miscToActiveMap = {
     ashfall_crabpot_01_m = "ashfall_crabpot_01_a",
+    ashfall_crabpot_02_m = "ashfall_crabpot_02_a",
 }
 crabpotConfig.activeToMiscMap = {}
 for misc, active in pairs(crabpotConfig.miscToActiveMap) do

@@ -30,7 +30,7 @@ local function playCrabSound(ref)
 end
 
 local function updateSwitchNodes(ref)
-    local crabCount = math.floor(ref.data.crabCount)
+    local crabCount = math.floor(ref.data.crabCount or 0)
     local crabSwitches = ref.sceneNode:getObjectByName("CRAB_SWITCHES")
     for _, crabSwitch in ipairs(crabSwitches.children) do
         local name = crabSwitch.name
@@ -134,8 +134,10 @@ local function cellHasCrabs(crabpot)
 end
 
 local function initPotData(crabpot)
-    crabpot.data.crabCount = 0
-    crabpot.data.inCrabCell = cellHasCrabs(crabpot)
+    crabpot.data.crabCount = crabpot.data.crabCount or 0
+    if crabpot.data.inCrabCell == nil then
+        crabpot.data.inCrabCell = cellHasCrabs(crabpot)
+    end
 end
 
 local function onGearDropped(e)
@@ -149,7 +151,7 @@ local function onGearDropped(e)
             orientation = orientation,
             cell = e.reference.cell,
         }
-        initPotData(crabpot)
+        --initPotData(crabpot)
         if common.helper.isStack(e.reference) then
             tes3.addItem{
                 reference = tes3.player,
@@ -163,12 +165,18 @@ local function onGearDropped(e)
 end
 event.register("Ashfall:GearDropped", onGearDropped)
 
-
+---@param e referenceActivatedEventData
+local function initCrabPotRef(e)
+    if getMiscFromActive(e.reference) then
+        updateSwitchNodes(e.reference)
+    end
+end
+event.register(tes3.event.referenceActivated, initCrabPotRef)
 
 --Update Crabpot status regularly
 local function updatePots(e)
-
     local function doUpdate(crabPotRef)
+        initPotData(crabPotRef)
         crabPotRef.data.crabCount = crabPotRef.data.crabCount or 0
         crabPotRef.data.lastCrabUpdated = crabPotRef.data.lastCrabUpdated or e.timestamp
         local interval = math.max(e.timestamp - crabPotRef.data.lastCrabUpdated, 0)
@@ -227,7 +235,7 @@ event.register("simulate", updatePots)
 
 local function updateTooltip(e)
     local isPot = crabpotConfig.activeToMiscMap[e.object.id:lower()]
-    if isPot and e.reference and common.helper.getRefUnderwater(e.reference) then
+    if isPot and e.reference then
         local label = e.tooltip:findChild(tes3ui.registerID('HelpMenu_name'))
         if label then
             local crabCount = e.reference.data.crabCount and math.floor(e.reference.data.crabCount) or 0
@@ -238,3 +246,24 @@ local function updateTooltip(e)
     end
 end
 event.register("uiObjectTooltip", updateTooltip)
+
+local buttons = {
+    collect = {
+        text = "Collect",
+        enableRequirements = function(e)
+            return e.reference.data.crabCount ~= nil
+                and e.reference.data.crabCount >= 1
+        end,
+        tooltipDisabled = {
+            text = "The Crab Pot is empty."
+        },
+        callback = function(e)
+            timer.delayOneFrame(function()
+                collectCrabs(e.reference)
+            end)
+        end
+    },
+}
+return {
+    buttons = buttons
+}
