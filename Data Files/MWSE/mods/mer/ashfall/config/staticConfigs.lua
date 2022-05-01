@@ -646,8 +646,6 @@ this.heatSourceValues = {
 
 this.utensils = {
 
-
-
     --iron
     ashfall_kettle = {
         type = "kettle",
@@ -835,6 +833,20 @@ this.utensils = {
         holdsStew = true,
     },
 
+    aatl_m_cookpot = {
+        type = "cookingPot",
+        capacity = 200,
+        waterMaxScale = 1.3,
+        waterMaxHeight = 20,
+        holdsStew = true,
+    },
+    aatl_m_cookpotmed = {
+        type = "cookingPot",
+        capacity = 200,
+        waterMaxScale = 1.3,
+        waterMaxHeight = 16.5,
+        holdsStew = true,
+    }
 
 }
 table.copy(this.utensils, this.bottleList)
@@ -903,7 +915,13 @@ this.grills = {
         materials = {
             ashfall_firewood = 3
         }
-    }
+    },
+
+    aatl_m_cookpan = {
+        type = "grill",
+        fryingPan = true,
+        meshOverride = "ashfall\\fry_pan_01_attach.nif"
+    },
 }
 
 this.bellows = {

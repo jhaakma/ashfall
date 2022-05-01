@@ -466,8 +466,25 @@ local Interop = {
             end
         end
         return success
+    end,
+
+
+    registerUtensil = function(data)
+        local id = data.id
+        local utensilData = data.data
+
+        if utensilData.type == "kettle" or utensilData.type == "cookingPot" then
+            staticConfigs.utensils[id:lower()] = utensilData
+            staticConfigs.bottleList[id:lower()] = utensilData
+            staticConfigs[utensilData.type .. "s"][id] = utensilData
+            staticConfigs.activatorConfig.list[utensilData.type]:addId(id)
+        elseif utensilData.type == "grill" then
+            staticConfigs.grills[data.id:lower()] = utensilData
+            staticConfigs.groundUtensils[data.id:lower()] = utensilData
+        end
     end
 }
+
 
 
 return Interop

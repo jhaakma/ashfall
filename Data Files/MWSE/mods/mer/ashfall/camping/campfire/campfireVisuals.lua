@@ -296,6 +296,7 @@ local function moveOriginToAttachPoint(node)
         node.translation.x = node.translation.x - attachPoint.translation.x
         node.translation.y = node.translation.y - attachPoint.translation.y
         node.translation.z = node.translation.z - attachPoint.translation.z
+        node.scale = node.scale * attachPoint.scale
     end
 end
 
@@ -405,7 +406,9 @@ local attachNodes = {
             if grillId then
                 local grillObj = tes3.getObject(grillId)
                 if grillObj then
-                    return common.helper.loadMesh(grillObj.mesh)
+                    local mesh = common.helper.loadMesh(grillObj.mesh)
+                    moveOriginToAttachPoint(mesh)
+                    return mesh
                 end
             end
         end,

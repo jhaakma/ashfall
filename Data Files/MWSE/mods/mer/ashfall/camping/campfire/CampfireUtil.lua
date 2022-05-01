@@ -344,15 +344,13 @@ function CampfireUtil.refCanHangUtensil(reference)
 end
 
 function CampfireUtil.itemCanBeHanged(item)
-    if common.staticConfigs.utensils[item.id:lower()] then
+    local utensilData =  common.staticConfigs.utensils[item.id:lower()]
+    if utensilData and utensilData.type == "cookingPot" then
         local mesh = tes3.loadMesh(item.mesh)
         return mesh:getObjectByName("ATTACH_POINT")
     end
 end
 
-function CampfireUtil.refCanBeHanged(reference)
-    return reference.sceneNode:getObjectByName("ATTACH_POINT")
-end
 
 return CampfireUtil
 
