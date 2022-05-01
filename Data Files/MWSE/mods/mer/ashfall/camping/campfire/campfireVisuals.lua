@@ -155,9 +155,9 @@ local function updateFireScale(campfire)
     }
     for _, fireNode in ipairs(fireNodes) do
         local fuelLevel = math.abs(CampfireUtil.getHeat(campfire))
-        local multiplier = 1 + ( fuelLevel * 0.1 )
-        multiplier = math.clamp( multiplier, 1.0, 10.0)
-        fireNode.scale = multiplier
+        local newScale = math.remap(fuelLevel, 0, 15, 1, 2)
+        newScale = math.clamp(newScale, 1, 2)
+        fireNode.scale = newScale
     end
 end
 
