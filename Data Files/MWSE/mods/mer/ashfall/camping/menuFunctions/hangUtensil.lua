@@ -54,7 +54,7 @@ local function utensilSelect(campfire)
             title = "Select Utensil",
             noResultsText = "You do not have any utensils.",
             filter = function(e)
-                return CampfireUtil.itemCanBeHanged(e.item) ~= nil
+                return CampfireUtil.itemCanBeHanged(e.item)
             end,
             callback = function(e)
                 if e.item then

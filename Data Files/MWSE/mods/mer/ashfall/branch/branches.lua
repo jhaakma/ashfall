@@ -175,7 +175,7 @@ local function checkAndRestoreBranch(branch)
         logger:debug("Now: %s", now)
         logger:debug("branch was last picked up %s", branch.data.lastPickedUp )
         logger:debug("now - lastPickedup = %s", (now - branch.data.lastPickedUp))
-        logger:debug("Seconds to refresh: %s", branchConfig.hoursToRefresh)
+        logger:debug("Hours to refresh: %s", branchConfig.hoursToRefresh)
         if branch.data.lastPickedUp < now - branchConfig.hoursToRefresh then
             logger:debug("Re-enabling branch")
             branch:enable()

@@ -155,8 +155,9 @@ local ignorePatterns = {
 local function getRandomItem(list)
     local attempts = 0
     while attempts < 10 do
-        local item = table.choice(table.keys(list))
-        if tes3.getObject(item) then
+        local id = table.choice(table.keys(list))
+        local item = tes3.getObject(id)
+        if item then
             logger:debug("returning random item: %s", item)
             return item
         else
@@ -164,11 +165,12 @@ local function getRandomItem(list)
         end
     end
     logger:error("getRandomItem(): No valid item found")
-    return item
+
 end
 
 local function addLadle(campfire)
-    campfire.data.ladle = getRandomItem(common.staticConfigs.ladles)
+    local ladle = getRandomItem(common.staticConfigs.ladles)
+    campfire.data.ladle = ladle and ladle.id:lower()
     campfire.data.dynamicConfig.ladle = "static"
 end
 
@@ -208,9 +210,9 @@ end
 
 local function addCookingPot(campfire)
     local cookingPot = getRandomItem(common.staticConfigs.cookingPots)
-    if cookingPot then
+    if cookingPot and CampfireUtil.itemCanBeHanged(cookingPot) then
         campfire.data.utensil = "cookingPot"
-        campfire.data.utensilId = cookingPot
+        campfire.data.utensilId = cookingPot.id:lower()
         campfire.data.waterCapacity = common.staticConfigs.utensils[campfire.data.utensilId].capacity
         campfire.data.dynamicConfig.cookingPot = "static"
         addWater(campfire)
@@ -219,10 +221,10 @@ end
 
 local function addKettle(campfire)
     local kettle = getRandomItem(common.staticConfigs.dynamicCampfireKettles)
-    if kettle then
+    if kettle and CampfireUtil.itemCanBeHanged(kettle) then
         campfire.data.dynamicConfig.kettle = "static"
         campfire.data.utensil = "kettle"
-        campfire.data.utensilId = kettle
+        campfire.data.utensilId = kettle.id:lower()
         campfire.data.waterCapacity = common.staticConfigs.utensils[campfire.data.utensilId].capacity
         addWater(campfire)
     end

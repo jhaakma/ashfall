@@ -345,11 +345,15 @@ end
 
 function CampfireUtil.itemCanBeHanged(item)
     local utensilData =  common.staticConfigs.utensils[item.id:lower()]
-    if utensilData and utensilData.type == "cookingPot" then
-        local mesh = tes3.loadMesh(item.mesh)
-        return mesh:getObjectByName("ATTACH_POINT")
+    if utensilData then
+        if utensilData.type == "kettle" or utensilData.type == "cookingPot" then
+            local mesh = tes3.loadMesh(item.mesh)
+            return mesh:getObjectByName("ATTACH_POINT")
+        end
     end
+    return false
 end
+
 
 
 return CampfireUtil
