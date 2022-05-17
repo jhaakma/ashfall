@@ -2,6 +2,7 @@ local common = require("mer.ashfall.common.common")
 local logger = common.createLogger("sleepController")
 local config = require("mer.ashfall.config").config
 local needsUI = require("mer.ashfall.needs.needsUI")
+local animationController = require("mer.ashfall.animation.animationController")
 local this = {}
 local statsEffect = require("mer.ashfall.needs.statsEffect")
 
@@ -163,6 +164,7 @@ end
 
 local function wakeUp()
     tes3.wakeUp()
+    animationController.cancel()
     event.trigger("Ashfall:WakeUp")
 end
 
@@ -229,6 +231,7 @@ end
 
 
 function this.calculate(scriptInterval, forceUpdate)
+
     checkInterruptSleep()
 
     if scriptInterval == 0 and not forceUpdate then return end

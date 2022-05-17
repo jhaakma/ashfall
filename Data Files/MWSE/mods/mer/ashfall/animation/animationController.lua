@@ -237,7 +237,8 @@ function this.doAnimation(e)
 end
 
 function this.cancel()
-    timer.delayOneFrame(function()
+    if not data then return end
+    --timer.delayOneFrame(function()
         logger:debug("Cancelling")
         tes3.runLegacyScript({command = 'DisablePlayerLooking'});
         if data.usingBed then
@@ -291,7 +292,7 @@ function this.cancel()
         end
         data = nil
         tes3.runLegacyScript({command = 'EnablePlayerLooking'});
-    end)
+    --end)
 end
 
 
