@@ -1,6 +1,6 @@
 local common = require ("mer.ashfall.common.common")
 local logger = common.createLogger("patinaController")
-local LiquidContainer = require("mer.ashfall.objects.LiquidContainer")
+local LiquidContainer = require("mer.ashfall.liquid.LiquidContainer")
 local this = {}
 local metalPatterns = {
     "iron", "steel", "metal", "pewter", "copper"

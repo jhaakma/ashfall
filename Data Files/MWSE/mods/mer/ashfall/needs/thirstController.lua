@@ -1,5 +1,5 @@
 
-local LiquidContainer = require "mer.ashfall.objects.LiquidContainer"
+local LiquidContainer = require "mer.ashfall.liquid.LiquidContainer"
 
 local this = {}
 local common = require("mer.ashfall.common.common")

@@ -4,7 +4,7 @@
     a tooltip will display, and pressing the activate button will bring up
     a menu that allows the player to drink or fill up a container with water.
 ]]--
-local LiquidContainer = require "mer.ashfall.objects.LiquidContainer"
+local LiquidContainer = require "mer.ashfall.liquid.LiquidContainer"
 local thirstController = require("mer.ashfall.needs.thirstController")
 local common = require("mer.ashfall.common.common")
 local logger = common.createLogger("waterController")

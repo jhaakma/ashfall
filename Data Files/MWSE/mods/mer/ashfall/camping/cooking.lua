@@ -1,6 +1,6 @@
 local common = require ("mer.ashfall.common.common")
 local logger = common.createLogger("cooking")
-local LiquidContainer = require("mer.ashfall.objects.LiquidContainer")
+local LiquidContainer = require("mer.ashfall.liquid.LiquidContainer")
 local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 local foodConfig = common.staticConfigs.foodConfig
 local hungerController = require("mer.ashfall.needs.hungerController")

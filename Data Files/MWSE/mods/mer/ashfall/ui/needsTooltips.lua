@@ -5,7 +5,7 @@ local teaConfig = common.staticConfigs.teaConfig
 local thirstController = require('mer.ashfall.needs.thirstController')
 local foodConfig = common.staticConfigs.foodConfig
 local itemTooltips = require("mer.ashfall.ui.itemTooltips")
-local LiquidContainer = require("mer.ashfall.objects.LiquidContainer")
+local LiquidContainer = require("mer.ashfall.liquid.LiquidContainer")
 
 local function updateFoodTile(e)
     if foodConfig.getGrillValues(e.item) then

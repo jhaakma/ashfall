@@ -1,6 +1,6 @@
 local common = require ("mer.ashfall.common.common")
 local logger = common.createLogger("douse")
-local LiquidContainer = require("mer.ashfall.objects.LiquidContainer")
+local LiquidContainer = require("mer.ashfall.liquid.LiquidContainer")
 return {
     dropText = function(campfire, item, itemData)
         return "Extinguish"

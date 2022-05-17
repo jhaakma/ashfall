@@ -3,7 +3,7 @@
 ]]
 local common = require ("mer.ashfall.common.common")
 local logger = common.createLogger("stewerController")
-local LiquidContainer = require("mer.ashfall.objects.LiquidContainer")
+local LiquidContainer = require("mer.ashfall.liquid.LiquidContainer")
 local foodConfig = common.staticConfigs.foodConfig
 local hungerController = require("mer.ashfall.needs.hungerController")
 local thirstController = require("mer.ashfall.needs.thirstController")

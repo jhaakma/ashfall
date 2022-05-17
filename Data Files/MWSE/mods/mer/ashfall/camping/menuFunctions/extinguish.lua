@@ -1,6 +1,6 @@
 local common = require ("mer.ashfall.common.common")
 local logger = common.createLogger("extinguish")
-local LiquidContainer = require "mer.ashfall.objects.LiquidContainer"
+local LiquidContainer = require "mer.ashfall.liquid.LiquidContainer"
 local function filterWaterContainer(e)
     local liquidContainer = LiquidContainer.createFromInventory(e.item, e.itemData)
     if liquidContainer then

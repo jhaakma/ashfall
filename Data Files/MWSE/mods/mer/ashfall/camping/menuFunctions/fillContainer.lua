@@ -1,7 +1,7 @@
 local thirstController = require("mer.ashfall.needs.thirstController")
 local common = require("mer.ashfall.common.common")
 local logger = common.createLogger("fillContainer")
-local LiquidContainer = require("mer.ashfall.objects.LiquidContainer")
+local LiquidContainer = require("mer.ashfall.liquid.LiquidContainer")
 
 return  {
     text = "Fill Container",

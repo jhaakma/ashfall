@@ -1,6 +1,6 @@
 local common = require("mer.ashfall.common.common")
 local log = common.createLogger("WaterFilter")
-local LiquidContainer   = require("mer.ashfall.objects.LiquidContainer")
+local LiquidContainer   = require("mer.ashfall.liquid.LiquidContainer")
 local WaterFilter = {}
 
 local config = {

@@ -1,5 +1,5 @@
 local common = require ("mer.ashfall.common.common")
-local LiquidContainer = require("mer.ashfall.objects.LiquidContainer")
+local LiquidContainer = require("mer.ashfall.liquid.LiquidContainer")
 return {
     dropText = function(target, item, itemData)
         --Liquids

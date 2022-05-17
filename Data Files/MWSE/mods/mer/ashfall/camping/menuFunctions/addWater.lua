@@ -1,6 +1,6 @@
 local common = require ("mer.ashfall.common.common")
 local thirstController = require("mer.ashfall.needs.thirstController")
-local LiquidContainer   = require("mer.ashfall.objects.LiquidContainer")
+local LiquidContainer   = require("mer.ashfall.liquid.LiquidContainer")
 local campfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 local teaConfig = common.staticConfigs.teaConfig
 return {

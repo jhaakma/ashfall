@@ -198,6 +198,7 @@ this.materials = {
             "ashfall_cush_crft_01",
             "ab_misc_depillowl_02",
             "misc_uni_pillow_02",
+            "This_Object_Doesn't_Exist"
         }
     },
     {

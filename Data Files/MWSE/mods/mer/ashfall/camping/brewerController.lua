@@ -4,7 +4,7 @@
 local common = require ("mer.ashfall.common.common")
 local logger = common.createLogger("brewerController")
 local teaConfig = common.staticConfigs.teaConfig
-local LiquidContainer = require("mer.ashfall.objects.LiquidContainer")
+local LiquidContainer = require("mer.ashfall.liquid.LiquidContainer")
 --Tea resist
 local temperatureController = require("mer.ashfall.temperatureController")
 temperatureController.registerBaseTempMultiplier({ id = "firePetalTeaEffect", coldOnly = true })

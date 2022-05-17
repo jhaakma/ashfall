@@ -3,7 +3,7 @@ local thirstController = require "mer.ashfall.needs.thirstController"
 --[[
     --Handles the heating and cooling of objects that can boil water
 ]]
-local LiquidContainer = require("mer.ashfall.objects.LiquidContainer")
+local LiquidContainer = require("mer.ashfall.liquid.LiquidContainer")
 local common = require ("mer.ashfall.common.common")
 local logger = common.createLogger("boilerController")
 local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
