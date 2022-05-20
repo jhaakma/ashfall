@@ -97,7 +97,7 @@ local function onActivate(e)
         buttons = {
             {
                 text = "Collect",
-                requirements = function()
+                enableRequirements = function()
                     return ref.data.crabCount ~= nil
                         and ref.data.crabCount >= 1
                 end,

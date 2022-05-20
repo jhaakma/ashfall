@@ -94,7 +94,7 @@ local function showMenuOnEquipTeaWarmer(e)
                 buttons = {
                     {
                         text = "Add Candle",
-                        requirements = function()
+                        enableRequirements = function()
                             return playerHasCandle() and hasRoomForCandle(teaWarmer)
                         end,
                         tooltipDisabled = function()

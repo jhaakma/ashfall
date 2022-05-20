@@ -240,23 +240,20 @@ this.bottleConfig = {
 
 ---@type table<string, AshfallBottleData>
 this.bottleList = {
-
-    ashfall_water_filter = {
-        capacity = 60,--sync with wooden bowl
-        holdsStew = false,
-        waterMaxHeight = 4,
-        waterMaxScale = 1.8,
-    },
-
     _infinite_water_source = {
         capacity = math.huge,
         holdsStew = false
     },
-
+    -- ashfall_water_filter = {
+    --     capacity = 60,--sync with wooden bowl
+    --     holdsStew = false,
+    --     waterMaxHeight = 4,
+    --     waterMaxScale = 1.8,
+    -- },
 
     --ashfall stuff
     ashfall_waterskin = {
-        capacity = 80
+        capacity = 90
     },
 
 

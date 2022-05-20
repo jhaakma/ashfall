@@ -122,7 +122,7 @@ return {
             table.insert(buttons, {
                 text = foodType,
                 callback = function() ingredientSelect(reference, foodType) end,
-                requirements = function()
+                enableRequirements = function()
                     return hasFood and hasCapacity
                 end,
                 tooltipDisabled = {

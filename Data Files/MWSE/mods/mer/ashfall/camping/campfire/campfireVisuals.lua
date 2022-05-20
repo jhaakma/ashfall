@@ -179,7 +179,7 @@ local function updateWaterHeight(ref)
 
     local waterNode = ref.sceneNode:getObjectByName("POT_WATER")
     if waterNode then
-        logger:debug("Found Water Node! Setting height to %s and scale to %s", height, scale)
+        logger:trace("Found Water Node! Setting height to %s and scale to %s", height, scale)
         waterNode.translation.z = height
         waterNode.scale = scale
     end
@@ -190,7 +190,7 @@ local function updateWaterHeight(ref)
     end
     local teaNode = ref.sceneNode:getObjectByName("POT_TEA")
     if teaNode then
-        logger:debug("Found Tea Node! Setting height to %s and scale to %s", height, scale)
+        logger:trace("Found Tea Node! Setting height to %s and scale to %s", height, scale)
         teaNode.translation.z = height
         teaNode.scale = scale
     end
@@ -437,7 +437,7 @@ local attachNodes = {
         attachNodeName = "ATTACH_LADLE",
         getDoAttach = function(campfire)
             local hasLadle = not not campfire.data.ladle
-            logger:debug("Has attach_ladle, has ladle? %s", hasLadle)
+            logger:trace("Has attach_ladle, has ladle? %s", hasLadle)
             return hasLadle
         end,
         getAttachMesh = function(campfire)
@@ -448,7 +448,7 @@ local attachNodes = {
                 if data and data.meshOverride then
                     meshId = data.meshOverride
                 end
-                logger:debug("mesh: %s", meshId)
+                logger:trace("mesh: %s", meshId)
                 local mesh = common.helper.loadMesh(meshId)
                 mesh.appCulled = false
                 mesh.name = "Ladle"
@@ -459,41 +459,41 @@ local attachNodes = {
 }
 
 local function updateAttachNodes(e)
-    logger:debug("Ashfall:UpdateAttachNodes: %s", e.campfire.object.id)
+    logger:trace("Ashfall:UpdateAttachNodes: %s", e.campfire.object.id)
     local campfire = e.campfire
     local sceneNode = campfire.sceneNode
 
     if not campfire.data then return end
     if not sceneNode then return end
     for _, attachData in ipairs(attachNodes) do
-        logger:debug("++++ATTACH NODE: %s+++++++", attachData.attachNodeName)
+        logger:trace("++++ATTACH NODE: %s+++++++", attachData.attachNodeName)
         local attachNode = sceneNode:getObjectByName(attachData.attachNodeName)
         if attachNode then
-            logger:debug("found attach node")
+            logger:trace("found attach node")
             --remove children
             for i, childNode in ipairs(attachNode.children) do
                 if childNode then
-                    logger:debug("removed %s children", attachData.attachNodeName)
+                    logger:trace("removed %s children", attachData.attachNodeName)
                     attachNode:detachChildAt(i)
                 end
             end
             if attachData.getDoAttach(campfire) then
-                logger:debug("Do attach: tru, getting mesh")
+                logger:trace("Do attach: tru, getting mesh")
                 local mesh = attachData.getAttachMesh(campfire)
                 if mesh then
                     mesh.appCulled = false
-                    logger:debug("Mesh succeed, attaching %s", mesh)
+                    logger:trace("Mesh succeed, attaching %s", mesh)
                     attachNode:attachChild(mesh)
                 else
-                    logger:debug("Failed to retrieve mesh")
+                    logger:trace("Failed to retrieve mesh")
                 end
             else
-                logger:debug("Do attach: false, removing mesh")
+                logger:trace("Do attach: false, removing mesh")
             end
             if attachData.postAttach then
                 local attachNode = sceneNode:getObjectByName(attachData.attachNodeName)
                 if attachNode then
-                    logger:debug("Running Post attach for %s", attachData.attachNodeName)
+                    logger:trace("Running Post attach for %s", attachData.attachNodeName)
                     attachData.postAttach(campfire, attachNode)
                 end
             end

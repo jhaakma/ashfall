@@ -1,12 +1,34 @@
 local common = require("mer.ashfall.common.common")
-local log = common.createLogger("WaterFilter")
+local logger = common.createLogger("WaterFilter")
 local LiquidContainer   = require("mer.ashfall.liquid.LiquidContainer")
 local WaterFilter = {}
-
+WaterFilter.filterIDs = {
+    --ashfall_water_filter = true
+}
 local config = {
     updateInterval = 0.001,
-    maxWaterAmount = common.staticConfigs.bottleList.ashfall_water_filter.capacity,
+    maxWaterAmount = common.staticConfigs.bottleList.ashfall_bowl_01.capacity,
     waterFilteredPerHour = 15,
+}
+
+
+function WaterFilter.registerWaterFilter(e)
+    common.staticConfigs.bottleList[e.id:lower()] = {
+        capacity = e.capacity,
+        holdsStew = false,
+        waterMaxHeight = e.waterMaxHeight,
+        waterMaxScale = e.waterMaxScale,
+    }
+    common.staticConfigs.activatorConfig.list.waterContainer:addId(e.id)
+    WaterFilter.filterIDs[e.id:lower()] = true
+end
+
+WaterFilter.registerWaterFilter{
+    id = "ashfall_water_filter",
+    capacity = config.maxWaterAmount,--sync with wooden bowl
+    holdsStew = false,
+    waterMaxHeight = 4,
+    waterMaxScale = 1.8,
 }
 
 function WaterFilter.refHasDirtyWater(e)
@@ -23,14 +45,14 @@ function WaterFilter.getTotalWaterAmount(reference)
     local unfilteredWater = reference.data.unfilteredWater or 0
     local filteredWater = reference.data.waterAmount or 0
     local totalWater = unfilteredWater + filteredWater
-    log:debug("getTotalWaterAmount: %s", totalWater)
+    logger:debug("getTotalWaterAmount: %s", totalWater)
     return totalWater
 end
 
 function WaterFilter.getUnfilteredCapacityRemaining(reference)
     local unfilteredWater = reference.data.unfilteredWater or 0
     local capacity = math.min(config.maxWaterAmount - unfilteredWater)
-    log:debug("getUnfilteredCapacityRemaining: %s", capacity)
+    logger:debug("getUnfilteredCapacityRemaining: %s", capacity)
     return capacity
 end
 
@@ -49,14 +71,14 @@ function WaterFilter.transferWater(filterRef, liquidContainer)
         if amount then
             filterRef.data.unfilteredWater =  filterRef.data.unfilteredWater or 0
             filterRef.data.unfilteredWater = filterRef.data.unfilteredWater + waterToTransfer
-            log:debug("transferWater: %s", amount)
+            logger:debug("transferWater: %s", amount)
             tes3.messageBox("Filled Water Filter with dirty water.")
             tes3.playSound{ sound = "Swim Right"}
         end
         return amount
     end
     tes3.messageBox("Water Filter is full.")
-    log:debug("No water to transfer")
+    logger:debug("No water to transfer")
     return 0
 end
 
@@ -92,14 +114,14 @@ end)
 function WaterFilter.hasRoomToFilter(e)
     local reference = e.reference
     local unfilteredWater = reference.data.unfilteredWater or 0
-    log:debug("unfilteredWater: %s", unfilteredWater)
-    return unfilteredWater < config.maxWaterAmount
+    logger:debug("unfilteredWater: %s", unfilteredWater)
+    return unfilteredWater <= config.maxWaterAmount - 1
 end
 
 function WaterFilter.hasWaterToCollect(e)
     local reference = e.reference
     local filteredWater = reference.data.waterAmount or 0
-    return filteredWater > 0
+    return filteredWater >= 1
 end
 
 function WaterFilter.doFilterWater(e)
@@ -114,14 +136,14 @@ function WaterFilter.doFilterWater(e)
         liquidContainer = LiquidContainer.createFromReference(reference)
     end
     if not liquidContainer then
-        log:error("doFilterWater: No liquid container found.")
+        logger:error("doFilterWater: No liquid container found.")
         return
     end
     WaterFilter.transferWater(waterFilterRef, liquidContainer)
 end
 
-function WaterFilter.filterWaterCallback(e)
-    local safeRef = tes3.makeSafeObjectHandle(e.reference)
+function WaterFilter.filterWaterCallback(filterWaterParams)
+    local safeRef = tes3.makeSafeObjectHandle(filterWaterParams.reference)
     timer.delayOneFrame(function()
         if not safeRef:valid() then return end
         local waterFilterRef = safeRef:getObject()
@@ -130,6 +152,7 @@ function WaterFilter.filterWaterCallback(e)
             noResultsText = "You have no dirty water to filter.",
             filter = WaterFilter.refHasDirtyWater,
             callback = function(inventorySelectEventData)
+                if not item then return end
                 local item = inventorySelectEventData.item
                 local itemData = inventorySelectEventData.itemData
                 WaterFilter.doFilterWater{
@@ -144,8 +167,8 @@ end
 
 
 
-function WaterFilter.collectWaterCallback(e)
-    local safeRef = tes3.makeSafeObjectHandle(e.reference)
+function WaterFilter.collectWaterCallback(collectWaterParams)
+    local safeRef = tes3.makeSafeObjectHandle(collectWaterParams.reference)
     timer.delayOneFrame(function()
         if not safeRef:valid() then return end
         local filterRef = safeRef:getObject()
@@ -167,7 +190,7 @@ function WaterFilter.collectWaterCallback(e)
                     local amount, errorMsg = filterRefContainer:transferLiquid(liquidContainer, filterRefContainer.waterAmount)
                     if amount then
                         tes3.playSound{ sound = "Swim Right"}
-                        tes3.messageBox("You collect %G from %s.", amount, e.item.name)
+                        --tes3.messageBox("You collect %d from %s.", amount, e.item.name)
                     else
                         tes3.messageBox(errorMsg)
                     end
@@ -176,8 +199,6 @@ function WaterFilter.collectWaterCallback(e)
         }
     end)
 end
-
-
 
 WaterFilter.buttons = {
     filterWater = {
@@ -189,9 +210,42 @@ WaterFilter.buttons = {
     collectWater = {
         text = "Collect Water",
         enableRequirements = WaterFilter.hasWaterToCollect,
-        tooltipDisabled = { text = "You have no water to collect." },
+        tooltipDisabled = { text = "There is no water to collect." },
         callback = WaterFilter.collectWaterCallback
     }
 }
+--[[
+    Bushcrafted water filters are controlled through Crafting Framework.
+    This handles water filters added via ESP (e.g. as a resource from OAAB).
+    So we only activate this if a sourceMod exists on the reference
+]]
+---@param e activateEventData
+local function onActivate(e)
+    logger:debug("onActivate")
+    local reference = e.target
+    --Only for ESP placed filters
+    if reference.data.crafted then
+        logger:debug("crafted, returning")
+        return
+    end
+    if WaterFilter.filterIDs[e.target.baseObject.id:lower()] then
+        logger:debug("is Water Filter, displaying message")
+        common.helper.messageBox{
+            message = e.target.object.name,
+            buttons = {
+                WaterFilter.buttons.filterWater,
+                WaterFilter.buttons.collectWater,
+            },
+            callbackParams = {
+                reference = e.target,
+            },
+            doesCancel = true
+        }
+        return false
+    end
+
+end
+event.register("activate", onActivate, { priority = 50 })
+
 
 return WaterFilter

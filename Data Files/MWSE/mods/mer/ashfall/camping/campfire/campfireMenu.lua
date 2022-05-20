@@ -80,7 +80,7 @@ local function onActivateCampfire(e)
                 end,
                 tooltip = buttonData.tooltip,
                 tooltipDisabled = getDisabledText(buttonData.tooltipDisabled, campfire),
-                requirements = function()
+                enableRequirements = function()
                     return (
                         buttonData.enableRequirements == nil or
                         buttonData.enableRequirements(campfire)

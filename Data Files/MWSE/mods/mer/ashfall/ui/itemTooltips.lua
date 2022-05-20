@@ -63,7 +63,7 @@ local function addWaterTooltips(item, itemData, tooltip)
         local waterType = data and data.waterType or nil
         common.helper.addLabelToTooltip(tooltip,
             string.format("Water: %d/%d %s",
-                math.ceil(waterAmount),
+                math.floor(waterAmount),
                 capacity,
                 ( waterType and waterType == "dirty" and "(Dirty) " or "")
             )
@@ -74,7 +74,7 @@ local function addWaterTooltips(item, itemData, tooltip)
     if unfilteredWater and capacity then
         common.helper.addLabelToTooltip(tooltip,
             string.format("Unfiltered Water: %d/%d",
-                math.ceil(unfilteredWater), capacity))
+                math.floor(unfilteredWater), capacity))
     end
 end
 

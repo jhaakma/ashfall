@@ -99,6 +99,7 @@ function CampfireUtil.getUtensilData(dataHolder)
     local utensilId = dataHolder.data.utensilId
     local utensilData = common.staticConfigs.bottleList[utensilId]
 
+
     if dataHolder.object and not utensilData then
         utensilData = common.staticConfigs.bottleList[dataHolder.object.id:lower()]
     end
@@ -127,7 +128,6 @@ end
 function CampfireUtil.getDataFromUtensilOrCampfire(e)
     local ref = e.dataHolder
     local obj = e.object
-
     local bottleData = obj and common.staticConfigs.bottleList[obj.id:lower()]
     local utensilData = ref and ref.object and CampfireUtil.getUtensilData(ref)
 

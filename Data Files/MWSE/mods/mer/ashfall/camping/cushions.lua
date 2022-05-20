@@ -32,7 +32,7 @@ local function cushionMenu(e)
     local buttons = {
         {
             text = "Sit Down",
-            requirements = canRest,
+            enableRequirements = canRest,
             callback = function()
                 local location = {
                     position = tes3vector3.new(

@@ -72,7 +72,7 @@ local function callWaterMenu(e)
         buttons = {
             {
                 text = "Drink",
-                requirements = function()
+                enableRequirements = function()
                     return thirst:getValue() > 0.1
                 end,
                 tooltipDisabled = {
@@ -87,7 +87,7 @@ local function callWaterMenu(e)
             },
             {
                 text = "Fill Container",
-                requirements = function()
+                enableRequirements = function()
                     return thirstController.playerHasEmpties(source)
                 end,
                 tooltipDisabled = {
@@ -265,7 +265,7 @@ local function drinkFromContainer(e)
                         showRequirements = function()
                             return source:getLiquidType() == "stew"
                         end,
-                        requirements = function()
+                        enableRequirements = function()
                             return source:isCookedStew()
                         end,
                         tooltipDisabled = {
@@ -290,7 +290,7 @@ local function drinkFromContainer(e)
                     },
                     {
                         text = "Fill Container",
-                        requirements = function()
+                        enableRequirements = function()
                             return thirstController.playerHasEmpties(source)
                         end,
                         tooltipDisabled = {

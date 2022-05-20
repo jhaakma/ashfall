@@ -13,7 +13,7 @@ local function populateButtons(e)
         local data = buttons[i]
         local doAddButton = true
         if data.showRequirements then
-            if data.showRequirements() ~= true then
+            if data.showRequirements(callbackParams) ~= true then
                 doAddButton = false
             end
         end
@@ -24,8 +24,8 @@ local function populateButtons(e)
             local button = buttonsBlock:createButton{ id = buttonId, text = data.text}
 
             local disabled = false
-            if data.requirements then
-                if data.requirements() ~= true then
+            if data.enableRequirements then
+                if data.enableRequirements(callbackParams) ~= true then
                     disabled = true
                 end
             end

@@ -500,7 +500,6 @@ this.bushCraftingRecipes = {
             { material = "rope", count = 2 },
             { material = "wood", count = 3 },
             { material = "ashfall_bowl_01", count = 1}
-
         },
         skillRequirements = {
             survivalTiers.novice
