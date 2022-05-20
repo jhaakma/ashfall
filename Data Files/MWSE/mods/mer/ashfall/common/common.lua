@@ -16,12 +16,14 @@ this.log = logger.new{
     --outputFile = "Ashfall.log",
     logLevel = logLevel,
 }
-
+this.loggers = {this.log}
 this.createLogger = function(serviceName)
-    return logger.new{
+    local logger = logger.new{
         name = string.format("Ashfall - %s", serviceName),
         logLevel = logLevel
     }
+    table.insert(this.loggers, logger)
+    return logger
 end
 
 --[[
