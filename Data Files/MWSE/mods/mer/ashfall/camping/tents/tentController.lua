@@ -89,7 +89,7 @@ local function packedTentMenu(miscRef)
     local buttons = {
         {
             text = "Unpack",
-            requirements = canUnpack,
+            enableRequirements = canUnpack,
             tooltipDisabled = {
                 text = "You can't unpack your tent here."
             },
@@ -186,6 +186,9 @@ local function activeTentMenu(activeRef)
         },
         {
             text = "Pack Up",
+            showRequirements = function()
+                return activeRef.sourceMod == nil
+            end,
             callback = function() packTent(activeRef) end
         },
     }

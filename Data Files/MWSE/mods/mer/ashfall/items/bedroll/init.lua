@@ -65,7 +65,7 @@ BedRoll.buttons = {
             setBedTempValues(ref)
             doRestMenu(ref, isCovered)
         end,
-        requirements = canRest,
+        enableRequirements = canRest,
         tooltipDisabled = function()
             return {
                 text = tes3.canRest{ checkForSolidGround = false } and "It is illegal to rest here." or "You can't rest here; enemies are nearby."
@@ -74,7 +74,7 @@ BedRoll.buttons = {
     },
     layDown = {
         text = "Lay Down",
-        requirements = canRest,
+        enableRequirements = canRest,
         callback = function(e)
             local ref = e.reference
             local bedData = bedConfig.beds[ref.object.id:lower()]
@@ -100,6 +100,9 @@ BedRoll.buttons = {
     },
     pickUp = {
         text = "Pick up",
+        showRequirements = function(e)
+            return e.reference.sourceMod == nil
+        end,
         callback = function(e)
             local ref = e.reference
             timer.delayOneFrame(function()
