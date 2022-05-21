@@ -835,10 +835,10 @@ this.ingredTypes = {
     ["ingred_resin_01_h"] = this.type.food,
 
     --whataburger
-    ["wabt_burgereat"] = this.type.food,
-    ["wabt_chickeneat"] = this.type.food,
-    ["wabt_frieseat"] = this.type.food,
-    ["wabt_sodaeat"] = this.type.food,
+    ["watb_burgereat"] = this.type.food,
+    ["watb_chickeneat"] = this.type.food,
+    ["watb_frieseat"] = this.type.food,
+    ["watb_sodaeat"] = this.type.food,
 }
 
 return this

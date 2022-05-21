@@ -8,7 +8,7 @@ local config = require("mer.ashfall.config").config
 
 
 
-local survivalTiers = {
+this.survivalTiers = {
     beginner = { skill = "Bushcrafting", requirement = 10 },
     novice = { skill = "Bushcrafting", requirement = 20 },
     apprentice = { skill = "Bushcrafting", requirement = 30 },
@@ -18,7 +18,7 @@ local survivalTiers = {
     grandmaster = { skill = "Bushcrafting", requirement = 100 },
 }
 
-local customRequirements = {
+this.customRequirements = {
     outdoorsOnly = {
         getLabel = function()
             return "Outdoors"
@@ -76,6 +76,8 @@ this.categories = {
     equipment = "Equipment",
     cutlery = "Cutlery",
     weapons = "Weapons",
+    shelter = "Shelter",
+    fencing = "Fencing",
 }
 
 --Do common ingred ids first so they have priority
@@ -86,6 +88,12 @@ this.menuOptions = {
         text = "Craft",
         callback = function()
             event.trigger("Ashfall:ActivateTanningRack")
+        end
+    },
+    workBenchMenu = {
+        text = "Craft",
+        callback = function()
+            event.trigger("Ashfall:ActivateWorkBench")
         end
     },
     rename = {
@@ -125,7 +133,10 @@ this.materials = {
     {
         id = "resin",
         name = "Resin",
-        ids = {"ingred_resin_01", "ingred_shalk_resin_01" }
+        ids = {
+            "ingred_resin_01",
+            "ingred_shalk_resin_01"
+        }
     },
     {
         id = "wood",
@@ -174,6 +185,15 @@ this.materials = {
             "ashfall_fabric",
             "misc_de_cloth10",
             "misc_de_cloth11",
+        }
+    },
+    {
+        id = "cloth",
+        name = "Cloth",
+        ids = {
+            "misc_clothbolt_01",
+            "misc_clothbolt_02",
+            "misc_clothbolt_03",
         }
     },
     {
@@ -232,7 +252,7 @@ this.bushCraftingRecipes = {
             { material = "fibre", count = 2 }
         },
         skillRequirements = {
-            survivalTiers.beginner
+            this.survivalTiers.beginner
         },
         category = this.categories.materials,
         soundType = "rope",
@@ -245,7 +265,7 @@ this.bushCraftingRecipes = {
             { material = "fibre", count = 1 }
         },
         skillRequirements = {
-            survivalTiers.beginner
+            this.survivalTiers.beginner
         },
         category = this.categories.materials,
         soundType = "straw",
@@ -258,7 +278,7 @@ this.bushCraftingRecipes = {
             { material = "wood", count = 1 }
         },
         skillRequirements = {
-            survivalTiers.beginner
+            this.survivalTiers.beginner
         },
         category = this.categories.other,
         soundType = "wood",
@@ -272,12 +292,12 @@ this.bushCraftingRecipes = {
             { material = "wood", count = 2 }
         },
         skillRequirements = {
-            survivalTiers.beginner
+            this.survivalTiers.beginner
         },
         category = this.categories.other,
         soundType = "wood",
         customRequirements = {
-            customRequirements.wildernessOnly
+            this.customRequirements.wildernessOnly
         }
     },
     {
@@ -295,12 +315,12 @@ this.bushCraftingRecipes = {
 
         },
         skillRequirements = {
-            survivalTiers.beginner
+            this.survivalTiers.beginner
         },
         category = this.categories.beds,
         soundType = "straw",
         customRequirements = {
-            customRequirements.wildernessOnly
+            this.customRequirements.wildernessOnly
         },
     },
     {
@@ -313,12 +333,12 @@ this.bushCraftingRecipes = {
             { material = "wood", count = 8 },
         },
         skillRequirements = {
-            survivalTiers.beginner
+            this.survivalTiers.beginner
         },
         category = this.categories.structures,
         soundType = "wood",
         customRequirements = {
-            customRequirements.wildernessOnly
+            this.customRequirements.wildernessOnly
         }
     },
     {
@@ -329,7 +349,7 @@ this.bushCraftingRecipes = {
             { material = "wood", count = 1 },
         },
         skillRequirements = {
-            survivalTiers.beginner
+            this.survivalTiers.beginner
         },
         category = this.categories.weapons,
         soundType = "wood",
@@ -344,7 +364,7 @@ this.bushCraftingRecipes = {
             { material = "rope", count = 1 },
         },
         skillRequirements = {
-            survivalTiers.beginner
+            this.survivalTiers.beginner
         },
         category = this.categories.weapons,
         soundType = "wood",
@@ -367,7 +387,7 @@ this.bushCraftingRecipes = {
         previewScale = 4,
         soundType = "carve",
         skillRequirements = {
-            survivalTiers.beginner
+            this.survivalTiers.beginner
         },
     },
     {
@@ -387,7 +407,7 @@ this.bushCraftingRecipes = {
         previewScale = 4,
         soundType = "carve",
         skillRequirements = {
-            survivalTiers.beginner
+            this.survivalTiers.beginner
         },
     },
     {
@@ -407,7 +427,7 @@ this.bushCraftingRecipes = {
         rotationAxis = 'y',
         soundType = "carve",
         skillRequirements = {
-            survivalTiers.beginner
+            this.survivalTiers.beginner
         },
     },
     {
@@ -427,7 +447,7 @@ this.bushCraftingRecipes = {
         rotationAxis = 'y',
         soundType = "carve",
         skillRequirements = {
-            survivalTiers.beginner
+            this.survivalTiers.beginner
         },
     },
     {
@@ -447,7 +467,7 @@ this.bushCraftingRecipes = {
         rotationAxis = 'y',
         soundType = "carve",
         skillRequirements = {
-            survivalTiers.beginner
+            this.survivalTiers.beginner
         },
     },
     {
@@ -466,7 +486,7 @@ this.bushCraftingRecipes = {
         category = this.categories.cutlery,
         soundType = "carve",
         skillRequirements = {
-            survivalTiers.beginner
+            this.survivalTiers.beginner
         },
     },
     {
@@ -486,11 +506,12 @@ this.bushCraftingRecipes = {
         previewMesh = "ashfall\\craft\\wood_ladle_attach.nif",
         soundType = "carve",
         skillRequirements = {
-            survivalTiers.beginner
+            this.survivalTiers.beginner
         },
     },
 
     --Novice
+
     {
         id = "ashfall_water_filter",
         description = "A water filter that uses plant fibre and coal to purify dirty water.",
@@ -502,12 +523,12 @@ this.bushCraftingRecipes = {
             { material = "ashfall_bowl_01", count = 1}
         },
         skillRequirements = {
-            survivalTiers.novice
+            this.survivalTiers.novice
         },
         category = this.categories.structures,
         soundType = "wood",
         customRequirements = {
-            customRequirements.wildernessOnly
+            this.customRequirements.wildernessOnly
         },
         maxSteepness = 0,
         additionalMenuOptions = {
@@ -523,7 +544,7 @@ this.bushCraftingRecipes = {
             { material = "fabric", count = 6 },
         },
         skillRequirements = {
-            survivalTiers.novice
+            this.survivalTiers.novice
         },
         category = this.categories.equipment,
         soundType = "fabric",
@@ -536,7 +557,7 @@ this.bushCraftingRecipes = {
             { material = "straw", count = 4 }
         },
         skillRequirements = {
-            survivalTiers.novice
+            this.survivalTiers.novice
         },
         category = this.categories.equipment,
         soundType = "straw",
@@ -550,7 +571,7 @@ this.bushCraftingRecipes = {
             { material = "fibre", count = 4 },
         },
         skillRequirements = {
-            survivalTiers.novice
+            this.survivalTiers.novice
         },
         category = this.categories.materials,
         soundType = "fabric",
@@ -565,7 +586,7 @@ this.bushCraftingRecipes = {
             { material = "straw", count = 4 }
         },
         skillRequirements = {
-            survivalTiers.novice
+            this.survivalTiers.novice
         },
         category = this.categories.other,
         soundType = "fabric",
@@ -579,7 +600,7 @@ this.bushCraftingRecipes = {
             { material = "fabric", count = 2 },
         },
         skillRequirements = {
-            survivalTiers.novice
+            this.survivalTiers.novice
         },
         category = this.categories.containers,
         soundType = "fabric",
@@ -594,7 +615,7 @@ this.bushCraftingRecipes = {
             { material = "fabric", count = 2 },
         },
         skillRequirements = {
-            survivalTiers.novice
+            this.survivalTiers.novice
         },
         category = this.categories.other,
         soundType = "fabric",
@@ -609,7 +630,7 @@ this.bushCraftingRecipes = {
             { material = "rope", count = 1 },
         },
         skillRequirements = {
-            survivalTiers.novice
+            this.survivalTiers.novice
         },
         category = this.categories.weapons,
         soundType = "wood",
@@ -623,7 +644,7 @@ this.bushCraftingRecipes = {
             { material = "rope", count = 3 },
         },
         skillRequirements = {
-            survivalTiers.novice
+            this.survivalTiers.novice
         },
         category = this.categories.weapons,
         soundType = "wood",
@@ -638,7 +659,7 @@ this.bushCraftingRecipes = {
             { material = "wood", count = 1 },
         },
         skillRequirements = {
-            survivalTiers.novice
+            this.survivalTiers.novice
         },
         category = this.categories.weapons,
         soundType = "wood",
@@ -647,23 +668,22 @@ this.bushCraftingRecipes = {
 
     --Apprentice
     {
-      --tanning rack
-        id = "ashfall_tan_rack",
+        id = "ashfall_workbench_01",
         additionalMenuOptions = {
-            this.menuOptions.tanningRackMenu
+            this.menuOptions.workBenchMenu
         },
-        description = "A rack for tanning hides to create leather.",
+        description = "A workbench for crafting wooden structures.",
         materials = {
-            { material = "wood", count = 4 },
+            { material = "wood", count = 6 },
             { material = "rope", count = 2 },
         },
         skillRequirements = {
-            survivalTiers.apprentice
+            this.survivalTiers.apprentice
         },
         category = this.categories.structures,
         soundType = "wood",
         customRequirements = {
-            customRequirements.wildernessOnly
+            this.customRequirements.wildernessOnly
         }
     },
     {
@@ -674,59 +694,14 @@ this.bushCraftingRecipes = {
             { material = "resin", count = 1 }
         },
         skillRequirements = {
-            survivalTiers.apprentice
+            this.survivalTiers.apprentice
         },
         category = this.categories.other,
         soundType = "leather",
         rotationAxis = 'y',
     },
-    {
-        id = "ashfall_tent_leather_m",
-        description = itemDescriptions.ashfall_tent_leather_m,
-        materials = {
-            { material = "leather", count = 4 },
-            { material = "wood", count = 6 },
-            { material = "rope", count = 2 },
-        },
-        skillRequirements = {
-            survivalTiers.apprentice
-        },
-        category = this.categories.survival,
-        soundType = "leather",
-        previewMesh = "ashfall\\tent\\tent_leather.nif"
-    },
-    {
-        id = "ashfall_table_sml_s",
-        description = "A tall, crudely made wooden table",
-        materials = {
-            { material = "wood", count = 6 },
-            { material = "rope", count = 2 }
-        },
-        skillRequirements = {
-            survivalTiers.apprentice
-        },
-        category = this.categories.structures,
-        soundType = "wood",
-        customRequirements = {
-            customRequirements.wildernessOnly
-        }
-    },
-    {
-        id = "ashfall_table_sml_2_s",
-        description = "A long, crudely made wooden table",
-        materials = {
-            { material = "wood", count = 8 },
-            { material = "rope", count = 2 }
-        },
-        skillRequirements = {
-            survivalTiers.apprentice
-        },
-        category = this.categories.structures,
-        soundType = "wood",
-        customRequirements = {
-            customRequirements.wildernessOnly
-        }
-    },
+
+
     {
         id = "ashfall_pickaxe_flint",
         description = "A pickaxe made with flint. Can be used to harvest stone.",
@@ -736,7 +711,7 @@ this.bushCraftingRecipes = {
             { material = "rope", count = 2 },
         },
         skillRequirements = {
-            survivalTiers.apprentice
+            this.survivalTiers.apprentice
         },
         category = this.categories.weapons,
         soundType = "wood",
@@ -751,12 +726,132 @@ this.bushCraftingRecipes = {
             { material = "rope", count = 2 },
         },
         skillRequirements = {
-            survivalTiers.journeyman
+            this.survivalTiers.journeyman
         },
         rotationAxis = 'y',
         category = this.categories.materials,
         soundType = "rope",
     },
+    {
+        id = "ashfall_crabpot_02_a",
+        description = itemDescriptions.ashfall_crabpot_01_m,
+        materials = {
+            { material = "wood", count = 4 },
+            { material = "rope", count = 1 },
+            { material = "netting", count = 2 },
+        },
+        skillRequirements = {
+            this.survivalTiers.journeyman
+        },
+        category = this.categories.structures,
+        soundType = "wood",
+        additionalMenuOptions = {
+            CrabPot.buttons.collect,
+        },
+        previewScale = 4,
+        previewHeight = -80
+    },
+
+    --Expert
+
+    {
+        id = "ashfall_fur_cloak",
+        previewMesh = "ashfall\\craft\\cloak_fur_preview.nif",
+        description = itemDescriptions.ashfall_fur_cloak,
+        materials = {
+            { material = "fur", count = 4 },
+        },
+        skillRequirements = {
+            this.survivalTiers.master
+        },
+        category = this.categories.equipment,
+        soundType = "fabric",
+    },
+}
+this.tanningRackRecipes = {
+    {
+        id = "ashfall_leather",
+        name = "Leather",
+        description = itemDescriptions.ashfall_leather,
+        materials = {
+            { material = "hide", count = 1 }
+        },
+        soundType = "leather",
+    }
+}
+
+this.workbenchRecipes = {
+
+    --Apprentice
+    {
+        --tanning rack
+        id = "ashfall_tan_rack",
+        additionalMenuOptions = {
+            this.menuOptions.tanningRackMenu
+        },
+        description = "A rack for tanning hides to create leather.",
+        materials = {
+            { material = "wood", count = 4 },
+            { material = "rope", count = 2 },
+        },
+        skillRequirements = {
+            this.survivalTiers.apprentice
+        },
+        category = this.categories.structures,
+        soundType = "wood",
+        customRequirements = {
+            this.customRequirements.wildernessOnly
+        }
+    },
+    {
+        id = "ashfall_tent_leather_m",
+        description = itemDescriptions.ashfall_tent_leather_m,
+        materials = {
+            { material = "leather", count = 4 },
+            { material = "wood", count = 6 },
+            { material = "rope", count = 2 },
+        },
+        skillRequirements = {
+            this.survivalTiers.apprentice
+        },
+        category = this.categories.survival,
+        soundType = "leather",
+        previewMesh = "ashfall\\tent\\tent_leather.nif"
+    },
+    {
+        id = "ashfall_table_sml_s",
+        description = "A tall, crudely made wooden table",
+        materials = {
+            { material = "wood", count = 6 },
+            { material = "rope", count = 2 }
+        },
+        skillRequirements = {
+            this.survivalTiers.apprentice
+        },
+        category = this.categories.furniture,
+        soundType = "wood",
+        customRequirements = {
+            this.customRequirements.wildernessOnly
+        }
+    },
+    {
+        id = "ashfall_table_sml_2_s",
+        description = "A long, crudely made wooden table",
+        materials = {
+            { material = "wood", count = 8 },
+            { material = "rope", count = 2 }
+        },
+        skillRequirements = {
+            this.survivalTiers.apprentice
+        },
+        category = this.categories.furniture,
+        soundType = "wood",
+        customRequirements = {
+            this.customRequirements.wildernessOnly
+        }
+    },
+
+    --journeyman
     {
         id = "ashfall_chest_01_c",
         description = "A large wooden chest that can be placed on the ground and used as storage.",
@@ -765,32 +860,16 @@ this.bushCraftingRecipes = {
             { material = "rope", count = 2 }
         },
         skillRequirements = {
-            survivalTiers.journeyman
+            this.survivalTiers.journeyman
         },
         category = this.categories.containers,
         soundType = "wood",
         customRequirements = {
-            customRequirements.wildernessOnly
+            this.customRequirements.wildernessOnly
         },
         additionalMenuOptions = {
             this.menuOptions.rename
         },
-    },
-    {
-        id = "ashfall_cov_thatch",
-        mesh = tentConfig.coverToMeshMap["ashfall_cov_thatch"],
-        description = itemDescriptions.ashfall_cov_thatch,
-        materials = {
-            { material = "wood", count = 4 },
-            { material = "rope", count = 1 },
-            { material = "straw", count = 10 },
-            { material = "leather", count = 2 },
-        },
-        skillRequirements = {
-            survivalTiers.journeyman
-        },
-        category = this.categories.survival,
-        soundType = "straw",
     },
     {
         id = "ashfall_hammock",
@@ -808,13 +887,29 @@ this.bushCraftingRecipes = {
             { material = "pillow", count = 1 },
         },
         skillRequirements = {
-            survivalTiers.journeyman
+            this.survivalTiers.journeyman
         },
         category = this.categories.beds,
         soundType = "wood",
         customRequirements = {
-            customRequirements.wildernessOnly
+            this.customRequirements.wildernessOnly
         }
+    },
+    {
+        id = "ashfall_cov_thatch",
+        mesh = tentConfig.coverToMeshMap["ashfall_cov_thatch"],
+        description = itemDescriptions.ashfall_cov_thatch,
+        materials = {
+            { material = "wood", count = 4 },
+            { material = "rope", count = 1 },
+            { material = "straw", count = 10 },
+            { material = "leather", count = 2 },
+        },
+        skillRequirements = {
+            this.survivalTiers.journeyman
+        },
+        category = this.categories.survival,
+        soundType = "straw",
     },
     {
         id = "ashfall_pack_04",
@@ -827,32 +922,13 @@ this.bushCraftingRecipes = {
             { material = "netting", count = 1 },
         },
         skillRequirements = {
-            survivalTiers.journeyman
+            this.survivalTiers.journeyman
         },
         category = this.categories.equipment,
         soundType = "wood",
     },
-    {
-        id = "ashfall_crabpot_02_a",
-        description = itemDescriptions.ashfall_crabpot_01_m,
-        materials = {
-            { material = "wood", count = 4 },
-            { material = "rope", count = 1 },
-            { material = "netting", count = 2 },
-        },
-        skillRequirements = {
-            survivalTiers.journeyman
-        },
-        category = this.categories.structures,
-        soundType = "wood",
-        additionalMenuOptions = {
-            CrabPot.buttons.collect,
-        },
-        previewScale = 4,
-        previewHeight = -80
-    },
 
-    --Expert
+    --expert
     {
         id = "ashfall_cov_ashl",
         mesh = tentConfig.coverToMeshMap["ashfall_cov_ashl"],
@@ -863,7 +939,7 @@ this.bushCraftingRecipes = {
             { material = "leather", count = 4 },
         },
         skillRequirements = {
-            survivalTiers.expert
+            this.survivalTiers.expert
         },
         category = this.categories.survival,
         soundType = "leather",
@@ -879,7 +955,26 @@ this.bushCraftingRecipes = {
             { material = "leather", count = 1 }
         },
         skillRequirements = {
-            survivalTiers.expert
+            this.survivalTiers.expert
+        },
+        category = this.categories.equipment,
+        soundType = "wood",
+    },
+
+    --Master
+    {
+        --Nordic backpack
+        id = "ashfall_pack_06",
+        description = itemDescriptions.ashfall_pack_06,
+        materials = {
+            { material = "wood", count = 2 },
+            { material = "rope", count = 1 },
+            { material = "fabric", count = 2 },
+            { material = "leather", count = 1 },
+            { material = "fur", count = 2 }
+        },
+        skillRequirements = {
+            this.survivalTiers.master
         },
         category = this.categories.equipment,
         soundType = "wood",
@@ -894,13 +989,13 @@ this.bushCraftingRecipes = {
             { material = "straw", count = 6 }
         },
         skillRequirements = {
-            survivalTiers.expert
+            this.survivalTiers.expert
         },
         category = this.categories.structures,
         maxSteepness = 0,
         soundType = "fabric",
         customRequirements = {
-            customRequirements.wildernessOnly
+            this.customRequirements.wildernessOnly
         }
     },
     {
@@ -912,13 +1007,13 @@ this.bushCraftingRecipes = {
             { material = "straw", count = 10 },
         },
         skillRequirements = {
-            survivalTiers.expert
+            this.survivalTiers.expert
         },
         category = this.categories.structures,
         maxSteepness = 0,
         soundType = "straw",
         customRequirements = {
-            customRequirements.wildernessOnly
+            this.customRequirements.wildernessOnly
         }
     },
     {
@@ -937,16 +1032,16 @@ this.bushCraftingRecipes = {
             { material = "pillow", count = 1 },
         },
         skillRequirements = {
-            survivalTiers.expert
+            this.survivalTiers.expert
         },
         category = this.categories.beds,
         soundType = "wood",
         customRequirements = {
-            customRequirements.wildernessOnly
+            this.customRequirements.wildernessOnly
         }
     },
 
-    --Master
+    --master
     {
         id =  "ashfall_cbroll_active",
         description = "A covered bedroll which provides protection from the elements while sleeping.",
@@ -963,56 +1058,15 @@ this.bushCraftingRecipes = {
             { material = "leather", count = 2 },
         },
         skillRequirements = {
-            survivalTiers.master
+            this.survivalTiers.master
         },
         category = this.categories.beds,
         soundType = "leather",
         previewScale = 1.25,
         customRequirements = {
-            customRequirements.wildernessOnly
+            this.customRequirements.wildernessOnly
         }
     },
-    {
-        --Nordic backpack
-        id = "ashfall_pack_06",
-        description = itemDescriptions.ashfall_pack_06,
-        materials = {
-            { material = "wood", count = 2 },
-            { material = "rope", count = 1 },
-            { material = "fabric", count = 2 },
-            { material = "leather", count = 1 },
-            { material = "fur", count = 2 }
-        },
-        skillRequirements = {
-            survivalTiers.master
-        },
-        category = this.categories.equipment,
-        soundType = "wood",
-    },
-    {
-        id = "ashfall_fur_cloak",
-        previewMesh = "ashfall\\craft\\cloak_fur_preview.nif",
-        description = itemDescriptions.ashfall_fur_cloak,
-        materials = {
-            { material = "fur", count = 4 },
-        },
-        skillRequirements = {
-            survivalTiers.master
-        },
-        category = this.categories.equipment,
-        soundType = "fabric",
-    },
-}
-this.tanningRackRecipes = {
-    {
-        id = "ashfall_leather",
-        name = "Leather",
-        description = itemDescriptions.ashfall_leather,
-        materials = {
-            { material = "hide", count = 1 }
-        },
-        soundType = "leather",
-    }
 }
 
 this.menuEvent = "Ashfall:ActivateBushcrafting"
@@ -1029,6 +1083,12 @@ this.menuActivators = {
         type = "event",
         id = "Ashfall:ActivateTanningRack",
         recipes = this.tanningRackRecipes,
+    },
+    {
+        name = "Workbench",
+        type = "event",
+        id = "Ashfall:ActivateWorkBench",
+        recipes = this.workbenchRecipes,
     }
 }
 

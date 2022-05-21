@@ -485,6 +485,6 @@ local Interop = {
     end
 }
 
-
+Interop.bushcrafting = require("mer.ashfall.bushcrafting.config")
 
 return Interop
