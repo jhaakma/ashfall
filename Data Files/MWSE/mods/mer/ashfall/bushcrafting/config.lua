@@ -93,7 +93,7 @@ this.menuOptions = {
     workBenchMenu = {
         text = "Craft",
         callback = function()
-            event.trigger("Ashfall:ActivateWorkBench")
+            event.trigger("ActivateWorkBench")
         end
     },
     rename = {
@@ -1087,7 +1087,7 @@ this.menuActivators = {
     {
         name = "Workbench",
         type = "event",
-        id = "Ashfall:ActivateWorkBench",
+        id = "ActivateWorkBench",
         recipes = this.workbenchRecipes,
     }
 }
