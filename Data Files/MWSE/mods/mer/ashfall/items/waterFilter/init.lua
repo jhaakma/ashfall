@@ -66,7 +66,7 @@ function WaterFilter.transferWater(filterRef, liquidContainer)
         local target = LiquidContainer.createInfiniteWaterSource()
         local amount, errorMsg = liquidContainer:transferLiquid(target, waterToTransfer)
         if errorMsg then
-            log:error("transferWater: %s", errorMsg)
+            logger:error("transferWater: %s", errorMsg)
         end
         if amount then
             filterRef.data.unfilteredWater =  filterRef.data.unfilteredWater or 0
@@ -221,10 +221,10 @@ WaterFilter.buttons = {
 ]]
 ---@param e activateEventData
 local function onActivate(e)
-    logger:debug("onActivate")
+    logger:debug("onActivate: %s", e.target)
     local reference = e.target
     --Only for ESP placed filters
-    if reference.data.crafted then
+    if reference.data and reference.data.crafted then
         logger:debug("crafted, returning")
         return
     end
