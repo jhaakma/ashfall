@@ -7,8 +7,7 @@ local CrabPot = require("mer.ashfall.items.crabpot")
 local config = require("mer.ashfall.config").config
 
 
-
-local survivalTiers = {
+this.survivalTiers = {
     beginner = { skill = "Bushcrafting", requirement = 10 },
     novice = { skill = "Bushcrafting", requirement = 20 },
     apprentice = { skill = "Bushcrafting", requirement = 30 },
@@ -18,7 +17,7 @@ local survivalTiers = {
     grandmaster = { skill = "Bushcrafting", requirement = 100 },
 }
 
-local customRequirements = {
+this.customRequirements = {
     outdoorsOnly = {
         getLabel = function()
             return "Outdoors"
@@ -232,7 +231,7 @@ this.bushCraftingRecipes = {
             { material = "fibre", count = 2 }
         },
         skillRequirements = {
-            survivalTiers.beginner
+            this.survivalTiers.beginner
         },
         category = this.categories.materials,
         soundType = "rope",
@@ -245,7 +244,7 @@ this.bushCraftingRecipes = {
             { material = "fibre", count = 1 }
         },
         skillRequirements = {
-            survivalTiers.beginner
+            this.survivalTiers.beginner
         },
         category = this.categories.materials,
         soundType = "straw",
@@ -258,7 +257,7 @@ this.bushCraftingRecipes = {
             { material = "wood", count = 1 }
         },
         skillRequirements = {
-            survivalTiers.beginner
+            this.survivalTiers.beginner
         },
         category = this.categories.other,
         soundType = "wood",
@@ -272,12 +271,12 @@ this.bushCraftingRecipes = {
             { material = "wood", count = 2 }
         },
         skillRequirements = {
-            survivalTiers.beginner
+            this.survivalTiers.beginner
         },
         category = this.categories.other,
         soundType = "wood",
         customRequirements = {
-            customRequirements.wildernessOnly
+            this.customRequirements.wildernessOnly
         }
     },
     {
@@ -295,12 +294,12 @@ this.bushCraftingRecipes = {
 
         },
         skillRequirements = {
-            survivalTiers.beginner
+            this.survivalTiers.beginner
         },
         category = this.categories.beds,
         soundType = "straw",
         customRequirements = {
-            customRequirements.wildernessOnly
+            this.customRequirements.wildernessOnly
         },
     },
     {
@@ -313,12 +312,12 @@ this.bushCraftingRecipes = {
             { material = "wood", count = 8 },
         },
         skillRequirements = {
-            survivalTiers.beginner
+            this.survivalTiers.beginner
         },
         category = this.categories.structures,
         soundType = "wood",
         customRequirements = {
-            customRequirements.wildernessOnly
+            this.customRequirements.wildernessOnly
         }
     },
     {
@@ -329,7 +328,7 @@ this.bushCraftingRecipes = {
             { material = "wood", count = 1 },
         },
         skillRequirements = {
-            survivalTiers.beginner
+            this.survivalTiers.beginner
         },
         category = this.categories.weapons,
         soundType = "wood",
@@ -344,7 +343,7 @@ this.bushCraftingRecipes = {
             { material = "rope", count = 1 },
         },
         skillRequirements = {
-            survivalTiers.beginner
+            this.survivalTiers.beginner
         },
         category = this.categories.weapons,
         soundType = "wood",
@@ -367,7 +366,7 @@ this.bushCraftingRecipes = {
         previewScale = 4,
         soundType = "carve",
         skillRequirements = {
-            survivalTiers.beginner
+            this.survivalTiers.beginner
         },
     },
     {
@@ -387,7 +386,7 @@ this.bushCraftingRecipes = {
         previewScale = 4,
         soundType = "carve",
         skillRequirements = {
-            survivalTiers.beginner
+            this.survivalTiers.beginner
         },
     },
     {
@@ -407,7 +406,7 @@ this.bushCraftingRecipes = {
         rotationAxis = 'y',
         soundType = "carve",
         skillRequirements = {
-            survivalTiers.beginner
+            this.survivalTiers.beginner
         },
     },
     {
@@ -427,7 +426,7 @@ this.bushCraftingRecipes = {
         rotationAxis = 'y',
         soundType = "carve",
         skillRequirements = {
-            survivalTiers.beginner
+            this.survivalTiers.beginner
         },
     },
     {
@@ -447,7 +446,7 @@ this.bushCraftingRecipes = {
         rotationAxis = 'y',
         soundType = "carve",
         skillRequirements = {
-            survivalTiers.beginner
+            this.survivalTiers.beginner
         },
     },
     {
@@ -466,7 +465,7 @@ this.bushCraftingRecipes = {
         category = this.categories.cutlery,
         soundType = "carve",
         skillRequirements = {
-            survivalTiers.beginner
+            this.survivalTiers.beginner
         },
     },
     {
@@ -486,7 +485,7 @@ this.bushCraftingRecipes = {
         previewMesh = "ashfall\\craft\\wood_ladle_attach.nif",
         soundType = "carve",
         skillRequirements = {
-            survivalTiers.beginner
+            this.survivalTiers.beginner
         },
     },
 
@@ -502,12 +501,12 @@ this.bushCraftingRecipes = {
             { material = "ashfall_bowl_01", count = 1}
         },
         skillRequirements = {
-            survivalTiers.novice
+            this.survivalTiers.novice
         },
         category = this.categories.structures,
         soundType = "wood",
         customRequirements = {
-            customRequirements.wildernessOnly
+            this.customRequirements.wildernessOnly
         },
         maxSteepness = 0,
         additionalMenuOptions = {
@@ -523,7 +522,7 @@ this.bushCraftingRecipes = {
             { material = "fabric", count = 6 },
         },
         skillRequirements = {
-            survivalTiers.novice
+            this.survivalTiers.novice
         },
         category = this.categories.equipment,
         soundType = "fabric",
@@ -536,7 +535,7 @@ this.bushCraftingRecipes = {
             { material = "straw", count = 4 }
         },
         skillRequirements = {
-            survivalTiers.novice
+            this.survivalTiers.novice
         },
         category = this.categories.equipment,
         soundType = "straw",
@@ -550,7 +549,7 @@ this.bushCraftingRecipes = {
             { material = "fibre", count = 4 },
         },
         skillRequirements = {
-            survivalTiers.novice
+            this.survivalTiers.novice
         },
         category = this.categories.materials,
         soundType = "fabric",
@@ -565,7 +564,7 @@ this.bushCraftingRecipes = {
             { material = "straw", count = 4 }
         },
         skillRequirements = {
-            survivalTiers.novice
+            this.survivalTiers.novice
         },
         category = this.categories.other,
         soundType = "fabric",
@@ -579,7 +578,7 @@ this.bushCraftingRecipes = {
             { material = "fabric", count = 2 },
         },
         skillRequirements = {
-            survivalTiers.novice
+            this.survivalTiers.novice
         },
         category = this.categories.containers,
         soundType = "fabric",
@@ -594,7 +593,7 @@ this.bushCraftingRecipes = {
             { material = "fabric", count = 2 },
         },
         skillRequirements = {
-            survivalTiers.novice
+            this.survivalTiers.novice
         },
         category = this.categories.other,
         soundType = "fabric",
@@ -609,7 +608,7 @@ this.bushCraftingRecipes = {
             { material = "rope", count = 1 },
         },
         skillRequirements = {
-            survivalTiers.novice
+            this.survivalTiers.novice
         },
         category = this.categories.weapons,
         soundType = "wood",
@@ -623,7 +622,7 @@ this.bushCraftingRecipes = {
             { material = "rope", count = 3 },
         },
         skillRequirements = {
-            survivalTiers.novice
+            this.survivalTiers.novice
         },
         category = this.categories.weapons,
         soundType = "wood",
@@ -638,7 +637,7 @@ this.bushCraftingRecipes = {
             { material = "wood", count = 1 },
         },
         skillRequirements = {
-            survivalTiers.novice
+            this.survivalTiers.novice
         },
         category = this.categories.weapons,
         soundType = "wood",
@@ -658,12 +657,12 @@ this.bushCraftingRecipes = {
             { material = "rope", count = 2 },
         },
         skillRequirements = {
-            survivalTiers.apprentice
+            this.survivalTiers.apprentice
         },
         category = this.categories.structures,
         soundType = "wood",
         customRequirements = {
-            customRequirements.wildernessOnly
+            this.customRequirements.wildernessOnly
         }
     },
     {
@@ -674,7 +673,7 @@ this.bushCraftingRecipes = {
             { material = "resin", count = 1 }
         },
         skillRequirements = {
-            survivalTiers.apprentice
+            this.survivalTiers.apprentice
         },
         category = this.categories.other,
         soundType = "leather",
@@ -689,7 +688,7 @@ this.bushCraftingRecipes = {
             { material = "rope", count = 2 },
         },
         skillRequirements = {
-            survivalTiers.apprentice
+            this.survivalTiers.apprentice
         },
         category = this.categories.survival,
         soundType = "leather",
@@ -703,12 +702,12 @@ this.bushCraftingRecipes = {
             { material = "rope", count = 2 }
         },
         skillRequirements = {
-            survivalTiers.apprentice
+            this.survivalTiers.apprentice
         },
         category = this.categories.structures,
         soundType = "wood",
         customRequirements = {
-            customRequirements.wildernessOnly
+            this.customRequirements.wildernessOnly
         }
     },
     {
@@ -719,12 +718,12 @@ this.bushCraftingRecipes = {
             { material = "rope", count = 2 }
         },
         skillRequirements = {
-            survivalTiers.apprentice
+            this.survivalTiers.apprentice
         },
         category = this.categories.structures,
         soundType = "wood",
         customRequirements = {
-            customRequirements.wildernessOnly
+            this.customRequirements.wildernessOnly
         }
     },
     {
@@ -736,7 +735,7 @@ this.bushCraftingRecipes = {
             { material = "rope", count = 2 },
         },
         skillRequirements = {
-            survivalTiers.apprentice
+            this.survivalTiers.apprentice
         },
         category = this.categories.weapons,
         soundType = "wood",
@@ -751,7 +750,7 @@ this.bushCraftingRecipes = {
             { material = "rope", count = 2 },
         },
         skillRequirements = {
-            survivalTiers.journeyman
+            this.survivalTiers.journeyman
         },
         rotationAxis = 'y',
         category = this.categories.materials,
@@ -765,12 +764,12 @@ this.bushCraftingRecipes = {
             { material = "rope", count = 2 }
         },
         skillRequirements = {
-            survivalTiers.journeyman
+            this.survivalTiers.journeyman
         },
         category = this.categories.containers,
         soundType = "wood",
         customRequirements = {
-            customRequirements.wildernessOnly
+            this.customRequirements.wildernessOnly
         },
         additionalMenuOptions = {
             this.menuOptions.rename
@@ -787,7 +786,7 @@ this.bushCraftingRecipes = {
             { material = "leather", count = 2 },
         },
         skillRequirements = {
-            survivalTiers.journeyman
+            this.survivalTiers.journeyman
         },
         category = this.categories.survival,
         soundType = "straw",
@@ -808,12 +807,12 @@ this.bushCraftingRecipes = {
             { material = "pillow", count = 1 },
         },
         skillRequirements = {
-            survivalTiers.journeyman
+            this.survivalTiers.journeyman
         },
         category = this.categories.beds,
         soundType = "wood",
         customRequirements = {
-            customRequirements.wildernessOnly
+            this.customRequirements.wildernessOnly
         }
     },
     {
@@ -827,7 +826,7 @@ this.bushCraftingRecipes = {
             { material = "netting", count = 1 },
         },
         skillRequirements = {
-            survivalTiers.journeyman
+            this.survivalTiers.journeyman
         },
         category = this.categories.equipment,
         soundType = "wood",
@@ -841,7 +840,7 @@ this.bushCraftingRecipes = {
             { material = "netting", count = 2 },
         },
         skillRequirements = {
-            survivalTiers.journeyman
+            this.survivalTiers.journeyman
         },
         category = this.categories.structures,
         soundType = "wood",
@@ -863,7 +862,7 @@ this.bushCraftingRecipes = {
             { material = "leather", count = 4 },
         },
         skillRequirements = {
-            survivalTiers.expert
+            this.survivalTiers.expert
         },
         category = this.categories.survival,
         soundType = "leather",
@@ -879,7 +878,7 @@ this.bushCraftingRecipes = {
             { material = "leather", count = 1 }
         },
         skillRequirements = {
-            survivalTiers.expert
+            this.survivalTiers.expert
         },
         category = this.categories.equipment,
         soundType = "wood",
@@ -894,13 +893,13 @@ this.bushCraftingRecipes = {
             { material = "straw", count = 6 }
         },
         skillRequirements = {
-            survivalTiers.expert
+            this.survivalTiers.expert
         },
         category = this.categories.structures,
         maxSteepness = 0,
         soundType = "fabric",
         customRequirements = {
-            customRequirements.wildernessOnly
+            this.customRequirements.wildernessOnly
         }
     },
     {
@@ -912,13 +911,13 @@ this.bushCraftingRecipes = {
             { material = "straw", count = 10 },
         },
         skillRequirements = {
-            survivalTiers.expert
+            this.survivalTiers.expert
         },
         category = this.categories.structures,
         maxSteepness = 0,
         soundType = "straw",
         customRequirements = {
-            customRequirements.wildernessOnly
+            this.customRequirements.wildernessOnly
         }
     },
     {
@@ -937,12 +936,12 @@ this.bushCraftingRecipes = {
             { material = "pillow", count = 1 },
         },
         skillRequirements = {
-            survivalTiers.expert
+            this.survivalTiers.expert
         },
         category = this.categories.beds,
         soundType = "wood",
         customRequirements = {
-            customRequirements.wildernessOnly
+            this.customRequirements.wildernessOnly
         }
     },
 
@@ -963,13 +962,13 @@ this.bushCraftingRecipes = {
             { material = "leather", count = 2 },
         },
         skillRequirements = {
-            survivalTiers.master
+            this.survivalTiers.master
         },
         category = this.categories.beds,
         soundType = "leather",
         previewScale = 1.25,
         customRequirements = {
-            customRequirements.wildernessOnly
+            this.customRequirements.wildernessOnly
         }
     },
     {
@@ -984,7 +983,7 @@ this.bushCraftingRecipes = {
             { material = "fur", count = 2 }
         },
         skillRequirements = {
-            survivalTiers.master
+            this.survivalTiers.master
         },
         category = this.categories.equipment,
         soundType = "wood",
@@ -997,7 +996,7 @@ this.bushCraftingRecipes = {
             { material = "fur", count = 4 },
         },
         skillRequirements = {
-            survivalTiers.master
+            this.survivalTiers.master
         },
         category = this.categories.equipment,
         soundType = "fabric",
