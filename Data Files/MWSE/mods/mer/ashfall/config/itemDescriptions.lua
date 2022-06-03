@@ -15,7 +15,8 @@ return {
     ashfall_kettle_05 = "A rare kettle of unknown make and origin. Use at a campfire to brew tea." ,
     ashfall_kettle_06 = "A small kettle of simple construction. Use at a campfire to brew tea." ,
     ashfall_kettle_07 = "An kettle made of limeware. Use at a campfire to brew tea." ,
-    ashfall_kettle_08 = "A small traditional teapot with wooden handle. " ,
+    ashfall_kettle_08 = "A small traditional teapot with wooden handle. Use at a campfire to brew tea." ,
+    ashfall_kettle_09 = "A small redware teapot. Use at a campfire to brew tea." ,
 
     --grills
     ashfall_grill = "A cheap but heavy iron grill. Use at a campfire to cook meat and vegetables." ,

@@ -7,6 +7,7 @@ local this = {}
 
 function this.getVersion()
     local versionFile = io.open("Data Files/MWSE/mods/mer/ashfall/version.txt", "r")
+    if not versionFile then return end
     local version = ""
     for line in versionFile:lines() do -- Loops over all the lines in an open text file
         version = line

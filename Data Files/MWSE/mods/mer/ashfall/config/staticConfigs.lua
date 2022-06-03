@@ -121,6 +121,7 @@ this.placementConfig = {
     ashfall_kettle_06 = { maxSteepness = 0.05 },
     ashfall_kettle_07 = { maxSteepness = 0.05 },
     ashfall_kettle_08 = { maxSteepness = 0.05 },
+    ashfall_kettle_09 = { maxSteepness = 0.05 },
 
     ashfall_bowl_01 = { maxSteepness = 0.05 },
 
@@ -685,6 +686,11 @@ this.utensils = {
     },
     --Japanese teapot
     ashfall_kettle_08 = {
+        type = "kettle",
+        capacity = 100,
+    },
+    --Redware
+    ashfall_kettle_09 = {
         type = "kettle",
         capacity = 100,
     },
