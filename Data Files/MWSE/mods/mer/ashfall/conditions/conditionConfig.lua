@@ -15,7 +15,7 @@ conditions.hunger = Condition:new{
             min = 80, max = 100,
             spell = "fw_h_starving",
             effects = {
-                { id = tes3.effect.drainAttribute, attribute = tes3.attribute.agility, amount = 0.6 }
+                { id = tes3.effect.drainAttribute, attribute = tes3.attribute.agility, amount = 0.5 }
             }
         },
         veryHungry = {
@@ -23,7 +23,7 @@ conditions.hunger = Condition:new{
             min = 60, max = 80,
             spell = "fw_h_veryHungry",
             effects = {
-                { id = tes3.effect.drainAttribute, attribute = tes3.attribute.agility, amount = 0.4 }
+                { id = tes3.effect.drainAttribute, attribute = tes3.attribute.agility, amount = 0.3 }
             }
         },
         hungry = {
@@ -31,7 +31,7 @@ conditions.hunger = Condition:new{
             min = 40, max = 60,
             spell = "fw_h_hungry",
             effects = {
-                { id = tes3.effect.drainAttribute, attribute = tes3.attribute.agility, amount = 0.2 }
+                { id = tes3.effect.drainAttribute, attribute = tes3.attribute.agility, amount = 0.1 }
             }
         },
         peckish = {
@@ -67,7 +67,7 @@ conditions.thirst = Condition:new{
             min = 80, max = 100,
             spell = "fw_t_dehydrated",
             effects = {
-                { id = tes3.effect.drainAttribute, attribute = tes3.attribute.willpower, amount = 0.6 }
+                { id = tes3.effect.drainAttribute, attribute = tes3.attribute.willpower, amount = 0.5 }
             }
         },
         parched = {
@@ -75,7 +75,7 @@ conditions.thirst = Condition:new{
             min = 60, max = 80,
             spell = "fw_t_parched",
             effects = {
-                { id = tes3.effect.drainAttribute, attribute = tes3.attribute.willpower, amount = 0.4 }
+                { id = tes3.effect.drainAttribute, attribute = tes3.attribute.willpower, amount = 0.3 }
             }
         },
         veryThirsty = {
@@ -83,7 +83,7 @@ conditions.thirst = Condition:new{
             min = 40, max = 60,
             spell = "fw_t_veryThirsty",
             effects = {
-                { id = tes3.effect.drainAttribute, attribute = tes3.attribute.willpower, amount = 0.2 }
+                { id = tes3.effect.drainAttribute, attribute = tes3.attribute.willpower, amount = 0.1 }
             }
         },
         thirsty = {
@@ -91,7 +91,7 @@ conditions.thirst = Condition:new{
             min = 20, max = 40,
             spell = "fw_t_thirsty",
             effects = {
-                { id = tes3.effect.drainAttribute, attribute = tes3.attribute.willpower, amount = 0.1 }
+                { id = tes3.effect.drainAttribute, attribute = tes3.attribute.willpower, amount = 0.05 }
             }
         },
         hydrated = {
@@ -99,7 +99,7 @@ conditions.thirst = Condition:new{
             min = 0, max = 20,
             spell = "fw_t_hydrated",
             effects = {
-                { id = tes3.effect.fortifyAttribute, attribute = tes3.attribute.willpower, amount = 0.2 }
+                { id = tes3.effect.fortifyAttribute, attribute = tes3.attribute.willpower, amount = 0.1 }
             }
         },
     },
@@ -119,7 +119,7 @@ conditions.tiredness = Condition:new{
             min = 80, max = 100,
             spell = "fw_s_exhausted",
             effects = {
-                { id = tes3.effect.drainAttribute, attribute = tes3.attribute.intelligence, amount = 0.6 },
+                { id = tes3.effect.drainAttribute, attribute = tes3.attribute.intelligence, amount = 0.5 },
                 { id = tes3.effect.weaknesstoCommonDisease, amount = 80}
             }
         },
@@ -128,7 +128,7 @@ conditions.tiredness = Condition:new{
             min = 60, max = 80,
             spell = "fw_s_veryTired",
             effects = {
-                { id = tes3.effect.drainAttribute, attribute = tes3.attribute.intelligence, amount = 0.4 },
+                { id = tes3.effect.drainAttribute, attribute = tes3.attribute.intelligence, amount = 0.3 },
                 { id = tes3.effect.weaknesstoCommonDisease, amount = 40}
             }
         },
@@ -137,7 +137,7 @@ conditions.tiredness = Condition:new{
             min = 40, max = 60,
             spell = "fw_s_tired",
             effects = {
-                { id = tes3.effect.drainAttribute, attribute = tes3.attribute.intelligence, amount = 0.2 },
+                { id = tes3.effect.drainAttribute, attribute = tes3.attribute.intelligence, amount = 0.1 },
                 { id = tes3.effect.weaknesstoCommonDisease, amount = 10}
             }
         },
@@ -150,7 +150,7 @@ conditions.tiredness = Condition:new{
             min = 0, max = 20,
             spell = "fw_s_wellRested",
             effects = {
-                { id = tes3.effect.fortifyAttribute, attribute = tes3.attribute.intelligence, amount = 0.2 }
+                { id = tes3.effect.fortifyFatigue, amount = 0.1 }
             }
         },
     },
@@ -193,6 +193,10 @@ conditions.temp = Condition:new{
             text = "Warm",
             min = 20, max = 40,
             spell = "fw_cond_warm",
+            effects = {
+                { id = tes3.effect.fortifyAttribute, attribute = tes3.attribute.endurance, amount = 0.05 },
+                { id = tes3.effect.fortifyAttribute, attribute = tes3.attribute.willpower, amount = 0.05 },
+            }
         },
         comfortable = {
             text = "Comfortable",

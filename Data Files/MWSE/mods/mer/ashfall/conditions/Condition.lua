@@ -32,17 +32,23 @@ function Condition:scaleSpellValues()
 
     for _, stateEffect in ipairs(state.effects) do
         for _, spellEffect in ipairs(spell.effects) do
-            local doScale = (
-                spellEffect.id == stateEffect.id and
-                spellEffect.attribute == stateEffect.attribute and
-                stateEffect.amount
-            )
+            local idMatches = spellEffect.id == stateEffect.id
+            local attributeMatches = (spellEffect.attribute == stateEffect.attribute) or not stateEffect.atribute
+            local hasAmount = stateEffect.amount ~= nil
+
+            local doScale = idMatches
+                and attributeMatches
+                and hasAmount
             if doScale then
                 --For drain/fortify attributes, we scale according
                 --to the player's base amount.
                 if stateEffect.attribute then
                     local baseAttr = tes3.mobilePlayer.attributes[stateEffect.attribute + 1].base
-                    spellEffect.min = baseAttr * stateEffect.amount
+                    spellEffect.min = math.ceil(baseAttr * stateEffect.amount)
+                    spellEffect.max = spellEffect.min
+                elseif stateEffect.id == tes3.effect.fortifyFatigue then
+                    local baseFatigue = tes3.mobilePlayer.fatigue.base
+                    spellEffect.min = math.ceil(baseFatigue * stateEffect.amount)
                     spellEffect.max = spellEffect.min
                 end
             end
