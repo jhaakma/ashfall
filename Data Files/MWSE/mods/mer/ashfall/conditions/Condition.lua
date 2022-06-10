@@ -134,16 +134,17 @@ function Condition:updateConditionEffects(currentState)
         local isCurrentState = ( currentState == state )
         local spell = self:getCurrentSpellObj(stateData)
         if spell then
-            --local hasCondition = self:isAffected(stateData)
+            local hasCondition = self:isAffected(stateData)
             if isCurrentState and self:isActive() then
                 self:scaleSpellValues()
                 --if not hasCondition then
-                    mwscript.addSpell({ reference = tes3.player, spell = spell })
+                    tes3.addSpell({ reference = tes3.player, spell = spell })
                 --end
             else
-                --if hasCondition then
-                    mwscript.removeSpell({ reference = tes3.player, spell = spell })
-                --end
+                if hasCondition then
+                    tes3.addSpell({ reference = tes3.player, spell = spell })
+                    tes3.removeSpell({ reference = tes3.player, spell = spell })
+                end
             end
         end
     end

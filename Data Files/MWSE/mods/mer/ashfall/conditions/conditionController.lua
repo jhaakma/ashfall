@@ -92,7 +92,7 @@ local function removeConditionEffects()
         if states then
             local spell = condition:getCurrentSpellObj()
             if spell and tes3.player.object.spells:contains(spell) then
-                mwscript.removeSpell({ reference = tes3.player, spell = spell })
+                tes3.removeSpell({ reference = tes3.player, spell = spell })
             end
         end
     end
