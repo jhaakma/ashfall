@@ -35,8 +35,28 @@ local animConfig = {
         mesh = "ashfall\\anim\\VA_sitting.nif",
         group = tes3.animationGroup.idle9,
     },
-
+    layHammock = {
+        mesh = "ashfall\\anim\\hammock.nif",
+        group = tes3.animationGroup.idle9
+    }
 }
+
+function this.getLocation(ref)
+    local sleepingPositionNode = ref.sceneNode:getObjectByName("SleepingPosition")
+    if not sleepingPositionNode then
+        return {
+            position = ref.position:copy(),
+            orientation = ref.orientation:copy(),
+            cell = ref.cell
+        }
+    end
+    return {
+        position = sleepingPositionNode.worldTransform.translation:copy(),
+        orientation = sleepingPositionNode.worldTransform.rotation:copy(),
+        cell = ref.cell
+    }
+end
+
 
 function this.sitDown(e)
     event.trigger("Ashfall:SitDown")
@@ -47,6 +67,12 @@ end
 function this.layDown(e)
     event.trigger("Ashfall:LayDown")
     table.copy(animConfig.layBack, e)
+    this.doAnimation(e)
+end
+
+function this.hammockLayDown(e)
+    event.trigger("Ashfall:LayDown")
+    table.copy(animConfig.layHammock, e)
     this.doAnimation(e)
 end
 
@@ -296,20 +322,20 @@ function this.cancel()
 end
 
 
-
+local animFunctions = {
+    sitting = this.sitDown,
+    layingDown = this.layDown,
+    hammock = this.hammockLayDown
+}
 local function buttonPressed(e)
-    if e.anim == "sitting" then
-
-        this.sitDown(e)
-    elseif e.anim == "layingDown" then
-
-
-        this.layDown(e)
+    local animFunction = animFunctions[e.anim]
+    if animFunction then
+        animFunction(e)
     else
         this.doAnimation(e)
     end
-
 end
+
 function this.showFastTimeMenu(e)
     if tes3.mobilePlayer.inCombat then
         tes3.messageBox("You are in combat.")

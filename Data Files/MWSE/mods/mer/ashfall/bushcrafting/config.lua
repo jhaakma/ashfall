@@ -1021,13 +1021,13 @@ this.menuActivators = {
         type = "event",
         id = this.menuEvent,
         recipes = this.bushCraftingRecipes,
-        defaultFilter = "skill"
+        defaultFilter = "skill",
     },
     {
         name = "Tanning Rack",
         type = "event",
         id = "Ashfall:ActivateTanningRack",
-        recipes = this.tanningRackRecipes,
+        recipes = this.tanningRackRecipes
     }
 }
 
