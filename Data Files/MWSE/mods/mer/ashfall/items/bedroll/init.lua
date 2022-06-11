@@ -148,6 +148,7 @@ local function activateBedroll(e)
             return
         end
         BedRoll.bedrollMenu(e.target)
+        logger:debug("Returning false on activate event")
         return false
     end
 end

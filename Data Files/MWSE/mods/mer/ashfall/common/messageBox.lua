@@ -99,11 +99,11 @@ end
 ---@param buttonData CustomMessageBox_Button
 ---@param e CustomMessageBox_PopulateButtons_Data
 local function addButton(buttonData, e)
-    if doAddButton(buttonData) then
+    if doAddButton(buttonData, e.callbackParams) then
         local button = e.buttonsBlock:createButton { id = uiids.button, text = resolveText(buttonData.text) }
         local enabled
         if buttonData.enableRequirements then
-            enabled = buttonData.enableRequirements()
+            enabled = buttonData.enableRequirements(e.callbackParams)
         else
             enabled = true
         end
