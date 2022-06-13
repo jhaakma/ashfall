@@ -31,10 +31,10 @@ local function showUpdateMessageBox()
         }
     }
 
-    common.helper.messageBox {
+    tes3ui.showMessageMenu {
         message = msg,
         buttons = buttons,
-        doesCancel = true
+        cancels = true
     }
 end
 
@@ -52,10 +52,10 @@ showConfirmUpdate = function()
             end
         }
     }
-    common.helper.messageBox {
+    tes3ui.showMessageMenu {
         message = "Exit Morrowind and download latest Ashfall?",
         buttons = buttons,
-        doesCancel = true,
+        cancels = true,
         cancelCallback = showUpdateMessageBox
     }
 end
@@ -69,7 +69,7 @@ showConfirmDisableNotifications = function()
             callback = function()
                 config.checkForUpdates = false
                 config.save()
-                common.helper.messageBox{
+                tes3ui.showMessageMenu{
                     message = "Update notifications disabled. You can enable them again in the Development Options in the MCM.",
                     buttons = {
                         { text = tes3.findGMST(tes3.gmst.sOK).value}
@@ -78,7 +78,7 @@ showConfirmDisableNotifications = function()
             end
         }
     }
-    common.helper.messageBox{ message = message, buttons = buttons, doesCancel = true, cancelCallback = showUpdateMessageBox }
+    tes3ui.showMessageMenu{ message = message, buttons = buttons, cancels = true, cancelCallback = showUpdateMessageBox }
 end
 
 function this.checkForUpdates()

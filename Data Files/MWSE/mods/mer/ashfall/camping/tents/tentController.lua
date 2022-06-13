@@ -107,10 +107,10 @@ local function packedTentMenu(miscRef)
             end
         },
     }
-    common.helper.messageBox{
+    tes3ui.showMessageMenu{
         message = message,
         buttons = buttons,
-        doesCancel = true
+        cancels = true
     }
 end
 
@@ -192,10 +192,10 @@ local function activeTentMenu(activeRef)
             callback = function() packTent(activeRef) end
         },
     }
-    common.helper.messageBox{
+    tes3ui.showMessageMenu{
         message = message,
         buttons = buttons,
-        doesCancel = true
+        cancels = true
     }
 end
 

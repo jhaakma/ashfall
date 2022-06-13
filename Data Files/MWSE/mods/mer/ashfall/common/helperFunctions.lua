@@ -8,7 +8,6 @@ local tentConfig = require("mer.ashfall.camping.tents.tentConfig")
 --Generic Tooltip with header and description
 ---@param e AshfallTooltipData
 this.createTooltip = require("mer.ashfall.common.tooltip")
-this.messageBox = require("mer.ashfall.common.messageBox")
 
 --[[
     Returns a human readable timestamp of the given time (or else the current time)

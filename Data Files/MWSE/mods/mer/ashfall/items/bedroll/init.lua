@@ -94,7 +94,7 @@ BedRoll.buttons = {
         end,
         tooltipDisabled = function()
             return {
-                text = tes3.canRest() and "It is illegal to rest here." or "You can't wait here; enemies are nearby."
+                text = tes3.canRest{} and "It is illegal to rest here." or "You can't wait here; enemies are nearby."
             }
         end,
     },
@@ -121,10 +121,10 @@ function BedRoll.bedrollMenu(ref)
         BedRoll.buttons.pickUp
     }
 
-    common.helper.messageBox{
+    tes3ui.showMessageMenu{
         message = message,
         buttons = buttons,
-        doesCancel = true,
+        cancels = true,
         callbackParams = { reference = ref }
     }
 end

@@ -69,7 +69,7 @@ return {
         }
         local utensilText = string.format("Empty %s", utensilNames[campfire.data.utensil])
         if campfire.data.waterType == "dirty" then
-            common.helper.messageBox{
+            tes3ui.showMessageMenu{
                 message = "This water is dirty.",
                 buttons = {
                     {
@@ -77,7 +77,7 @@ return {
                         callback = function() doDrink() end
                     },
                 },
-                doesCancel = true,
+                cancels = true,
             }
         else
             doDrink()

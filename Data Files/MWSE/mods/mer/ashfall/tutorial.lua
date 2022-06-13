@@ -55,7 +55,7 @@ for id, data in pairs(tutorials) do
 
     event.register(data.event, function()
         if doShowTutorial(id) then
-             common.helper.messageBox{
+             tes3ui.showMessageMenu{
                 header = data.header,
                 text = data.text,
                 buttons = {

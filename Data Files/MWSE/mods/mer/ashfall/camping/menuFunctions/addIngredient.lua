@@ -135,10 +135,10 @@ return {
             })
 
         end
-        common.helper.messageBox({
+        tes3ui.showMessageMenu{
             message = "Select Ingredient Type:",
             buttons = buttons,
-            doesCancel = true,
-        })
+            cancels = true,
+        }
     end
 }

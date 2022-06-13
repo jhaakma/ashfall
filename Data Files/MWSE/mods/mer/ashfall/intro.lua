@@ -72,7 +72,7 @@ function this.confirmDefaultSettings()
         "Default Settings: All needs enabled. Timescale set to 20. Item weights and values adjusted. \n\nYou can change this setting in the MCM menu at any time. Proceed?",
         common.defaultValues.manualTimeScale
     )
-    common.helper.messageBox{
+    tes3ui.showMessageMenu{
         message = message,
         buttons = {
             { text = "Okay", callback = this.doDefaultSettings
@@ -99,7 +99,7 @@ function this.doVanillaSettings()
     config.save()
 end
 function this.confirmVanillaSettings()
-    common.helper.messageBox{
+    tes3ui.showMessageMenu{
         message = "Vanilla Settings: no changes to timescale or item values. \n\nYou can change this setting in the MCM menu at any time. Proceed?",
         buttons = {
             { text = "Okay", callback = this.doVanillaSettings },
@@ -151,7 +151,7 @@ function this.startAshfall()
                 callback = this.disableAshfall
             }
         }
-        common.helper.messageBox{ message = introMessage, buttons = buttons}
+        tes3ui.showMessageMenu{ message = introMessage, buttons = buttons}
     else
         --initialise defaults
         if config.overrideTimeScale and newGame then

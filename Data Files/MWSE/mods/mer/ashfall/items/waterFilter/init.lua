@@ -230,7 +230,7 @@ local function onActivate(e)
     end
     if WaterFilter.filterIDs[e.target.baseObject.id:lower()] then
         logger:debug("is Water Filter, displaying message")
-        common.helper.messageBox{
+        tes3ui.showMessageMenu{
             message = e.target.object.name,
             buttons = {
                 WaterFilter.buttons.filterWater,
@@ -239,7 +239,7 @@ local function onActivate(e)
             callbackParams = {
                 reference = e.target,
             },
-            doesCancel = true
+            cancels = true
         }
         return false
     end

@@ -9,7 +9,7 @@ return {
             and campfire.data.waterAmount > 0
     end,
     callback = function(campfire)
-        common.helper.messageBox{
+        tes3ui.showMessageMenu{
             message = "Empty Cooking Pot?",
             buttons = {
                 {
@@ -21,7 +21,7 @@ return {
                     end
                 }
             },
-            doesCancel = true,
+            cancels = true,
         }
     end
 }

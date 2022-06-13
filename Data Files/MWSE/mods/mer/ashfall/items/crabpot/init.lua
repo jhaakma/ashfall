@@ -92,7 +92,7 @@ local function onActivate(e)
     local crabCount = e.target.data.crabCount and math.floor(e.target.data.crabCount) or 0
     local message = string.format("%s (%d/%d)",e.target.object.name, crabCount, crabpotConfig.maxCrabs)
 
-    common.helper.messageBox{
+    tes3ui.showMessageMenu{
         message = message,
         buttons = {
             {
@@ -117,7 +117,7 @@ local function onActivate(e)
                 end
             },
         },
-        doesCancel = true
+        cancels = true
     }
     return false
 end

@@ -156,9 +156,9 @@ local function showMenuOnEquipTeaWarmer(e)
                         end
                     },
                 },
-                doesCancel = true
+                cancels = true
             }
-            common.helper.messageBox(menu)
+            tes3ui.showMessageMenu(menu)
             return false
         end
     end

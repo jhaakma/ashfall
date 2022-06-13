@@ -87,7 +87,7 @@ event.register("OtherSkills:Ready", onSkillsReady)
 
 local function checkSkillModule()
     if not skillModule then
-        this.helper.messageBox({
+        tes3ui.showMessageMenu({
             message = "Skills Module is not installed! This is a requirement for Ashfall and the mod will NOT work without it.",
             buttons = {
                 {
@@ -106,7 +106,7 @@ local function checkSkillModule()
 
     if ( skillModule.version == nil ) or ( skillModule.version < 1.4 ) then
 
-        this.helper.messageBox({
+        tes3ui.showMessageMenu({
             message = "Outdated version of Skills Module detected.",
             buttons = {
                 {

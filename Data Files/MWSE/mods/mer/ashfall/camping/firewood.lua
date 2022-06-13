@@ -92,14 +92,14 @@ local function onActivateFirewood(e)
         if isModifierKeyPressed then
             return
         else
-            common.helper.messageBox({
+            tes3ui.showMessageMenu{
                 message = string.format("You have %d %s.", e.target.stackSize, e.target.object.name),
                 buttons = {
                     { text = "Create Campfire", callback = function() placeCampfire(e) end },
                     { text = "Pick Up", callback = function() pickupFirewood(e.target) end },
                 },
-                doesCancel = true
-            })
+                cancels = true
+            }
             return true
         end
     end

@@ -61,7 +61,7 @@ local function stewSelectMenu()
         })
     end
 
-    common.helper.messageBox{ message = menuMessage, buttons = buttons, doesCancel = true}
+    tes3ui.showMessageMenu{ message = menuMessage, buttons = buttons, cancels = true}
 end
 
 local function onStewServiceClick()

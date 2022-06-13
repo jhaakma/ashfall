@@ -67,7 +67,7 @@ local function callWaterMenu(e)
         waterType = e.waterType
     })
 
-    common.helper.messageBox{
+    tes3ui.showMessageMenu{
         message = message,
         buttons = {
             {
@@ -109,7 +109,7 @@ local function callWaterMenu(e)
                 callback = douse
             }
         },
-        doesCancel = true,
+        cancels = true,
     }
     --triple delay frame...
     timer.delayOneFrame(function()timer.delayOneFrame(function()timer.delayOneFrame(function()timer.delayOneFrame(function()
@@ -248,7 +248,7 @@ local function drinkFromContainer(e)
             local currentAmount = e.itemData.data.waterAmount
             local maxAmount = thirstController.getBottleData(e.item.id).capacity
             local message = string.format("%s (%d/%d)", waterName, currentAmount, maxAmount)
-            common.helper.messageBox{
+            tes3ui.showMessageMenu{
                 message = message,
                 buttons = {
                     {
@@ -311,7 +311,7 @@ local function drinkFromContainer(e)
                         end
                     },
                 },
-                doesCancel = true,
+                cancels = true,
             }
         --If water is dirty, give option to drink or empty
         else

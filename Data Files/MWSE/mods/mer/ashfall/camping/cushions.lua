@@ -75,10 +75,10 @@ local function cushionMenu(e)
             end
         },
     }
-    common.helper.messageBox{
+    tes3ui.showMessageMenu{
         message = message,
         buttons = buttons,
-        doesCancel = true
+        cancels = true
     }
 end
 

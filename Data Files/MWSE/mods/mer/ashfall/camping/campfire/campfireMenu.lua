@@ -86,7 +86,7 @@ local function onActivateCampfire(e)
                         buttonData.enableRequirements(campfire)
                     )
                 end,
-                doesCancel = buttonData.doesCancel
+                cancels = buttonData.cancels
             })
         end
     end
@@ -106,10 +106,10 @@ local function onActivateCampfire(e)
             addButton(buttons, buttonData)
         end
 
-        common.helper.messageBox({
+        tes3ui.showMessageMenu({
             message = text,
             buttons = buttons,
-            doesCancel = true
+            cancels = true
         })
     end
 end

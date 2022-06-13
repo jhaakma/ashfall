@@ -368,10 +368,10 @@ function this.showFastTimeMenu(e)
         })
     end
     local message = e.message or (e.sleeping and "Resting" or "Waiting" )
-    common.helper.messageBox{
+    tes3ui.showMessageMenu{
         message = message,
         buttons = buttons,
-        doesCancel = true,
+        cancels = true,
     }
 end
 
