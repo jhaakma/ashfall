@@ -2,6 +2,18 @@ local common = require("mer.ashfall.common.common")
 local logger = common.createLogger("harvestService")
 local config = require("mer.ashfall.config").config
 local harvestConfigs = require("mer.ashfall.harvest.config")
+local ReferenceController = require("mer.ashfall.referenceController")
+local destroyedHarvestables = ReferenceController.registerReferenceController{
+    id = "destroyedHarvestable",
+    ---@param self any
+    ---@param ref tes3reference
+    requirements = function(self, ref)
+        return ref.disabled
+            and (ref.data and ref.data.ashfallDestroyedHarvestable)
+    end
+}
+
+
 local HarvestService = {}
 
 local MAX_WEAPON_DAMAGE = 50
@@ -166,6 +178,7 @@ function HarvestService.showHarvestedMessage(numHarvested, harvestName)
 end
 
 ---@param harvestConfig AshfallHarvestConfig
+---@return number numHarvested The number of items that were harvested from the reference
 function HarvestService.addItems(harvestConfig)
     local roll = math.random()
     logger:debug("Roll: %s", roll)
@@ -179,19 +192,143 @@ function HarvestService.addItems(harvestConfig)
             tes3.addItem{reference=tes3.player, item= harvestable.id, count=numHarvested, playSound = false}
             HarvestService.showHarvestedMessage(numHarvested, tes3.getObject(harvestable.id).name)
             event.trigger("Ashfall:triggerPackUpdate")
-            return
+            return numHarvested
         end
         roll = roll - harvestable.chance
     end
 end
 
+
+
 ---@param reference tes3reference
 ---@param harvestConfig AshfallHarvestConfig
+---@return number numHarvested The number of items that were harvested from the reference
 function HarvestService.harvest(reference, harvestConfig)
     HarvestService.resetSwings(reference)
     common.skills.survival:progressSkill(harvestConfig.swingsNeeded * 2)
-    HarvestService.addItems(harvestConfig)
+    local numHarvested = HarvestService.addItems(harvestConfig)
     tes3.playSound{ reference = tes3.player, sound = "Item Misc Up"  }
+    HarvestService.updateTotalHarvested(reference, numHarvested)
+    return numHarvested
+end
+
+function HarvestService.updateTotalHarvested(reference, numHarvested)
+    reference.data.ashfallTotalHarvested = reference.data.ashfallTotalHarvested or 0
+    reference.data.ashfallTotalHarvested = reference.data.ashfallTotalHarvested + numHarvested
+end
+
+function HarvestService.getTotalHarvested(reference)
+    return reference.data.ashfallTotalHarvested or 0
+end
+
+function HarvestService.getSetDestructionLimit(reference, destructionLimit)
+    if not reference.data.ashfallDestructionLimit then
+        local limit = math.random(destructionLimit.min, destructionLimit.max)
+        reference.data.ashfallDestructionLimit = limit
+    end
+    return reference.data.ashfallDestructionLimit
+end
+
+---@param reference tes3reference
+---@param harvestConfig AshfallHarvestConfig
+function HarvestService.disableExhaustedHarvestable(reference, harvestConfig)
+    local destructionLimit = harvestConfig.destructionLimit
+    if not destructionLimit then return end
+    local totalHarvested = HarvestService.getTotalHarvested(reference)
+    local destructionLimit = HarvestService.getSetDestructionLimit(reference, destructionLimit)
+    if totalHarvested >= destructionLimit then
+        HarvestService.disableHarvestable(reference, harvestConfig, true)
+    end
+end
+
+function HarvestService.updateDisabledHarvestables()
+    destroyedHarvestables:iterate(function(ref)
+        if ref.position:distance(tes3.player.position) > (8192/2) then
+            logger:debug("Enabling Disabled Harvestable: %s", ref.id)
+            ref:enable()
+            ref.hasNoCollision = false
+            ref.data.ashfallDestroyedHarvestable = nil
+        end
+    end)
+end
+
+function HarvestService.disableNearbyRefs(harvestableRef, harvestConfig)
+    logger:debug("disabling nearby refs")
+    for ref in harvestableRef.cell:iterateReferences{tes3.objectType.container, tes3.objectType.static} do
+        if harvestConfig.clutter and harvestConfig.clutter[ref.baseObject.id:lower()] then
+            logger:trace("%s", ref.id)
+            if common.helper.getCloseEnough({ref1 = ref, ref2 = harvestableRef, distHorizontal = 400, distVertical = 1000}) then
+                logger:debug("close enough, disabling")
+                HarvestService.disableHarvestable(ref, harvestConfig, false)
+            end
+        end
+    end
+end
+
+function HarvestService.disableHarvestable(reference, harvestConfig, doNearbyRefs)
+    logger:debug("Disabling harvestable %s", reference)
+    reference.data.ashfallTotalHarvested = nil
+    reference.data.ashfallDestructionLimit = nil
+    HarvestService.demolish(reference)
+    reference.data.ashfallDestroyedHarvestable = true
+    if doNearbyRefs then
+        if harvestConfig.fallSound then
+            tes3.playSound{ reference = reference, sound = harvestConfig.fallSound}
+        end
+        if harvestConfig.clutter then
+            HarvestService.disableNearbyRefs(reference, harvestConfig)
+        end
+    end
+end
+
+function HarvestService.demolish(reference)
+    --remove collision
+    reference.hasNoCollision = true
+    --move ref down on a timer then disable
+    local safeRef = tes3.makeSafeObjectHandle(reference)
+    local distance = 500
+    local iterations = 1000
+    local duration = 1.4
+    local originalLocation = reference.position:copy()
+    timer.start{
+        duration = duration/iterations,
+        iterations = iterations,
+        type = timer.simulate,
+        callback = function()
+            if safeRef:valid() then
+                local ref = safeRef:getObject()
+                tes3.positionCell{
+                    reference = ref,
+                    cell = ref.cell,
+                    position = {
+                        ref.position.x,
+                        ref.position.y,
+                        ref.position.z - (distance/iterations)
+                    },
+                    orientation = ref.orientation
+                }
+            end
+        end
+    }
+    timer.start{
+        duration = duration,
+        iterations = 1,
+        type = timer.simulate,
+        callback = function()
+            if safeRef:valid() then
+
+                local ref = safeRef:getObject()
+                ref:disable()
+                tes3.positionCell{
+                    reference = ref,
+                    cell = ref.cell,
+                    position = originalLocation,
+                    orientation = ref.orientation
+                }
+                destroyedHarvestables:addReference(reference)
+            end
+        end
+    }
 end
 
 return HarvestService

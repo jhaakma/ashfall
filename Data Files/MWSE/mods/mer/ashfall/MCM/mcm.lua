@@ -324,6 +324,12 @@ local function registerModConfig()
                 variable = mwse.mcm.createTableVariable{ id = "enableDiseasedMeat", table = config },
             }
 
+            categoryMisc:createYesNoButton{
+                label = "Disable Harvested Trees/Vegetation",
+                description = "If this is enabled, trees and vegetation will disappear after you've harvested too much materials from it. They will come back the next time you enter the cell.",
+                variable = mwse.mcm.createTableVariable{ id = "disableHarvested", table = config}
+            }
+
 
         end --\Miscellanious Category
 

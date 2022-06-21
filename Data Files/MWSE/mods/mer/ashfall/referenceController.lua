@@ -24,13 +24,25 @@ local ReferenceController = {
         return self:requirements(ref)
     end,
 
+    iterate = function(self, callback)
+        for ref, _ in pairs(self.references) do
+            --check requirements in case it's no longer valid
+            if self:requirements(ref) then
+                if ref.sceneNode then
+                    callback(ref)
+                end
+            else
+                --no longer valid, remove from ref list
+                self.references[ref] = nil
+            end
+        end
+    end,
+
     references = nil,
     requirements = nil
 }
 
 this.controllers = {
-
-
     campfire = ReferenceController:new{
         requirements = function(_, ref)
             return ref.sceneNode
@@ -156,6 +168,7 @@ function this.registerReferenceController(e)
     assert(e.id, "No id provided")
     assert(e.requirements, "No reference requirements provieded")
     this.controllers[e.id] =  ReferenceController:new{ requirements = e.requirements }
+    return this.controllers[e.id]
 end
 event.register("Ashfall:RegisterReferenceController", this.registerReferenceController)
 

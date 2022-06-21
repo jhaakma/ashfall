@@ -87,6 +87,7 @@ return {
     potionsHydrate = true,
     seeThroughTents = true,
     disableRainInTents = true,
+    disableHarvested = true,
 
     hungerRate = 20,
     thirstRate = 30,

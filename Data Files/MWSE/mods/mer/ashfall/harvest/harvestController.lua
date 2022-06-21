@@ -5,6 +5,17 @@ local logger = common.createLogger("harvestController")
 local config = require("mer.ashfall.config").config
 local service = require("mer.ashfall.harvest.harvestService")
 
+
+
+event.register("loaded", function()
+    timer.start{
+        type = timer.real,
+        iterations = -1,
+        duration = 0.1,
+        callback = service.updateDisabledHarvestables
+    }
+end)
+
 ---@param e attackEventData
 local function harvestOnAttack(e)
     logger:debug("harvestOnAttack")
@@ -88,6 +99,10 @@ local function harvestOnAttack(e)
 
     --Harvest the resources
     service.harvest(reference, harvestConfig)
+
+    if harvestConfig.destructionLimit and config.disableHarvested then
+        service.disableExhaustedHarvestable(reference, harvestConfig)
+    end
 end
 
 event.register("attack", harvestOnAttack )

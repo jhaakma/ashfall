@@ -7,6 +7,10 @@
 ---@field count number
 ---@field chance number
 
+---@class AshfallHarvestConfigDestructionLimit
+---@field min number
+---@field max number
+
 ---@class AshfallHarvestConfig
 ---@field name string Name needed for error message when harvesting is illegal
 ---@field weaponTypes table<number, AshfallHarvestWeaponData> Key: tes3.weaponType
@@ -16,6 +20,7 @@
 ---@field items AshfallHarvestConfigHarvestable[] Array of harvestables
 ---@field sound string
 ---@field swingsNeeded number
+---@field destructionLimit AshfallHarvestConfigDestructionLimit The min/max that can be harvested before being destroyed
 
 local attackDirection = {
     slash = 1,
@@ -23,6 +28,9 @@ local attackDirection = {
     stab = 3
 }
 local config = {}
+
+
+
 config.woodaxes = {
     ashfall_woodaxe_flint = {
         effectiveness = 1.4,
@@ -51,6 +59,7 @@ config.attackDirectionMapping = {
         max = "stabMax"
     }
 }
+
 config.activatorHarvestData = {
     woodSource = {
         attackDirections = {
@@ -75,7 +84,18 @@ config.activatorHarvestData = {
             { id = "ashfall_firewood", count = 10, chance = 1.0 },
         },
         sound = "ashfall\\chopshort.wav",
-        swingsNeeded = 2
+        swingsNeeded = 2,
+        destructionLimit = {
+            min = 10,
+            max = 20
+        },
+        clutter = {
+            ["flora_bc_shelffungus_01"] = true,
+            ["flora_bc_shelffungus_02"] = true,
+            ["flora_bc_shelffungus_03"] = true,
+            ["flora_bc_shelffungus_04"] = true,
+        },
+        fallSound = "ashfall_treefall",
     },
     resinSource = {
         attackDirections = {
@@ -101,7 +121,26 @@ config.activatorHarvestData = {
             { id = "ingred_resin_01", count = 3, chance = 0.3 },
         },
         sound = "ashfall\\chopshort.wav",
-        swingsNeeded = 2
+        swingsNeeded = 2,
+        destructionLimit = {
+            min = 15,
+            max = 30
+        },
+        clutter = {
+            ["flora_bc_shelffungus_01"] = true,
+            ["flora_bc_shelffungus_02"] = true,
+            ["flora_bc_shelffungus_03"] = true,
+            ["flora_bc_shelffungus_04"] = true,
+            ["flora_root_wg_01"] = true,
+            ["flora_root_wg_02"] = true,
+            ["flora_root_wg_03"] = true,
+            ["flora_root_wg_04"] = true,
+            ["flora_root_wg_05"] = true,
+            ["flora_root_wg_06"] = true,
+            ["flora_root_wg_07"] = true,
+            ["flora_root_wg_08"] = true,
+        },
+        fallSound = "ashfall_treefall",
     },
     vegetation = {
         attackDirections = {
@@ -129,7 +168,11 @@ config.activatorHarvestData = {
             { id = "ashfall_plant_fibre", count = 15, chance = 1.0 },
         },
         sound ="ashfall\\chopveg.wav",
-        swingsNeeded = 1
+        swingsNeeded = 1,
+        destructionLimit = {
+            min = 10,
+            max = 20
+        },
     },
     stoneSource = {
         attackDirections = {
@@ -149,7 +192,7 @@ config.activatorHarvestData = {
             { id = "ashfall_flint", count = 2, chance = 1.0 }
         },
         sound = "Fx\\Heavy Armor Hit.wav",
-        swingsNeeded = 4
+        swingsNeeded = 4,
     }
 }
 
