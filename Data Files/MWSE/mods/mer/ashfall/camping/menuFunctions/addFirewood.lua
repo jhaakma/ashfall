@@ -29,6 +29,11 @@ return {
     enableRequirements = function(campfire)
         return getFirewoodCount() > 0 and canAddFireWoodToCampfire(campfire)
     end,
+    tooltip = function()
+        return common.helper.showHint(
+            "You can add firewood by dropping it directly onto the fire."
+        )
+    end,
     tooltipDisabled = getDisabledText,
     callback = function(campfire)
         tes3.playSound{

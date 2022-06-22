@@ -96,7 +96,6 @@ local function ingredientSelect(campfire, foodType)
     end)
 end
 
-
 return {
     text = "Add Ingredient",
     showRequirements = function(ref)
@@ -112,6 +111,9 @@ return {
     tooltipDisabled = {
         text = "An Iron Ladle is required to make Stew."
     },
+    tooltip = function()
+        return common.helper.showHint("You can add ingredients by dropping them directly into the cooking pot.")
+    end,
     callback = function(reference)
         --add buttons for ingredients that can be added
         local buttons = {}

@@ -1,8 +1,11 @@
 local common = require ("mer.ashfall.common.common")
+local config = require("mer.ashfall.config").config
 local thirstController = require("mer.ashfall.needs.thirstController")
 local LiquidContainer   = require("mer.ashfall.liquid.LiquidContainer")
 local campfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 local teaConfig = common.staticConfigs.teaConfig
+
+
 return {
     text = "Add Water",
     showRequirements = function(campfire)
@@ -21,6 +24,11 @@ return {
         )
         local isTea = teaConfig.teaTypes[campfire.data.waterType] ~= nil
         return needsWater and hasUtensil and not isTea
+    end,
+    tooltip = function()
+        return common.helper.showHint(
+            "You can add water by dragging and dropping a water-filled container directly onto the target."
+        )
     end,
     callback = function(campfire)
         local to = LiquidContainer.createFromReference(campfire)

@@ -25,6 +25,12 @@ return  {
     tooltipDisabled = {
         text = "Cannot remove while stew or tea is in progress."
     },
+    tooltip = function()
+        return common.helper.showHint(string.format(
+            "You can pick this up directly by holding %s and activating.",
+            common.helper.getModifierKeyString()
+        ))
+    end,
     callback = function(campfire)
         --add utensil
         tes3.addItem{

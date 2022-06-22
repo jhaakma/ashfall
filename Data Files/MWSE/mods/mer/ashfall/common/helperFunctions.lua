@@ -882,6 +882,46 @@ function this.isModifierKeyPressed()
     return tes3.worldController.inputController:isKeyDown(config.modifierHotKey.keyCode)
 end
 
+function this.getModifierKeyString()
+    return this.get
+end
+
+function this.getLetter(keyCode)
+    for letter, code in pairs(tes3.scanCode) do
+        if code == keyCode then
+            local returnString = tes3.scanCodeToNumber[code] or letter
+            return string.upper(returnString)
+        end
+    end
+    return nil
+end
+
+function this.getComboString(keyCombo)
+	-- Returns "SHIFT-X" if shift is held down but the active key is not Shift,
+	-- otherwise just "X" (X being the key being pressed)
+	-- And so on for Alt and Ctrl
+
+	local letter = this.getLetter(keyCombo.keyCode) or string.format("{%s}", mwse.mcm.i18n("unknown key"))
+	local hasAlt = (keyCombo.isAltDown and keyCombo.keyCode ~= tes3.scanCode.lAlt and keyCombo.keyCode ~=
+	               tes3.scanCode.rAlt)
+	local hasShift = (keyCombo.isShiftDown and keyCombo.keyCode ~= tes3.scanCode.lShift and keyCombo.keyCode ~=
+	                 tes3.scanCode.rShift)
+	local hasCtrl = (keyCombo.isControlDown and keyCombo.keyCode ~= tes3.scanCode.lCtrl and keyCombo.keyCode ~=
+	                tes3.scanCode.rCtrl)
+	local prefix = (hasAlt and "Alt-" or hasShift and "Shift-" or hasCtrl and "Ctrl-" or "")
+	return (prefix .. letter)
+end
+
+
+function this.showHint(hint)
+    if config.showHints then
+        return {
+            header = "Hint:",
+            text = hint
+        }
+    end
+end
+
 function this.playerHasMaterials(materials)
     if not materials then return false end
     local hasMaterials = true

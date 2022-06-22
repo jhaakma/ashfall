@@ -205,12 +205,21 @@ WaterFilter.buttons = {
         text = "Filter Water",
         enableRequirements = WaterFilter.hasRoomToFilter,
         tooltipDisabled = { text = "Water Filter is full." },
+        tooltip = function()
+            return common.helper.showHint("You can filter water by dropping a water-filled container directly onto the water filter.")
+        end,
         callback = WaterFilter.filterWaterCallback
     },
     collectWater = {
         text = "Collect Water",
         enableRequirements = WaterFilter.hasWaterToCollect,
         tooltipDisabled = { text = "There is no water to collect." },
+        tooltip = function()
+            return common.helper.showHint(string.format(
+                "You can collect water by dropping a container directly onto the filter while holdind down %s.",
+                common.helper.getModifierKeyString()
+            ))
+        end,
         callback = WaterFilter.collectWaterCallback
     }
 }

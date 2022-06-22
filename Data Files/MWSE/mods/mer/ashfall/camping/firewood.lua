@@ -95,8 +95,21 @@ local function onActivateFirewood(e)
             tes3ui.showMessageMenu{
                 message = string.format("You have %d %s.", e.target.stackSize, e.target.object.name),
                 buttons = {
-                    { text = "Create Campfire", callback = function() placeCampfire(e) end },
-                    { text = "Pick Up", callback = function() pickupFirewood(e.target) end },
+                    {
+                        text = "Create Campfire",
+                        callback = function() placeCampfire(e) end
+                    },
+                    {
+                        text = "Pick Up",
+                        callback = function() pickupFirewood(e.target) end,
+                        tooltip = function()
+                            return common.helper.showHint(
+                                string.format("You can pick firewood up directly by holding down %s and activating.",
+                                    common.helper.getModifierKeyString()
+                                )
+                            )
+                        end
+                    },
                 },
                 cancels = true
             }

@@ -1,5 +1,6 @@
 
 return {
+    showHints = true,
     checkForUpdates = false,
     --intro setup
     doIntro = false,

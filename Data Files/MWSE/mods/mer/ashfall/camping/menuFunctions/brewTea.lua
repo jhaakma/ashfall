@@ -10,6 +10,11 @@ return {
         local hasWater = ref.data.waterAmount and ref.data.waterAmount > 0
         return isKettle and hasWater and ref.data.waterType == nil
     end,
+    tooltip = function()
+        return common.helper.showHint(
+            "You can brew tea by dragging and dropping a herb directly onto the teapot."
+        )
+    end,
     callback = function(campfire)
         timer.delayOneFrame(function()
             common.data.inventorySelectTeaBrew = true

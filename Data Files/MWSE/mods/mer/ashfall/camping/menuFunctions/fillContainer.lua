@@ -24,6 +24,12 @@ return  {
     tooltipDisabled = {
         text = common.messages.noContainersToFill
     },
+    tooltip = function()
+        return common.helper.showHint(string.format(
+            "You can fill a container directly by dropping it onto the target while holding down %s.",
+            common.helper.getModifierKeyString()
+        ))
+    end,
     callback = function(reference)
         thirstController.fillContainer{
             source = LiquidContainer.createFromReference(reference),

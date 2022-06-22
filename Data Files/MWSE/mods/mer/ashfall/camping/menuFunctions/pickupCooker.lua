@@ -20,6 +20,12 @@ return {
             text = "Must be extinguished before picking up."
         }
     end,
+    tooltip = function()
+        return common.helper.showHint(string.format(
+            "You can pick this up directly by holding %s and activating.",
+            common.helper.getModifierKeyString()
+        ))
+    end,
     callback = function(campfire)
         campfire.data.destroyed = true
         local recoveredFuel =  math.floor(campfire.data.fuelLevel / 2)

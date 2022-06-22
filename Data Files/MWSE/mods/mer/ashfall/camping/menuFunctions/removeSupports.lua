@@ -16,6 +16,12 @@ return {
     tooltipDisabled = {
         text = "Utensil must be removed first."
     },
+    tooltip = function()
+        return common.helper.showHint(string.format(
+            "You can pick this up directly by holding %s and activating.",
+            common.helper.getModifierKeyString()
+        ))
+    end,
     callback = function(campfire)
         local supports = campfire.data.supportsId
         local data = common.staticConfigs.supports[supports:lower()]

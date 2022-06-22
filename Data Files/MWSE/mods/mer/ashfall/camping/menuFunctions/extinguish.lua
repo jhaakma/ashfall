@@ -16,6 +16,9 @@ return {
     showRequirements = function(campfire)
         return campfire.data.isLit and not campfire.data.isStatic
     end,
+    tooltip = function()
+        return common.helper.showHint("You can extinguish the fire by dropping a water-filled container directly onto it.")
+    end,
     callback = function(campfire)
         timer.delayOneFrame(function()
             logger:debug("Opening Inventory Select Menu")

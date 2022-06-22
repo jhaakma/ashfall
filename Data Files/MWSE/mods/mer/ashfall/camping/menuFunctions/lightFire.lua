@@ -39,6 +39,9 @@ local menuConfig = {
             campfire.data.fuelLevel > 0.5
         )
     end,
+    tooltip = function()
+        return common.helper.showHint("You can light the fire by dropping a flint and steel or a light directly onto it.")
+    end,
     callback = function(campfire)
         timer.delayOneFrame(function()
             logger:debug("Opening Inventory Select Menu")

@@ -20,6 +20,9 @@ return {
         end
         return false
     end,
+    tooltip = function()
+        return common.helper.showHint("You can add a ladle by dropping it directly onto the cooking pot.")
+    end,
     tooltipDisabled = {
         text = "Requires 1 Ladle."
     },

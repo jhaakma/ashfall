@@ -228,6 +228,12 @@ local function registerModConfig()
                 description = "Ashfall features not directly related to survival mechanics.",
             }
 
+            categoryMisc:createYesNoButton{
+                label = "Show Hint Tooltips",
+                description = "Show additional tooltips explaining various mechanics.",
+                variable = mwse.mcm.createTableVariable{ id = "showHints", table = config }
+            }
+
             categoryMisc:createKeyBinder{
                 label = "Assign Modifier Hotkey",
                 description = "Key Modifier for accessing special options. For example, hold down this key while activating a water bottle to open the water menu (to empty or drink from the bottle directly). Default: Left Shift.",

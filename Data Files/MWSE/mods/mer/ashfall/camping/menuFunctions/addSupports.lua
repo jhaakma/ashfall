@@ -57,6 +57,7 @@ local function supportsSelect(campfire)
     end)
 end
 
+
 return {
     text = "Add Supports",
     showRequirements = function(campfire)

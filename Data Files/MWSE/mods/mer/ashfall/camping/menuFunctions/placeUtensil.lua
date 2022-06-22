@@ -98,6 +98,12 @@ return {
         end
         return false
     end,
+    tooltip = function()
+        return common.helper.showHint(string.format(
+            "You can attach a utensil by dropping it directly onto the campfire.",
+            common.helper.getModifierKeyString()
+        ))
+    end,
     tooltipDisabled = {
         text = "You don't have any suitable utensils."
     },

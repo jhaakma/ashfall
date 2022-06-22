@@ -13,6 +13,12 @@ return {
             campfire.data.dynamicConfig.grill == "dynamic"
         )
     end,
+    tooltip = function()
+        return common.helper.showHint(string.format(
+            "You can pick this up directly by holding %s and activating.",
+            common.helper.getModifierKeyString()
+        ))
+    end,
     callback = function(campfire)
         local grillId = campfire.data.grillId
         local grillData = common.staticConfigs.grills[grillId:lower()]

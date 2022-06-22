@@ -82,6 +82,9 @@ return {
         end
         return false
     end,
+    tooltip = function()
+        return common.helper.showHint("You can hang a utensil by dropping it directly onto the supports.")
+    end,
     tooltipDisabled = {
         text = "You don't have any suitable utensils."
     },
