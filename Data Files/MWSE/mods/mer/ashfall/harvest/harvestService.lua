@@ -182,6 +182,7 @@ end
 function HarvestService.addItems(harvestConfig)
     local roll = math.random()
     logger:debug("Roll: %s", roll)
+    ---@param harvestable AshfallHarvestConfigHarvestable
     for _, harvestable in ipairs(harvestConfig.items) do
         local chance = harvestable.chance
         logger:debug("Chance: %s", chance)
@@ -215,6 +216,7 @@ end
 function HarvestService.updateTotalHarvested(reference, numHarvested)
     reference.data.ashfallTotalHarvested = reference.data.ashfallTotalHarvested or 0
     reference.data.ashfallTotalHarvested = reference.data.ashfallTotalHarvested + numHarvested
+    logger:debug("Added %s to total harvested, new total: %s", numHarvested, reference.data.ashfallTotalHarvested)
 end
 
 function HarvestService.getTotalHarvested(reference)
@@ -223,10 +225,24 @@ end
 
 function HarvestService.getSetDestructionLimit(reference, destructionLimit)
     if not reference.data.ashfallDestructionLimit then
-        local limit = math.random(destructionLimit.min, destructionLimit.max)
+        local height = HarvestService.getRefHeight(reference)
+        local minIn = destructionLimit.minHeight
+        local maxIn = destructionLimit.maxHeight
+        local minOut = destructionLimit.min
+        local maxOut = destructionLimit.max
+        local limit = math.remap(height, minIn, maxIn, minOut, maxOut)
+        limit = math.clamp(limit, minOut, maxOut)
+        limit = math.ceil(limit)
+        logger:debug("Ref height: %s", height)
+        logger:debug("Set destruction limit to %s", limit)
         reference.data.ashfallDestructionLimit = limit
     end
     return reference.data.ashfallDestructionLimit
+end
+
+---@param reference tes3reference
+function HarvestService.getRefHeight(reference)
+    return (reference.object.boundingBox.max.z - reference.object.boundingBox.min.z) * reference.scale
 end
 
 ---@param reference tes3reference
@@ -237,7 +253,14 @@ function HarvestService.disableExhaustedHarvestable(reference, harvestConfig)
     local totalHarvested = HarvestService.getTotalHarvested(reference)
     local destructionLimit = HarvestService.getSetDestructionLimit(reference, destructionLimit)
     if totalHarvested >= destructionLimit then
-        HarvestService.disableHarvestable(reference, harvestConfig, true)
+        local harvestableHeight = HarvestService.getRefHeight(reference)
+        HarvestService.disableHarvestable(reference, harvestableHeight)
+        if harvestConfig.fallSound then
+            tes3.playSound{ sound = harvestConfig.fallSound}
+        end
+        if harvestConfig.clutter then
+            HarvestService.disableNearbyRefs(reference, harvestConfig, harvestableHeight)
+        end
     end
 end
 
@@ -252,43 +275,35 @@ function HarvestService.updateDisabledHarvestables()
     end)
 end
 
-function HarvestService.disableNearbyRefs(harvestableRef, harvestConfig)
+function HarvestService.disableNearbyRefs(harvestableRef, harvestConfig, harvestableHeight)
     logger:debug("disabling nearby refs")
     for ref in harvestableRef.cell:iterateReferences{tes3.objectType.container, tes3.objectType.static} do
         if harvestConfig.clutter and harvestConfig.clutter[ref.baseObject.id:lower()] then
             logger:trace("%s", ref.id)
             if common.helper.getCloseEnough({ref1 = ref, ref2 = harvestableRef, distHorizontal = 400, distVertical = 1000}) then
                 logger:debug("close enough, disabling")
-                HarvestService.disableHarvestable(ref, harvestConfig, false)
+                HarvestService.disableHarvestable(ref, harvestableHeight)
             end
         end
     end
 end
 
-function HarvestService.disableHarvestable(reference, harvestConfig, doNearbyRefs)
+function HarvestService.disableHarvestable(reference, harvestableHeight)
     logger:debug("Disabling harvestable %s", reference)
     reference.data.ashfallTotalHarvested = nil
     reference.data.ashfallDestructionLimit = nil
-    HarvestService.demolish(reference)
+    HarvestService.demolish(reference, harvestableHeight)
     reference.data.ashfallDestroyedHarvestable = true
-    if doNearbyRefs then
-        if harvestConfig.fallSound then
-            tes3.playSound{ reference = reference, sound = harvestConfig.fallSound}
-        end
-        if harvestConfig.clutter then
-            HarvestService.disableNearbyRefs(reference, harvestConfig)
-        end
-    end
 end
 
-function HarvestService.demolish(reference)
+---@param reference tes3reference
+function HarvestService.demolish(reference, harvestableHeight)
     --remove collision
     reference.hasNoCollision = true
     --move ref down on a timer then disable
     local safeRef = tes3.makeSafeObjectHandle(reference)
-    local distance = 500
     local iterations = 1000
-    local duration = 1.4
+    local duration = 1.2
     local originalLocation = reference.position:copy()
     timer.start{
         duration = duration/iterations,
@@ -303,7 +318,7 @@ function HarvestService.demolish(reference)
                     position = {
                         ref.position.x,
                         ref.position.y,
-                        ref.position.z - (distance/iterations)
+                        ref.position.z - (harvestableHeight/iterations)
                     },
                     orientation = ref.orientation
                 }

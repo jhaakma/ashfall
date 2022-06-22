@@ -21,6 +21,8 @@
 ---@field sound string
 ---@field swingsNeeded number
 ---@field destructionLimit AshfallHarvestConfigDestructionLimit The min/max that can be harvested before being destroyed
+---@field fallSound string The sound to play when the harvestable is destroyed
+---@field clutter table<string, boolean> A list of clutter items that are destroyed alongside this harvestable.
 
 local attackDirection = {
     slash = 1,
@@ -86,8 +88,10 @@ config.activatorHarvestData = {
         sound = "ashfall\\chopshort.wav",
         swingsNeeded = 2,
         destructionLimit = {
-            min = 10,
-            max = 20
+            min = 8,
+            minHeight = 300,
+            max = 25,
+            maxHeight = 4000,
         },
         clutter = {
             ["flora_bc_shelffungus_01"] = true,
@@ -123,8 +127,10 @@ config.activatorHarvestData = {
         sound = "ashfall\\chopshort.wav",
         swingsNeeded = 2,
         destructionLimit = {
-            min = 15,
-            max = 30
+            min = 10,
+            minHeight = 500,
+            max = 30,
+            maxHeight = 4000,
         },
         clutter = {
             ["flora_bc_shelffungus_01"] = true,
@@ -170,8 +176,10 @@ config.activatorHarvestData = {
         sound ="ashfall\\chopveg.wav",
         swingsNeeded = 1,
         destructionLimit = {
-            min = 10,
-            max = 20
+            min = 8,
+            minHeight = 50,
+            max = 20,
+            maxHeight = 500,
         },
     },
     stoneSource = {
