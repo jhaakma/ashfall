@@ -181,6 +181,7 @@ config.activatorHarvestData = {
             max = 20,
             maxHeight = 500,
         },
+        fallSound = "ashfall_vegfall",
     },
     stoneSource = {
         attackDirections = {
