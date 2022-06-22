@@ -296,6 +296,10 @@ function HarvestService.disableHarvestable(reference, harvestableHeight)
     reference.data.ashfallDestroyedHarvestable = true
 end
 
+
+local m1 = tes3matrix33.new()
+local m2 = tes3matrix33.new()
+
 ---@param reference tes3reference
 function HarvestService.demolish(reference, harvestableHeight)
     --remove collision
@@ -305,25 +309,49 @@ function HarvestService.demolish(reference, harvestableHeight)
     local iterations = 1000
     local duration = 1.2
     local originalLocation = reference.position:copy()
+    local fellNode = reference.sceneNode:getObjectByName("ASHFALL_TREEFALL")
+    local originalNodeRotation
+    if fellNode then
+        originalNodeRotation = fellNode.rotation:copy()
+    end
+
+    local function animateFellNode()
+        if safeRef:valid() then
+            local rotation = 90 / iterations
+            local playerZ = tes3.player.orientation.z
+            local refZ = reference.orientation.z
+            local rotZ = playerZ - refZ + 90
+
+            local rotX = rotation * math.sin(rotZ)
+            local rotY = rotation * math.cos(rotZ)
+            m1:toRotationX(math.rad(rotX))
+            m2:toRotationY(math.rad(rotY))
+            fellNode.rotation = fellNode.rotation * m1:copy() * m2:copy()
+            fellNode:update()
+        end
+    end
+
+    local function animateDefault()
+        if safeRef:valid() then
+            local ref = safeRef:getObject()
+            tes3.positionCell{
+                reference = ref,
+                cell = ref.cell,
+                position = {
+                    ref.position.x,
+                    ref.position.y,
+                    ref.position.z - (harvestableHeight/iterations)
+                },
+                orientation = ref.orientation
+            }
+        end
+    end
+
     timer.start{
         duration = duration/iterations,
         iterations = iterations,
         type = timer.simulate,
-        callback = function()
-            if safeRef:valid() then
-                local ref = safeRef:getObject()
-                tes3.positionCell{
-                    reference = ref,
-                    cell = ref.cell,
-                    position = {
-                        ref.position.x,
-                        ref.position.y,
-                        ref.position.z - (harvestableHeight/iterations)
-                    },
-                    orientation = ref.orientation
-                }
-            end
-        end
+        callback = fellNode and animateFellNode or animateDefault
     }
     timer.start{
         duration = duration,
@@ -341,6 +369,10 @@ function HarvestService.demolish(reference, harvestableHeight)
                     orientation = ref.orientation
                 }
                 destroyedHarvestables:addReference(reference)
+                if originalLocation and fellNode then
+                    fellNode.rotation = originalNodeRotation
+                    fellNode:update()
+                end
             end
         end
     }
