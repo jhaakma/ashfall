@@ -31,7 +31,7 @@ local function calcHealth()
     if baseHealthCache then
         tes3.setStatistic({
             reference = tes3.mobilePlayer,
-            base = baseHealthCache,
+            base = math.floor(baseHealthCache),
             name = "health"
         })
         baseHealthCache = nil
@@ -42,7 +42,7 @@ local function calcHealth()
                 effect = tes3.effect.fortifyHealth,
             })
             local max =  getMaxHealth() + fortifyEffect
-            if math.floor(tes3.mobilePlayer.health.current) > max then
+            if tes3.mobilePlayer.health.current > max then
                 tes3.setStatistic({
                     reference = tes3.mobilePlayer,
                     current = max,
@@ -65,7 +65,7 @@ local function calcMagicka()
         effect = tes3.effect.fortifyMagicka,
     })
     local max = getMaxMagicka() + fortifyEffect
-    if tes3.mobilePlayer.magicka.current > max then
+    if math.floor(tes3.mobilePlayer.magicka.current) > math.floor(max) then
         tes3.setStatistic({
             reference = tes3.mobilePlayer,
             current = max,
@@ -144,7 +144,7 @@ local function enterRestMenu()
     baseHealthCache = tes3.mobilePlayer.health.base
     tes3.setStatistic({
         reference = tes3.mobilePlayer,
-        base = maxHealth,
+        base = math.floor(maxHealth),
         name = "health"
     })
 end

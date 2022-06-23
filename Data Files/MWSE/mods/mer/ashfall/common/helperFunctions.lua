@@ -883,7 +883,7 @@ function this.isModifierKeyPressed()
 end
 
 function this.getModifierKeyString()
-    return this.get
+    return this.getLetter(config.modifierHotKey.keyCode)
 end
 
 function this.getLetter(keyCode)
