@@ -395,8 +395,17 @@ this.list.tree = Activator:new{
     name = "Tree",
     type = this.types.resinSource,
     mcmSetting = nil,
+    ids = {
+        flora_bc_tree_01 = true,
+        flora_bc_tree_02 = true,
+        flora_bc_tree_03 = true,
+        flora_bc_tree_04 = true,
+        flora_bc_tree_05 = true,
+        flora_bc_tree_06 = true,
+        flora_bc_tree_07 = true,
+        flora_bc_tree_08 = true,
+    },
     patterns = {
-        ["flora_bc_tree"] = true,
         ["flora_emp_parasol"] = true,
         ["flora_tree"] = true,
         ["vurt_baobab"] = true,
@@ -430,6 +439,13 @@ this.list.deadTree = Activator:new{
     name = "Dead Tree",
     type = this.types.woodSource,
     mcmSetting = nil,
+    ids = {
+        flora_bc_tree_09 = true,
+        flora_bc_tree_10 = true,
+        flora_bc_tree_11 = true,
+        flora_bc_tree_12 = true,
+        flora_bc_tree_13 = true,
+    },
     patterns = {
         ["flora_ashtree"] = true,
     }
