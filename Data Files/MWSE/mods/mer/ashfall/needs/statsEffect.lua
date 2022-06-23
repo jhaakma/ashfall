@@ -42,7 +42,7 @@ local function calcHealth()
                 effect = tes3.effect.fortifyHealth,
             })
             local max =  getMaxHealth() + fortifyEffect
-            if tes3.mobilePlayer.health.current > max then
+            if math.floor(tes3.mobilePlayer.health.current) > max then
                 tes3.setStatistic({
                     reference = tes3.mobilePlayer,
                     current = max,

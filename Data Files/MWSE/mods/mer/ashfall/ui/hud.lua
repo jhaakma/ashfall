@@ -185,7 +185,7 @@ local function updateTooltips()
 
                     local stat = tes3.mobilePlayer[needData.stat]
                     local maxStat = statsEffect.getMaxStat(needData.stat)
-                    if maxStat < stat.base then
+                    if maxStat < math.floor(stat.base) then
                         local valText = text.parent.children[2]
                         valText.text = string.format("%d/%d",stat.current, maxStat)
 
