@@ -106,3 +106,22 @@ local function harvestOnAttack(e)
 end
 
 event.register("attack", harvestOnAttack )
+
+--- Reset harvestables on load.
+event.register("loaded", function()
+    service.destroyedHarvestables:iterate(function(reference)
+        service.enableHarvestable(reference)
+    end)
+end)
+
+
+--- Clear any data added when an item was felled from a tree.
+---@param e activateEventData
+event.register("activate", function(e)
+    if common.helper.isCarryable(e.target.baseObject) then
+        if e.target and e.target.data then
+            e.target.data.ashfallHarvestOriginalLocation = nil
+            e.target.data.ashfallDestroyedHarvestable = nil
+        end
+    end
+end)

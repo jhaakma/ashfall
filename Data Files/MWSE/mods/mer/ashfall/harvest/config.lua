@@ -23,6 +23,7 @@
 ---@field destructionLimit AshfallHarvestConfigDestructionLimit The min/max that can be harvested before being destroyed
 ---@field fallSound string The sound to play when the harvestable is destroyed
 ---@field clutter table<string, boolean> A list of clutter items that are destroyed alongside this harvestable.
+---@field dropLoot boolean If set, any items sitting on top of the reference will be "dropped" to the ground
 
 local attackDirection = {
     slash = 1,
@@ -63,9 +64,52 @@ config.attackDirectionMapping = {
 }
 
 config.activatorHarvestData = {
+    stump = {
+        attackDirections = {
+            [attackDirection.chop] = true,
+            [attackDirection.slash] = true
+        },
+        weaponTypes = {
+            [tes3.weaponType.axeOneHand] = {
+                effectiveness = 1.0,
+            },
+            [tes3.weaponType.axeTwoHand] = {
+                effectiveness = 1.0,
+            },
+        },
+        weaponIds = config.woodaxes,
+        requirements = function(weapon)
+            local isAxe = weapon.object.type == tes3.weaponType.axeOneHand
+                or weapon.object.type == tes3.weaponType.axeTwoHand
+            local isPick = string.find(weapon.object.id:lower(), "pick")
+            return isAxe and not isPick
+        end,
+        items = {
+            { id = "ashfall_firewood", count = 10, chance = 1.0 },
+        },
+        sound = "ashfall\\chopshort.wav",
+        swingsNeeded = 2,
+        destructionLimit = {
+            min = 8,
+            minHeight = 300,
+            max = 25,
+            maxHeight = 4000,
+        },
+        clutter = {
+            ["flora_bc_shelffungus_01"] = true,
+            ["flora_bc_shelffungus_02"] = true,
+            ["flora_bc_shelffungus_03"] = true,
+            ["flora_bc_shelffungus_04"] = true,
+            ["furn_bone_skull_01"] = true
+        },
+        fallSound = "ashfall_woodfall",
+        fallSpeed = 1.5,
+        dropLoot = true,
+    },
     woodSource = {
         attackDirections = {
-            [attackDirection.chop] = true
+            [attackDirection.chop] = true,
+            [attackDirection.slash] = true
         },
         weaponTypes = {
             [tes3.weaponType.axeOneHand] = {
@@ -99,18 +143,20 @@ config.activatorHarvestData = {
             ["flora_bc_shelffungus_03"] = true,
             ["flora_bc_shelffungus_04"] = true,
         },
-        fallSound = "ashfall_treefall",
+        fallSound = "ashfall_woodfall",
+        fallSpeed = 1.5,
     },
     resinSource = {
         attackDirections = {
-            [attackDirection.chop] = true
+            [attackDirection.chop] = true,
+            [attackDirection.slash] = true
         },
         weaponTypes = {
             [tes3.weaponType.axeOneHand] = {
                 effectiveness = 1.0
             },
             [tes3.weaponType.axeTwoHand] = {
-                effectiveness = 1.0
+                effectiveness = 1.25
             },
         },
         weaponIds = config.woodaxes,
@@ -147,6 +193,7 @@ config.activatorHarvestData = {
             ["flora_root_wg_08"] = true,
         },
         fallSound = "ashfall_treefall",
+        fallSpeed = 2.0,
     },
     vegetation = {
         attackDirections = {
@@ -182,6 +229,7 @@ config.activatorHarvestData = {
             maxHeight = 500,
         },
         fallSound = "ashfall_vegfall",
+        fallSpeed = 1.0,
     },
     stoneSource = {
         attackDirections = {

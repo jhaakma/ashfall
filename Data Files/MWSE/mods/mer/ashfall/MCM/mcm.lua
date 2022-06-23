@@ -331,11 +331,10 @@ local function registerModConfig()
             }
 
             categoryMisc:createYesNoButton{
-                label = "Disable Harvested Trees/Vegetation",
-                description = "If this is enabled, trees and vegetation will disappear after you've harvested too much materials from it. They will come back the next time you enter the cell.",
+                label = "Animated Tree Felling",
+                description = "If this is enabled, trees and vegetation will fall down after you've harvested too many materials from it. They will come back the next time you enter the cell. Realtime shadows and water reflections will not be updated, as this is based on MGE XE distant land statics, which may result in minor visual disparities.",
                 variable = mwse.mcm.createTableVariable{ id = "disableHarvested", table = config}
             }
-
 
         end --\Miscellanious Category
 

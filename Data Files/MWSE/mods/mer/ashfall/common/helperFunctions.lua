@@ -619,15 +619,33 @@ function this.rotationDifference(vec1, vec2)
     return m:toEulerXYZ()
 end
 
+local function log(doLog, message, ...)
+    if doLog then
+        mwse.log(message, ...)
+    end
+end
 ---@return niPickRecord
 function this.getGroundBelowRef(e)
+    e.doLog = e.doLog or false
     local ref = e.ref
-    local ignoreList = e.ignoreList or {}
+    log(e.doLog, "getGroundBelowRef: %s", ref)
+
+    local ignoreList = e.ignoreList and table.copy(e.ignoreList, {}) or {}
     table.insert(ignoreList, ref)
     table.insert(ignoreList, tes3.player)
-    if not ref then return end
-    if not ref.object.boundingBox then return end
-    local height = -ref.object.boundingBox.min.z + 5
+    log(e.doLog, "IgnoreList: ")
+    for _, ref in ipairs(ignoreList) do
+        log(e.doLog, " - %s", ref)
+    end
+    if not ref then
+        log(e.doLog, "getGroundBelowRef: no ref")
+        return
+    end
+    if not ref.object.boundingBox then
+        log(e.doLog, "getGroundBelowRef: no bounding box")
+        return
+    end
+    local height = -ref.object.boundingBox.min.z + (e.rootHeight or 5)
     local result = tes3.rayTest{
         position = {ref.position.x, ref.position.y, ref.position.z + height},
         direction = {0, 0, -1},
@@ -636,6 +654,16 @@ function this.getGroundBelowRef(e)
         useBackTriangles = false,
         root = e.terrainOnly and tes3.game.worldLandscapeRoot or nil
     }
+    if not result then
+        log(e.doLog, "getGroundBelowRef: no result")
+        return
+    end
+    if not result.reference then
+        log(e.doLog, "getGroundBelowRef: no reference")
+    else
+        log(e.doLog, "getGroundBelowRef: %s", result.reference)
+    end
+
     return result
 end
 
@@ -940,5 +968,27 @@ function this.playDeconstructionSound(reference)
     }
 end
 
+---@param object tes3object|tes3light
+function this.isCarryable(object)
+    local unCarryableTypes = {
+        [tes3.objectType.light] = true,
+        [tes3.objectType.container] = true,
+        [tes3.objectType.static] = true,
+        [tes3.objectType.door] = true,
+        [tes3.objectType.activator] = true,
+        [tes3.objectType.npc] = true,
+        [tes3.objectType.creature] = true,
+    }
+    if object then
+        if object.canCarry then
+            return true
+        end
+        local objType = object.objectType
+        if unCarryableTypes[objType] then
+            return false
+        end
+        return true
+    end
+end
 
 return this

@@ -3,18 +3,19 @@ local logger = common.createLogger("harvestService")
 local config = require("mer.ashfall.config").config
 local harvestConfigs = require("mer.ashfall.harvest.config")
 local ReferenceController = require("mer.ashfall.referenceController")
-local destroyedHarvestables = ReferenceController.registerReferenceController{
+local ActivatorController = require("mer.ashfall.activators.activatorController")
+
+local HarvestService = {}
+
+HarvestService.destroyedHarvestables = ReferenceController.registerReferenceController{
     id = "destroyedHarvestable",
     ---@param self any
     ---@param ref tes3reference
     requirements = function(self, ref)
-        return ref.disabled
-            and (ref.data and ref.data.ashfallDestroyedHarvestable)
+        return (ref.data and ref.data.ashfallDestroyedHarvestable)
     end
 }
 
-
-local HarvestService = {}
 
 local MAX_WEAPON_DAMAGE = 50
 
@@ -80,9 +81,9 @@ function HarvestService.getDamageEffect(weapon)
     local attackDirection = tes3.mobilePlayer.actionData.attackDirection
     local maxField = harvestConfigs.attackDirectionMapping[attackDirection].max
     local maxDamage = weapon.object[maxField]
-    logger:debug("maxDamage: %s", maxDamage)
+    logger:trace("maxDamage: %s", maxDamage)
     local cappedDamage = math.min(maxDamage, MAX_WEAPON_DAMAGE)
-    logger:debug("cappedDamage: %s", cappedDamage)
+    logger:trace("cappedDamage: %s", cappedDamage)
     return 1 + (cappedDamage / MAX_WEAPON_DAMAGE)
 end
 
@@ -91,14 +92,14 @@ end
 ---@return number
 function HarvestService.getSwingStrength(weapon, weaponData)
     local attackSwing = tes3.player.mobile.actionData.attackSwing
-    logger:debug("attackSwing: %s", attackSwing)
+    logger:trace("attackSwing: %s", attackSwing)
     local effectiveness = weaponData.effectiveness or 1.0
-    logger:debug("effectiveness: %s", effectiveness)
+    logger:trace("effectiveness: %s", effectiveness)
     local damageEffect = HarvestService.getDamageEffect(weapon)
-    logger:debug("damageEffect: %s", damageEffect)
+    logger:trace("damageEffect: %s", damageEffect)
     --Calculate Swing Strength
     local swingStrength = attackSwing * effectiveness * damageEffect
-    logger:debug("swingStrength: %s", swingStrength)
+    logger:trace("swingStrength: %s", swingStrength)
     return swingStrength
 end
 
@@ -123,12 +124,12 @@ function HarvestService.attemptSwing(swingStrength, reference, harvestConfig)
     local swingsNeeded = HarvestService.getSwingsNeeded(reference, harvestConfig)
     reference.tempData.ashfallHarvestSwings = reference.tempData.ashfallHarvestSwings or 0
     local swings = reference.tempData.ashfallHarvestSwings + swingStrength
-    logger:debug("swings before: %s", reference.tempData.ashfallHarvestSwings)
-    logger:debug("swingStrength: %s", swingStrength)
-    logger:debug("swings after: %s", swings)
+    logger:trace("swings before: %s", reference.tempData.ashfallHarvestSwings)
+    logger:trace("swingStrength: %s", swingStrength)
+    logger:trace("swings after: %s", swings)
     reference.tempData.ashfallHarvestSwings = swings
     local isHarvested = swings > swingsNeeded
-    logger:debug("isHarvested: %s", isHarvested)
+    logger:trace("isHarvested: %s", isHarvested)
     return isHarvested
 end
 
@@ -143,7 +144,7 @@ end
 ---@param weaponData AshfallHarvestWeaponData
 function HarvestService.degradeWeapon(weapon, swingStrength, weaponData)
     local degradeMulti = weaponData.degradeMulti or 1.0
-    logger:debug("degrade multiplier: %s", degradeMulti)
+    logger:trace("degrade multiplier: %s", degradeMulti)
     --Weapon degradation
     weapon.variables.condition = weapon.variables.condition - (4 * swingStrength * degradeMulti)
     --weapon is broken, unequip
@@ -181,13 +182,13 @@ end
 ---@return number numHarvested The number of items that were harvested from the reference
 function HarvestService.addItems(harvestConfig)
     local roll = math.random()
-    logger:debug("Roll: %s", roll)
+    logger:trace("Roll: %s", roll)
     ---@param harvestable AshfallHarvestConfigHarvestable
     for _, harvestable in ipairs(harvestConfig.items) do
         local chance = harvestable.chance
-        logger:debug("Chance: %s", chance)
+        logger:trace("Chance: %s", chance)
         if roll <= chance then
-            logger:debug("Adding %s", harvestable.id)
+            logger:trace("Adding %s", harvestable.id)
             tes3.playSound({reference=tes3.player, sound="Item Misc Up"})
             local numHarvested = HarvestService.calcNumHarvested(harvestable)
             tes3.addItem{reference=tes3.player, item= harvestable.id, count=numHarvested, playSound = false}
@@ -216,7 +217,7 @@ end
 function HarvestService.updateTotalHarvested(reference, numHarvested)
     reference.data.ashfallTotalHarvested = reference.data.ashfallTotalHarvested or 0
     reference.data.ashfallTotalHarvested = reference.data.ashfallTotalHarvested + numHarvested
-    logger:debug("Added %s to total harvested, new total: %s", numHarvested, reference.data.ashfallTotalHarvested)
+    logger:trace("Added %s to total harvested, new total: %s", numHarvested, reference.data.ashfallTotalHarvested)
 end
 
 function HarvestService.getTotalHarvested(reference)
@@ -254,7 +255,7 @@ function HarvestService.disableExhaustedHarvestable(reference, harvestConfig)
     local destructionLimit = HarvestService.getSetDestructionLimit(reference, destructionLimit)
     if totalHarvested >= destructionLimit then
         local harvestableHeight = HarvestService.getRefHeight(reference)
-        HarvestService.disableHarvestable(reference, harvestableHeight)
+        HarvestService.disableHarvestable(reference, harvestableHeight, harvestConfig)
         if harvestConfig.fallSound then
             tes3.playSound{ sound = harvestConfig.fallSound}
         end
@@ -264,70 +265,187 @@ function HarvestService.disableExhaustedHarvestable(reference, harvestConfig)
     end
 end
 
+
+
+function HarvestService.enableHarvestable(reference)
+    logger:debug("Enabling Disabled Harvestable: %s", reference.id)
+    --reset nodes
+    for _, nodeName in ipairs{"ASHFALL_TREEFALL", "ASHFALL_STUMP"} do
+        local node = reference.sceneNode:getObjectByName(nodeName)
+        if node then
+            local parent = node.parent
+            parent:detachChild(node)
+            local originalNode = tes3.loadMesh(reference.object.mesh, false):getObjectByName(nodeName)
+            parent:attachChild(originalNode)
+            originalNode.appCulled = false
+            parent:update()
+        end
+    end
+    if reference.data and reference.data.ashfallHarvestOriginalLocation then
+        logger:debug("Reseting location of %s", reference)
+        tes3.positionCell{
+            reference = reference,
+            cell = reference.cell,
+            position = reference.data.ashfallHarvestOriginalLocation.position,
+            orientation = reference.data.ashfallHarvestOriginalLocation.orientation,
+        }
+    end
+    reference:enable()
+    --reference.hasNoCollision = false
+    reference.data.ashfallDestroyedHarvestable = nil
+end
+
+
 function HarvestService.updateDisabledHarvestables()
-    destroyedHarvestables:iterate(function(ref)
-        if ref.position:distance(tes3.player.position) > (8192/2) then
-            logger:debug("Enabling Disabled Harvestable: %s", ref.id)
-            ref:enable()
-            ref.hasNoCollision = false
-            ref.data.ashfallDestroyedHarvestable = nil
+    HarvestService.destroyedHarvestables:iterate(function(reference)
+        if reference.position:distance(tes3.player.position) > (8192/2) then
+            HarvestService.enableHarvestable(reference)
         end
     end)
 end
 
+
+
 function HarvestService.disableNearbyRefs(harvestableRef, harvestConfig, harvestableHeight)
-    logger:debug("disabling nearby refs")
-    for ref in harvestableRef.cell:iterateReferences{tes3.objectType.container, tes3.objectType.static} do
-        if harvestConfig.clutter and harvestConfig.clutter[ref.baseObject.id:lower()] then
+    logger:debug("disabling nearby refs for %s", harvestableRef)
+    local ignoreList = {}
+    for ref in harvestableRef.cell:iterateReferences() do
+        local isValid = ref ~= harvestableRef
+            and harvestConfig.clutter
+            and harvestConfig.clutter[ref.baseObject.id:lower()]
+        if isValid then
             logger:trace("%s", ref.id)
             if common.helper.getCloseEnough({ref1 = ref, ref2 = harvestableRef, distHorizontal = 400, distVertical = 1000}) then
                 logger:debug("close enough, disabling")
-                HarvestService.disableHarvestable(ref, harvestableHeight)
+                HarvestService.disableHarvestable(ref, harvestableHeight, harvestConfig)
+                table.insert(ignoreList, ref)
+            end
+        end
+    end
+    ---@param ref tes3reference
+    for ref in harvestableRef.cell:iterateReferences() do
+        local isValid = ref ~= harvestableRef
+            and not (harvestConfig.clutter and harvestConfig.clutter[ref.baseObject.id:lower()])
+            and not ActivatorController.getRefActivator(ref)
+        if isValid then
+            --Drop nearby loot
+            if common.helper.getCloseEnough({ref1 = ref, ref2 = harvestableRef, distHorizontal = 150, distVertical = 1000, rootHeight = 100}) then
+                logger:debug("Found nearby %s", ref)
+                local result = common.helper.getGroundBelowRef{doLog = false, ref = ref, ignoreList = ignoreList}
+                local refBelow = result and result.reference
+                logger:debug(result and result.reference)
+                if refBelow == harvestableRef then
+                    local localIgnoreList = table.copy(ignoreList, {})
+                    table.insert(localIgnoreList, harvestableRef)
+                    logger:debug("Thing is indeed sitting on stump, orienting %s to ground", ref)
+                    if ref.supportsLuaData and common.helper.getStackCount(ref) <= 1 then
+                        logger:debug("adding to list of destroyedHarvestables")
+                        ref.data.ashfallDestroyedHarvestable = true
+                        ref.data.ashfallHarvestOriginalLocation = {
+                            position = {
+                                ref.position.x,
+                                ref.position.y,
+                                ref.position.z
+                            },
+                            orientation = {
+                                ref.orientation.x,
+                                ref.orientation.y,
+                                ref.orientation.z,
+                            }
+                        }
+                        HarvestService.destroyedHarvestables:addReference(ref)
+                    end
+                    common.helper.orientRefToGround{
+                        ref = ref,
+                        ignoreList = localIgnoreList,
+                        rootHeight = 50
+                    }
+                end
             end
         end
     end
 end
 
-function HarvestService.disableHarvestable(reference, harvestableHeight)
+---@param reference tes3reference
+---@param harvestableHeight number
+function HarvestService.disableHarvestable(reference, harvestableHeight, harvestConfig)
     logger:debug("Disabling harvestable %s", reference)
     reference.data.ashfallTotalHarvested = nil
     reference.data.ashfallDestructionLimit = nil
-    HarvestService.demolish(reference, harvestableHeight)
-    reference.data.ashfallDestroyedHarvestable = true
+    HarvestService.demolish(reference, harvestableHeight, harvestConfig)
 end
-
 
 local m1 = tes3matrix33.new()
 local m2 = tes3matrix33.new()
+local m3 = tes3matrix33.new()
 
 ---@param reference tes3reference
-function HarvestService.demolish(reference, harvestableHeight)
+---@param currentTime number
+---@param totalTime number
+---@param playerZ number
+---@param acceleration number
+---@param node niNode **Optional** if not provided, will rotate reference
+function HarvestService.rotateNodeAwayFromPlayer(reference, currentTime, totalTime, playerZ, acceleration, node)
+
+    local refZ = reference.orientation.z
+    local rotZ = playerZ - refZ + 90
+    if node then
+        local u = 0
+        local t = currentTime/totalTime
+        local v = u + acceleration * t
+        local rotation = 30 / (totalTime) * v
+
+        local rotX = rotation * math.sin(rotZ)
+        local rotY = rotation * math.cos(rotZ)
+        m1:toRotationX(math.rad(rotX))
+        m2:toRotationY(math.rad(rotY))
+        node.rotation = node.rotation * m1:copy() * m2:copy()
+        node:update()
+    end
+end
+
+---@param reference tes3reference
+function HarvestService.demolish(reference, harvestableHeight, harvestConfig)
     --remove collision
-    reference.hasNoCollision = true
+    --reference.hasNoCollision = true
     --move ref down on a timer then disable
     local safeRef = tes3.makeSafeObjectHandle(reference)
     local iterations = 1000
-    local duration = 1.2
-    local originalLocation = reference.position:copy()
+    local originalLocation = {
+        position = {
+            reference.position.x,
+            reference.position.y,
+            reference.position.z
+        },
+        orientation = {
+            reference.orientation.x,
+            reference.orientation.y,
+            reference.orientation.z,
+        }
+    }
     local fellNode = reference.sceneNode:getObjectByName("ASHFALL_TREEFALL")
-    local originalNodeRotation
-    if fellNode then
-        originalNodeRotation = fellNode.rotation:copy()
-    end
+    local stumpNode = reference.sceneNode:getObjectByName("ASHFALL_STUMP")
+    local playerZ = tes3.player.orientation.z
+    logger:debug("Adding to destroyedHarvestables: %s", reference.id)
 
-    local function animateFellNode()
+    reference.data.ashfallDestroyedHarvestable = true
+    HarvestService.destroyedHarvestables:addReference(reference)
+
+    local currentIteration = 0
+    local function animateFellNode(e)
         if safeRef:valid() then
-            local rotation = 90 / iterations
-            local playerZ = tes3.player.orientation.z
-            local refZ = reference.orientation.z
-            local rotZ = playerZ - refZ + 90
-
-            local rotX = rotation * math.sin(rotZ)
-            local rotY = rotation * math.cos(rotZ)
-            m1:toRotationX(math.rad(rotX))
-            m2:toRotationY(math.rad(rotY))
-            fellNode.rotation = fellNode.rotation * m1:copy() * m2:copy()
-            fellNode:update()
+            if fellNode then --rotate fell node
+                HarvestService.rotateNodeAwayFromPlayer(reference, currentIteration, iterations, playerZ, 10, fellNode)
+            end
+            if stumpNode then --lower stump node
+                local a = 4
+                local u = 0
+                local t = currentIteration/iterations
+                local v = u + a * t
+                stumpNode.translation = stumpNode.translation + tes3vector3.new(0, 0, -(100/iterations)*v)
+                stumpNode:update()
+            end
+            currentIteration = currentIteration + 1
         end
     end
 
@@ -340,18 +458,19 @@ function HarvestService.demolish(reference, harvestableHeight)
                 position = {
                     ref.position.x,
                     ref.position.y,
-                    ref.position.z - (harvestableHeight/iterations)
+                    ref.position.z - (harvestableHeight* 0.5)/iterations
                 },
-                orientation = ref.orientation
             }
+            currentIteration = currentIteration + 1
         end
     end
 
+    local duration = harvestConfig.fallSpeed
     timer.start{
         duration = duration/iterations,
         iterations = iterations,
         type = timer.simulate,
-        callback = fellNode and animateFellNode or animateDefault
+        callback = fellNode and animateFellNode or animateDefault,
     }
     timer.start{
         duration = duration,
@@ -359,20 +478,15 @@ function HarvestService.demolish(reference, harvestableHeight)
         type = timer.simulate,
         callback = function()
             if safeRef:valid() then
-
                 local ref = safeRef:getObject()
                 ref:disable()
                 tes3.positionCell{
                     reference = ref,
                     cell = ref.cell,
-                    position = originalLocation,
-                    orientation = ref.orientation
+                    position = originalLocation.position,
+                    orientation = originalLocation.orientation
                 }
-                destroyedHarvestables:addReference(reference)
-                if originalLocation and fellNode then
-                    fellNode.rotation = originalNodeRotation
-                    fellNode:update()
-                end
+
             end
         end
     }

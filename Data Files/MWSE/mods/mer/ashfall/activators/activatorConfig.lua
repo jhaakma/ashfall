@@ -8,6 +8,7 @@ this.types = {
     fire = "fire",
     campfire = "campfire",
     woodSource = "woodSource",
+    stump = "stump",
     resinSource = "resinSource",
     vegetation = "vegetation",
     branch = "branch",
@@ -407,7 +408,7 @@ this.list.tree = Activator:new{
     },
     patterns = {
         ["flora_emp_parasol"] = true,
-        ["flora_tree"] = true,
+        ["flora_tree_"] = true,
         ["vurt_baobab"] = true,
         ["vurt_bctree"] = true,
         ["vurt_bentpalm"] = true,
@@ -435,6 +436,27 @@ this.list.tree = Activator:new{
 
     },
 }
+this.list.trump = Activator:new{
+    name = "Tree Stump",
+    type = this.types.stump,
+    mcmSetting = nil,
+    ids = {
+        flora_bc_tree_12 = true,
+        flora_bc_tree_13 = true,
+        flora_bm_snowstump_01 = true,
+        flora_bm_snowstump_02 = true,
+        flora_bm_snowstump_03 = true,
+        flora_bm_snowstump_04 = true,
+        flora_bm_snowstump_05 = true,
+        flora_bm_snowstump_06 = true,
+        flora_treestump_wg_01 = true,
+        flora_treestump_wg_02 = true,
+
+    },
+    patterns = {
+        ["flora_ashtree"] = true,
+    }
+}
 this.list.deadTree = Activator:new{
     name = "Dead Tree",
     type = this.types.woodSource,
@@ -443,8 +465,6 @@ this.list.deadTree = Activator:new{
         flora_bc_tree_09 = true,
         flora_bc_tree_10 = true,
         flora_bc_tree_11 = true,
-        flora_bc_tree_12 = true,
-        flora_bc_tree_13 = true,
     },
     patterns = {
         ["flora_ashtree"] = true,
@@ -460,8 +480,6 @@ this.list.wood = Activator:new{
         ["flora_bc_log"] = true,
         ["flora_bm_log"] = true,
         ["flora_bm_snow_log"] = true,
-        ["flora_bm_snowstump"] = true,
-        ["flora_bm_treestump"] = true,
         ["flora_root_wg"] = true,
         ["flora_trama_shrub_01"] = true,
         ["flora_trama_shrub_02"] = true,

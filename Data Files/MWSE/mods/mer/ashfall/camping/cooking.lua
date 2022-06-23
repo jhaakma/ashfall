@@ -133,7 +133,7 @@ local function grillFoodItem(ingredReference, timestamp)
             ingredReference.data.cookedAmount = ingredReference.data.cookedAmount or 0
 
             local difference = timestamp - ingredReference.data.lastCookUpdated
-            if difference > 0.008 then
+            if difference > 0.010 then
 
                 addGrillPatina(campfire, difference)
                 ingredReference.data.lastCookUpdated = timestamp
