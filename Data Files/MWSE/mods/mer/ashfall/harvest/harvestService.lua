@@ -224,6 +224,7 @@ function HarvestService.getTotalHarvested(reference)
     return reference.data.ashfallTotalHarvested or 0
 end
 
+---@param reference tes3reference
 function HarvestService.getSetDestructionLimit(reference, destructionLimit)
     if not reference.data.ashfallDestructionLimit then
         local height = HarvestService.getRefHeight(reference)
@@ -237,6 +238,7 @@ function HarvestService.getSetDestructionLimit(reference, destructionLimit)
         logger:debug("Ref height: %s", height)
         logger:debug("Set destruction limit to %s", limit)
         reference.data.ashfallDestructionLimit = limit
+        reference.modified = true
     end
     return reference.data.ashfallDestructionLimit
 end
