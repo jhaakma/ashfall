@@ -322,7 +322,7 @@ this.bushCraftingRecipes = {
     },
     {
         id = "ashfall_knife_flint",
-        description = "A simple dagger made of flint. Useful for skinning animals and harvesting plant fibres.",
+        description = "A simple dagger made of flint. Useful for skinning animals and harvesting plant fibres.\n\nNote: Broken bushcrafted weapons can be dismantled for parts by equipping them.",
         materials = {
             { material = "flint", count = 1 },
             { material = "wood", count = 1 },
@@ -336,7 +336,7 @@ this.bushCraftingRecipes = {
     },
     {
         id = "ashfall_woodaxe_flint",
-        description = "A woodaxe made with flint. Can be used to harvest firewood.",
+        description = "A woodaxe made with flint. Can be used to harvest firewood.\n\nNote: Broken bushcrafted weapons can be dismantled for parts by equipping them.",
         materials = {
             { material = "flint", count = 2 },
             { material = "wood", count = 1 },
@@ -601,7 +601,7 @@ this.bushCraftingRecipes = {
     },
     {
         id = "ashfall_spear_flint",
-        description = "A wooden spear with a flint tip. Useful for hunting game.",
+        description = "A wooden spear with a flint tip. Useful for hunting game.\n\nNote: Broken bushcrafted weapons can be dismantled for parts by equipping them.",
         materials = {
             { material = "flint", count = 1 },
             { material = "wood", count = 2 },
@@ -616,7 +616,7 @@ this.bushCraftingRecipes = {
     },
     {
         id = "ashfall_bow_wood",
-        description = "A simple bow and quiver made of wood.",
+        description = "A simple bow and quiver made of wood.\n\nNote: Broken bushcrafted weapons can be dismantled for parts by equipping them.",
         materials = {
             { material = "wood", count = 3 },
             { material = "rope", count = 3 },
@@ -728,7 +728,7 @@ this.bushCraftingRecipes = {
     },
     {
         id = "ashfall_pickaxe_flint",
-        description = "A pickaxe made with flint. Can be used to harvest stone.",
+        description = "A pickaxe made with flint. Can be used to harvest stone.\n\nNote: Broken bushcrafted weapons can be dismantled for parts by equipping them.",
         materials = {
             { material = "flint", count = 1 },
             { material = "wood", count = 1 },
