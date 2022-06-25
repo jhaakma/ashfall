@@ -323,43 +323,46 @@ function HarvestService.disableNearbyRefs(harvestableRef, harvestConfig, harvest
         end
     end
     ---@param ref tes3reference
-    for ref in harvestableRef.cell:iterateReferences() do
-        local isValid = ref ~= harvestableRef
-            and not (harvestConfig.clutter and harvestConfig.clutter[ref.baseObject.id:lower()])
-            and not ActivatorController.getRefActivator(ref)
-        if isValid then
-            --Drop nearby loot
-            if common.helper.getCloseEnough({ref1 = ref, ref2 = harvestableRef, distHorizontal = 150, distVertical = 1000, rootHeight = 100}) then
-                logger:debug("Found nearby %s", ref)
-                local result = common.helper.getGroundBelowRef{doLog = false, ref = ref, ignoreList = ignoreList}
-                local refBelow = result and result.reference
-                logger:debug(result and result.reference)
-                if refBelow == harvestableRef then
-                    local localIgnoreList = table.copy(ignoreList, {})
-                    table.insert(localIgnoreList, harvestableRef)
-                    logger:debug("Thing is indeed sitting on stump, orienting %s to ground", ref)
-                    if ref.supportsLuaData and common.helper.getStackCount(ref) <= 1 then
-                        logger:debug("adding to list of destroyedHarvestables")
-                        ref.data.ashfallDestroyedHarvestable = true
-                        ref.data.ashfallHarvestOriginalLocation = {
-                            position = {
-                                ref.position.x,
-                                ref.position.y,
-                                ref.position.z
-                            },
-                            orientation = {
-                                ref.orientation.x,
-                                ref.orientation.y,
-                                ref.orientation.z,
+    for _, cell in ipairs(tes3.getActiveCells()) do
+        for ref in cell:iterateReferences() do
+            local activator = ActivatorController.getRefActivator(ref)
+            local isValid = ref ~= harvestableRef
+                and not (harvestConfig.clutter and harvestConfig.clutter[ref.baseObject.id:lower()])
+                and not (activator and activator.type == "woodSource")
+            if isValid then
+                --Drop nearby loot
+                if common.helper.getCloseEnough({ref1 = ref, ref2 = harvestableRef, distHorizontal = 150, distVertical = 1000, rootHeight = 100}) then
+                    logger:debug("Found nearby %s", ref)
+                    local result = common.helper.getGroundBelowRef{doLog = false, ref = ref, ignoreList = ignoreList}
+                    local refBelow = result and result.reference
+                    logger:debug(result and result.reference)
+                    if refBelow == harvestableRef then
+                        local localIgnoreList = table.copy(ignoreList, {})
+                        table.insert(localIgnoreList, harvestableRef)
+                        logger:debug("Thing is indeed sitting on stump, orienting %s to ground", ref)
+                        if ref.supportsLuaData and common.helper.getStackCount(ref) <= 1 then
+                            logger:debug("adding to list of destroyedHarvestables")
+                            ref.data.ashfallDestroyedHarvestable = true
+                            ref.data.ashfallHarvestOriginalLocation = {
+                                position = {
+                                    ref.position.x,
+                                    ref.position.y,
+                                    ref.position.z
+                                },
+                                orientation = {
+                                    ref.orientation.x,
+                                    ref.orientation.y,
+                                    ref.orientation.z,
+                                }
                             }
+                            HarvestService.destroyedHarvestables:addReference(ref)
+                        end
+                        common.helper.orientRefToGround{
+                            ref = ref,
+                            ignoreList = localIgnoreList,
+                            rootHeight = 50
                         }
-                        HarvestService.destroyedHarvestables:addReference(ref)
                     end
-                    common.helper.orientRefToGround{
-                        ref = ref,
-                        ignoreList = localIgnoreList,
-                        rootHeight = 50
-                    }
                 end
             end
         end
