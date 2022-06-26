@@ -311,16 +311,19 @@ end
 function HarvestService.disableNearbyRefs(harvestableRef, harvestConfig, harvestableHeight)
     logger:debug("disabling nearby refs for %s", harvestableRef)
     local ignoreList = {}
-    for ref in harvestableRef.cell:iterateReferences() do
-        local isValid = ref ~= harvestableRef
-            and harvestConfig.clutter
-            and harvestConfig.clutter[ref.baseObject.id:lower()]
-        if isValid then
-            logger:trace("%s", ref.id)
-            if common.helper.getCloseEnough({ref1 = ref, ref2 = harvestableRef, distHorizontal = 400, distVertical = 1000}) then
-                logger:debug("close enough, disabling")
-                HarvestService.disableHarvestable(ref, harvestableHeight, harvestConfig)
-                table.insert(ignoreList, ref)
+    ---@param ref tes3reference
+    for _, cell in ipairs(tes3.getActiveCells()) do
+        for ref in cell:iterateReferences() do
+            local isValid = ref ~= harvestableRef
+                and harvestConfig.clutter
+                and harvestConfig.clutter[ref.baseObject.id:lower()]
+            if isValid then
+                logger:trace("%s", ref.id)
+                if common.helper.getCloseEnough({ref1 = ref, ref2 = harvestableRef, distHorizontal = 500, distVertical = 2000}) then
+                    logger:debug("close enough, disabling")
+                    HarvestService.disableHarvestable(ref, harvestableHeight, harvestConfig)
+                    table.insert(ignoreList, ref)
+                end
             end
         end
     end
@@ -333,7 +336,7 @@ function HarvestService.disableNearbyRefs(harvestableRef, harvestConfig, harvest
                 and not (activator and activator.type == "woodSource")
             if isValid then
                 --Drop nearby loot
-                if common.helper.getCloseEnough({ref1 = ref, ref2 = harvestableRef, distHorizontal = 150, distVertical = 1000, rootHeight = 100}) then
+                if common.helper.getCloseEnough({ref1 = ref, ref2 = harvestableRef, distHorizontal = 150, distVertical = 2000, rootHeight = 100}) then
                     logger:debug("Found nearby %s", ref)
                     local result = common.helper.getGroundBelowRef{doLog = false, ref = ref, ignoreList = ignoreList}
                     local refBelow = result and result.reference
