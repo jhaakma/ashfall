@@ -239,7 +239,7 @@ local function updateTooltip(e)
         local label = e.tooltip:findChild(tes3ui.registerID('HelpMenu_name'))
         if label then
             local crabCount = e.reference.data.crabCount and math.floor(e.reference.data.crabCount) or 0
-            label.text = string.format("%s (%d/%d",
+            label.text = string.format("%s (%d/%d)",
                 label.text, crabCount, crabpotConfig.maxCrabs
             )
         end
