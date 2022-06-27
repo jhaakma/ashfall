@@ -162,7 +162,4 @@ end
 event.register("itemDropped", doPatinaDrop)
 --event.register("referenceActivated", doPatinaDrop)
 
-
-
-
 return this

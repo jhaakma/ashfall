@@ -22,7 +22,7 @@ local function initialized()
         require("mer.ashfall.needs.extremeEffects")
         require("mer.ashfall.needs.diseasedMeat")
 
-        require("mer.ashfall.camping.camping")
+        require("mer.ashfall.camping")
         require("mer.ashfall.items")
         require("mer.ashfall.effects.frostbreath")
         require("mer.ashfall.effects.keybinds")
@@ -40,9 +40,9 @@ local function initialized()
         require("mer.ashfall.branch.branches")
 
         require("mer.ashfall.bushcrafting")
-
+        require("mer.ashfall.gearPlacement")
         require('mer.ashfall.harvest.harvestController')
-
+        require("mer.ashfall.cooking")
         require("mer.ashfall.ui.sephInterop")
         event.trigger("Ashfall:Interop", Interop)
         logger:info("%s Initialised", versionController.getVersion())
