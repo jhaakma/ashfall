@@ -243,6 +243,26 @@ local AttachConfig = {
                 centerText(fuelLabel)
             end
         end,
-    }
+    },
+
+    DROP_WOODSTACK = {
+        name = "Wood Stack",
+        commands = {
+            "addToWoodStack",
+            "takeFromWoodStack",
+        },
+        tooltipExtra = function(ref, tooltip)
+            if not ref.data then return end
+            logger:debug("DROP_WOODSTACK")
+            local WoodStack = require("mer.ashfall.items.woodStack")
+            if ref.data.woodAmount then
+                local label = tooltip:createLabel{
+                    text = string.format("Firewood: %d/%d", ref.data.woodAmount, WoodStack.getCapacity(ref.object.id ))
+                }
+                centerText(label)
+            end
+        end,
+        shiftCommand = "takeFromWoodStack",
+    },
 }
 return AttachConfig

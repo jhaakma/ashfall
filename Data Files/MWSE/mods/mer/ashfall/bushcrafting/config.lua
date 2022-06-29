@@ -4,6 +4,7 @@ local itemDescriptions = require("mer.ashfall.config.itemDescriptions")
 local BedRoll = require("mer.ashfall.items.bedroll")
 local WaterFilter = require("mer.ashfall.items.waterFilter")
 local CrabPot = require("mer.ashfall.items.crabpot")
+local WoodStack = require("mer.ashfall.items.woodStack")
 local config = require("mer.ashfall.config").config
 
 
@@ -303,13 +304,33 @@ this.bushCraftingRecipes = {
         },
     },
     {
+        id = "ashfall_wood_stack",
+        description = "A wooden frame for storing large amounts of firewood.",
+        materials = {
+            { material = "wood", count = 10 }
+        },
+        skillRequirements = {
+            this.survivalTiers.beginner
+        },
+        category = this.categories.structures,
+        soundType = "wood",
+        customRequirements = {
+            this.customRequirements.wildernessOnly
+        },
+        additionalMenuOptions = {
+            WoodStack.buttons.addWood,
+            WoodStack.buttons.takeWood,
+        },
+        destroyCallback = WoodStack.destroyCallback,
+    },
+    {
         --Lean To
         id = "ashfall_lean_to_01",
         description = "A simple lean-to provides a bit of shelter from the elements.",
         materials = {
             { material = "straw", count = 8 },
             { material = "rope", count = 1 },
-            { material = "wood", count = 8 },
+            { material = "wood", count = 12 },
         },
         skillRequirements = {
             this.survivalTiers.beginner

@@ -44,7 +44,7 @@ return {
             item = campfire.data.ashfallCookerMiscId,
             count = 1
         }
-        tes3.messageBox(tes3.findGMST(tes3.gmst.sNotifyMessage61).value, 1, tes3.getObject(campfire.data.ashfallCookerMiscId).name)
+        tes3.messageBox(tes3.findGMST(tes3.gmst.sNotifyMessage60).value, tes3.getObject(campfire.data.ashfallCookerMiscId).name)
         common.helper.yeet(campfire)
     end
 }

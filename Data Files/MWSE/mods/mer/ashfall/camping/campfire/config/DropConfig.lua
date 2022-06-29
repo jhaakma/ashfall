@@ -4,6 +4,9 @@ local DropConfig = {
         "tea"
     },
     node = {
+        DROP_WOODSTACK = {
+            "woodStack"
+        },
         FILTER_WATER = {
             "filterWater"
         },

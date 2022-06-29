@@ -5,6 +5,7 @@ local teaConfig   = require("mer.ashfall.config.teaConfig")
 local foodConfig = require("mer.ashfall.config.foodConfig")
 local hungerController = require("mer.ashfall.needs.hungerController")
 local activatorController = require("mer.ashfall.activators.activatorController")
+local WoodStack = require("mer.ashfall.items.woodStack")
 
 --Todo- refactor and get rid of these duplicate functions
 --They are in CampfireUtil, but that file requires this one already
@@ -275,13 +276,22 @@ local function addStewTooltips(item, itemData, tooltip)
     end
 end
 
+local function addWoodStackTooltips(item, itemData, tooltip)
+    if not itemData then return end
+    if itemData.data.woodAmount then
+        common.helper.addLabelToTooltip(tooltip,
+            string.format("Firewood: %d/%d", itemData.data.woodAmount, WoodStack.getCapacity(item.id ))
+        )
+    end
+end
+
 local function additemTooltips(item, itemData, tooltip)
     addLadleTooltips(item, itemData, tooltip)
     addTeaTooltips(item, itemData, tooltip)
     addWaterTooltips(item, itemData, tooltip)
     addFoodTooltips(item, itemData, tooltip)
     addStewTooltips(item, itemData, tooltip)
-
+    addWoodStackTooltips(item, itemData, tooltip)
     tooltip:updateLayout()
 end
 

@@ -23,6 +23,7 @@ this.types = {
     waterContainer = "waterContainer",
     stoneSource = "stoneSource",
     waterFilter = "waterFilter",
+    woodStack = "woodStack",
 }
 
 this.list = {}
@@ -894,6 +895,16 @@ this.list.waterFilter = Activator:new{
     type = this.types.waterFilter,
     ids = {
         ["ashfall_water_filter"] = true,
+    }
+}
+
+this.list.woodStack = Activator:new{
+    name = "Wood Stack",
+    type = this.types.woodStack,
+    ids = {
+        ashfall_wood_stack = true,
+        ab_furn_woodstack01 = true,
+        ab_furn_woodstack02 = true,
     }
 }
 

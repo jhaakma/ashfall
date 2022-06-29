@@ -3,10 +3,53 @@ local logger = common.createLogger("campfireVisuals")
 local patinaController = require("mer.ashfall.camping.patinaController")
 local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 local referenceController = require("mer.ashfall.referenceController")
+local WoodStack = require("mer.ashfall.items.woodStack")
+
 --[[
     Mapping of campfire states to switch node states.
 ]]
 local switchNodeValues = {
+    SWITCH_WOODSTACK = function(reference)
+        local amount = WoodStack.getWoodAmount(reference)
+        local max = WoodStack.getCapacity(reference.object.id )
+        local switchNode = reference.sceneNode:getObjectByName("SWITCH_WOODSTACK")
+        local on = switchNode:getObjectByName("ON")
+        local off = switchNode:getObjectByName("OFF")
+
+        local maxNodes = 0
+        for _, node in pairs(on.children) do
+            if node then
+                maxNodes = maxNodes + 1
+            end
+        end
+        for _, node in pairs(off.children) do
+            if node then
+                maxNodes = maxNodes + 1
+            end
+        end
+        logger:debug("maxNodes: %s", maxNodes)
+        local activeNodeNum = math.ceil(maxNodes * amount / max)
+        logger:debug("activeNodeNum: %s", activeNodeNum)
+        --Move active wood to ON node
+        for i=1,activeNodeNum,1 do
+            local wood = off:getObjectByName(tostring(i))
+            if wood then
+                logger:debug("Enabling %s", i)
+                off:detachChild(wood)
+                on:attachChild(wood)
+            end
+        end
+        --Move inactive wood to OFF node
+        for i=activeNodeNum+1,maxNodes,1 do
+            local wood = on:getObjectByName(tostring(i))
+            if wood then
+                logger:debug("Disabling %s", i)
+                on:detachChild(wood)
+                off:attachChild(wood)
+            end
+        end
+        return "ON"
+    end,
     SWITCH_BASE = function(campfire)
         local isCold = campfire.data.hasColdFlame
         local isLit = campfire.data.isLit
@@ -510,6 +553,7 @@ local attachNodeRefTypes = {
     "fuelConsumer",
     "waterContainer",
     "waterFilter",
+    "woodStack",
 }
 local function initialiseAttachNodes()
     for _, refType in ipairs(attachNodeRefTypes) do
