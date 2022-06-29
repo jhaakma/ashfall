@@ -581,11 +581,9 @@ this.list.tree = Activator:new{
         ["vurt_neentree"] = true,
         ["vurt_palm"] = true,
         ["vurt_unicy"] = true,
-        ["floraat_tree_"] = true,
         ['flora_t_mushroom'] = true,
         ["pine_tree"] = true,--vsw
         ["mr_flora_graze_tree "] = true, --Rebirth
-        ["floraat_tree"] = true, --TR
         ['florabw_tree'] = true, --TR
         ['florach_tree'] = true, --TR
         ['floragc_tree'] = true, --TR
@@ -596,7 +594,6 @@ this.list.tree = Activator:new{
         ['florakstr_tree'] = true, --TR
         ['floravm_tree'] = true, --TR
         ['floraww_tree'] = true, --TR
-        ['mdbc_treehuge'] = true, -- Mels Graht trees
         ['ex_t_root_'] = true,
     },
 }
