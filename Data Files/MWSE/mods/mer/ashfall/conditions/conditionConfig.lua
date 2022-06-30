@@ -169,7 +169,7 @@ conditions.temp = Condition:new{
             min = 80, max = 100,
             spell = "fw_cond_scorching",
             effects = {
-                { id = tes3.effect.drainAttribute, attribute = tes3.attribute.endurance, amount = 0.6 },
+                { id = tes3.effect.drainAttribute, attribute = tes3.attribute.endurance, amount = 0.3 },
                 { id = tes3.effect.drainAttribute, attribute = tes3.attribute.strength, amount = 0.1 }
             }
         },
@@ -178,7 +178,7 @@ conditions.temp = Condition:new{
             min = 60, max = 80,
             spell = "fw_cond_very_hot",
             effects = {
-                { id = tes3.effect.drainAttribute, attribute = tes3.attribute.endurance, amount = 0.4 }
+                { id = tes3.effect.drainAttribute, attribute = tes3.attribute.endurance, amount = 0.2 }
             }
         },
         hot = {
@@ -186,7 +186,7 @@ conditions.temp = Condition:new{
             min = 40, max = 60,
             spell = "fw_cond_hot",
             effects = {
-                { id = tes3.effect.drainAttribute, attribute = tes3.attribute.endurance, amount = 0.2 }
+                { id = tes3.effect.drainAttribute, attribute = tes3.attribute.endurance, amount = 0.1 }
             }
         },
         warm = {
