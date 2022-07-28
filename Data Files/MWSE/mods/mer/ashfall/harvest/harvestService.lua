@@ -24,14 +24,14 @@ function HarvestService.checkIllegalToHarvest()
         and tes3.player.cell.restingIsIllegal
 end
 
----@param harvestConfig AshfallHarvestConfig
+---@param harvestConfig Ashfall.Harvest.Config
 function HarvestService.showIllegalToHarvestMessage(harvestConfig)
     tes3.messageBox("You must be in the wilderness to harvest.")
 end
 
 ---@param weapon tes3equipmentStack
----@param harvestConfig AshfallHarvestConfig
----@return AshfallHarvestWeaponData | nil
+---@param harvestConfig Ashfall.Harvest.Config
+---@return Ashfall.Harvest.WeaponData | nil
 function HarvestService.getWeaponHarvestData(weapon, harvestConfig)
 
     --check requirements
@@ -88,7 +88,7 @@ function HarvestService.getDamageEffect(weapon)
 end
 
 ---@param weapon tes3equipmentStack
----@param weaponData AshfallHarvestWeaponData
+---@param weaponData Ashfall.Harvest.WeaponData
 ---@return number
 function HarvestService.getSwingStrength(weapon, weaponData)
     local attackSwing = tes3.player.mobile.actionData.attackSwing
@@ -118,7 +118,7 @@ end
 
 ---@param swingStrength number
 ---@param reference tes3reference
----@param harvestConfig AshfallHarvestConfig
+---@param harvestConfig Ashfall.Harvest.Config
 ---@return boolean isHarvested
 function HarvestService.attemptSwing(swingStrength, reference, harvestConfig)
     local swingsNeeded = HarvestService.getSwingsNeeded(reference, harvestConfig)
@@ -141,7 +141,7 @@ end
 
 ---@param weapon tes3equipmentStack
 ---@param swingStrength number
----@param weaponData AshfallHarvestWeaponData
+---@param weaponData Ashfall.Harvest.WeaponData
 function HarvestService.degradeWeapon(weapon, swingStrength, weaponData)
     local degradeMulti = weaponData.degradeMulti or 1.0
     logger:trace("degrade multiplier: %s", degradeMulti)
@@ -178,12 +178,12 @@ function HarvestService.showHarvestedMessage(numHarvested, harvestName)
     tes3.messageBox(message)
 end
 
----@param harvestConfig AshfallHarvestConfig
+---@param harvestConfig Ashfall.Harvest.Config
 ---@return number numHarvested The number of items that were harvested from the reference
 function HarvestService.addItems(harvestConfig)
     local roll = math.random()
     logger:trace("Roll: %s", roll)
-    ---@param harvestable AshfallHarvestConfigHarvestable
+    ---@param harvestable Ashfall.Harvest.Config.Harvestable
     for _, harvestable in ipairs(harvestConfig.items) do
         local chance = harvestable.chance
         logger:trace("Chance: %s", chance)
@@ -203,7 +203,7 @@ end
 
 
 ---@param reference tes3reference
----@param harvestConfig AshfallHarvestConfig
+---@param harvestConfig Ashfall.Harvest.Config
 ---@return number numHarvested The number of items that were harvested from the reference
 function HarvestService.harvest(reference, harvestConfig)
     HarvestService.resetSwings(reference)
@@ -249,7 +249,7 @@ function HarvestService.getRefHeight(reference)
 end
 
 ---@param reference tes3reference
----@param harvestConfig AshfallHarvestConfig
+---@param harvestConfig Ashfall.Harvest.Config
 function HarvestService.disableExhaustedHarvestable(reference, harvestConfig)
     local destructionLimit = harvestConfig.destructionLimit
     if not destructionLimit then return end

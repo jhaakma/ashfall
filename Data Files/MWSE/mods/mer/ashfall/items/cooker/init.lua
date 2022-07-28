@@ -28,7 +28,7 @@ local function onGearDropped(e)
         end
         common.helper.yeet(e.reference)
         ref:deleteDynamicLightAttachment()
-        event.trigger("Ashfall:UpdateAttachNodes", { campfire = ref})
+        event.trigger("Ashfall:UpdateAttachNodes", { reference = ref})
     end
 end
 event.register("Ashfall:GearDropped", onGearDropped)

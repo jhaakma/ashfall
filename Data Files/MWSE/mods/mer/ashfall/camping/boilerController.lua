@@ -9,7 +9,7 @@ local logger = common.createLogger("boilerController")
 local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 local patinaController = require("mer.ashfall.camping.patinaController")
 local BOILER_UPDATE_INTERVAL = 0.001
-
+local ReferenceController = require("mer.ashfall.referenceController")
 
 local function addUtensilPatina(campfire,interval)
     if campfire.sceneNode and campfire.data.utensilId then
@@ -31,7 +31,7 @@ end
 local function updateBoilers(e)
 
     local function doUpdate(boilerRef)
-        ---@type AshfallLiquidContainer
+        ---@type Ashfall.LiquidContainer
         local liquidContainer = LiquidContainer.createFromReference(boilerRef)
         --logger:trace("BOILER updating %s", boilerRef.object.id)
         liquidContainer.data.lastWaterUpdated = liquidContainer.data.lastWaterUpdated or e.timestamp
@@ -70,7 +70,7 @@ local function updateBoilers(e)
             end
         end
     end
-    common.helper.iterateRefType("boiler", doUpdate)
+    ReferenceController.iterateReferences("boiler", doUpdate)
 
 end
 event.register("simulate", updateBoilers)

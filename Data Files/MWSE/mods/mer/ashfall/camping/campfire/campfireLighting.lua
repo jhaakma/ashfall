@@ -7,7 +7,7 @@
 ]]
 local common = require ("mer.ashfall.common.common")
 local logger = common.createLogger("campfireLighting")
-local referenceController = require("mer.ashfall.referenceController")
+local ReferenceController = require("mer.ashfall.referenceController")
 local skillSurvivalLightFireIncrement = 5
 
 local function initialiseCampfireSoundAndFlame()
@@ -33,7 +33,7 @@ local function initialiseCampfireSoundAndFlame()
 
         --Add spells a frame after they have been removed
         timer.delayOneFrame(function()
-            local isCampfire = referenceController.controllers.campfire:isReference(campfire)
+            local isCampfire = ReferenceController.controllers.campfire:isReference(campfire)
             if isCampfire and campfire.data.isLit then
                 logger:debug("initilaliseCampfire: playing sound on %s", campfire.object.id)
                 tes3.playSound{
@@ -50,7 +50,7 @@ local function initialiseCampfireSoundAndFlame()
         end)
     end
 
-    common.helper.iterateRefType("fuelConsumer", doUpdate)
+    ReferenceController.iterateReferences("fuelConsumer", doUpdate)
 end
 
 --[[
@@ -114,7 +114,7 @@ local function extinguish(e)
         campfire.data.fuelLevel = math.max(0, campfire.data.fuelLevel - 0.5)
     end
 
-    event.trigger("Ashfall:UpdateAttachNodes", {campfire = campfire})
+    event.trigger("Ashfall:UpdateAttachNodes", { reference = campfire})
     --event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})
 end
 event.register("Ashfall:fuelConsumer_Extinguish", extinguish)
@@ -133,14 +133,14 @@ local function lightFire(e)
 
     fuelConsumer.data.isLit = true
     --Only for campfires
-    if referenceController.controllers.campfire:isReference(e.fuelConsumer) then
+    if ReferenceController.controllers.campfire:isReference(e.fuelConsumer) then
         fuelConsumer.data.burned = true
         fuelConsumer.data.fuelLevel = math.max(0, fuelConsumer.data.fuelLevel - 0.5)
         reduceLightTime(lighterData)
         tes3.playSound{ sound = "Fire", reference = fuelConsumer, loop = true }
         common.skills.survival:progressSkill(skillSurvivalLightFireIncrement)
     end
-    event.trigger("Ashfall:UpdateAttachNodes", {campfire = fuelConsumer})
+    event.trigger("Ashfall:UpdateAttachNodes", { reference = fuelConsumer})
     event.trigger("Ashfall:Campfire_Enablelight", { campfire = fuelConsumer})
 end
 event.register("Ashfall:fuelConsumer_Alight", lightFire)

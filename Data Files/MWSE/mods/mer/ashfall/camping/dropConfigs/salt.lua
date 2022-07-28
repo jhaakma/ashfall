@@ -81,7 +81,7 @@ return {
                     common.helper.pickUp(reference)
                 end
                 data.callback(target)
-                event.trigger("Ashfall:UpdateAttachNodes", { campfire = target})
+                event.trigger("Ashfall:UpdateAttachNodes", { reference = target})
             end)
         end
     end

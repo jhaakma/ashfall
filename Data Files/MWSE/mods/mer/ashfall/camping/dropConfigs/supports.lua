@@ -29,6 +29,6 @@ return {
             common.helper.pickUp(reference)
         end
         tes3.messageBox("Added %s", common.helper.getGenericUtensilName(reference.object))
-        event.trigger("Ashfall:UpdateAttachNodes", {campfire = campfire})
+        event.trigger("Ashfall:UpdateAttachNodes", { reference = campfire})
     end
 }

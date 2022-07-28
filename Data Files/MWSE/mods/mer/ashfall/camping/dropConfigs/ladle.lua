@@ -28,6 +28,6 @@ return {
         end
 
         tes3.messageBox("Added %s", common.helper.getGenericUtensilName(reference.object))
-        event.trigger("Ashfall:UpdateAttachNodes", {campfire = target})
+        event.trigger("Ashfall:UpdateAttachNodes", { reference = target})
     end
 }

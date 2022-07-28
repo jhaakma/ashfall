@@ -88,7 +88,7 @@ function uiCommon.updateTooltipHeader(newText)
 end
 
 function uiCommon.addCenterLabel(e)
-    local tooltipContents = uiCommon.getTooltipContentsBlock()
+    local tooltipContents = e.parentElement or uiCommon.getTooltipContentsBlock()
     if tooltipContents then
         local text = e.text
         local color = e.color

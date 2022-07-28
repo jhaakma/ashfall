@@ -67,6 +67,6 @@ return {
         logger:debug("Set water heat to %s", campfire.data.waterHeat)
         logger:debug("Set lastWaterUpdated to %s", campfire.data.lastWaterUpdated)
         event.trigger("Ashfall:registerReference", { reference = campfire})
-        event.trigger("Ashfall:UpdateAttachNodes", {campfire = campfire})
+        event.trigger("Ashfall:UpdateAttachNodes", { reference = campfire})
     end
 }

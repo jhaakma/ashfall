@@ -1,62 +1,73 @@
-local this = {}
+local ActivatorController = {}
 
 --[[
     This script determines what static activator is being looked at, and
     creates the tooltip for it.
     Other scripts can see what the player is looking at by checking
-    this.getCurrentActivator()
+    ActivatorController.getCurrentActivator()
 ]]--
-
-local activatorConfig = require("mer.ashfall.config.staticConfigs").activatorConfig
+local Activator = require("mer.ashfall.activators.Activator")
+local activatorConfig = require("mer.Ashfall.activators.activatorConfig")
 local config = require("mer.ashfall.config").config
 local common = require("mer.ashfall.common.common")
 local logger = common.createLogger("activatorController")
 local uiCommon = require("mer.ashfall.ui.uiCommon")
-this.list = activatorConfig.list
-this.current = nil
-this.currentRef = nil
-this.parentNode = nil
+ActivatorController.list = activatorConfig.list
+ActivatorController.current = nil
+ActivatorController.currentRef = nil
+ActivatorController.parentNode = nil
 
-function this.getCurrentActivator()
-    return this.list[this.current]
+
+function ActivatorController.registerActivator(activator)
+    assert(activator.type ~= nil)
+    activatorConfig.types[activator.type] = activator.type
+    ActivatorController.list[activator.id] = Activator:new(activator)
+end
+
+
+
+function ActivatorController.getCurrentActivator()
+    return ActivatorController.list[ActivatorController.current]
 end
 
 ---@return tes3reference | nil
-function this.getCurrentActivatorReference()
-    return this.currentRef
+function ActivatorController.getCurrentActivatorReference()
+    return ActivatorController.currentRef
 end
 
-function this.getCurrentType()
-    local currentActivator = this.getCurrentActivator()
+function ActivatorController.getCurrentType()
+    local currentActivator = ActivatorController.getCurrentActivator()
     if currentActivator then
         return currentActivator.type
     end
 end
 
-function this.getRefActivator(reference)
-    for _, activator in pairs(this.list) do
-        if activator:isActivator(reference.object.id) then
+function ActivatorController.getRefActivator(reference)
+    for _, activator in pairs(ActivatorController.list) do
+        if activator:isActivator(reference) then
             return activator
         end
     end
 end
 
 
+
+
 local function doActivate()
     return (not tes3.mobilePlayer.werewolf)
-        and this.current
-        and config[this.getCurrentActivator().mcmSetting] ~= false
+        and ActivatorController.current
+        and config[ActivatorController.getCurrentActivator().mcmSetting] ~= false
 end
 
 local function getActivatorName()
-    local activator = this.list[this.current]
+    local activator = ActivatorController.list[ActivatorController.current]
     if activator then
         if activator.name and activator.name ~= "" then
             logger:trace("returning activator name: %s", activator.name)
             return activator.name
-        elseif this.currentRef then
-            logger:trace("returning activator ref name: %s", this.currentRef.object.name)
-            return this.currentRef.object.name
+        elseif ActivatorController.currentRef then
+            logger:trace("returning activator ref name: %s", ActivatorController.currentRef.object.name)
+            return ActivatorController.currentRef.object.name
         else
             logger:trace("No ref found for activator")
         end
@@ -72,17 +83,17 @@ local function createActivatorIndicator()
     if doShowActivator() then
         local headerText = getActivatorName()
         local tooltipMenu = uiCommon.createOrUpdateTooltipMenu(headerText)
-        local hasIcon = this.currentRef
-            and this.currentRef.object.icon
-            and this.currentRef.object.icon ~= ""
+        local hasIcon = ActivatorController.currentRef
+            and ActivatorController.currentRef.object.icon
+            and ActivatorController.currentRef.object.icon ~= ""
         if hasIcon then
-            uiCommon.addIconToHeader(this.currentRef.object.icon)
+            uiCommon.addIconToHeader(ActivatorController.currentRef.object.icon)
         end
         local eventData = {
-            parentNode = this.parentNode,
-            reference = this.currentRef
+            parentNode = ActivatorController.parentNode,
+            reference = ActivatorController.currentRef
         }
-        event.trigger("Ashfall:Activator_tooltip", eventData, {filter = this.current })
+        event.trigger("Ashfall:Activator_tooltip", eventData, {filter = ActivatorController.current })
     else
         uiCommon.disableTooltipMenu()
     end
@@ -93,10 +104,10 @@ end
     Every frame, check whether the player is looking at
     a static activator
 ]]--
-function this.callRayTest()
+function ActivatorController.callRayTest()
     --if not tes3ui.menuMode() then
-        this.current = nil
-        this.currentRef = nil
+        ActivatorController.current = nil
+        ActivatorController.currentRef = nil
     --end
 
     local eyePos
@@ -132,11 +143,11 @@ function this.callRayTest()
     if result and result.reference then
         --Look for activators from list
         local targetRef = result.reference
-        this.currentRef = targetRef
-        this.parentNode = result.object.parent
-        for activatorId, activator in pairs(this.list) do
-            if activator:isActivator(targetRef.object.id) then
-                this.current = activatorId
+        ActivatorController.currentRef = targetRef
+        ActivatorController.parentNode = result.object.parent
+        for activatorId, activator in pairs(ActivatorController.list) do
+            if activator:isActivator(targetRef) then
+                ActivatorController.current = activatorId
                 break
             end
         end
@@ -147,7 +158,7 @@ function this.callRayTest()
         if waterLevel and eyePos.z > waterLevel then
             local intersection = (result and result.intersection) or (eyePos + eyeVec * activationDistance)
             if waterLevel >= intersection.z then
-                this.current = "water"
+                ActivatorController.current = "water"
             end
         end
     end
@@ -155,38 +166,25 @@ function this.callRayTest()
     createActivatorIndicator()
 end
 
-local isBlocked
-local function blockScriptedActivate(e)
-    isBlocked = e.doBlock
-end
-event.register("BlockScriptedActivate", blockScriptedActivate)
-
-event.register("loaded", function() isBlocked = false end)
 --[[
     triggerActivate:
     When player presses the activate key, if they are looking
     at an activator static then fire an event
 ]]--
-local function doTriggerActivate()
-    if this.list[this.current] and not isBlocked then
-
-        local eventData = {
-            activator = this.list[this.current],
-            ref = this.currentRef,
-            node = this.parentNode
-        }
-        logger:debug("triggering activator filtering on %s", eventData.activator.type)
-        event.trigger("Ashfall:ActivatorActivated", eventData, { filter = eventData.activator.type })
-    end
-end
-
-local function onActivateKeyPressed(e)
+function ActivatorController.doTriggerActivate()
     if (not tes3ui.menuMode()) and doActivate() then
-        doTriggerActivate()
+        if ActivatorController.list[ActivatorController.current] then
+
+            local eventData = {
+                activator = ActivatorController.list[ActivatorController.current],
+                ref = ActivatorController.currentRef,
+                node = ActivatorController.parentNode
+            }
+            logger:debug("triggering activator filtering on %s", eventData.activator.type)
+            event.trigger("Ashfall:ActivatorActivated", eventData, { filter = eventData.activator.type })
+        end
     end
 end
-event.register("Ashfall:ActivateButtonPressed", onActivateKeyPressed)
 
 
-
-return this
+return ActivatorController

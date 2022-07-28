@@ -81,7 +81,7 @@ local function registerCampfire(e)
         end
     end
     local dynamicConfig = campfireConfig.getConfig(e.reference.object.id)
-    local isActivator = activatorConfig.list.campfire:isActivator(e.reference.object.id)
+    local isActivator = activatorConfig.list.campfire:isActivator(e.reference)
     local initialised = e.reference.data and e.reference.data.campfireInitialised
     if dynamicConfig and isActivator and not initialised then
         local campfire = e.reference

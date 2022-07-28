@@ -734,6 +734,7 @@ local function registerModConfig()
             variable = mwse.mcm.createTableVariable{ id = "logLevel", table = config },
             callback = function(self)
                 for _, log in ipairs(common.loggers) do
+                    mwse.log("Setting %s to log level %s", log.name, self.variable.value)
                     log:setLogLevel(self.variable.value)
                 end
             end

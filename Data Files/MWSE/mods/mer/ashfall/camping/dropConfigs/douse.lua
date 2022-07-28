@@ -39,7 +39,7 @@ return {
         if liquidContainer then
             event.trigger("Ashfall:fuelConsumer_Extinguish", {fuelConsumer = campfire, playSound = true})
             liquidContainer:transferLiquid(LiquidContainer.createInfiniteWaterSource(), 10)
-            tes3.playSound{ reference = tes3.player, sound = "Swim Left" }
+            tes3.playSound{ reference = tes3.player, sound = "ashfall_water" }
             common.helper.pickUp(reference)
         else
             logger:error("Not a liquid container somehow")

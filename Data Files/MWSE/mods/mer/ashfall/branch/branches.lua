@@ -18,7 +18,7 @@ local function isBranch(reference)
 end
 
 local function isTree(reference)
-    return common.staticConfigs.activatorConfig.list.tree:isActivator(reference.object.id)
+    return common.staticConfigs.activatorConfig.list.tree:isActivator(reference)
 end
 
 local function isWaterplant(reference)
@@ -36,9 +36,9 @@ end
 
 
 local function isSource(reference)
-    return common.staticConfigs.activatorConfig.list.tree:isActivator(reference.object.id)
-        or common.staticConfigs.activatorConfig.list.deadTree:isActivator(reference.object.id)
-        or common.staticConfigs.activatorConfig.list.stoneSource:isActivator(reference.object.id)
+    return common.staticConfigs.activatorConfig.list.tree:isActivator(reference)
+        or common.staticConfigs.activatorConfig.list.deadTree:isActivator(reference)
+        or common.staticConfigs.activatorConfig.list.stoneSource:isActivator(reference)
         or isWaterplant(reference)
 end
 

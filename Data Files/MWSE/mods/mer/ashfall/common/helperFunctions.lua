@@ -991,4 +991,85 @@ function this.isCarryable(object)
     end
 end
 
+---@class Ashfall.GroundTextureInfo
+---@field blend number The amount of blending between the ground and decal texture
+---@field texturingProperty niTexturingProperty
+---@field object any
+---@return Ashfall.GroundTextureInfo|nil
+function this.getGroundTextureInfo(e)
+    local rayhit = tes3.rayTest({
+        position = e.position or tes3.getPlayerEyePosition(),
+        direction = e.direction or tes3.getPlayerEyeVector(),
+        returnColor = true,
+        root = tes3.game.worldLandscapeRoot
+    })
+    -- ignore misses
+    if not rayhit then
+        return
+    end
+    -- ignore untextured things
+    local texProp = rayhit.object.texturingProperty
+    if not texProp then
+        return
+    end
+    return {
+        blend = rayhit.color,
+        object = rayhit.object,
+        texturingProperty = texProp
+    }
+end
+
+function this.daysToHours(days)
+    return days * 24
+end
+
+function this.weeksToHours(weeks)
+    return this.daysToHours(weeks * 7)
+end
+
+function this.getIngredients(inventory)
+    local function ingredsIterator(list, parents)
+        parents = parents or {}
+        for i, node in pairs(list or inventory) do
+            if node.object.objectType == tes3.objectType.leveledItem then
+                ---@type tes3leveledItem
+                if parents[node.object] then
+                    mwse.log("Duplicate leveled list detected: %s", node.object.id)
+                else
+                    ingredsIterator(node.object.list, table.copy(parents, {[node.object]=table.size(parents)}))
+                end
+            elseif node.object.objectType == tes3.objectType.ingredient then
+                coroutine.yield(node.object)
+            end
+        end
+    end
+    return coroutine.wrap(ingredsIterator)
+end
+
+function this.showItemAddedMessage(item, count)
+    count = count or 1
+    if (type(item) == "string") then
+        item = tes3.getObject(item)
+    end
+    local name = item.name or item.object.name
+    if count > 1 then
+        tes3.messageBox(string.format(tes3.findGMST(tes3.gmst.sNotifyMessage61).value, count, name))
+    else
+        tes3.messageBox(string.format(tes3.findGMST(tes3.gmst.sNotifyMessage60).value, name))
+    end
+end
+
+function this.showItemRemovedMessage(item, count)
+    count = count or 1
+    if (type(item) == "string") then
+        item = tes3.getObject(item)
+    end
+    local name = item.name or item.object.name
+    if count > 1 then
+        tes3.messageBox(string.format(tes3.findGMST(tes3.gmst.sNotifyMessage63).value, count, name))
+    else
+        tes3.messageBox(string.format(tes3.findGMST(tes3.gmst.sNotifyMessage62).value, name))
+    end
+end
+
 return this

@@ -6,7 +6,7 @@ local foodConfig = common.staticConfigs.foodConfig
 local hungerController = require("mer.ashfall.needs.hungerController")
 local skillSurvivalGrillingIncrement = 5
 local patinaController = require("mer.ashfall.camping.patinaController")
-
+local ReferenceController = require("mer.ashfall.referenceController")
 ----------------------------
 --Grilling
 -----------------------------
@@ -205,7 +205,7 @@ end
 
 --update any food that is currently grilling
 local function grillFoodSimulate(e)
-    common.helper.iterateRefType("grillableFood", function(ref)
+    ReferenceController.iterateReferences("grillableFood", function(ref)
         grillFoodItem(ref, e.timestamp)
     end)
 end
@@ -295,11 +295,11 @@ local function clearCampfireUtensilData(e)
 
     logger:debug("Clearing Utensil Data")
     local campfire = e.campfire
-    LiquidContainer.createFromReference(campfire):clearData()
+    LiquidContainer.createFromReference(campfire):empty()
 
     if e.removeUtensil then
         clearUtensilData(campfire.data)
     end
-    event.trigger("Ashfall:UpdateAttachNodes", {campfire = campfire})
+    event.trigger("Ashfall:UpdateAttachNodes", { reference = campfire})
 end
 event.register("Ashfall:Campfire_clear_utensils", clearCampfireUtensilData)

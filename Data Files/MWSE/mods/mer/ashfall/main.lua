@@ -12,6 +12,7 @@ local function initialized()
         -- This has to go first so events trigger properly
         require("mer.ashfall.referenceController")
 
+        require("mer.ashfall.activators")
         require("mer.ashfall.survival")
 
         require("mer.ashfall.intro")

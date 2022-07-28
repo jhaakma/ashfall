@@ -31,14 +31,12 @@ local function douse(bottleData)
 
     --handle bottleData if provided
     if bottleData then
-        logger:debug("Douse: Reducing amount in bottle by %s", math.ceil(waterUsed))
-        --Reduce liquid in bottleData
-        bottleData.waterAmount = bottleData.waterAmount - math.ceil(waterUsed)
-        thirstController.handleEmpties(bottleData)
+        local liquidContainer = LiquidContainer.createFromData(bottleData)
+        if liquidContainer then
+            liquidContainer:transferLiquid(LiquidContainer.createInfiniteWaterSource(), waterUsed)
+            tes3.messageBox("You douse yourself with water.")
+        end
     end
-
-    tes3.playSound{ reference = tes3.player, pitch = 0.8, sound = "Swim Right" }
-    tes3.messageBox("You douse yourself with water.")
 
     return waterUsed
 end
@@ -200,8 +198,10 @@ local function doDrinkWater(bottleData)
         event.trigger("Ashfall:DrinkTea", { teaType = bottleData.waterType, amountDrank = amountDrank, heat = bottleData.waterHeat})
     end
     --Reduce liquid in bottleData
-    bottleData.waterAmount = bottleData.waterAmount - thisSipSize
-    thirstController.handleEmpties(bottleData)
+    local liquidContainer = LiquidContainer.createFromData(bottleData)
+    if liquidContainer then
+        liquidContainer:transferLiquid(LiquidContainer.createInfiniteWaterSource(), thisSipSize)
+    end
 end
 
 local function getIsPotion(e)
@@ -227,7 +227,7 @@ local function drinkFromContainer(e)
         local isStew = e.itemData.data.stewLevels
         local hungerFull = hunger:getValue() < 1
         local thirstFull = thirst:getValue() < 1
-        ---@type AshfallLiquidContainer
+        ---@type Ashfall.LiquidContainer
         local source = LiquidContainer.createFromInventory(e.item, e.itemData)
 
         local doPrompt
@@ -305,9 +305,11 @@ local function drinkFromContainer(e)
                     {
                         text = "Empty",
                         callback = function()
-                            e.itemData.data.waterAmount = 0
-                            thirstController.handleEmpties(e.itemData.data)
-                            tes3.playSound({reference = tes3.player, sound = "Swim Left"})
+                            local liquidContainer = LiquidContainer.createFromData(e.itemData.data)
+                            if liquidContainer then
+                                liquidContainer:empty()
+                                tes3.playSound({reference = tes3.player, sound = "ashfall_water"})
+                            end
                         end
                     },
                 },

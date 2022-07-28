@@ -87,4 +87,6 @@ return {
     ashfall_supports_03 = { maxSteepness = 0, drop = 10 },
 
     ashfall_wood_stack = { maxSteepness = 0.1 },
+
+
 }

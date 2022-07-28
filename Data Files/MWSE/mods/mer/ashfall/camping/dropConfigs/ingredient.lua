@@ -51,7 +51,7 @@ return {
         else
             tes3.messageBox("You cannot add any more %s.", foodConfig.getFoodTypeResolveMeat(reference.object):lower())
         end
-        tes3.playSound{ reference = tes3.player, sound = "Swim Left" }
+        tes3.playSound{ reference = tes3.player, sound = "ashfall_water" }
     end
 }
 

@@ -9,7 +9,7 @@ local common = require("mer.ashfall.common.common")
 local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 local staticConfigs = common.staticConfigs
 local activatorConfig = common.staticConfigs.activatorConfig
-local refController = require("mer.ashfall.referenceController")
+local ReferenceController = require("mer.ashfall.referenceController")
 ---CONFIGS----------------------------------------
 --max distance where fire has an effect
 
@@ -49,25 +49,25 @@ local function isLight(ref)
     return ref.baseObject and ref.baseObject.objectType == tes3.objectType.light
 end
 
-refController.registerReferenceController{
+ReferenceController.registerReferenceController{
     id = "heatSource",
     requirements = function(_, ref)
         if ref.disabled then return false end
         if isLight(ref) then
             return getHeatSourceValue(ref) ~= nil
-                and not activatorConfig.list.fire:isActivator(ref.object.id)
-                and not activatorConfig.list.campfire:isActivator(ref.object.id)
+                and not activatorConfig.list.fire:isActivator(ref)
+                and not activatorConfig.list.campfire:isActivator(ref)
         end
         return false
     end
 }
 
-refController.registerReferenceController{
+ReferenceController.registerReferenceController{
     id = "flame",
     requirements = function(_, ref)
         if ref.disabled then return false end
-        return activatorConfig.list.fire:isActivator(ref.object.id) == true
-            and not activatorConfig.list.campfire:isActivator(ref.object.id)
+        return activatorConfig.list.fire:isActivator(ref) == true
+            and not activatorConfig.list.campfire:isActivator(ref)
     end
 }
 
@@ -148,7 +148,7 @@ function this.calculateFireEffect()
             closeEnough = true
         end
     end
-    common.helper.iterateRefType("fuelConsumer", doCampfireHeat)
+    ReferenceController.iterateReferences("fuelConsumer", doCampfireHeat)
 
     local function doFlameHeat(ref)
         local distance = getDistance(ref)
@@ -166,7 +166,7 @@ function this.calculateFireEffect()
             closeEnough = true
         end
     end
-    common.helper.iterateRefType("flame", doFlameHeat)
+    ReferenceController.iterateReferences("flame", doFlameHeat)
 
     local function doOtherHeat(ref)
         local distance = getDistance(ref)
@@ -179,7 +179,7 @@ function this.calculateFireEffect()
             totalHeat = totalHeat + heatAtThisDistance
         end
     end
-    common.helper.iterateRefType("heatSource", doOtherHeat)
+    ReferenceController.iterateReferences("heatSource", doOtherHeat)
 
     if not closeEnough then
         warmingHands = false

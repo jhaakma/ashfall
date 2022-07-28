@@ -1,6 +1,8 @@
 local common = require("mer.ashfall.common.common")
 local logger = common.createLogger("WaterFilter")
 local LiquidContainer   = require("mer.ashfall.liquid.LiquidContainer")
+local ReferenceController = require("mer.ashfall.referenceController")
+
 local WaterFilter = {}
 WaterFilter.filterIDs = {
     --ashfall_water_filter = true
@@ -57,7 +59,7 @@ function WaterFilter.getUnfilteredCapacityRemaining(reference)
 end
 
 ---@param filterRef tes3reference
----@param liquidContainer AshfallLiquidContainer
+---@param liquidContainer Ashfall.LiquidContainer
 function WaterFilter.transferWater(filterRef, liquidContainer)
     local waterAmount = liquidContainer.waterAmount
     local capacity = WaterFilter.getUnfilteredCapacityRemaining(filterRef)
@@ -73,7 +75,7 @@ function WaterFilter.transferWater(filterRef, liquidContainer)
             filterRef.data.unfilteredWater = filterRef.data.unfilteredWater + waterToTransfer
             logger:debug("transferWater: %s", amount)
             tes3.messageBox("Filled Water Filter with dirty water.")
-            tes3.playSound{ sound = "Swim Right"}
+            tes3.playSound{ sound = "ashfall_water"}
         end
         return amount
     end
@@ -84,7 +86,7 @@ end
 
 
 event.register("simulate", function(e)
-    common.helper.iterateRefType("waterFilter", function(reference)
+    ReferenceController.iterateReferences("waterFilter", function(reference)
         reference.data.lastWaterFilterUpdated = reference.data.lastWaterFilterUpdated or e.timestamp
         local timeSinceLastUpdate = e.timestamp - reference.data.lastWaterFilterUpdated
         if timeSinceLastUpdate > config.updateInterval then
@@ -104,7 +106,7 @@ event.register("simulate", function(e)
                 reference.data.waterAmount = reference.data.waterAmount + waterFilteredAmount
                 reference.data.lastWaterFilterUpdated = e.timestamp
                 tes3ui.refreshTooltip()
-                event.trigger("Ashfall:UpdateAttachNodes", { campfire = reference})
+                event.trigger("Ashfall:UpdateAttachNodes", { reference = reference})
             end
             reference.data.lastWaterFilterUpdated = e.timestamp
         end
@@ -189,7 +191,7 @@ function WaterFilter.collectWaterCallback(collectWaterParams)
                     local filterRefContainer = LiquidContainer.createFromReference(filterRef)
                     local amount, errorMsg = filterRefContainer:transferLiquid(liquidContainer, filterRefContainer.waterAmount)
                     if amount then
-                        tes3.playSound{ sound = "Swim Right"}
+                        tes3.playSound{ sound = "ashfall_water"}
                         --tes3.messageBox("You collect %d from %s.", amount, e.item.name)
                     else
                         tes3.messageBox(errorMsg)

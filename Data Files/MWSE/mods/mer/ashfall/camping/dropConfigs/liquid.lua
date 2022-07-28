@@ -6,10 +6,10 @@ return {
         local isModifierKeyPressed = common.helper.isModifierKeyPressed()
         if isModifierKeyPressed then --retrieving water from target
             local liquidContainer = LiquidContainer.createFromReference(target)
-            return string.format("Retrieve %s", liquidContainer:getLiquidName())
+            return string.format("Retrieve %s", liquidContainer and liquidContainer:getLiquidName())
         else --adding water to target
             local liquidContainer = LiquidContainer.createFromInventory(item, itemData)
-            return string.format("Add %s", liquidContainer:getLiquidName())
+            return string.format("Add %s", liquidContainer and liquidContainer:getLiquidName())
         end
     end,
     --onDrop for Stew handled separately, this only does tea

@@ -5,6 +5,7 @@ local BedRoll = require("mer.ashfall.items.bedroll")
 local WaterFilter = require("mer.ashfall.items.waterFilter")
 local CrabPot = require("mer.ashfall.items.crabpot")
 local WoodStack = require("mer.ashfall.items.woodStack")
+local Planter = require("mer.ashfall.items.planter.Planter")
 local config = require("mer.ashfall.config").config
 
 
@@ -76,12 +77,11 @@ this.categories = {
     equipment = "Equipment",
     cutlery = "Cutlery",
     weapons = "Weapons",
+    planters = "Planters"
 }
 
 --Do common ingred ids first so they have priority
 this.menuOptions = {
-    restMenu = BedRoll.buttons.sleep,
-    layDown = BedRoll.buttons.layDown,
     tanningRackMenu = {
         text = "Craft",
         callback = function()
@@ -117,8 +117,6 @@ this.menuOptions = {
             tes3ui.enterMenuMode(menuID)
         end
     },
-    filterWater = WaterFilter.buttons.filterWater,
-    collectWater = WaterFilter.buttons.collectWater,
 }
 
 this.materials = {
@@ -283,8 +281,8 @@ this.bushCraftingRecipes = {
     {
         id = "ashfall_strawbed_s",
         additionalMenuOptions = {
-            this.menuOptions.restMenu,
-            this.menuOptions.layDown,
+            BedRoll.buttons.sleep,
+            BedRoll.buttons.layDown,
         },
         maxSteepness = 0,
         description = "A simple straw bed. Not very comfortable but it beats sleeping on the ground.",
@@ -512,6 +510,58 @@ this.bushCraftingRecipes = {
 
     --Novice
     {
+        id = "ashfall_planter_01",
+        description = "A small wooden planter for growing crops.",
+        materials = {
+            { material = "wood", count = 4 },
+            { material = "rope", count = 2 },
+        },
+        skillRequirements = {
+            this.survivalTiers.novice
+        },
+        category = this.categories.planters,
+        soundType = "wood",
+        customRequirements = {
+            this.customRequirements.wildernessOnly
+        },
+        additionalMenuOptions = {
+            Planter.buttons.harvest,
+            Planter.buttons.plantSeed,
+            Planter.buttons.water,
+            Planter.buttons.removePlant,
+        },
+        placeCallback = Planter.placeCallback,
+        positionCallback = Planter.placeCallback,
+        destroyCallback = Planter.destroyCallback,
+        maxSteepness = 15,
+    },
+    {
+        id = "ashfall_planter_02",
+        description = "A medium sized wooden planter for growing crops.",
+        materials = {
+            { material = "wood", count = 6 },
+            { material = "rope", count = 2 },
+        },
+        skillRequirements = {
+            this.survivalTiers.novice
+        },
+        category = this.categories.planters,
+        soundType = "wood",
+        customRequirements = {
+            this.customRequirements.wildernessOnly
+        },
+        additionalMenuOptions = {
+            Planter.buttons.harvest,
+            Planter.buttons.plantSeed,
+            Planter.buttons.water,
+            Planter.buttons.removePlant,
+        },
+        placeCallback = Planter.placeCallback,
+        positionCallback = Planter.placeCallback,
+        destroyCallback = Planter.destroyCallback,
+        maxSteepness = 15,
+    },
+    {
         id = "ashfall_water_filter",
         description = "A water filter that uses plant fibre and coal to purify dirty water.",
         materials = {
@@ -531,8 +581,8 @@ this.bushCraftingRecipes = {
         },
         maxSteepness = 0,
         additionalMenuOptions = {
-            this.menuOptions.filterWater,
-            this.menuOptions.collectWater,
+            WaterFilter.buttons.filterWater,
+            WaterFilter.buttons.collectWater,
         }
     },
     {
@@ -816,8 +866,8 @@ this.bushCraftingRecipes = {
         id = "ashfall_hammock",
         maxSteepness = 0,
         additionalMenuOptions = {
-            this.menuOptions.restMenu,
-            this.menuOptions.layDown,
+            BedRoll.buttons.sleep,
+            BedRoll.buttons.layDown,
         },
         description = "A hammock for sleeping out in the rough.",
         materials = {
@@ -945,8 +995,8 @@ this.bushCraftingRecipes = {
         id = "ashfall_bed_fur",
         maxSteepness = 0,
         additionalMenuOptions = {
-            this.menuOptions.restMenu,
-            this.menuOptions.layDown,
+            BedRoll.buttons.sleep,
+            BedRoll.buttons.layDown,
         },
         description = "A sturdy bed covered in warm furs.",
         materials = {
@@ -971,8 +1021,8 @@ this.bushCraftingRecipes = {
         id =  "ashfall_cbroll_active",
         description = "A covered bedroll which provides protection from the elements while sleeping.",
         additionalMenuOptions = {
-            this.menuOptions.restMenu,
-            this.menuOptions.layDown,
+            BedRoll.buttons.sleep,
+            BedRoll.buttons.layDown,
         },
         maxSteepness = 0,
         materials = {

@@ -17,8 +17,7 @@ local logger = common.createLogger("LiquidContainer")
 local foodConfig = require "mer.ashfall.config.foodConfig"
 local teaConfig = require "mer.ashfall.config.teaConfig"
 
---Types
----@class AshfallLiquidContainerData
+---@class Ashfall.LiquidContainer.Data
 ---@field waterAmount number Amount of water in container. Maps to data.waterAmount
 ---@field waterHeat number How hot the water is out of 100. Maps to data.waterHeat
 ---@field stewProgress number How far the stew has cooked
@@ -32,10 +31,8 @@ local teaConfig = require "mer.ashfall.config.teaConfig"
 ---@field stewBuffs table The stew buffs
 ---@field ladle boolean A ladle is attached to the cooking pot
 
-
----@class AshfallLiquidContainer
----@field new function constructor
----@field data AshfallLiquidContainerData The Reference.data or itemData.data
+---@class Ashfall.LiquidContainer
+---@field data Ashfall.LiquidContainer.Data The Reference.data or itemData.data
 ---@field itemId string The id of the item
 ---@field reference tes3reference (Optional) if there is a reference, we need it for updating nodes
 ---@field waterAmount number Amount of water in container. Maps to data.waterAmount
@@ -51,26 +48,8 @@ local teaConfig = require "mer.ashfall.config.teaConfig"
 ---@field stewBuffs table The stew buffs
 ---@field capacity number Maximum water capacity of container
 ---@field holdsStew boolean Flag whether container is able to hold stew. If it can hold stew, it can't hold tea.
----@field createFromReference function Create a new LiquidContainer from an in-world reference
----@field createFromInventory function Create a new LiquidContainer from an item in the player's inventory
----@field createInfiniteWaterSource function Create a liquidContainer with an infinite water source, such as a well.
----@field transferLiquid function Transfer liquid from one liquidContainer to another
----@field updateHeat function Updates the heat and triggers node updates for steam etc
----@field clearData function Resets the data of the liquid container to their default values
----@field getHeat function Gets the heat of the liquid
----@field getLiquidName function Get's a user-facing string for the type of liquid in the container
----@field getLiquidType function Get the type of liquid in the container. Return values: "clean", "dirty", "tea", "stew"
----@field getWaterRatio function Gets the ratio of water in the container
----@field getStewLevel function Gets the % filled for a given foodType in the stew
----@field getStewCapacity function returns how many ingredients of the given food type can still be added to the stew
----@field isBoiling function Returns whether the water is boiling
----@field isWater function Returns true if the liquid is clean or dirty water, but not if it's stew or tea
----@field isInfinite function Returns true if the liquid is infinite, such as a well
----@field isCookedStew function Returns true if the liquid is stew and it is fulled cooked
----@field isBrewedTea function Returns true if the liquid is tea and it is fulled brewed
----@field canTransfer function Returns true if it is possible to transfer liquids between two liquid containers.
-
 local LiquidContainer = {}
+
 local dataValues = {
     waterAmount = {default = 0},
     waterHeat = {default = 0},
@@ -86,7 +65,7 @@ local dataValues = {
 }
 
 local meta = {
-    ---@param tbl AshfallLiquidContainer
+    ---@param tbl Ashfall.LiquidContainer
     ---@param key any
     __index = function(tbl, key)
         if LiquidContainer[key] then return LiquidContainer[key] end
@@ -96,7 +75,7 @@ local meta = {
         end
     end,
 
-    ---@param self AshfallLiquidContainer
+    ---@param self Ashfall.LiquidContainer
     ---@param key any
     ---@param val any
     __newindex = function(self, key, val)
@@ -112,17 +91,32 @@ local meta = {
     end,
 }
 
----@param id string The Object id of the container
----@param dataHolder table Either a reference or an itemData, either way it is how we access data table.
----Data Holder is Optional, but only for using as a filter. Mandatory if you want to actually transfer liquid
----@return AshfallLiquidContainer|boolean liquidContainer
-function LiquidContainer.new(id, dataHolder, reference)
-    local bottleData = common.staticConfigs.bottleList[id:lower()]
+---@class LiquidContainer.BottleData
+---@field capacity number
+---@field holdsStew boolean
+
+---@class LiquidContainer.ConstructorData
+---@field id string
+---@field dataHolder table
+---@field reference tes3reference
+---@field bottleData table
+
+--[[
+    Construct a new Liquid Container.
+    Data Holder is Optional, but only for using as a filter. Mandatory if you want to actually transfer liquid
+]]
+---@param e LiquidContainer.ConstructorData
+---@return Ashfall.LiquidContainer|nil liquidContainer
+function LiquidContainer.new(e)
+    local id = e.id
+    local dataHolder = e.dataHolder
+    local reference = e.reference
+    local bottleData = e.bottleData or common.staticConfigs.bottleList[id:lower()]
     if bottleData then
-        ---@type AshfallLiquidContainer
+        ---@type Ashfall.LiquidContainer
         local liquidContainer = {}
         liquidContainer.dataHolder = dataHolder --if null, an item with no itemData
-        ---@type AshfallLiquidContainerData
+        ---@type Ashfall.LiquidContainer.Data
         liquidContainer.data = dataHolder and dataHolder.data or {}
         liquidContainer.capacity = bottleData.capacity
         liquidContainer.holdsStew = bottleData.holdsStew == true
@@ -135,20 +129,42 @@ function LiquidContainer.new(id, dataHolder, reference)
     --Not a valid liquidContainer
 end
 
+--[[
+    Create a Liquid container from a given reference.
+]]
 ---@param reference tes3reference
----@return AshfallLiquidContainer liquidContainer
-function LiquidContainer.createFromReference(reference)
+---@return Ashfall.LiquidContainer|nil liquidContainer
+function LiquidContainer.createFromReference(reference, bottleData)
     local id = (reference.data and reference.data.utensilId) or reference.baseObject.id
-    return LiquidContainer.new(id, reference, reference)
+    return LiquidContainer.new{
+        id = id,
+        dataHolder = reference,
+        reference = reference,
+        bottleData = bottleData
+    }
 end
 
+--[[
+    Create a Liquid Container from an item in the player's inventory.
+]]
 ---@param item tes3object
 ---@param itemData tes3itemData
----@return AshfallLiquidContainer liquidContainer
+---@return Ashfall.LiquidContainer|nil liquidContainer
 function LiquidContainer.createFromInventory(item, itemData)
-    return LiquidContainer.new(item.id, itemData)
+    local bottleData = common.staticConfigs.bottleList[item.id:lower()]
+    return LiquidContainer.new{
+        id = item.id,
+        dataHolder = itemData,
+        bottleData = bottleData
+    }
 end
 
+--[[
+    Create a Liquid Container from an item in the player's inventory and initialise an itemData for it.
+]]
+---@param item tes3object
+---@param itemData tes3itemData
+---@return Ashfall.LiquidContainer|nil liquidContainer
 function LiquidContainer.createFromInventoryInitItemData(item, itemData)
     if not itemData then
         itemData = tes3.addItemData{
@@ -156,24 +172,46 @@ function LiquidContainer.createFromInventoryInitItemData(item, itemData)
             item = item.id
         }
     end
-    return LiquidContainer.new(item.id, itemData)
+    return LiquidContainer.new{
+        id = item.id,
+        dataHolder = itemData,
+    }
 end
 
+--[[
+    Create Liquid Container from an exiting item's data table.
+]]
 ---@param data table
----@return AshfallLiquidContainer liquidContainer
-function LiquidContainer.createFromData(data)
-    return LiquidContainer.new('_infinite_water_source', { data = data} )
+---@return Ashfall.LiquidContainer|nil liquidContainer
+function LiquidContainer.createFromData(data, bottleData)
+    bottleData = bottleData or {
+        capacity = math.huge,
+        holdsStew = false
+    }
+    return LiquidContainer.new{
+        id = '_infinite_water_source',
+        dataHolder = { data = data},
+        bottleData = bottleData
+    }
 end
 
-function LiquidContainer.createInfiniteWaterSource(data, reference)
+--[[
+    Create an infinite water source Liquid Container.
+    Use optional data table to determine properties such as tea type, dirty water etc.
+]]
+---@param data table **Optional**
+---@return Ashfall.LiquidContainer|nil liquidContainer
+function LiquidContainer.createInfiniteWaterSource(data)
     data = data or {}
     data.waterAmount = data.waterAmount or math.huge
-    return LiquidContainer.new('_infinite_water_source', {data = data}, reference)
+    return LiquidContainer.createFromData(data)
 end
 
-
----@param from AshfallLiquidContainer
----@param to AshfallLiquidContainer
+--[[
+    Check if water can be transfer between two liquid containers.
+]]
+---@param from Ashfall.LiquidContainer
+---@param to Ashfall.LiquidContainer
 function LiquidContainer.canTransfer(from, to)
     --Can't transfer to itself
     if from.data == to.data then
@@ -230,12 +268,14 @@ function LiquidContainer.canTransfer(from, to)
     return true
 end
 
----@param from AshfallLiquidContainer
----@param to AshfallLiquidContainer
----@param amount number
+---Trasfer liquid from one liquid container to another.
+---@param from Ashfall.LiquidContainer
+---@param to Ashfall.LiquidContainer
+---@param amount number|nil
 function LiquidContainer.transferLiquid(from, to, amount)
     logger:debug("Transferring %s from %s to %s", amount or "[infinite]", from, to)
 
+    --Check if transfer is possible
     local canTransfer, errorMsg = from:canTransfer(to)
     if not canTransfer then
         logger:debug("Failed to transfer: %s", errorMsg)
@@ -247,13 +287,11 @@ function LiquidContainer.transferLiquid(from, to, amount)
     local fillAmount = math.min(from.waterAmount, targetRemainingCapacity, amount)
     --Early exit if there's nothing to fill
     if fillAmount < 1 then return 0 end
-
     --Show message
     local item =  tes3.getObject(to.itemId)
     if item and item.name then
         tes3.messageBox('%s filled with %s.', common.helper.getGenericUtensilName(item), from:getLiquidName())
     end
-
     -- waterHeat
     local fromHeat = from.waterHeat or 0
     local toHeat = to.waterHeat or 0
@@ -261,7 +299,6 @@ function LiquidContainer.transferLiquid(from, to, amount)
         (fromHeat*fillAmount + toHeat*to.waterAmount)
         / (fillAmount + to.waterAmount)
     to:updateHeat(newHeat)
-
     -- stewProgress
     to.stewProgress = (from.stewProgress*fillAmount + to.stewProgress*to.waterAmount)
         / (fillAmount + to.waterAmount)
@@ -274,7 +311,6 @@ function LiquidContainer.transferLiquid(from, to, amount)
     logger:trace("fillAmount: %s", fillAmount)
     logger:trace("to.teaProgress: %s", to.teaProgress)
     logger:trace("to.waterAmount: %s", to.waterAmount)
-
     -- waterAmount
     local targetWaterBefore = to.waterAmount
     from.waterAmount = from.waterAmount - fillAmount
@@ -311,32 +347,37 @@ function LiquidContainer.transferLiquid(from, to, amount)
     to.lastWaterHeatUpdated = nil
     --Clear empty from
     if from.waterAmount < 1 then
-        from:clearData()
+        from:empty()
     end
     --Trigger node updates
     if from.reference then
-        event.trigger("Ashfall:UpdateAttachNodes", {campfire = from.reference})
+        event.trigger("Ashfall:UpdateAttachNodes", { reference = from.reference})
     end
     if to.reference then
-        event.trigger("Ashfall:UpdateAttachNodes", {campfire = to.reference})
+        event.trigger("Ashfall:UpdateAttachNodes", { reference = to.reference})
         event.trigger("Ashfall:registerReference", { reference = to.reference})
     end
     tes3ui.updateInventoryTiles()
-    tes3.playSound({reference = tes3.player, sound = "Swim Left", volume = 2.0})
+    tes3.playSound{sound = "ashfall_water"}
     logger:debug("Transferred %s", fillAmount)
     logger:debug("New water amount: %s", to.waterAmount)
     return fillAmount
 end
 
-function LiquidContainer.clearData(self)
+---Empty a water container, clearing item data and triggering any node updates.
+function LiquidContainer:empty()
     self:updateHeat(0)
     for k, _ in pairs(dataValues) do
         self.data[k] = nil
     end
+    tes3ui.updateInventoryTiles()
 end
 
----@param self AshfallLiquidContainer
-function LiquidContainer.getLiquidName(self)
+
+
+
+---@param self Ashfall.LiquidContainer
+function LiquidContainer:getLiquidName()
     if self.waterType == "dirty" then
         return "Dirty water"
     elseif teaConfig.teaTypes[self.waterType] then
@@ -348,7 +389,7 @@ function LiquidContainer.getLiquidName(self)
     end
 end
 
-function LiquidContainer.getLiquidType(self)
+function LiquidContainer:getLiquidType()
     if self.waterType == "dirty" then
         return "dirty"
     elseif teaConfig.teaTypes[self.waterType] then
@@ -361,20 +402,20 @@ function LiquidContainer.getLiquidType(self)
 end
 
 ---@return number heat
-function LiquidContainer.getHeat(self)
+function LiquidContainer:getHeat()
     return self.data.waterHeat or 0
 end
 
-function LiquidContainer.getWaterRatio(self)
+function LiquidContainer:getWaterRatio()
     return self.waterAmount / self.capacity
 end
 
-function LiquidContainer.getStewLevel(self, foodType)
+function LiquidContainer:getStewLevel(foodType)
     if not self.stewLevels then return 0 end
     return self.stewLevels[foodType] or 0
 end
 
-function LiquidContainer.getStewCapacity(self, foodType)
+function LiquidContainer:getStewCapacity(foodType)
     local waterRatio = self:getWaterRatio()
     local stewLevel = self:getStewLevel(foodType)
     local adjustedIngredAmount = common.staticConfigs.stewIngredAddAmount / waterRatio
@@ -383,31 +424,38 @@ function LiquidContainer.getStewCapacity(self, foodType)
     return capacity
 end
 
-function LiquidContainer.isWater(self)
+function LiquidContainer:isWater()
     local liquidType = self:getLiquidType()
     return liquidType == "clean" or liquidType == "dirty"
 end
 
-function LiquidContainer.isInfinite(self)
+function LiquidContainer:isInfinite()
     return self.itemId == '_infinite_water_source'
 end
 
-function LiquidContainer.isCookedStew(self)
+function LiquidContainer:isCookedStew()
     return self:getLiquidType() == "stew"
         and self.stewProgress >= 100
 end
 
-function LiquidContainer.isBrewedTea(self)
+function LiquidContainer:isTea()
     return self:getLiquidType() == "tea"
-        and self.teaProgress >= 100
 end
 
-function LiquidContainer.isBoiling(self)
+function LiquidContainer:isBrewedTea()
+    return self:isTea() and self.teaProgress >= 100
+end
+
+function LiquidContainer:isBoiling()
     return self.waterHeat > common.staticConfigs.hotWaterHeatValue
 end
 
+function LiquidContainer:hasWater()
+    return self.waterAmount >= 1
+end
+
 ---Updates the heat of a liquid container, triggering any node updates and sounds if necessary
----@param self AshfallLiquidContainer
+---@param self Ashfall.LiquidContainer
 ---@param newHeat number
 function LiquidContainer.updateHeat(self, newHeat)
     local heatBefore = self.data.waterHeat or 0
@@ -416,11 +464,11 @@ function LiquidContainer.updateHeat(self, newHeat)
     --add sound if crossing the boiling barrior
     if self.reference and not self.reference.disabled then
         if heatBefore < common.staticConfigs.hotWaterHeatValue and heatAfter > common.staticConfigs.hotWaterHeatValue then
-            event.trigger("Ashfall:UpdateAttachNodes", {campfire = self.reference})
+            event.trigger("Ashfall:UpdateAttachNodes", { reference = self.reference})
         end
         if heatBefore > common.staticConfigs.hotWaterHeatValue and heatAfter < common.staticConfigs.hotWaterHeatValue then
             logger:debug("No longer hot")
-            event.trigger("Ashfall:UpdateAttachNodes", {campfire = self.reference})
+            event.trigger("Ashfall:UpdateAttachNodes", { reference = self.reference})
         end
     end
 end

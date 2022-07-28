@@ -172,4 +172,22 @@ function this.registerReferenceController(e)
 end
 event.register("Ashfall:RegisterReferenceController", this.registerReferenceController)
 
+function this.iterateReferences(refType, callback)
+    for ref, _ in pairs(this.controllers[refType].references) do
+        --check requirements in case it's no longer valid
+        if this.controllers[refType]:requirements(ref) then
+            if ref.sceneNode then
+                callback(ref)
+            end
+        else
+            --no longer valid, remove from ref list
+            this.controllers[refType].references[ref] = nil
+        end
+    end
+end
+
+function this.isReference(refType, reference)
+    return this.controllers[refType]:isReference(reference)
+end
+
 return this

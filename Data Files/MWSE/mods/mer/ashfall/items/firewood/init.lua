@@ -58,7 +58,7 @@ local function placeCampfire(e)
         end)
     end
     campfire.data.fuelLevel = stackSize - remaining
-    event.trigger("Ashfall:UpdateAttachNodes", { campfire = campfire})
+    event.trigger("Ashfall:UpdateAttachNodes", { reference = campfire})
 end
 
 

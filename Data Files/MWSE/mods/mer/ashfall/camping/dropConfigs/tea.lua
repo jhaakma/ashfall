@@ -49,6 +49,6 @@ return {
             common.helper.pickUp(reference)
         end
         tes3.messageBox("Added %s", reference.object.name)
-        tes3.playSound{ reference = tes3.player, sound = "Swim Left" }
+        tes3.playSound{ reference = tes3.player, sound = "ashfall_water" }
     end
 }

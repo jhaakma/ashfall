@@ -1,6 +1,7 @@
 local this = {}
 local common = require("mer.ashfall.common.common")
 local staticConfigs = common.staticConfigs
+local ReferenceController = require("mer.ashfall.referenceController")
 --Register heat source
 local temperatureController = require("mer.ashfall.temperatureController")
 temperatureController.registerExternalHeatSource("hazardTemp")
@@ -22,7 +23,7 @@ end
 
 function this.calculateHazards()
     local totalHeat = 0
-    common.helper.iterateRefType("hazard", function(ref)
+    ReferenceController.iterateReferences("hazard", function(ref)
         totalHeat = totalHeat + getHeat(ref)
     end)
     --tes3.messageBox("%s", totalHeat)

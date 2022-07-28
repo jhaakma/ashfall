@@ -1,38 +1,9 @@
----@class AshfallHarvestWeaponData
----@field effectiveness number
----@field degradeMulti number
-
----@class AshfallHarvestConfigHarvestable
----@field id number
----@field count number
----@field chance number
-
----@class AshfallHarvestConfigDestructionLimit
----@field min number
----@field max number
-
----@class AshfallHarvestConfig
----@field name string Name needed for error message when harvesting is illegal
----@field weaponTypes table<number, AshfallHarvestWeaponData> Key: tes3.weaponType
----@field weaponIds table<number, AshfallHarvestWeaponData> Key: tes3.weaponType
----@field weaponNamePatterns table<string, AshfallHarvestWeaponData> Key: String pattern to search in object name
----@field requirements function (weapon: tes3equipmentStack) -> boolean Returns true if the weapon meets the requirements
----@field items AshfallHarvestConfigHarvestable[] Array of harvestables
----@field sound string
----@field swingsNeeded number
----@field destructionLimit AshfallHarvestConfigDestructionLimit The min/max that can be harvested before being destroyed
----@field fallSound string The sound to play when the harvestable is destroyed
----@field clutter table<string, boolean> A list of clutter items that are destroyed alongside this harvestable.
----@field dropLoot boolean If set, any items sitting on top of the reference will be "dropped" to the ground
-
 local attackDirection = {
     slash = 1,
     chop = 2,
     stab = 3
 }
 local config = {}
-
-
 
 config.woodaxes = {
     ashfall_woodaxe_flint = {
@@ -63,6 +34,7 @@ config.attackDirectionMapping = {
     }
 }
 
+---@type table<string, Ashfall.Harvest.Config>
 config.activatorHarvestData = {
     stump = {
         attackDirections = {

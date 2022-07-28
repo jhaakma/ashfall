@@ -18,15 +18,7 @@ local THIRST_EFFECT_HIGH = 1.0
 local conditionConfig = common.staticConfigs.conditionConfig
 local thirst = conditionConfig.thirst
 
-function this.handleEmpties(data)
-    logger:trace("handleEmpties")
-    if data.waterAmount and data.waterAmount < 1 then
-        logger:debug("handleEmpties: waterAmount < 1, clearing water data")
-        LiquidContainer.createFromData(data):clearData()
-        --restack / remove sound
-        tes3ui.updateInventoryTiles()
-    end
-end
+
 
 function this.calculate(scriptInterval, forceUpdate)
     if  scriptInterval == 0 and not forceUpdate then return end
@@ -201,7 +193,7 @@ end
 function this.fillContainer(params)
     params = params or {}
     local cost = params.cost
-    ---@type AshfallLiquidContainer
+    ---@type Ashfall.LiquidContainer
     local source = params.source or LiquidContainer.createInfiniteWaterSource()
     local callback = params.callback
     timer.delayOneFrame(function()

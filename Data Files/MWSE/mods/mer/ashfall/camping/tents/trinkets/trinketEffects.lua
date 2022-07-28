@@ -1,14 +1,14 @@
 local common = require("mer.ashfall.common.common")
 local logger = common.createLogger("trinketEffects")
 local tentConfig = require("mer.ashfall.camping.tents.tentConfig")
+local ReferenceController = require("mer.ashfall.referenceController")
 
-event.trigger("Ashfall:RegisterReferenceController", {
+ReferenceController.registerReferenceController{
     id = "trinket",
     requirements = function(_, ref)
         return ref.data and ref.data.trinket
     end
-})
-
+}
 
 local function enableTrinketEffect(trinket)
         if common.data.trinketEffects[trinket.id] then return end
@@ -67,7 +67,7 @@ local function updateTrinketEffects(e)
             disableTrinketEffect(trinket)
         end
     end
-    common.helper.iterateRefType("trinket", doUpdate)
+    ReferenceController.iterateReferences("trinket", doUpdate)
 end
 event.register("simulate", updateTrinketEffects)
 

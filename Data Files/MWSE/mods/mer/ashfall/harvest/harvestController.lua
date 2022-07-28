@@ -42,7 +42,7 @@ local function harvestOnAttack(e)
     end
 
     --Get harvest config from activator
-    ---@type AshfallHarvestConfig
+    ---@type Ashfall.Harvest.Config
     local harvestConfig = harvestConfigs.activatorHarvestData[activator.type]
     if not harvestConfig then
         logger:debug("Harvest: No harvest config")

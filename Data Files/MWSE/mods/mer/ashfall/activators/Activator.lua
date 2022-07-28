@@ -18,18 +18,21 @@ function Activator:new(data)
 end
 
 
-function Activator:isActivator(id)
+function Activator:isActivator(reference)
     if self.ids then
-        if self.ids[string.lower(id)] then
+        if self.ids[reference.baseObject.id:lower()] then
             return true
         end
     end
     if self.patterns then
         for pattern, _ in pairs(self.patterns) do
-            if string.find(string.lower(id), pattern) ~= nil then
+            if string.find(reference.baseObject.id:lower(), pattern) ~= nil then
                 return true
             end
         end
+    end
+    if self.requirements then
+        return self:requirements(reference)
     end
 
     return false

@@ -59,7 +59,7 @@ local function addFuel(teaWarmer)
         loop = false
     }
     teaWarmer.data.fuelLevel = MAX_FUEL_LEVEL
-    event.trigger("Ashfall:UpdateAttachNodes", { campfire = teaWarmer})
+    event.trigger("Ashfall:UpdateAttachNodes", { reference = teaWarmer})
 end
 
 local function doLight(teaWarmer)
@@ -67,7 +67,7 @@ local function doLight(teaWarmer)
     tes3.playSound{ reference = tes3.player, sound = "ashfall_light_fire"  }
     event.trigger("Ashfall:registerReference", { reference = teaWarmer})
     event.trigger("Ashfall:Campfire_Enablelight", { campfire = teaWarmer})
-    event.trigger("Ashfall:UpdateAttachNodes", {campfire = teaWarmer})
+    event.trigger("Ashfall:UpdateAttachNodes", { reference = teaWarmer})
 end
 
 local function pickup(teaWarmer)

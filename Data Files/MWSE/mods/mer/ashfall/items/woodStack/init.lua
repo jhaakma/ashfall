@@ -38,18 +38,14 @@ function WoodStack.destroyCallback(recipe, e)
     local reference = e.reference
     if reference.data and reference.data.woodAmount and reference.data.woodAmount > 0 then
         local count = reference.data.woodAmount
-        local firewood = tes3.getObject("ashfall_firewood")
+        local firewood = common.staticConfigs.objectIds.firewood
         tes3.addItem{
             reference = tes3.player,
             count = count,
             item = firewood,
             playSound = true,
+            showMessage = true,
         }
-        if count == 1 then
-            tes3.messageBox(tes3.findGMST(tes3.gmst.sNotifyMessage60).value, firewood.name)
-        elseif count > 1 then
-            tes3.messageBox(tes3.findGMST(tes3.gmst.sNotifyMessage61).value, count, firewood.name)
-        end
     end
 end
 
@@ -112,8 +108,9 @@ WoodStack.buttons = {
                         count = t.amount,
                         playSound = true,
                     }
+                    tes3.messageBox("Added %s%s.", t.amount > 1 and t.amount .. " " or "", tes3.getObject("ashfall_firewood").name)
                     reference.data.woodAmount = woodAmount + t.amount
-                    event.trigger("Ashfall:UpdateAttachNodes", { campfire = reference })
+                    event.trigger("Ashfall:UpdateAttachNodes", { reference = reference })
                 end
             }
         end
@@ -144,9 +141,10 @@ WoodStack.buttons = {
                         item = "ashfall_firewood",
                         count = t.amount,
                         playSound = true,
+                        showMessage = true,
                     }
                     reference.data.woodAmount = woodAmount - t.amount
-                    event.trigger("Ashfall:UpdateAttachNodes", { campfire = reference })
+                    event.trigger("Ashfall:UpdateAttachNodes", { reference = reference })
                 end
             }
         end

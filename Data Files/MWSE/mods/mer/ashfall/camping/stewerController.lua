@@ -7,6 +7,7 @@ local LiquidContainer = require("mer.ashfall.liquid.LiquidContainer")
 local foodConfig = common.staticConfigs.foodConfig
 local hungerController = require("mer.ashfall.needs.hungerController")
 local thirstController = require("mer.ashfall.needs.thirstController")
+local ReferenceController = require("mer.ashfall.referenceController")
 local stewCookRate = 40
 local STEWER_UPDATE_INTERVAL = 0.001
 
@@ -48,7 +49,7 @@ local function updateBuffs(e)
             end
         end
     end
-    common.helper.iterateRefType("stewBuffedActor", doUpdateBuff)
+    ReferenceController.iterateReferences("stewBuffedActor", doUpdateBuff)
 end
 
 
@@ -84,7 +85,7 @@ local function updateStewers(e)
             end
         end
     end
-    common.helper.iterateRefType("stewer", doUpdate)
+    ReferenceController.iterateReferences("stewer", doUpdate)
 end
 
  event.register("simulate", function(e)
@@ -167,7 +168,7 @@ local function eatStew(e)
     end
     if e.data.waterAmount and e.data.waterAmount < 1 then
         logger:debug("Clearing data after eating stew")
-        LiquidContainer.createFromData(e.data):clearData()
+        LiquidContainer.createFromData(e.data):empty()
     end
 end
 event.register("Ashfall:eatStew", eatStew)

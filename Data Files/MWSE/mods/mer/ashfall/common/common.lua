@@ -6,7 +6,7 @@ this.defaultValues = require ("mer.ashfall.MCM.defaultConfig")
 this.messages = require("mer.ashfall.messages.messages")
 local config = require("mer.ashfall.config").config
 --set up logger
-local logLevel = config.logLevel
+
 
 
 local logger = require("logging.logger")
@@ -14,13 +14,13 @@ local logger = require("logging.logger")
 this.log = logger.new{
     name = "Ashfall",
     --outputFile = "Ashfall.log",
-    logLevel = logLevel,
+    logLevel = config.logLevel,
 }
 this.loggers = {this.log}
 this.createLogger = function(serviceName)
     local logger = logger.new{
         name = string.format("Ashfall - %s", serviceName),
-        logLevel = logLevel
+        logLevel = config.logLevel
     }
     table.insert(this.loggers, logger)
     return logger

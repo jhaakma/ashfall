@@ -41,6 +41,6 @@ return {
         end
 
         campfire.data.burned = campfire.data.isLit == true
-        event.trigger("Ashfall:UpdateAttachNodes", { campfire = campfire})
+        event.trigger("Ashfall:UpdateAttachNodes", { reference = campfire})
     end
 }

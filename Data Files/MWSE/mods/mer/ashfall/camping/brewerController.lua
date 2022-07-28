@@ -11,7 +11,7 @@ temperatureController.registerBaseTempMultiplier({ id = "firePetalTeaEffect", co
 temperatureController.registerBaseTempMultiplier({ id = "hollyTeaEffect", coldOnly = true })
 local brewRate = 160
 local BREWER_UPDATE_INTERVAL = 0.001
-
+local ReferenceController = require("mer.ashfall.referenceController")
 
 local function removeTeaEffect(teaData)
     logger:debug("onDrinkTea: removing previous effect")
@@ -121,7 +121,7 @@ event.register("Ashfall:DrinkTea", onDrinkTea)
 
 local function updateBrewers(e)
     local function doUpdate(brewerRef_)
-        ---@type AshfallLiquidContainer
+        ---@type Ashfall.LiquidContainer
         local liquidContainer = LiquidContainer.createFromReference(brewerRef_)
         liquidContainer.data.lastBrewUpdated = liquidContainer.data.lastBrewUpdated or e.timestamp
         local difference = e.timestamp - liquidContainer.data.lastBrewUpdated
@@ -129,7 +129,6 @@ local function updateBrewers(e)
         if difference < 0 then
             logger:error("BREWER liquidContainer.data.lastBrewUpdated(%.4f) is ahead of e.timestamp(%.4f).",
                 liquidContainer.data.lastBrewUpdated, e.timestamp)
-            --something fucky happened
             liquidContainer.data.lastBrewUpdated = e.timestamp
         end
 
@@ -150,7 +149,7 @@ local function updateBrewers(e)
             end
         end
     end
-    common.helper.iterateRefType("brewer", doUpdate)
+    ReferenceController.iterateReferences("brewer", doUpdate)
 end
 
  event.register("simulate", updateBrewers)

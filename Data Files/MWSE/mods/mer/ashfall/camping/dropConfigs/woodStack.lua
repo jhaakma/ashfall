@@ -45,8 +45,7 @@ return {
             common.helper.pickUp(reference)
             tes3.playSound{ reference = tes3.player, sound = "ashfall_add_wood"  }
         end
-        tes3.messageBox("Added firewood.")
-        targetRef.data.burned = targetRef.data.isLit == true
-        event.trigger("Ashfall:UpdateAttachNodes", { campfire = targetRef})
+        tes3.messageBox("Added %s%s.", woodAdded > 1 and woodAdded .. " " or "", reference.object.name)
+        event.trigger("Ashfall:UpdateAttachNodes", { reference = targetRef})
     end
 }

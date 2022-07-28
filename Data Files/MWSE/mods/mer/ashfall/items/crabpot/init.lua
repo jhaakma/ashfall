@@ -2,6 +2,7 @@ local common = require ("mer.ashfall.common.common")
 local logger = common.createLogger("crabpot")
 local config = require("mer.ashfall.config").config
 local crabpotConfig = require("mer.ashfall.items.crabpot.config")
+local ReferenceController = require("mer.ashfall.referenceController")
 
 local function getActiveFromMisc(miscRef)
     return crabpotConfig.miscToActiveMap[miscRef.object.id:lower()]
@@ -47,9 +48,13 @@ end
 local function collectCrabs(ref)
     if ref.data.crabCount and ref.data.crabCount >= 1 then
         local count = math.floor(ref.data.crabCount)
-        local crabmeat = tes3.getObject("ingred_crab_meat_01")---@type tes3ingredient
-        tes3.addItem{ reference = tes3.player, item = crabmeat, count = count }
-        tes3.messageBox(tes3.findGMST(tes3.gmst.sNotifyMessage61).value, count, crabmeat.name)
+        local crabmeat = "ingred_crab_meat_01"
+        tes3.addItem{
+            reference = tes3.player,
+            item = crabmeat,
+            count = count,
+            showMessage = true,
+        }
         ref.data.crabCount = 0
         updateSwitchNodes(ref)
         playCrabSound(ref)
@@ -62,7 +67,11 @@ local function pickup(ref)
     local miscId = getMiscFromActive(ref)
     if not miscId then return end
     collectCrabs(ref)
-    tes3.addItem{ reference = tes3.player, item = miscId, }
+    tes3.addItem{
+        reference = tes3.player,
+        item = miscId,
+        showMessage = true,
+    }
     common.helper.yeet(ref)
 end
 
@@ -229,7 +238,7 @@ local function updatePots(e)
             crabPotRef.data.lastCrabUpdated = e.timestamp
         end
     end
-    common.helper.iterateRefType("crabpot", doUpdate)
+    ReferenceController.iterateReferences("crabpot", doUpdate)
 end
 event.register("simulate", updatePots)
 

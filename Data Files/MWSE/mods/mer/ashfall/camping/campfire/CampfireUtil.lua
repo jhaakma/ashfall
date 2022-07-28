@@ -1,10 +1,10 @@
 
-local DropConfig = require "mer.ashfall.camping.campfire.config.DropConfig"
+local DropConfig = require "mer.ashfall.activators.config.DropConfig"
 local itemTooltips = require("mer.ashfall.ui.itemTooltips")
 local activatorController = require "mer.ashfall.activators.activatorController"
 local foodConfig = require "mer.ashfall.config.foodConfig"
 local LiquidContainer = require("mer.ashfall.liquid.LiquidContainer")
-local AttachConfig = require "mer.ashfall.camping.campfire.config.AttachConfig"
+local AttachConfig = require "mer.ashfall.activators.config.AttachConfig"
 local CampfireUtil = {}
 local common = require ("mer.ashfall.common.common")
 local logger = common.createLogger("campfireUtil")
@@ -21,7 +21,7 @@ function CampfireUtil.getHeat(reference)
     end
     local isLit = data.isLit
     local fuelLevel = data.fuelLevel or 0
-    local isWeak = common.staticConfigs.activatorConfig.list.teaWarmer:isActivator(reference.object.id:lower())
+    local isWeak = common.staticConfigs.activatorConfig.list.teaWarmer:isActivator(reference)
     local weakEffect = isWeak and 0.1 or 1.0
 
     if (not isLit) or (fuelLevel <= 0) then
@@ -145,12 +145,12 @@ function CampfireUtil.setHeat(refData, newHeat, reference)
     --add sound if crossing the boiling barrior
     if reference and not reference.disabled then
         if heatBefore < common.staticConfigs.hotWaterHeatValue and heatAfter > common.staticConfigs.hotWaterHeatValue then
-            event.trigger("Ashfall:UpdateAttachNodes", {campfire = reference})
+            event.trigger("Ashfall:UpdateAttachNodes", { reference = reference})
         end
         --remove boiling sound
         if heatBefore > common.staticConfigs.hotWaterHeatValue and heatAfter < common.staticConfigs.hotWaterHeatValue then
             logger:debug("No longer hot")
-            event.trigger("Ashfall:UpdateAttachNodes", {campfire = reference})
+            event.trigger("Ashfall:UpdateAttachNodes", { reference = reference})
         end
     end
 end
@@ -228,13 +228,14 @@ function CampfireUtil.isUtensil(ref)
         or ( ref.data and ref.data.utensil ~= nil)
 end
 
----@class AshfallAddIngredToStewType
+---@class Ashfall.AddIngredToStewType
 ---@field campfire tes3reference
 ---@field item tes3ingredient
 ---@field count number optional, default: 1
+
 local stewIngredientCooldownAmount = 20
 local skillSurvivalStewIngredIncrement  = 5
----@param e AshfallAddIngredToStewType
+---@param e Ashfall.AddIngredToStewType
 function CampfireUtil.addIngredToStew(e)
     local campfire = e.campfire
     local item = e.item
@@ -264,8 +265,8 @@ function CampfireUtil.addIngredToStew(e)
 
     common.skills.survival:progressSkill(skillSurvivalStewIngredIncrement*amountToAdd)
 
-    tes3.playSound{ reference = tes3.player, sound = "Swim Right" }
-    event.trigger("Ashfall:UpdateAttachNodes", {campfire = campfire,})
+    tes3.playSound{ reference = tes3.player, sound = "ashfall_water" }
+    event.trigger("Ashfall:UpdateAttachNodes", { reference = campfire,})
     return amountToAdd
 end
 

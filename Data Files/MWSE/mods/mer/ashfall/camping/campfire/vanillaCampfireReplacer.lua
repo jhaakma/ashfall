@@ -535,7 +535,7 @@ local function replaceCampfire(e)
 
             setInitialState(campfire, e.reference, data, vanillaConfig)
             attachRandomStuff(campfire, vanillaConfig)
-            event.trigger("Ashfall:UpdateAttachNodes", { campfire = campfire })
+            event.trigger("Ashfall:UpdateAttachNodes", { reference = campfire })
 
             campfire.scale = e.reference.scale
             if vanillaConfig.scale then

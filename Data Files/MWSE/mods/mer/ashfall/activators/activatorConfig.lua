@@ -36,9 +36,7 @@ this.list = {}
 this.list.partial = Activator:new({
     name = nil,
     type = this.types.partial,
-    ids = {
-
-    }
+    ids = {}
 })
 
 this.list.waterDirty = Activator:new{
@@ -904,5 +902,6 @@ this.list.woodStack = Activator:new{
         ab_furn_woodstack02 = true,
     }
 }
+
 
 return this

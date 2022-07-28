@@ -4,6 +4,7 @@
 
 local common = require ("mer.ashfall.common.common")
 local logger = common.createLogger("fuelConsumerController")
+local ReferenceController = require("mer.ashfall.referenceController")
 local fuelDecay = 1.0
 local fuelDecayRainEffect = 1.4
 local fuelDecayThunderEffect = 1.6
@@ -65,7 +66,7 @@ local function updateFuelConsumers(e)
             end
         end
     end
-    common.helper.iterateRefType("fuelConsumer", doUpdate)
+    ReferenceController.iterateReferences("fuelConsumer", doUpdate)
 end
 
  event.register("simulate", updateFuelConsumers)

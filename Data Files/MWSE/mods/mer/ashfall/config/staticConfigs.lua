@@ -141,23 +141,13 @@ this.bottleConfig = {
     }, --waterPerDollar = 5.5, waterPerWeight = 30
 }
 
----@class AshfallBottleData
+---@class Ashfall.BottleData
 ---@field capacity number
 ---@field holdsStew boolean
 ---@field type string
 
----@type table<string, AshfallBottleData>
+---@type table<string, Ashfall.BottleData>
 this.bottleList = {
-    _infinite_water_source = {
-        capacity = math.huge,
-        holdsStew = false
-    },
-    -- ashfall_water_filter = {
-    --     capacity = 60,--sync with wooden bowl
-    --     holdsStew = false,
-    --     waterMaxHeight = 4,
-    --     waterMaxScale = 1.8,
-    -- },
 
     --ashfall stuff
     ashfall_waterskin = {
