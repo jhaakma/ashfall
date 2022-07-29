@@ -345,23 +345,40 @@ function LiquidContainer.transferLiquid(from, to, amount)
     to.lastBrewUpdated = nil
     to.lastStewUpdated = nil
     to.lastWaterHeatUpdated = nil
-    --Clear empty from
-    if from.waterAmount < 1 then
-        from:empty()
-    end
-    --Trigger node updates
-    if from.reference then
-        event.trigger("Ashfall:UpdateAttachNodes", { reference = from.reference})
-    end
-    if to.reference then
-        event.trigger("Ashfall:UpdateAttachNodes", { reference = to.reference})
-        event.trigger("Ashfall:registerReference", { reference = to.reference})
-    end
-    tes3ui.updateInventoryTiles()
-    tes3.playSound{sound = "ashfall_water"}
+
+    --play water transfer sound
+    self:playSound()
+    --Update both vessels
+    from:updateAfterTransfer()
+    to:updateAfterTransfer()
     logger:debug("Transferred %s", fillAmount)
     logger:debug("New water amount: %s", to.waterAmount)
     return fillAmount
+end
+
+function LiquidContainer:reduce(amount) 
+    self.waterAmount = math.max(0, self.waterAmount - amount)
+    self:playSound()
+    self:updateAfterTransfer()
+end
+
+function LiquidContainer:increase(amount)
+    local remainingCapacity = self.capacity - self.waterAmount
+    local amountToFill = math.min(amount, remainingCapacity)
+    local remaining = amount - amountToFill
+    self.waterAmount = self.waterAmount + amountToFill
+    self:playSound()
+    self:updateAfterTransfer()
+    return remaining
+end
+
+--Perform any updates that might be required when water level changes
+function LiquidContainer:updateAfterTransfer()
+    --Clear data on empty
+    if self.waterAmount < 1 then
+        self:empty()
+    end
+    self:doGraphicalUpdates()
 end
 
 ---Empty a water container, clearing item data and triggering any node updates.
@@ -370,10 +387,22 @@ function LiquidContainer:empty()
     for k, _ in pairs(dataValues) do
         self.data[k] = nil
     end
+    self:doGraphicalUpdates()
+end
+
+function LiquidCOntainer:doGraphicalUpdates()
+    --Update reference
+    if self.reference then
+        event.trigger("Ashfall:UpdateAttachNodes", { reference = self.reference})
+        event.trigger("Ashfall:registerReference", { reference = self.reference})
+    end
+    --Update inventory
     tes3ui.updateInventoryTiles()
 end
 
-
+function LiquidContainer:playSound()
+    tes3.playSound({reference = tes3.player, sound = "ashfall_water"})
+end
 
 
 ---@param self Ashfall.LiquidContainer
