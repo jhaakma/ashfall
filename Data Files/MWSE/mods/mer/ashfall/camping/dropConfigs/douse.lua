@@ -15,8 +15,7 @@ return {
             return false
         end
 
-        local hasWater = liquidContainer and liquidContainer.waterAmount > 0
-        if not hasWater then
+        if not liquidContainer:hasWater() then
             return false
         end
 
@@ -25,9 +24,7 @@ return {
             return false, "Campfire is not lit."
         end
 
-
-        local isStew = liquidContainer.waterType == "stew"
-        if isStew then
+        if not (liquidContainer:isWater() or liquidContainer:isTea() ) then
             return false, "Invalid liquid type."
         end
 
@@ -38,7 +35,7 @@ return {
         local liquidContainer = LiquidContainer.createFromReference(reference)
         if liquidContainer then
             event.trigger("Ashfall:fuelConsumer_Extinguish", {fuelConsumer = campfire, playSound = true})
-            liquidContainer:transferLiquid(LiquidContainer.createInfiniteWaterSource(), 10)
+            liquidContainer:reduce(10)
             tes3.playSound{ reference = tes3.player, sound = "ashfall_water" }
             common.helper.pickUp(reference)
         else

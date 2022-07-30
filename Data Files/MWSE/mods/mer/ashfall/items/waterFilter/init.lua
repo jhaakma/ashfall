@@ -64,24 +64,24 @@ function WaterFilter.transferWater(filterRef, liquidContainer)
     local waterAmount = liquidContainer.waterAmount
     local capacity = WaterFilter.getUnfilteredCapacityRemaining(filterRef)
     local waterToTransfer = math.min(waterAmount, capacity)
-    if waterToTransfer > 0 then
-        local target = LiquidContainer.createInfiniteWaterSource()
-        local amount, errorMsg = liquidContainer:transferLiquid(target, waterToTransfer)
-        if errorMsg then
-            logger:error("transferWater: %s", errorMsg)
-        end
-        if amount then
-            filterRef.data.unfilteredWater =  filterRef.data.unfilteredWater or 0
-            filterRef.data.unfilteredWater = filterRef.data.unfilteredWater + waterToTransfer
-            logger:debug("transferWater: %s", amount)
-            tes3.messageBox("Filled Water Filter with dirty water.")
-            tes3.playSound{ sound = "ashfall_water"}
-        end
-        return amount
+
+    if waterAmount < 1 then
+        tes3.messageBox("No water to transfer.")
+        return 0
     end
-    tes3.messageBox("Water Filter is full.")
-    logger:debug("No water to transfer")
-    return 0
+
+    if waterToTransfer < 1 then
+        tes3.messageBox("Water Filter is full.")
+        return 0
+    end
+
+    liquidContainer:reduce(waterToTransfer)
+    filterRef.data.unfilteredWater =  filterRef.data.unfilteredWater or 0
+    filterRef.data.unfilteredWater = filterRef.data.unfilteredWater + waterToTransfer
+    logger:debug("transferWater: %s", waterToTransfer)
+    tes3.messageBox("Filled Water Filter with dirty water.")
+    tes3.playSound{ sound = "ashfall_water"}
+    return waterToTransfer
 end
 
 

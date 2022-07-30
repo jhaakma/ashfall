@@ -561,6 +561,7 @@ this.bushCraftingRecipes = {
         destroyCallback = Planter.destroyCallback,
         maxSteepness = 15,
     },
+
     {
         id = "ashfall_water_filter",
         description = "A water filter that uses plant fibre and coal to purify dirty water.",

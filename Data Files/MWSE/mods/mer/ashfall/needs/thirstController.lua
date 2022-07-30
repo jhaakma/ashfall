@@ -70,32 +70,7 @@ function this.getBottleData(id)
     return common.staticConfigs.bottleList[id and string.lower(id)]
 end
 
-function this.playerHasEmpties(source)
-    source = source or LiquidContainer.createInfiniteWaterSource()
-    for stack in tes3.iterate(tes3.player.object.inventory.iterator) do
-        local bottleData = this.getBottleData(stack.object.id)
-        if bottleData then
-            logger:trace("Found a bottle")
-            if stack.variables then
-                logger:trace("Has data")
-                if #stack.variables < stack.count then
-                    logger:trace("Some bottles have no data")
-                    return true
-                end
 
-                for _, itemData in pairs(stack.variables) do
-                    local target = LiquidContainer.createFromInventory(stack.object, itemData)
-                    if source:canTransfer(target) then return true end
-                end
-            else
-                --no itemData means empty bottle
-                logger:trace("no variables")
-                return true
-            end
-        end
-    end
-    return false
-end
 
 
 local function addDysentry(amountDrank)
@@ -188,6 +163,39 @@ function this.callWaterMenuAction(callback)
     common.data.drinkingWaterType = nil
 end
 
+function this.canTransferFilter(source, item, itemData)
+    local target = LiquidContainer.createFromInventory(item, itemData)
+    if not target then return false end
+    if source:canTransfer(target) then return true end
+end
+
+function this.playerHasFillableContainers(source)
+    source = source or LiquidContainer.createInfiniteWaterSource()
+    for stack in tes3.iterate(tes3.player.object.inventory.iterator) do
+        --Check if stack is a water container
+        local bottleData = this.getBottleData(stack.object.id)
+        if bottleData then
+            --get itemData/variables of the stack
+            logger:trace("Found a bottle")
+            if stack.variables then
+                logger:trace("Has data")
+                if #stack.variables < stack.count then
+                    logger:trace("Some bottles have no data")
+                    return true
+                end
+                --check each bottle if water from the source can transfer to it
+                for _, itemData in pairs(stack.variables) do
+                    if this.canTransferFilter(source, stack.object, itemData) then return true end
+                end
+            else
+                --no itemData means empty bottle
+                logger:trace("no variables")
+                return true
+            end
+        end
+    end
+    return false
+end
 
 --Fill a bottle to max water capacity
 function this.fillContainer(params)
@@ -202,12 +210,12 @@ function this.fillContainer(params)
             title = "Select Water Container",
             noResultsText = noResultsText,
             filter = function(e)
-                local to = LiquidContainer.createFromInventory(e.item, e.itemData)
-                return to and source:canTransfer(to) or false
+                return this.canTransferFilter(source, e.item, e.itemData)
             end,
             callback = function(e)
                 if e.item then
                     local to = LiquidContainer.createFromInventoryInitItemData(e.item, e.itemData)
+                    if not to then logger:error("Could not create liquid container from inventory item") return end
                     this.callWaterMenuAction(function()
                         if not e.itemData then
                             e.itemData = tes3.addItemData{ item = e.item, to = tes3.player, updateGUI = true}

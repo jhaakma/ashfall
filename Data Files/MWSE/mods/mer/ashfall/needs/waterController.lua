@@ -33,7 +33,7 @@ local function douse(bottleData)
     if bottleData then
         local liquidContainer = LiquidContainer.createFromData(bottleData)
         if liquidContainer then
-            liquidContainer:transferLiquid(LiquidContainer.createInfiniteWaterSource(), waterUsed)
+            liquidContainer:reduce(waterUsed)
             tes3.messageBox("You douse yourself with water.")
         end
     end
@@ -86,7 +86,7 @@ local function callWaterMenu(e)
             {
                 text = "Fill Container",
                 enableRequirements = function()
-                    return thirstController.playerHasEmpties(source)
+                    return thirstController.playerHasFillableContainers(source)
                 end,
                 tooltipDisabled = {
                     text = common.messages.noContainersToFill
@@ -200,7 +200,7 @@ local function doDrinkWater(bottleData)
     --Reduce liquid in bottleData
     local liquidContainer = LiquidContainer.createFromData(bottleData)
     if liquidContainer then
-        liquidContainer:transferLiquid(LiquidContainer.createInfiniteWaterSource(), thisSipSize)
+        liquidContainer:reduce(thisSipSize)
     end
 end
 
@@ -227,8 +227,9 @@ local function drinkFromContainer(e)
         local isStew = e.itemData.data.stewLevels
         local hungerFull = hunger:getValue() < 1
         local thirstFull = thirst:getValue() < 1
-        ---@type Ashfall.LiquidContainer
+
         local source = LiquidContainer.createFromInventory(e.item, e.itemData)
+        if not source then logger:error("Could not create liquid container from inventory") return end
 
         local doPrompt
         if isStew then
@@ -291,7 +292,7 @@ local function drinkFromContainer(e)
                     {
                         text = "Fill Container",
                         enableRequirements = function()
-                            return thirstController.playerHasEmpties(source)
+                            return thirstController.playerHasFillableContainers(source)
                         end,
                         tooltipDisabled = {
                             text = common.messages.noContainersToFill

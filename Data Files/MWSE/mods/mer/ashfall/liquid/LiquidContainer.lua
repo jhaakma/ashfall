@@ -3,7 +3,6 @@
     liquid from one to another. A liquid container can take many forms, each requiring different logic.
     For example, if a liquid container is or is attached to a real-world reference, we need to trigger node updates
     so that steam visuals etc gets updated, whereas if it's in the player's inventory, we need to refresh the UI.
-
     A liquid container can be one of the following:
     - An in-world reference to a utensil or bottle
     - A campfire with a cooking pot or kettle attached to it
@@ -199,8 +198,8 @@ end
     Create an infinite water source Liquid Container.
     Use optional data table to determine properties such as tea type, dirty water etc.
 ]]
----@param data table **Optional**
----@return Ashfall.LiquidContainer|nil liquidContainer
+---@param data table|nil **Optional**
+---@return Ashfall.LiquidContainer liquidContainer
 function LiquidContainer.createInfiniteWaterSource(data)
     data = data or {}
     data.waterAmount = data.waterAmount or math.huge
@@ -345,35 +344,71 @@ function LiquidContainer.transferLiquid(from, to, amount)
     to.lastBrewUpdated = nil
     to.lastStewUpdated = nil
     to.lastWaterHeatUpdated = nil
-    --Clear empty from
-    if from.waterAmount < 1 then
-        from:empty()
-    end
-    --Trigger node updates
-    if from.reference then
-        event.trigger("Ashfall:UpdateAttachNodes", { reference = from.reference})
-    end
-    if to.reference then
-        event.trigger("Ashfall:UpdateAttachNodes", { reference = to.reference})
-        event.trigger("Ashfall:registerReference", { reference = to.reference})
-    end
-    tes3ui.updateInventoryTiles()
-    tes3.playSound{sound = "ashfall_water"}
+
+    --play water transfer sound
+    from:playSound()
+    --Update both vessels
+    from:updateAfterTransfer()
+    to:updateAfterTransfer()
     logger:debug("Transferred %s", fillAmount)
     logger:debug("New water amount: %s", to.waterAmount)
     return fillAmount
 end
 
+---@return number #The amount of water that was removed. This may be less than the amount requested if there wasn't as much water in the container.
+function LiquidContainer:reduce(amount)
+    local amountToReduce = math.min(amount, self.waterAmount)
+    self.waterAmount = self.waterAmount - amountToReduce
+    self:playSound()
+    self:updateAfterTransfer()
+    return amountToReduce
+end
+
+---@return number #The amount that was added. This may be less than the amount requested if there wasn't enough capacity in the container.
+function LiquidContainer:increase(amount)
+    local remainingCapacity = self.capacity - self.waterAmount
+    local amountToFill = math.min(amount, remainingCapacity)
+    local remaining = amount - amountToFill
+    self.waterAmount = self.waterAmount + amountToFill
+    self:playSound()
+    self:updateAfterTransfer()
+    return amountToFill
+end
+
+--Perform any updates that might be required when water level changes
+function LiquidContainer:updateAfterTransfer()
+    --Clear data on empty
+    if self.waterAmount < 1 then
+        self:empty()
+    end
+    self:doGraphicalUpdates()
+end
+
 ---Empty a water container, clearing item data and triggering any node updates.
+---@return number #The amount of water that was emptied
 function LiquidContainer:empty()
+    local amountEmptied = self.waterAmount
     self:updateHeat(0)
     for k, _ in pairs(dataValues) do
         self.data[k] = nil
     end
+    self:doGraphicalUpdates()
+    return amountEmptied
+end
+
+function LiquidContainer:doGraphicalUpdates()
+    --Update reference
+    if self.reference then
+        event.trigger("Ashfall:UpdateAttachNodes", { reference = self.reference})
+        event.trigger("Ashfall:registerReference", { reference = self.reference})
+    end
+    --Update inventory
     tes3ui.updateInventoryTiles()
 end
 
-
+function LiquidContainer:playSound()
+    tes3.playSound({reference = tes3.player, sound = "ashfall_water"})
+end
 
 
 ---@param self Ashfall.LiquidContainer
@@ -433,9 +468,12 @@ function LiquidContainer:isInfinite()
     return self.itemId == '_infinite_water_source'
 end
 
-function LiquidContainer:isCookedStew()
+function LiquidContainer:isStew()
     return self:getLiquidType() == "stew"
-        and self.stewProgress >= 100
+end
+
+function LiquidContainer:isCookedStew()
+    return self:isStew() and self.stewProgress >= 100
 end
 
 function LiquidContainer:isTea()

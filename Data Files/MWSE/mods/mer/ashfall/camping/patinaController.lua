@@ -103,10 +103,10 @@ local function doPatinaDrop(e)
         if common.helper.getRefUnderwater(e.reference) then
             if common.helper.isModifierKeyPressed() then
                 local liquidContainer = LiquidContainer.createFromReference(e.reference)
-                if liquidContainer then
-                    local infinite = LiquidContainer.createInfiniteWaterSource({
-                        waterType = "dirty"
-                    })
+                local infinite = LiquidContainer.createInfiniteWaterSource({
+                    waterType = "dirty"
+                })
+                if liquidContainer and infinite then
                     local amount, errorMsg = infinite:transferLiquid(liquidContainer)
                     if errorMsg then
                         tes3.messageBox(errorMsg)

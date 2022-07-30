@@ -19,8 +19,8 @@ return  {
     enableRequirements = function(reference)
         ---@type Ashfall.LiquidContainer
         local source = LiquidContainer.createFromReference(reference)
-        local playerHasEmpties = source and thirstController.playerHasEmpties(source)
-        return playerHasEmpties
+        local playerHasFillableContainers = source and thirstController.playerHasFillableContainers(source)
+        return playerHasFillableContainers
     end,
     tooltipDisabled = {
         text = common.messages.noContainersToFill

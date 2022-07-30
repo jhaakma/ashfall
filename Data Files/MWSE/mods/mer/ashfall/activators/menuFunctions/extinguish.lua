@@ -30,7 +30,7 @@ return {
                         if liquidContainer then
                             logger:debug("showInventorySelectMenu Callback")
                             event.trigger("Ashfall:fuelConsumer_Extinguish", {fuelConsumer = campfire, playSound = true})
-                            liquidContainer:transferLiquid(LiquidContainer.createInfiniteWaterSource(), 10)
+                            liquidContainer:reduce(10)
                             tes3.playSound{ reference = tes3.player, sound = "ashfall_water" }
                         end
                     end

@@ -3,6 +3,7 @@ local logger = common.createLogger("waterMerchant")
 local merchantMenu = require('mer.ashfall.merchants.merchantMenu')
 local config = require("mer.ashfall.config").config
 local thirstController = require("mer.ashfall.needs.thirstController")
+local LiquidContainer = require "mer.ashfall.liquid.LiquidContainer"
 
 
 local dispMulti = 3.0
@@ -36,7 +37,9 @@ local function onWaterServiceClick()
 end
 
 local function getDisabled(cost)
-    return tes3.getPlayerGold() < cost or not thirstController.playerHasEmpties()
+    if tes3.getPlayerGold() < cost then return true end
+    local cleanWater = LiquidContainer.createInfiniteWaterSource()
+    return not thirstController.playerHasFillableContainers(cleanWater)
 end
 
 local function makeTooltip()
