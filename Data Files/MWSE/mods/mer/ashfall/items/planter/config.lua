@@ -9,10 +9,11 @@ local planterConfig = {
         flora_bm_holly_06 = true,
     },
     floraPatterns = {
-        "flora",
-        "shrub"
+        "flora_",
+        "shrub_,",
+        "ab_f_",
     },
-    plantConfigs = {}
+    plantConfigs = {},
 }
 
 return planterConfig

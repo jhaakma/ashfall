@@ -86,6 +86,7 @@ this.type = {
     mushroom = "Mushroom",
     seasoning = "Seasoning",
     herb = "Herb",
+    fruit = "Fruit",
     food = "Food",
     misc = nil
 }

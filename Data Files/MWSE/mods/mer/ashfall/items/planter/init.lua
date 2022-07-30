@@ -63,6 +63,7 @@ do --Initialise Seedling Data
             [common.staticConfigs.foodConfig.type.herb] = true,
             [common.staticConfigs.foodConfig.type.vegetable] = true,
             [common.staticConfigs.foodConfig.type.mushroom] = true,
+            [common.staticConfigs.foodConfig.type.food] = true,
         }
         local thisFoodType = common.staticConfigs.foodConfig.getFoodType(ingredient)
         local isValidFoodType = validFoodTypes[thisFoodType]
