@@ -166,7 +166,7 @@ end
 function this.canTransferFilter(source, item, itemData)
     local target = LiquidContainer.createFromInventory(item, itemData)
     if not target then return false end
-    if source:canTransfer(target) then return true end
+    return source:canTransfer(target)
 end
 
 function this.playerHasFillableContainers(source)

@@ -9,7 +9,7 @@ local foodConfig = staticConfigs.foodConfig
 local ratingsConfig = require('mer.ashfall.tempEffects.ratings.ratingsConfig')
 local climateConfig = require('mer.ashfall.config.weatherRegionConfig')
 local teaConfig = require('mer.ashfall.config.teaConfig')
-local Activator = require("mer.ashfall.activators.Activator")
+local ActivatorController = require("mer.ashfall.activators.activatorController")
 local overrides = require("mer.ashfall.config.overrides")
 
 local function listValidActivatorTypes()
@@ -74,12 +74,13 @@ local function registerActivatorType(e)
     end
 
     if not activatorConfig.list[e.id] then
-        activatorConfig.list[e.id] = Activator:new{
+        activatorConfig.list[e.id] = ActivatorController.registerActivator{
             name = e.name,
             type = e.type,
             ids = idList,
             patterns = patternList
         }
+        activatorConfig.subTyps[e.id] = e.id
     else
         error(string.format("registerActivatorType: %s already exists as an activator type", e.id))
     end
@@ -87,23 +88,25 @@ local function registerActivatorType(e)
     return true
 end
 
+local function registerActivator(id, activatorType, usePatterns)
+    assert(type(id) == 'string', "registerActivator(): Invalid id. Must be a string.")
+
+    local activator = activatorConfig.list[activatorType]
+    assert(activator, string.format("registerActivator(): %s is an invalid activator type. Valid types include: %s",
+            activatorType, listValidActivatorTypes()))
+
+    if usePatterns then
+        activator:addPattern(id)
+    else
+        activator:addId(id)
+    end
+    logger:debug("    %s as %s", id, activatorType)
+end
+
 local function registerActivators(e)
     logger:debug("Registering the following activator %s: ", (e.usePatterns and "patterns" or "ids"))
     for id, activatorType in pairs(e.data) do
-
-        assert(type(id) == 'string', "registerActivator(): Invalid id. Must be a string.")
-
-        local activator = activatorConfig.list[activatorType]
-        assert(activator, string.format("registerActivator(): %s is an invalid activator type. Valid types include: %s",
-                activatorType, listValidActivatorTypes()))
-
-        if e.usePatterns then
-            activator:addPattern(id)
-        else
-            activator:addId(id)
-        end
-
-        logger:debug("    %s as %s", id, activatorType)
+        registerActivator(id, activatorType, e.usePatterns)
     end
     return true
 end
@@ -118,11 +121,12 @@ local function registerWaterSource(e)
     for _, id in ipairs(e.ids) do
         idList[id] = true
     end
-    activatorConfig.list[e.name] = Activator:new{
+    activatorConfig.list[e.name] = ActivatorController.registerActivator{
         name = e.name,
         type = waterType,
         ids = idList
     }
+    activatorConfig.subTypes[e.name] = e.name
     return true
 end
 
@@ -277,17 +281,41 @@ local function registerClimates(e)
     return true
 end
 
-local function registerWoodAxes(data)
+
+local function registerWoodAxe(id)
     local woodAxeConfig = require("mer.ashfall.harvest.config").woodaxes
-    assert(type(data) == 'table', "registerWoodAxes: data must be a table of axe ids")
-    logger:debug("Registering wood axes: ")
-    for _, id in ipairs(data) do
-        assert(type(id) == 'string', "registerWoodAxes: id must be a string")
-        logger:debug(id)
-        woodAxeConfig[id:lower()] = {
-            effectiveness = 1.5,
-            degradeMulti = 0.5,
-        }
+    --legacy API
+    assert(type(id) == 'string', "registerWoodAxes: id must be a string")
+    logger:debug(id)
+    woodAxeConfig[id:lower()] = {
+        effectiveness = 1.5,
+        degradeMulti = 0.5,
+    }
+end
+
+local woodAxeConfig = require("mer.ashfall.items.backpack.config")
+local function registerWoodAxeForBackpack(id)
+    woodAxeConfig.woodAxes[id:lower()] = true
+end
+
+local function registerWoodAxes(data)
+    logger:info("Registering Wood Axes")
+    for _, v in pairs(data) do
+        if type(v) == "string" then
+            logger:info("as string")
+            registerWoodAxe(v)
+        elseif type(v) == "table" then
+            logger:info("as table")
+            local id = v.id
+            assert(id)
+            registerWoodAxe(id)
+            if v.registerForBackpacks then
+                logger:info("Register for backpacks")
+                registerWoodAxeForBackpack(id)
+            end
+        else
+            logger:error("Invalid values passed to registerWoodAxes")
+        end
     end
     return true
 end
@@ -440,6 +468,8 @@ local Interop = {
         return registerWoodAxes(data)
     end,
 
+
+
     registerTreeBranches = branchInterop.registerTreeBranches,
 
     --ratings, WIP, need to add support for ids
@@ -461,7 +491,7 @@ local Interop = {
                 overrides[id] = override
 
             else
-                mwse.log("Invalid override data. Must be a table.")
+                logger:error("Invalid override data. Must be a table.")
                 success = false
             end
         end

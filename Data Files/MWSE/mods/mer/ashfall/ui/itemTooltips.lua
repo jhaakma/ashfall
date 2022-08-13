@@ -4,7 +4,6 @@ local config = require("mer.ashfall.config").config
 local teaConfig   = require("mer.ashfall.config.teaConfig")
 local foodConfig = require("mer.ashfall.config.foodConfig")
 local hungerController = require("mer.ashfall.needs.hungerController")
-local activatorController = require("mer.ashfall.activators.activatorController")
 local WoodStack = require("mer.ashfall.items.woodStack")
 
 --Todo- refactor and get rid of these duplicate functions

@@ -6,42 +6,8 @@ local refController = require("mer.ashfall.referenceController")
 local tentConfig = require("mer.ashfall.camping.tents.tentConfig")
 
 --Generic Tooltip with header and description
----@param e AshfallTooltipData
+
 this.createTooltip = require("mer.ashfall.common.tooltip")
-
---[[
-    Returns a human readable timestamp of the given time (or else the current time)
-]]
-function this.hourToClockTime ( time )
-    local gameTime = time or tes3.findGlobal("GameHour").value
-    local formattedTime
-
-    local isPM = false
-    if gameTime > 12 then
-        isPM = true
-        gameTime = gameTime - 12
-    end
-
-
-    local hourString = math.floor(gameTime)
-    -- if gameTime < 10 then
-    --     hourString = string.sub(gameTime, 1, 1)
-    -- else
-    --     hourString  = string.sub(gameTime, 1, 2)
-    -- end
-
-    local minuteTime = ( gameTime - hourString ) * 60
-    local minuteString
-    if minuteTime < 10 then
-        minuteString = "0" .. string.sub( minuteTime, 1, 1 )
-    else
-        minuteString = string.sub ( minuteTime , 1, 2)
-    end
-
-    formattedTime = string.format("%d:%d %s", hourString, minuteString, (isPM and "pm" or "am"))
-
-    return ( formattedTime )
-end
 
 function this.getHoursPassed()
     return ( tes3.worldController.daysPassed.value * 24 ) + tes3.worldController.hour.value
@@ -619,30 +585,18 @@ function this.rotationDifference(vec1, vec2)
     return m:toEulerXYZ()
 end
 
-local function log(doLog, message, ...)
-    if doLog then
-        mwse.log(message, ...)
-    end
-end
----@return niPickRecord
+
+---@return niPickRecord|nil
 function this.getGroundBelowRef(e)
     e.doLog = e.doLog or false
     local ref = e.ref
-    log(e.doLog, "getGroundBelowRef: %s", ref)
-
     local ignoreList = e.ignoreList and table.copy(e.ignoreList, {}) or {}
     table.insert(ignoreList, ref)
     table.insert(ignoreList, tes3.player)
-    log(e.doLog, "IgnoreList: ")
-    for _, ref in ipairs(ignoreList) do
-        log(e.doLog, " - %s", ref)
-    end
     if not ref then
-        log(e.doLog, "getGroundBelowRef: no ref")
         return
     end
     if not ref.object.boundingBox then
-        log(e.doLog, "getGroundBelowRef: no bounding box")
         return
     end
     local height = -ref.object.boundingBox.min.z + (e.rootHeight or 5)
@@ -654,16 +608,6 @@ function this.getGroundBelowRef(e)
         useBackTriangles = false,
         root = e.terrainOnly and tes3.game.worldLandscapeRoot or nil
     }
-    if not result then
-        log(e.doLog, "getGroundBelowRef: no result")
-        return
-    end
-    if not result.reference then
-        log(e.doLog, "getGroundBelowRef: no reference")
-    else
-        log(e.doLog, "getGroundBelowRef: %s", result.reference)
-    end
-
     return result
 end
 
@@ -1034,7 +978,6 @@ function this.getIngredients(inventory)
             if node.object.objectType == tes3.objectType.leveledItem then
                 ---@type tes3leveledItem
                 if parents[node.object] then
-                    mwse.log("Duplicate leveled list detected: %s", node.object.id)
                 else
                     ingredsIterator(node.object.list, table.copy(parents, {[node.object]=table.size(parents)}))
                 end

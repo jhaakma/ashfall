@@ -1,9 +1,11 @@
 local common = require ("mer.ashfall.common.common")
+
+local campfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
+
 return {
     text = "Empty",
     showRequirements = function(reference)
-        local isBottle = common.staticConfigs.bottleList[reference.object.id:lower()]
-        return isBottle
+        return campfireUtil.isWaterContainer(reference)
             and reference.data.waterAmount
             and reference.data.waterAmount > 0
     end,

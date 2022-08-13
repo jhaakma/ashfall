@@ -85,7 +85,7 @@ event.register("OtherSkills:Ready", onSkillsReady)
 
 
 
-local function checkSkillModule()
+local function checkDependencies()
     if not skillModule then
         tes3ui.showMessageMenu({
             message = "Skills Module is not installed! This is a requirement for Ashfall and the mod will NOT work without it.",
@@ -97,15 +97,10 @@ local function checkSkillModule()
                         os.exit()
                     end
                 },
-                {
-                    text = "Continue with a broken game"
-                }
+                { text = "Continue with a broken game" }
             }
         })
-    end
-
-    if ( skillModule.version == nil ) or ( skillModule.version < 1.4 ) then
-
+    elseif ( skillModule.version == nil ) or ( skillModule.version < 1.4 ) then
         tes3ui.showMessageMenu({
             message = "Outdated version of Skills Module detected.",
             buttons = {
@@ -116,9 +111,21 @@ local function checkSkillModule()
                         os.exit()
                     end
                 },
+                { text = "Continue with a broken game" }
+            }
+        })
+    elseif not include("CraftingFramework") then
+        tes3ui.showMessageMenu({
+            message = "Crafting Framework is not installed! This is a requirement for Ashfall and the mod will NOT work without it.",
+            buttons = {
                 {
-                    text = "Continue"
-                }
+                    text = "Exit game and go to Crafting Framework Nexus page",
+                    callback = function()
+                        os.execute("start https://www.nexusmods.com/morrowind/mods/51009")
+                        os.exit()
+                    end
+                },
+                { text = "Continue with a broken game" }
             }
         })
     end
@@ -146,7 +153,7 @@ end
 --INITIALISE COMMON--
 local dataLoadedOnce = false
 local function onLoaded()
-    checkSkillModule()
+    checkDependencies()
     initData()
     doUpgrades()
     this.log:info("Common Data loaded successfully")

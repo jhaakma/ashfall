@@ -4,37 +4,38 @@ local thirstController = require("mer.ashfall.needs.thirstController")
 local LiquidContainer   = require("mer.ashfall.liquid.LiquidContainer")
 local campfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 local teaConfig = common.staticConfigs.teaConfig
-
+local logger = common.createLogger("MenuFunction:AddWater")
 
 return {
     text = "Add Water",
-    showRequirements = function(campfire)
+    showRequirements = function(targetRef)
 
         local maxCapacity = campfireUtil.getUtensilCapacity{
-            dataHolder = campfire,
-            object = campfire.object
+            dataHolder = targetRef,
+            object = targetRef.object
         }
-        local needsWater = (not campfire.data.waterAmount)
-            or campfire.data.waterAmount < maxCapacity
 
-        local hasUtensil = (
-            campfire.data.utensil == "kettle" or
-            campfire.data.utensil == "cookingPot"
-        )
-        local isTea = teaConfig.teaTypes[campfire.data.waterType] ~= nil
-        return needsWater and hasUtensil and not isTea
+        local needsWater = (not targetRef.data.waterAmount)
+            or targetRef.data.waterAmount < maxCapacity
+
+        local isTea = teaConfig.teaTypes[targetRef.data.waterType] ~= nil
+        return needsWater and campfireUtil.isWaterContainer(targetRef) and not isTea
     end,
     tooltip = function()
         return common.helper.showHint(
             "You can add water by dragging and dropping a water-filled container directly onto the target."
         )
     end,
-    callback = function(campfire)
-        local to = LiquidContainer.createFromReference(campfire)
+    callback = function(reference)
+        local to = LiquidContainer.createFromReference(reference)
+        if to == nil then
+            logger:error("Could not create liquid container from reference %s", reference.id)
+            return
+        end
         timer.delayOneFrame(function()
             tes3ui.showInventorySelectMenu{
                 title = "Select Water Container:",
-                noResultsText = "You don't have any water.",
+                noResultsText = ("You don't have any %s."):format(to:getLiquidName()),
                 filter = function(e)
                     local from = LiquidContainer.createFromInventory(e.item, e.itemData)
                     return from and from:canTransfer(to) or false

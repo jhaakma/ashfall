@@ -71,9 +71,6 @@ local function registerModConfig()
         config.save()
     end
     template:register()
-
-
-
     do --General Settings Page
         local pageGeneral = template:createSideBarPage({
             label = "General Settings",
@@ -346,25 +343,6 @@ local function registerModConfig()
         }
         addSideBar(pageModValues)
         pageModValues.noScroll = true
-        -- do --Time Category
-        --     local categoryTime = pageModValues:createCategory{
-        --         label = "Time",
-        --         description = "Change time components."
-        --     }
-
-        --     -- categoryTime:createSlider{
-        --     --     label = "Time Scale",
-        --     --     description = ("Changes the speed of the day/night cycle. A value of 1 makes the day go at real-time speed; "
-        --     --     .."an in-game day would last 24 hours in real life. A value of 10 will make it ten times as fast as real-time "
-        --     --     .."(i.e., one in-game day lasts 2.4 hours), etc. "
-        --     --     .."\n\nThe default timescale is 30 (1 in-game day = 48 real minutes), however a value of 15-25 is highly recommended."),
-        --     --     min = 0,
-        --     --     max = 50,
-        --     --     step = 1,
-        --     --     jump = 5,
-        --     --     variable = mwse.mcm:createGlobal{ id = "timeScale"}
-        --     -- }
-        -- end --\Time category
 
         do --Hunger Category
             local categoryTime = pageModValues:createCategory{
@@ -589,114 +567,6 @@ local function registerModConfig()
     end
 
     do --Dev Options
-        --get a formatted string of all Ashfall data
-
-        local function addLine(text, line, indent)
-            for i = 0, indent, 1 do
-                text = text .. " "
-            end
-            text = string.format("%s%s", text, line)
-            return text
-        end
-
-        local function recursivePrint()
-            if not tes3.player then return "" end
-            local data = common.data
-            local text = ""
-            local indent = 0
-            local function recurse(thisData)
-                for key, val in pairs(thisData) do
-
-                    if type(val) == "table" then
-                        local line = string.format("%s: {\n", key)
-                        text = addLine(text, line, indent)
-                        indent = indent + 1
-                        recurse(val)
-                        indent = indent - 1
-                        line = "},\n"
-                        text = addLine(text, line, indent)
-
-                    else
-                        local line = string.format("%s: %s,\n", key, val)
-                        text = addLine(text, line, indent)
-                    end
-                end
-            end
-            recurse(data)
-            return text
-        end
-
-        --Add settings for each Ashfall data field each time the menu is opened
-        local function postCreateData(self)
-            if not tes3.player then return end
-            --clear the existing components
-            self.elements.subcomponentsContainer:destroyChildren()
-            self.components = {}
-
-            local path = "Ashfall"
-            local data = common.data
-            local function recurse(component)
-
-                --Boolean: buttons
-                for key, val in pairs(data) do
-                    if type(val) == "boolean" then
-                        component:createOnOffButton{
-                            label = key,
-                            variable = mwse.mcm.createPlayerData {
-                                id = key,
-                                path = path
-                            },
-                            getText = function(button)
-                                return button.variable.value and "true" or "false"
-                            end
-                        }
-                    end
-                end
-                --Strings: text fields
-                for key, val in pairs(data) do
-                    if type(val) == "string" then
-                        component:createTextField{
-                            label = key,
-                            variable = mwse.mcm.createPlayerData {
-                                id = key,
-                                path = path
-                            },
-                        }
-                    end
-                end
-                --numbers: number fields
-                for key, val in pairs(data) do
-                    if type(val) == "number" then
-                        component:createTextField{
-                            label = key,
-                            variable = mwse.mcm.createPlayerData {
-                                id = key,
-                                path = path
-                            },
-                            numbersOnly = true
-                        }
-                    end
-                end
-                --tables: category, then recurse over the table
-                for key, val in pairs(data) do
-                    if type(val) == "table" and not string.find(key, "__") then
-                        local category = component:createCategory(key)
-
-                        local prevData = data
-                        local prevPath = path
-                        path = path .. "." .. key
-                        data = val
-                        recurse(category)
-                        data = prevData
-                        path = prevPath
-                    end
-                end
-            end
-            recurse(self)
-            --Render the new components
-            self:createSubcomponents(self.elements.subcomponentsContainer, self.components)
-        end
-
         local pageDevOptions = template:createSideBarPage{
             label = "Development Options",
             description = "Tools for debugging etc. Don't touch unless you know what you're doing.",
@@ -734,17 +604,10 @@ local function registerModConfig()
             variable = mwse.mcm.createTableVariable{ id = "logLevel", table = config },
             callback = function(self)
                 for _, log in ipairs(common.loggers) do
-                    mwse.log("Setting %s to log level %s", log.name, self.variable.value)
                     log:setLogLevel(self.variable.value)
                 end
             end
         }
-
-        -- pageDevOptions:createOnOffButton{
-        --     label = "Enable Development Features",
-        --     description = "Enable unfinished features currently in development. Not recommended unless you know what you're doing.",
-        --     variable = mwse.mcm.createTableVariable{ id = "devFeatures", table = config }
-        -- }
 
         pageDevOptions:createButton{
             buttonText = "Print data to log",
@@ -755,29 +618,7 @@ local function registerModConfig()
             end,
             inGameOnly = true
         }
-
-        -- pageDevOptions:createCategory{
-        --     label = "Current Values",
-        --     description = (
-        --         "Dynamic data for Ashfall. Use with caution, " ..
-        --         "although the vast majority of these values are " ..
-        --         "re-calculated every frame so changing them here won't do much."
-        --     ),
-        --     postCreate = postCreateData,
-        --     inGameOnly = true
-        -- }
-
-        -- pageDevOptions:createInfo{
-        --     label = "Current Data: ",
-        --     inGameOnly = true,
-        --     text = "",
-        --     postCreate = function(self)
-        --         self.elements.info.text = recursivePrint()
-        --     end
-        -- }
     end --\Dev Options
-
-
 end
 
 event.register("modConfigReady", registerModConfig)

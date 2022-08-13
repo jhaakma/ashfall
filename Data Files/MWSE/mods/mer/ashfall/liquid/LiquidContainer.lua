@@ -16,6 +16,8 @@ local logger = common.createLogger("LiquidContainer")
 local foodConfig = require "mer.ashfall.config.foodConfig"
 local teaConfig = require "mer.ashfall.config.teaConfig"
 
+
+
 ---@class Ashfall.LiquidContainer.Data
 ---@field waterAmount number Amount of water in container. Maps to data.waterAmount
 ---@field waterHeat number How hot the water is out of 100. Maps to data.waterHeat
@@ -410,8 +412,14 @@ function LiquidContainer:playSound()
     tes3.playSound({reference = tes3.player, sound = "ashfall_water"})
 end
 
+---@alias Ashfall.LiquidContainer.LiquidName
+---| '"Dirty Water"'
+---| '"Water"'
+---| '"Stew"'
+---| '"Soup"'
 
 ---@param self Ashfall.LiquidContainer
+---@return Ashfall.LiquidContainer.LiquidName
 function LiquidContainer:getLiquidName()
     if self.waterType == "dirty" then
         return "Dirty water"

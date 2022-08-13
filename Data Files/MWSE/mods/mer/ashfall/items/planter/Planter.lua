@@ -2,6 +2,7 @@ local common = require("mer.ashfall.common.common")
 local config = require("mer.ashfall.items.planter.config")
 local Seedling = require("mer.ashfall.items.planter.Seedling")
 local LiquidContainer   = require("mer.ashfall.liquid.LiquidContainer")
+local ActivatorController = require "mer.ashfall.activators.activatorController"
 
 ---@class Ashfall.Planter
 ---@field reference tes3reference The reference of the planter.
@@ -33,8 +34,6 @@ local Planter = {
     WATER_PER_HOUR_RAIN = 200,
     WATER_PER_HOUR_THUNDER = 400,
 }
-
-
 
 Planter.logger = common.createLogger("Planter")
 
@@ -187,9 +186,11 @@ function Planter:canRecover()
     --Navigates a mesh to find if there are any trishapes outside of the un-harvested switch node.
     local function sceneNodeHasHarvestedShapes(node)
         if node == nil then return false end
+        if node:isInstanceOfType(tes3.niType.RootCollisionNode) then return false end
         if node.name == "NORMAL" then return false end
         if node:isInstanceOfType(tes3.niType.NiNode) then
             for i = 1, #node.children do
+
                 if sceneNodeHasHarvestedShapes(node.children[i]) == true then
                     return true
                 end
@@ -214,7 +215,7 @@ end
     If Graphic Herbalism is installed, update the switch nodes to show whether the plant is harvested or not
 ]]
 function Planter:updateGHNodes()
-    self.logger:debug("updating gh nodes")
+    self.logger:trace("updating gh nodes")
     local ghNode = self:getGHSwichNode()
     if not ghNode then
         self.logger:trace("No herbalism switch, skip update")
@@ -233,7 +234,7 @@ end
     Attach a plant mesh to the planter.
 ]]
 function Planter:updatePlantMesh()
-    self.logger:debug("Updating plant mesh")
+    self.logger:trace("Updating plant mesh")
     local attachNode = self.reference.sceneNode:getObjectByName(Planter.ATTACH_NODE)
     if not attachNode then
         self.logger:error("No %s node found", Planter.ATTACH_NODE)
@@ -466,8 +467,8 @@ function Planter:addItems()
         local item = stack.object
         local count = stack.count + 1
         if item.objectType == tes3.objectType.leveledItem then
-            ---@type tes3leveledItem
             local leveledItem = item
+            ---@diagnostic disable-next-line: assign-type-mismatch
             item = leveledItem:pickFrom()
         end
         if item then
@@ -565,21 +566,24 @@ Planter.destroyCallback = function(_, e)
     end
 end
 
+--- Checks for required nodes that make the reference a valid planter.
 Planter.isPlanter = function(reference)
-    return reference.sceneNode and reference.sceneNode:getObjectByName("ASHFALL_SOIL") ~= nil
+    return reference.sceneNode
+        and reference.sceneNode:getObjectByName("ASHFALL_SOIL") ~= nil
+        and reference.sceneNode:getObjectByName("ATTACH_PLANT") ~= nil
 end
-
-
 
 Planter.buttons = {
     harvest = {
         text = "Harvest",
         showRequirements = function(e)
-            local planter = Planter.new(e.reference)
+            local reference = e.reference or e
+            local planter = Planter.new(reference)
             return planter and planter:readyToHarvest()
         end,
         callback = function(e)
-            local planter = Planter.new(e.reference)
+            local reference = e.reference or e
+            local planter = Planter.new(reference)
             if not planter then return end
             planter:harvest()
         end
@@ -592,7 +596,8 @@ Planter.buttons = {
             )
         end,
         showRequirements = function(e)
-            local planter = Planter.new(e.reference)
+            local reference = e.reference or e
+            local planter = Planter.new(reference)
             if not planter then return false end
             if planter.seedlingId then
                 return false
@@ -600,7 +605,8 @@ Planter.buttons = {
             return planter and planter.plantId == nil
         end,
         callback = function(e)
-            local planter = Planter.new(e.reference)
+            local reference = e.reference or e
+            local planter = Planter.new(reference)
             if not planter then return end
             timer.delayOneFrame(function()
                 tes3ui.showInventorySelectMenu{
@@ -633,7 +639,8 @@ Planter.buttons = {
             )
         end,
         tooltipDisabled = function(e)
-            local planter = Planter.new(e.reference)
+            local reference = e.reference or e
+            local planter = Planter.new(reference)
             if not planter then return end
             local hasRoomForWater = planter.waterAmount < planter.MAX_WATER_AMOUNT - 1
             if not hasRoomForWater then
@@ -641,7 +648,8 @@ Planter.buttons = {
             end
         end,
         enableRequirements = function(e)
-            local planter = Planter.new(e.reference)
+            local reference = e.reference or e
+            local planter = Planter.new(reference)
             if not planter then return end
             local hasRoomForWater = planter:canBeWatered()
             if not hasRoomForWater then
@@ -650,14 +658,14 @@ Planter.buttons = {
             return hasRoomForWater
         end,
         callback = function(e)
-            local planter = Planter.new(e.reference)
+            local reference = e.reference or e
+            local planter = Planter.new(reference)
             if not planter then return end
             timer.delayOneFrame(function()
                 tes3ui.showInventorySelectMenu{
                     title = "Select Water Container",
                     noResultsText = "You don't have any water.",
                     filter = function(e)
-                        ---@type Ashfall.LiquidContainer
                         local liquidContainer = LiquidContainer.createFromInventory(e.item, e.itemData)
                         return liquidContainer ~= nil
                             and liquidContainer:isWater()
@@ -678,11 +686,13 @@ Planter.buttons = {
     removePlant = {
         text = "Remove Plant",
         showRequirements = function(e)
-            local planter = Planter.new(e.reference)
+            local reference = e.reference or e
+            local planter = Planter.new(reference)
             return planter and planter:hasPlant()
         end,
         callback = function(e)
-            local planter = Planter.new(e.reference)
+            local reference = e.reference or e
+            local planter = Planter.new(reference)
             if not planter then return end
             tes3.addItem{
                 reference = tes3.player,
@@ -693,5 +703,7 @@ Planter.buttons = {
         end
     },
 }
+
+
 
 return Planter

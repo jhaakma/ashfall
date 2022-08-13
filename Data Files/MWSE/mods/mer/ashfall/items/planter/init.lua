@@ -19,6 +19,33 @@ ActivatorController.registerActivator{
     requirements = function(_, ref)
         return Planter.isPlanter(ref)
     end,
+    ids = {
+        furn_planter_03 = true,
+    },
+    menuConfig  = {
+        name = "Planter",
+        menuCommands = {
+            Planter.buttons.harvest,
+            Planter.buttons.plantSeed,
+            Planter.buttons.water,
+            Planter.buttons.removePlant,
+        },
+        tooltipExtra = function(ref, tooltip)
+            local Planter = require("mer.ashfall.items.planter.Planter")
+            local planter = Planter.new(ref)
+            if planter then
+                for _, message in ipairs(planter:getTooltipMessages()) do
+                    local label = tooltip:createLabel{
+                        text = message
+                    }
+                    label.autoHeight = true
+                    label.autoWidth = true
+                    label.wrapText = true
+                    label.justifyText = "center"
+                end
+            end
+        end
+    }
 }
 
 local function hasFloraPattern(id)
@@ -183,3 +210,5 @@ event.register("uiObjectTooltip", function(e)
         end
     end
 end)
+
+

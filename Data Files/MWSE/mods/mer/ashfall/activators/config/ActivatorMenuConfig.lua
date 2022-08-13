@@ -1,5 +1,5 @@
 local common = require ("mer.ashfall.common.common")
-local logger = common.createLogger("attachConfig")
+local logger = common.createLogger("activatorMenuConfig")
 local itemTooltips = require("mer.ashfall.ui.itemTooltips")
 local function centerText(element)
     element.autoHeight = true
@@ -8,30 +8,18 @@ local function centerText(element)
     element.justifyText = "center"
 end
 
-local AttachConfig = {
-    waterContainer = {
-        commands = {
-            --actions
-            "drink",
-            "brewTea",
-            "eatStew",
-            "douse",
-            "companionEatStew",
-            "addIngredient",
-            "fillContainer",
-            "addWater",
-            "emptyContainer",
-            --attach
-            "addLadle",
-            --remove
-            "removeUtensil",
-            "removeLadle",
-            "pickup",
-        },
-        tooltipExtra = function(reference, tooltip)
-            itemTooltips(reference.object, reference.itemData, tooltip)
-        end,
-    },
+---@class Ashfall.Activator.ActivatorMenuConfig
+---@field name string|nil **Optional** The name shown in the tooltip when this node is looked at.
+---@field menuCommands table<string, function>|nil **Optional** A table of commands to be shown in the menu.
+---@field command function|nil **Optional** A function to be called when this node is activated.
+---@field shiftCommand function|string|nil **Optional** A function to be called when this node is activated with the shift key pressed.
+---@field tooltipExtra function|nil **Optional** A function which populates the tooltip with extra information.
+
+---@type table<string, Ashfall.Activator.ActivatorMenuConfig>
+local ActivatorMenuConfig = {}
+
+
+ActivatorMenuConfig.nodeMapping = {
 
     ACTIVATE_DOOR = {
         name = "Door",
@@ -82,12 +70,12 @@ local AttachConfig = {
         end
     },
     ASHFALL_STOVE = {
-        commands = {
+        menuCommands = {
             "pickupCooker"
         }
     },
     ASHFALL_FIREBASE = {
-        commands = {
+        menuCommands = {
             -- --actions
             "lightFire",
             -- --attach
@@ -111,12 +99,12 @@ local AttachConfig = {
     },
     ASHFALL_GRILLER = {
         name = "Grill",
-        commands = {
+        menuCommands = {
             "pickup"
         }
     },
     DROP_GROUND_UTENSIL = {
-        commands = {
+        menuCommands = {
             -- --actions
             "lightFire",
             -- --attach
@@ -141,7 +129,7 @@ local AttachConfig = {
 
     COOKING_POT = {
         idPath = "utensilId",
-        commands = {
+        menuCommands = {
             --actions
             "drink",
             "eatStew",
@@ -165,7 +153,7 @@ local AttachConfig = {
     },
     KETTLE = {
         idPath  = "utensilId",
-        commands = {
+        menuCommands = {
             --actions
             "drink",
             "douse",
@@ -187,21 +175,21 @@ local AttachConfig = {
     },
     SWITCH_LADLE = {
         name = "Ladle",
-        commands = {
+        menuCommands = {
             "removeLadle",
         },
         shiftCommand = "removeLadle"
     },
     ATTACH_GRILL = {
         idPath = "grillId",
-        commands = {
+        menuCommands = {
             "removeGrill",
         },
         shiftCommand = "removeGrill"
     },
     ATTACH_BELLOWS = {
         idPath = "bellowsId",
-        commands = {
+        menuCommands = {
             "removeBellows",
         },
         shiftCommand = "removeBellows",
@@ -220,7 +208,7 @@ local AttachConfig = {
     DROP_HANG_UTENSIL = {
         name = "Supports",
         idPath = "supportsId",
-        commands = {
+        menuCommands = {
             --attach
             "hangUtensil",
             --remove
@@ -246,7 +234,7 @@ local AttachConfig = {
 
     DROP_WOODSTACK = {
         name = "Wood Stack",
-        commands = {
+        menuCommands = {
             "addToWoodStack",
             "takeFromWoodStack",
         },
@@ -263,21 +251,5 @@ local AttachConfig = {
         end,
         shiftCommand = "takeFromWoodStack",
     },
-
-    ASHFALL_PLANTER = {
-        name = "Planter",
-        tooltipExtra = function(ref, tooltip)
-            local Planter = require("mer.ashfall.items.planter.Planter")
-            local planter = Planter.new(ref)
-            if planter then
-                for _, message in ipairs(planter:getTooltipMessages()) do
-                    local label = tooltip:createLabel{
-                        text = message
-                    }
-                    centerText(label)
-                end
-            end
-        end
-    }
 }
-return AttachConfig
+return ActivatorMenuConfig

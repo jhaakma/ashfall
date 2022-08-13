@@ -1,6 +1,5 @@
 require("mer.ashfall.camping.campfire.campfireInit")
 require("mer.ashfall.camping.campfire.campfireLighting")
-require("mer.ashfall.camping.campfire.campfireTooltip")
 require("mer.ashfall.camping.campfire.campfireVisuals")
 require("mer.ashfall.camping.campfire.vanillaCampfireReplacer")
 require("mer.ashfall.camping.stewerController")

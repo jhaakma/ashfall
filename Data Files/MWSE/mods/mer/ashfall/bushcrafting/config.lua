@@ -224,7 +224,7 @@ end
 this.bushCraftingRecipes = {
     --Beginner
     {
-        id  = "ashfall_rope",
+        id = "ashfall_rope",
         description = itemDescriptions.ashfall_rope,
         materials = {
             { material = "fibre", count = 2 }
@@ -249,7 +249,7 @@ this.bushCraftingRecipes = {
         soundType = "straw",
     },
     {
-        id  = "ashfall_torch",
+        id = "ashfall_torch",
         description = itemDescriptions.ashfall_torch,
         materials = {
             { material = "resin", count = 1 },

@@ -12,6 +12,7 @@ local function initialized()
         -- This has to go first so events trigger properly
         require("mer.ashfall.referenceController")
 
+
         require("mer.ashfall.activators")
         require("mer.ashfall.survival")
 
@@ -44,8 +45,13 @@ local function initialized()
         require("mer.ashfall.gearPlacement")
         require('mer.ashfall.harvest.harvestController')
         require("mer.ashfall.cooking")
+
+        --interops/integrations
         require("mer.ashfall.ui.sephInterop")
+        require("mer.ashfall.integrations")
+
         event.trigger("Ashfall:Interop", Interop)
+
         logger:info("%s Initialised", versionController.getVersion())
     end
 end

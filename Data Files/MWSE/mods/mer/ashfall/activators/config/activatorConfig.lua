@@ -1,6 +1,12 @@
 local Activator = require("mer.ashfall.activators.Activator")
 local this = {}
 
+--[[
+    TODO:
+    Move configs into integrations, move tables into Activator,
+    then remove this file.
+]]
+
 this.types = {
     waterSource = "waterSource",
     dirtyWaterSource = "dirtyWaterSource",
@@ -17,6 +23,37 @@ this.types = {
     hearth = "hearth",
     stove = "stove",
     partial = "partial",
+    planter = "planter",
+    teaWarmer = "teaWarmer",
+    kettle = "kettle",
+    cookingPot = "cookingPot",
+    waterContainer = "waterContainer",
+    stoneSource = "stoneSource",
+    waterFilter = "waterFilter",
+    woodStack = "woodStack",
+}
+
+this.subTypes = {
+    partial = "partial",
+    waterDirty = "waterDirty",
+    water = "water",
+    waterClean = "waterClean",
+    basin = "basin",
+    waterJug = "waterJug",
+    well = "well",
+    keg = "keg",
+    vegetation = "vegetation",
+    tree = "tree",
+    stump = "stump",
+    deadTree = "deadTree",
+    wood = "wood",
+    fire = "fire",
+    campfire = "campfire",
+    hearth = "hearth",
+    fireplace = "fireplace",
+    stove = "stove",
+    cushion = "cushion",
+    cauldron = "cauldron",
     teaWarmer = "teaWarmer",
     kettle = "kettle",
     cookingPot = "cookingPot",
@@ -32,6 +69,10 @@ this.list = {}
     The partial activator is any activator that
     only shows a tooltip and has functionality
     when looking at specific NiNodes.
+
+    There's nothing special going on behind the scenes,
+    it's literally just registering an activator with no name
+    and no functionality.
 ]]
 this.list.partial = Activator:new({
     name = nil,
@@ -224,33 +265,13 @@ this.list.vegetation = Activator:new{
     name = "Vegetation",
     type = this.types.vegetation,
     mcmSetting = "bushcraftingEnabled",
-    patterns = {},
+    patterns = {
+    },
     ids = {
         --TR
-        t_sky_flora_bushpine4dry_01 = true,
-        t_sky_flora_bushpine4dry_02 = true,
-        t_sky_flora_bushleaves1dry_01 = true,
-        t_sky_flora_bushleaves1dry_02 = true,
-        t_sky_flora_bushleaves5_01 = true,
-        t_sky_flora_bushleaves5_02 = true,
-        t_sky_flora_bushleaves5_03 = true,
-        t_sky_flora_bushleaves5dry_01 = true,
-        t_sky_flora_bushleaves5dry_02 = true,
-        t_sky_flora_bushleaves5dry_03 = true,
-        t_sky_flora_bushpine1_01 = true,
-        t_sky_flora_bushpine1_02 = true,
-        t_sky_flora_bushpine1dry_01 = true,
-        t_sky_flora_bushpine1dry_02 = true,
-        t_sky_flora_bushpine2_01 = true,
-        t_sky_flora_bushpine2_02 = true,
-        t_sky_flora_bushpine2_03 = true,
-        t_sky_flora_bushpine2dry_01 = true,
-        t_sky_flora_bushpine2dry_02 = true,
-        t_sky_flora_bushpine2dry_03 = true,
-        t_sky_flora_bushpine3dry_01 = true,
-        t_sky_flora_bushpine3dry_02 = true,
-        t_sky_flora_bushpine3dry_03 = true,
-        t_sky_flora_bushplain1_03 = true,
+
+
+
         --Plant Static
         ["flora_ash_grass_b_01"] = true,
         ["flora_ash_grass_r_01"] = true,
@@ -295,11 +316,6 @@ this.list.vegetation = Activator:new{
         ["flora_bm_grass_05"] = true,
         ["flora_bm_grass_06"] = true,
         ["flora_bm_holly_06a"] = true,
-        ["flora_bm_log_01"] = true,
-        ["flora_bm_log_02"] = true,
-        ["flora_bm_log_03"] = true,
-        ["flora_bm_log_04"] = true,
-        ["flora_bm_log_05"] = true,
         ["flora_bm_shrub_01"] = true,
         ["flora_bm_shrub_02"] = true,
         ["flora_bm_shrub_03"] = true,
@@ -715,12 +731,16 @@ this.list.wood = Activator:new{
         t_mw_floratv_manshroomroot_07 = true,
         t_mw_floratv_manshroomroot_08 = true,
         t_mw_floratv_treegeranlog_01 = true,
+        flora_bm_log_01 = true,
+        flora_bm_log_02 = true,
+        flora_bm_log_03 = true,
+        flora_bm_log_04 = true,
+        flora_bm_log_05 = true,
     },
     patterns = {
         ["flora_ash_log"] = true,
         ["flora_bc_knee"] = true,
         ["flora_bc_log"] = true,
-        ["flora_bm_log"] = true,
         ["flora_bm_snow_log"] = true,
         ["flora_root_wg"] = true,
         --["furn_log"] = true
@@ -900,8 +920,7 @@ this.list.woodStack = Activator:new{
         ashfall_wood_stack = true,
         ab_furn_woodstack01 = true,
         ab_furn_woodstack02 = true,
-    }
+    },
 }
-
 
 return this

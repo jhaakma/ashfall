@@ -7,24 +7,34 @@ local ActivatorController = {}
     ActivatorController.getCurrentActivator()
 ]]--
 local Activator = require("mer.ashfall.activators.Activator")
-local activatorConfig = require("mer.Ashfall.activators.activatorConfig")
+local activatorConfig = require("mer.Ashfall.activators.config.activatorConfig")
 local config = require("mer.ashfall.config").config
 local common = require("mer.ashfall.common.common")
 local logger = common.createLogger("activatorController")
 local uiCommon = require("mer.ashfall.ui.uiCommon")
+local ActivatorMenuConfig = require "mer.ashfall.activators.config.ActivatorMenuConfig"
+local DropConfig = require "mer.ashfall.activators.config.DropConfig"
+local itemTooltips = require("mer.ashfall.ui.itemTooltips")
 ActivatorController.list = activatorConfig.list
 ActivatorController.current = nil
 ActivatorController.currentRef = nil
 ActivatorController.parentNode = nil
+ActivatorController.subTypes = {}
 
 
 function ActivatorController.registerActivator(activator)
     assert(activator.type ~= nil)
     activatorConfig.types[activator.type] = activator.type
     ActivatorController.list[activator.id] = Activator:new(activator)
+    ActivatorController.subTypes[activator.id] = activator.id
 end
 
-
+---comment
+---@param nodeName string
+---@param activatorMenuConfig Ashfall.Activator.ActivatorMenuConfig
+function ActivatorController.registerActivationNode(nodeName, activatorMenuConfig)
+    ActivatorMenuConfig.nodeMapping[nodeName] = activatorMenuConfig
+end
 
 function ActivatorController.getCurrentActivator()
     return ActivatorController.list[ActivatorController.current]
@@ -45,11 +55,83 @@ end
 function ActivatorController.getRefActivator(reference)
     for _, activator in pairs(ActivatorController.list) do
         if activator:isActivator(reference) then
+            logger:trace("Activator: %s", activator.type)
             return activator
         end
     end
 end
 
+function ActivatorController.getActivatorMenuConfig(reference, node)
+    local activatorMenuConfig
+    -- Check Nodes
+    if node then
+        while node.parent do
+            if ActivatorMenuConfig.nodeMapping[node.name] then
+                activatorMenuConfig = ActivatorMenuConfig.nodeMapping[node.name]
+                break
+            end
+            node = node.parent
+        end
+    end
+    --Check Activator
+    if not activatorMenuConfig then
+        local activator = ActivatorController.getRefActivator(reference)
+        if activator then
+            activatorMenuConfig = activator.menuConfig
+        end
+    end
+
+    return activatorMenuConfig
+end
+
+function ActivatorController.getDropConfig(reference, node)
+    --default campfire
+    local dropConfig
+    while node.parent do
+        if DropConfig.node[node.name] then
+            dropConfig = DropConfig.node[node.name]
+            break
+        end
+        node = node.parent
+    end
+    if not dropConfig then
+        if common.staticConfigs.bottleList[reference.object.id:lower()] then
+            return DropConfig.waterContainer
+        end
+    end
+    return dropConfig
+end
+
+function ActivatorController.getDropText(node, reference, item, itemData)
+    local dropConfig = ActivatorController.getDropConfig(reference, node)
+    if not dropConfig then return end
+    for _, optionId in ipairs(dropConfig) do
+        local option = require('mer.ashfall.activators.config.dropConfigs.' .. optionId)
+        local canDrop, errorMsg = option.canDrop(reference, item, itemData)
+        local hasError = (errorMsg ~= nil)
+        if canDrop or hasError then
+            return option.dropText(reference, item, itemData), hasError
+        end
+    end
+end
+
+function ActivatorController.getAttachmentName(reference, activatorMenuConfig)
+    if activatorMenuConfig.name then
+        return activatorMenuConfig.name
+    elseif activatorMenuConfig.idPath then
+        local objId = reference.data[activatorMenuConfig.idPath]
+        if objId then
+            local obj = tes3.getObject(objId)
+            return common.helper.getGenericUtensilName(obj)
+        end
+    elseif reference.object.name and reference.object.name ~= "" then
+        return reference.object.name
+    elseif ActivatorController.getRefActivator(reference) then
+        return ActivatorController.getRefActivator(reference).name
+    end
+    --fallback
+    return nil
+end
 
 
 
@@ -172,11 +254,14 @@ end
     at an activator static then fire an event
 ]]--
 function ActivatorController.doTriggerActivate()
+    logger:debug("ActivatorController.doTriggerActivate")
     if (not tes3ui.menuMode()) and doActivate() then
-        if ActivatorController.list[ActivatorController.current] then
-
+        logger:debug("Do activate")
+        local currentActivator = ActivatorController.list[ActivatorController.current]
+        if currentActivator then
+            logger:debug("Current activator: %s", currentActivator.type)
             local eventData = {
-                activator = ActivatorController.list[ActivatorController.current],
+                activator = currentActivator,
                 ref = ActivatorController.currentRef,
                 node = ActivatorController.parentNode
             }
@@ -185,6 +270,5 @@ function ActivatorController.doTriggerActivate()
         end
     end
 end
-
 
 return ActivatorController

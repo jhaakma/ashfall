@@ -1,7 +1,8 @@
 local common = require ("mer.ashfall.common.common")
 local logger = common.createLogger("campfireMenu")
+local itemTooltips = require("mer.ashfall.ui.itemTooltips")
+local ActivatorController = require "mer.ashfall.activators.activatorController"
 local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
-local AttachConfig = require "mer.ashfall.activators.config.AttachConfig"
 --[[
     No longer just for campfires!
 
@@ -18,36 +19,34 @@ end
 
 local function resolveButtonData(buttonData)
     if type(buttonData) == "string" then
-        return require(string.format("mer.ashfall.activators.menuFunctions.%s", buttonData))
+        return require(string.format("mer.ashfall.activators.config.menuFunctions.%s", buttonData))
     else
         return buttonData
     end
 end
 
 local function onActivatorActivated(e)
+    logger:debug("ENTRY onActivatorActivated")
     local reference = e.ref
     if not reference then return end
-    local node = e.node
+    local activatorMenuConfig = e.activatorMenuConfig
+        or ActivatorController.getActivatorMenuConfig(reference, e.node)
 
-    local attachmentConfig
-    if node then
-        attachmentConfig = CampfireUtil.getAttachmentConfig(reference, node)
-    elseif e.attachmentConfig then
-        attachmentConfig = e.attachmentConfig
+    if not activatorMenuConfig then
+        logger:debug("No activator menu config found")
+        return
     end
 
-    if not attachmentConfig then return end
-
-    if attachmentConfig.command then
-        --Execute command
-        attachmentConfig.command(reference)
+    if activatorMenuConfig.command then
+        logger:debug("Execute command")
+        activatorMenuConfig.command(reference)
         return
     end
 
     local isModifierKeyPressed = common.helper.isModifierKeyPressed()
 
-    if isModifierKeyPressed and attachmentConfig.shiftCommand then
-        local buttonData = resolveButtonData(attachmentConfig.shiftCommand)
+    if isModifierKeyPressed and activatorMenuConfig.shiftCommand then
+        local buttonData = resolveButtonData(activatorMenuConfig.shiftCommand)
         local canShow = true
         if buttonData.showRequirements then
             canShow = buttonData.showRequirements(reference)
@@ -99,9 +98,9 @@ local function onActivatorActivated(e)
 
     local buttons = {}
     --Add contextual buttons
-    local buttonList = attachmentConfig.commands
+    local buttonList = activatorMenuConfig.menuCommands
 
-    local attachmentName = CampfireUtil.getAttachmentName(reference, attachmentConfig)
+    local attachmentName = ActivatorController.getAttachmentName(reference, activatorMenuConfig)
     local text = attachmentName
         or reference.object.name
 
@@ -110,17 +109,18 @@ local function onActivatorActivated(e)
             buttonData = resolveButtonData(buttonData)
             addButton(buttons, buttonData)
         end
-        --if #buttons > 0 then
             tes3ui.showMessageMenu({
                 message = text,
                 buttons = buttons,
                 cancels = true
             })
-       -- end
+    else
+        logger:debug("list of valid buttons is empty")
     end
 end
 
 event.register("Ashfall:ActivatorActivated",onActivatorActivated)
+
 
 event.register("activate", function(e)
     if tes3ui.menuMode() then return end
@@ -132,7 +132,30 @@ event.register("activate", function(e)
         onActivatorActivated{
             ref = e.target,
             node = nil,
-            attachmentConfig = AttachConfig.waterContainer
+            activatorMenuConfig = {
+                menuCommands = {
+                    --actions
+                    "drink",
+                    "brewTea",
+                    "eatStew",
+                    "douse",
+                    "companionEatStew",
+                    "addIngredient",
+                    "fillContainer",
+                    "addWater",
+                    "emptyContainer",
+                    --attach
+                    "addLadle",
+                    --remove
+                    "removeUtensil",
+                    "removeLadle",
+                    "pickup",
+                },
+                tooltipExtra = function(campfire, tooltip)
+                    itemTooltips(campfire.object, campfire.itemData, tooltip)
+                end
+            }
+
         }
         return false
     end

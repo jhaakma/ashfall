@@ -1,13 +1,6 @@
 
 local Activator = {}
 
-Activator.type = nil
-Activator.name = ""
-Activator.mcmSetting = nil
-Activator.ids = {}
-Activator.patterns = {}
-Activator.hideTooltip = false
-
 function Activator:new(data)
     local t = data or {}
     t.ids = t.ids or {}

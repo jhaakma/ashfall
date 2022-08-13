@@ -6,7 +6,6 @@ local LiquidContainer = require("mer.ashfall.liquid.LiquidContainer")
 return  {
     text = "Fill Container",
     showRequirements = function(reference)
-        ---@type Ashfall.LiquidContainer
         local source = LiquidContainer.createFromReference(reference)
         if not source then return false end
         local hasWaterAmount = source.waterAmount > 0
@@ -17,8 +16,8 @@ return  {
         return hasWaterAmount and (isWater or isTea or isStew)
     end,
     enableRequirements = function(reference)
-        ---@type Ashfall.LiquidContainer
         local source = LiquidContainer.createFromReference(reference)
+        if not source then return false end
         local playerHasFillableContainers = source and thirstController.playerHasFillableContainers(source)
         return playerHasFillableContainers
     end,

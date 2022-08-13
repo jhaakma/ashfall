@@ -2,14 +2,13 @@
     Controller for dropping items onto a campfire
     Examples include dropping firewood to increase fuel, adding ingredients to stews etc
 ]]
-local CampfireUtil = require "mer.ashfall.camping.campfire.CampfireUtil"
-local activatorController = require "mer.ashfall.activators.activatorController"
+local ActivatorController = require "mer.ashfall.activators.activatorController"
 local common = require("mer.ashfall.common.common")
 local logger = common.createLogger("dropAttach")
 
 local function resolveDropOption(dropOption)
     if type(dropOption) == "string" then
-        return require('mer.ashfall.camping.dropConfigs.' .. dropOption)
+        return require('mer.ashfall.activators.config.dropConfigs.' .. dropOption)
     else
         return dropOption
     end
@@ -17,15 +16,15 @@ end
 
 local function onDrop(e)
     logger:debug("item dropped: %s", e.reference.object.id)
-    local target = activatorController.currentRef
+    local target = ActivatorController.currentRef
     local droppedRef = e.reference
 
     if not target then
         logger:debug("no target!")
         return
     end
-    local node = activatorController.parentNode
-    local dropConfig = CampfireUtil.getDropConfig(target, node)
+    local node = ActivatorController.parentNode
+    local dropConfig = ActivatorController.getDropConfig(target, node)
 
     logger:debug("CurrentRef: %s", target.object.id)
 

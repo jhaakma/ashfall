@@ -1,10 +1,8 @@
 
-local DropConfig = require "mer.ashfall.activators.config.DropConfig"
-local itemTooltips = require("mer.ashfall.ui.itemTooltips")
+
 local activatorController = require "mer.ashfall.activators.activatorController"
 local foodConfig = require "mer.ashfall.config.foodConfig"
 local LiquidContainer = require("mer.ashfall.liquid.LiquidContainer")
-local AttachConfig = require "mer.ashfall.activators.config.AttachConfig"
 local CampfireUtil = {}
 local common = require ("mer.ashfall.common.common")
 local logger = common.createLogger("campfireUtil")
@@ -31,66 +29,6 @@ function CampfireUtil.getHeat(reference)
         local finalHeat = (fuelLevel * bellowsEffect * weakEffect * isColdEffect)
         return finalHeat
     end
-end
-
-function CampfireUtil.getAttachmentConfig(reference, node)
-    if reference then
-        if common.staticConfigs.bottleList[reference.object.id:lower()] then
-            return {
-                tooltipExtra = function(campfire, tooltip)
-                    itemTooltips(campfire.object, campfire.itemData, tooltip)
-                end
-            }
-        end
-    end
-
-    if not node then return end
-    --default campfire
-    local attachmentConfig
-    while node.parent do
-        if AttachConfig[node.name] then
-            attachmentConfig = AttachConfig[node.name]
-            break
-        end
-        node = node.parent
-    end
-    return attachmentConfig
-end
-
-function CampfireUtil.getDropConfig(reference, node)
-    --default campfire
-    local dropConfig
-    while node.parent do
-        if DropConfig.node[node.name] then
-            dropConfig = DropConfig.node[node.name]
-            break
-        end
-        node = node.parent
-    end
-    if not dropConfig then
-        if common.staticConfigs.bottleList[reference.object.id:lower()] then
-            return DropConfig.waterContainer
-        end
-    end
-    return dropConfig
-end
-
-function CampfireUtil.getAttachmentName(campfire, attachConfig)
-    if attachConfig.name then
-        return attachConfig.name
-    elseif attachConfig.idPath then
-        local objId = campfire.data[attachConfig.idPath]
-        if objId then
-            local obj = tes3.getObject(objId)
-            return common.helper.getGenericUtensilName(obj)
-        end
-    elseif campfire.object.name and campfire.object.name ~= "" then
-        return campfire.object.name
-    elseif activatorController.getRefActivator(campfire) then
-        return activatorController.getRefActivator(campfire).name
-    end
-    --fallback
-    return nil
 end
 
 
@@ -223,10 +161,7 @@ function CampfireUtil.updateWaterHeat(refData, capacity, reference)
 end
 
 
-function CampfireUtil.isUtensil(ref)
-    return common.staticConfigs.utensils[ref.object.id:lower()] ~= nil
-        or ( ref.data and ref.data.utensil ~= nil)
-end
+
 
 ---@class Ashfall.AddIngredToStewType
 ---@field campfire tes3reference
@@ -242,6 +177,10 @@ function CampfireUtil.addIngredToStew(e)
     local amount = e.count or 1
     local foodType = foodConfig.getFoodTypeResolveMeat(item)
     local liquidContainer = LiquidContainer.createFromReference(campfire)
+    if not liquidContainer then
+        logger:error("Could not create liquid container from campfire")
+        return
+    end
     local capacity = liquidContainer:getStewCapacity(foodType)
     local amountToAdd = math.min(amount, capacity)
     if amountToAdd == 0 then return amountToAdd end
@@ -281,7 +220,7 @@ function CampfireUtil.findNamedParentNode(node, name)
     end
 end
 
----@return niNode NiNode
+---@return niNode|nil NiNode
 function CampfireUtil.findNamedChildNode(node, name)
     if node.name and node.name == name then
         return node
@@ -327,32 +266,45 @@ function CampfireUtil.getFoodPlacedOnGrill(ingredReference, campfire)
     end
 end
 
-function CampfireUtil.getDropText(node, reference, item, itemData)
-    local dropConfig = CampfireUtil.getDropConfig(reference, node)
-    if not dropConfig then return end
-    for _, optionId in ipairs(dropConfig) do
-        local option = require('mer.ashfall.camping.dropConfigs.' .. optionId)
-        local canDrop, errorMsg = option.canDrop(reference, item, itemData)
-        local hasError = (errorMsg ~= nil)
-        if canDrop or hasError then
-            return option.dropText(reference, item, itemData), hasError
-        end
-    end
-end
 
 function CampfireUtil.refCanHangUtensil(reference)
     return reference.sceneNode:getObjectByName("DROP_HANG_UTENSIL")
 end
+
 
 function CampfireUtil.itemCanBeHanged(item)
     local utensilData =  common.staticConfigs.utensils[item.id:lower()]
     if utensilData then
         if utensilData.type == "kettle" or utensilData.type == "cookingPot" then
             local mesh = tes3.loadMesh(item.mesh)
-            return mesh:getObjectByName("ATTACH_POINT")
+            logger:debug("Mesh: %s", item.mesh)
+            local attachPointNode = mesh:getObjectByName("ATTACH_POINT")
+            logger:debug("AttachPointNode: %s", attachPointNode)
+            return attachPointNode ~= nil
         end
     end
     return false
+end
+
+
+function CampfireUtil.refIsCookingPot(reference)
+    return reference.data.utensil == "cookingPot"
+        or common.staticConfigs.cookingPots[item.id:lower()]
+end
+
+function CampfireUtil.refIsKettle(reference)
+    return reference.data.utensil == "kettle"
+        or common.staticConfigs.kettles[item.id:lower()]
+end
+
+function CampfireUtil.isUtensil(ref)
+    return common.staticConfigs.utensils[ref.object.id:lower()] ~= nil
+        or ( ref.data and ref.data.utensil ~= nil)
+end
+
+function CampfireUtil.isWaterContainer(reference)
+    return CampfireUtil.isUtensil(reference)
+        or common.staticConfigs.bottleList[reference.object.id:lower()]
 end
 
 
