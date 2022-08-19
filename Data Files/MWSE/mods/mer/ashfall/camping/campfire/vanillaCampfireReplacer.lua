@@ -77,6 +77,12 @@ local legacyReplacedCampfires = {
 --A list of shit that campfires can be composed of
 --When replacing a vanilla mesh, get rid of these
 local kitBashObjects = {
+
+    mwg_burnt_log_01 = true,
+    mwg_burnt_log_02 = true,
+    mwg_burnt_log_01_g = true,
+    mwg_burnt_log_02_g = true,
+
     furn_log_01 = true,
     furn_log_02 = true,
     furn_log_03 = true,
