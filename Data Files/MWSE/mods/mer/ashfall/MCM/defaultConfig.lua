@@ -90,6 +90,8 @@ return {
     disableRainInTents = true,
     disableHarvested = true,
 
+    globalColdEffect = 0,
+    globalWarmEffect = 0,
     hungerRate = 20,
     thirstRate = 30,
     loseSleepRate = 50,

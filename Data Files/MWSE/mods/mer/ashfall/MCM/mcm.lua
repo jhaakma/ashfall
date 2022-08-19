@@ -344,10 +344,45 @@ local function registerModConfig()
         addSideBar(pageModValues)
         pageModValues.noScroll = true
 
+
+        do -- Temperature
+            local categoryTemperature = pageModValues:createCategory{
+                label = "Temperature",
+                description = "Temperature Modifiers.",
+            }
+            categoryTemperature:createSlider{
+                label = "Cold Modifier: %s%%",
+                description = string.format("Modifies the intensity of all cold sources."
+                    .. "\n\nThe default cold modifier is %s.",
+                    common.defaultValues.globalColdEffect
+                ),
+                min = -50,
+                max = 50,
+                step = 1,
+                variable = mwse.mcm.createTableVariable{ id = "globalColdEffect", table = config },
+                callback = function()
+                    common.data.globalColdEffect = 1 + config.globalColdEffect * 0.01
+                end
+            }
+            categoryTemperature:createSlider{
+                label = "Heat Modifier: %s%%",
+                description = string.format("Modifies the intensity of all heat sources."
+                    .. "\n\nThe default heat modifier is %s.",
+                    common.defaultValues.globalWarmEffect
+                ),
+                min = -50,
+                max = 50,
+                step = 1,
+                variable = mwse.mcm.createTableVariable{ id = "globalWarmEffect", table = config },
+                callback = function()
+                    common.data.globalWarmEffect = 1 + config.globalWarmEffect * 0.01
+                end
+            }
+        end
         do --Hunger Category
             local categoryTime = pageModValues:createCategory{
                 label = "Hunger",
-                description = "Change hunger components.",
+                description = "Hunger Modifiers.",
             }
 
 
@@ -370,7 +405,7 @@ local function registerModConfig()
         do --Thirst Category
             local categoryThirst = pageModValues:createCategory{
                 label = "Thirst",
-                description = "Change thirst components.",
+                description = "Thirst Modifiers.",
             }
 
             categoryThirst:createSlider{
@@ -392,7 +427,7 @@ local function registerModConfig()
         do --Sleep Category
             local categorySleep = pageModValues:createCategory{
                 label = "Sleep",
-                description =  "Change tiredness components."
+                description =  "Sleep Modifiers.",
             }
 
             categorySleep:createSlider{

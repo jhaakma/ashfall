@@ -31,6 +31,7 @@ local function initialized()
         require("mer.ashfall.ui.hud")
         require("mer.ashfall.ui.tooltipsCompleteInterop")
         require("mer.ashfall.tempEffects.ratings.ratingEffects")
+        require("mer.ashfall.tempEffects.globalModifiers")
 
         require("mer.ashfall.quickKeys")
         require("mer.ashfall.activators.activationEvent")
