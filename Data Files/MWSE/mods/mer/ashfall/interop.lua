@@ -38,7 +38,7 @@ end
 
 local function listValidClimateTypes()
     local message = '\n'
-    for typeString, _ in pairs(climateConfig.CLIMATE) do
+    for typeString, _ in pairs(climateConfig.climate) do
         message = message .. '\n' .. typeString
     end
     return message
@@ -262,18 +262,19 @@ end
 
 local function registerClimates(e)
     logger:debug("Registering climate data for the following regions: ")
-    for id, data in pairs(e.data) do
-        id = id:lower()
+    for region, data in pairs(e.data) do
+        region = region:lower()
         if type(data) == 'table' then
             assert(data.min, "Missing min climate value.")
             assert(data.max, "Missing max climate value.")
-            climateConfig.regions[id] = data
-            logger:debug("    %s: { min: %d, max: %d }", id, data.min, data.max)
+            climateConfig.regions[region] = data
+            logger:debug("    %s: { min: %d, max: %d }", region, data.min, data.max)
         elseif type(data) == 'string' then
-            local climateData = climateConfig.CLIMATE[data]
+            local climateType = data:lower()
+            local climateData = climateConfig.climate[climateType]
             assert(climateData, string.format("Invalid Climate type. Must be ones of the following: %s", listValidClimateTypes()))
-            climateConfig.regions[id] = climateData
-            logger:debug("    %s: { min: %d, max: %d }", id, climateData.min, climateData.max)
+            climateConfig.regions[region] = climateData
+            logger:debug("    %s: { min: %d, max: %d }", region, climateData.min, climateData.max)
         else
             mwse.error("Invalid climate data. Must be a table with min/max values, a string matching the following: " .. listValidClimateTypes())
         end

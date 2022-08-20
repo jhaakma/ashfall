@@ -365,7 +365,7 @@ local attachNodes = {
             --Vanilla replaced campfires get logs of wood, player made get branches
             --TODO - do this properly
             if campfire.data.staticCampfireInitialised then
-                firewoodMesh = "ashfall\\cf\\Firewood_02.nif"
+                firewoodMesh = "ashfall\\cf\\Firewood_03.nif"
             else
                 firewoodMesh = "ashfall\\cf\\Firewood_01.nif"
             end
