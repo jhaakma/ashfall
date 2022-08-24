@@ -902,6 +902,7 @@ this.list.stoneSource = Activator:new{
     patterns = {
         ["terrain_rock"] = true,
         ["terrain_ashland_rock"] = true,
+
     }
 }
 

@@ -72,10 +72,25 @@ local switchNodeValues = {
         return reference.data.isLit and "LIT" or "UNLIT"
     end,
     SWITCH_WOOD = function(reference)
-        if reference.data.fuelLevel and reference.data.fuelLevel ~= 0 then
-            return reference.data.burned and "BURNED" or "UNBURNED"
-        else
+        local hasFuel = reference.data.fuelLevel and reference.data.fuelLevel ~= 0
+        local isLit = reference.data.isLit
+        local isBurned = reference.data.burned
+
+        --stage one: no wood
+        if (not hasFuel) and (not isBurned) then
             return "OFF"
+        end
+        --stage two: wood added
+        if (hasFuel) and (not isLit) and (not isBurned) then
+            return "UNBURNED"
+        end
+        --stage three: wood added and lit
+        if (hasFuel) and (isLit) then
+            return reference.sceneNode:getObjectByName("WOODLIT") and "WOODLIT" or "BURNED"
+        end
+        --stage hour: wood added and burnt
+        if (hasFuel) and (not isLit) and (isBurned) then
+            return "BURNED"
         end
     end,
     SWITCH_SUPPORTS = function(reference)
@@ -365,7 +380,7 @@ local attachNodes = {
             --Vanilla replaced campfires get logs of wood, player made get branches
             --TODO - do this properly
             if campfire.data.staticCampfireInitialised then
-                firewoodMesh = "ashfall\\cf\\Firewood_03.nif"
+                firewoodMesh = "ashfall\\cf\\Firewood_02.nif"
             else
                 firewoodMesh = "ashfall\\cf\\Firewood_01.nif"
             end

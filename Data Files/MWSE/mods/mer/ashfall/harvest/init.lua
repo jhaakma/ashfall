@@ -3,7 +3,7 @@ local harvestConfigs = require("mer.ashfall.harvest.config")
 local common = require("mer.ashfall.common.common")
 local logger = common.createLogger("harvestController")
 local config = require("mer.ashfall.config").config
-local service = require("mer.ashfall.harvest.harvestService")
+local service = require("mer.ashfall.harvest.service")
 
 
 

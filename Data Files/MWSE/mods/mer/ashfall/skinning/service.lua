@@ -1,0 +1,3 @@
+local SkinningService = {}
+
+return SkinningService

@@ -44,7 +44,7 @@ local function initialized()
 
         require("mer.ashfall.bushcrafting")
         require("mer.ashfall.gearPlacement")
-        require('mer.ashfall.harvest.harvestController')
+        require('mer.ashfall.harvest')
         require("mer.ashfall.cooking")
 
         --interops/integrations
