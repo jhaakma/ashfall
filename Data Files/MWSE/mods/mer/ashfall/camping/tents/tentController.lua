@@ -333,22 +333,30 @@ end)
 
 
 local function cullRain(position)
-    local rain = tes3.worldController.weatherController.sceneRainRoot
-    for raindrop in table.traverse{rain} do
-        if not raindrop.appCulled then
-            if position:distance(raindrop.worldTransform.translation) < 400 then
-                raindrop.appCulled = true
+    local particlesActive = tes3.worldController.weatherController.particlesActive
+    for _, particle in pairs(particlesActive) do
+        if not particle.object.appCulled then
+            if position:distance(particle.object.worldTransform.translation) < 400 then
+                particle.object.appCulled = true
             end
         end
     end
 end
 
+local function isBadWeather(weatherIndex)
+    return (weatherIndex == tes3.weather.rain) or (weatherIndex == tes3.weather.thunder)
+end
+
 --Must be done each frame to remove the particles as they get added
 local function tentSimulate(e)
     if config.disableRainInTents then
-        if currentTent and currentTent:valid() then
-            local position = currentTent.position:copy()
-            cullRain(position)
+        if currentTent and currentTent:valid() and common.data.insideTent then
+            if isBadWeather(tes3.worldController.weatherController.currentWeather.index)
+                or (tes3.worldController.weatherController.nextWeather 
+                    and isBadWeather(tes3.worldController.weatherController.nextWeather.index)) then
+                local position = currentTent.position:copy()
+                cullRain(position)
+            end
         end
     end
 end
