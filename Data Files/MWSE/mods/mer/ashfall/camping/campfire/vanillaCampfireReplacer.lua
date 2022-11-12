@@ -108,6 +108,9 @@ local kitBashObjects = {
     t_nor_var_logssmallbirch_02 = true,
     t_nor_var_logssmalllarch_01 = true,
     t_nor_var_logssmalllarch_02 = true,
+
+    --ab
+    ab_furn_barrelfillgrain = true,
 }
 
 local cauldrons = {

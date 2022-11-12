@@ -12,6 +12,10 @@ local function initialized()
         -- This has to go first so events trigger properly
         require("mer.ashfall.referenceController")
 
+        --interops/integrations
+        --This has to run before some other scripts to ensure the lists are up to date
+        require("mer.ashfall.ui.sephInterop")
+        require("mer.ashfall.integrations")
 
         require("mer.ashfall.activators")
         require("mer.ashfall.survival")
@@ -47,9 +51,7 @@ local function initialized()
         require('mer.ashfall.harvest')
         require("mer.ashfall.cooking")
 
-        --interops/integrations
-        require("mer.ashfall.ui.sephInterop")
-        require("mer.ashfall.integrations")
+
 
         event.trigger("Ashfall:Interop", Interop)
 
