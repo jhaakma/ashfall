@@ -20,7 +20,7 @@ local function cushionMenu(e)
                     position = tes3vector3.new(
                         ref.position.x,
                         ref.position.y,
-                        ref.position.z + common.helper.getObjectHeight(ref.object) - 7
+                        ref.position.z + common.helper.getObjectHeight(ref.object, ref.scale) - 7
                     ),
                     orientation = {
                         0,--ref.orientation.x,

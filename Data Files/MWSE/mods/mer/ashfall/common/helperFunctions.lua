@@ -611,8 +611,9 @@ function this.getGroundBelowRef(e)
     return result
 end
 
-function this.getObjectHeight(obj)
-    return obj.boundingBox.max.z - obj.boundingBox.min.z
+function this.getObjectHeight(obj, scale)
+    scale = scale or 1.0
+    return (obj.boundingBox.max.z - obj.boundingBox.min.z) * scale
 end
 
 function this.getObjectBottomZ(obj)
