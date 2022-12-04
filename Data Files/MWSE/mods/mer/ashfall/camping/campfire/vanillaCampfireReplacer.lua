@@ -42,29 +42,29 @@ local vanillaCampfires = {
     furn_de_minercave_grill_01 = { replacement = "ashfall_campfire", supports = false, rootHeight = 0, hasGrill = true, rotation = 90, infinite = true},
 
     --Hearths and fireplaces
-    furn_redoran_hearth_01 = { replacement = "ashfall_redhearth_01", supports = false, rootHeight = 0, exactPosition = true },
-    furn_redoran_hearth_02 = { replacement = "ashfall_redhearth_02", supports = false, rootHeight = 0, exactPosition = true },
-    furn_fireplace10 = { replacement = "ashfall_fireplace10", supports = false, rootHeight = 0, exactPosition = true },
-    in_nord_fireplace_01 = { replacement = "ashfall_nordfireplace_01", supports = false, rootHeight = 0, exactPosition = true },
-    in_imp_fireplace_grand = { replacement = "ashfall_impfireplace_01", supports = false, rootHeight = 0, exactPosition = true },
+    furn_redoran_hearth_01 = { replacement = "ashfall_redhearth_01", supports = false, rootHeight = 0, exactPosition = true, unremovable = true },
+    furn_redoran_hearth_02 = { replacement = "ashfall_redhearth_02", supports = false, rootHeight = 0, exactPosition = true, unremovable = true },
+    furn_fireplace10 = { replacement = "ashfall_fireplace10", supports = false, rootHeight = 0, exactPosition = true, unremovable = true },
+    in_nord_fireplace_01 = { replacement = "ashfall_nordfireplace_01", supports = false, rootHeight = 0, exactPosition = true, unremovable = true },
+    in_imp_fireplace_grand = { replacement = "ashfall_impfireplace_01", supports = false, rootHeight = 0, exactPosition = true, unremovable = true },
 
     --TR
-    t_imp_setsky_i_fireplace_01 = { replacement = "ashfall_skyfp_01", supports = false, rootHeight = 0, exactPosition = true },
-    t_imp_setsky_i_fireplace_02 = { replacement = "ashfall_skyfp_02", supports = false, rootHeight = 0, exactPosition = true },
-    t_nor_furn_fireplace_01 = { replacement = "ashfall_skyfp_03", supports = false, rootHeight = 0, exactPosition = true },
-    t_nor_furn_fireplace_02 = { replacement = "ashfall_skyfp_hf1", supports = false, rootHeight = 0, exactPosition = true },
-    t_nor_furn_fireplace_03 = { replacement = "ashfall_skyfp_hf2", supports = false, rootHeight = 0, exactPosition = true },
-    t_nor_furn_fireplace_04 = { replacement = "ashfall_skyfp_hfb", supports = false, rootHeight = 0, exactPosition = true },
-    t_imp_setstr_i_fireplace_01 = { replacement = "ashfall_pc_fp_01", supports = false, rootHeight = 0, exactPosition = true },
-    t_imp_setgcpoor_i_fireplace_01 = { replacement = "ashfall_pc_fp_02", supports = false, rootHeight = 0, exactPosition = true },
-    t_imp_setgc_i_fireplace_01 = { replacement = "ashfall_pc_fp_03", supports = false, rootHeight = 0, exactPosition = true },
+    t_imp_setsky_i_fireplace_01 = { replacement = "ashfall_skyfp_01", supports = false, rootHeight = 0, exactPosition = true, unremovable = true },
+    t_imp_setsky_i_fireplace_02 = { replacement = "ashfall_skyfp_02", supports = false, rootHeight = 0, exactPosition = true, unremovable = true },
+    t_nor_furn_fireplace_01 = { replacement = "ashfall_skyfp_03", supports = false, rootHeight = 0, exactPosition = true, unremovable = true },
+    t_nor_furn_fireplace_02 = { replacement = "ashfall_skyfp_hf1", supports = false, rootHeight = 0, exactPosition = true, unremovable = true },
+    t_nor_furn_fireplace_03 = { replacement = "ashfall_skyfp_hf2", supports = false, rootHeight = 0, exactPosition = true, unremovable = true },
+    t_nor_furn_fireplace_04 = { replacement = "ashfall_skyfp_hfb", supports = false, rootHeight = 0, exactPosition = true, unremovable = true },
+    t_imp_setstr_i_fireplace_01 = { replacement = "ashfall_pc_fp_01", supports = false, rootHeight = 0, exactPosition = true, unremovable = true },
+    t_imp_setgcpoor_i_fireplace_01 = { replacement = "ashfall_pc_fp_02", supports = false, rootHeight = 0, exactPosition = true, unremovable = true },
+    t_imp_setgc_i_fireplace_01 = { replacement = "ashfall_pc_fp_03", supports = false, rootHeight = 0, exactPosition = true, unremovable = true },
 
     --OAAB
-    ab_in_velhearthsmall = { replacement = "ashfall_ab_hearth_sml", supports = false, rootHeight = 0, exactPosition = true, hasGrill = true },
-    ab_in_velhearthlargelh = { replacement = "ashfall_ab_hearth_lh", supports = false, rootHeight = 0, exactPosition = true, hasGrill = true },
-    ab_in_velhearthlargerh = { replacement = "ashfall_ab_hearth_rh", supports = false, rootHeight = 0, exactPosition = true, hasGrill = true },
+    ab_in_velhearthsmall = { replacement = "ashfall_ab_hearth_sml", supports = false, rootHeight = 0, exactPosition = true, hasGrill = true, unremovable = true },
+    ab_in_velhearthlargelh = { replacement = "ashfall_ab_hearth_lh", supports = false, rootHeight = 0, exactPosition = true, hasGrill = true, unremovable = true },
+    ab_in_velhearthlargerh = { replacement = "ashfall_ab_hearth_rh", supports = false, rootHeight = 0, exactPosition = true, hasGrill = true, unremovable = true },
     --stove
-    furn_dwrv_stove00 = { replacement = "ashfall_stove_01", supports = false, rootHeight = 0, exactPosition = true, hasGrill = true },
+    furn_dwrv_stove00 = { replacement = "ashfall_stove_01", supports = false, rootHeight = 0, exactPosition = true, hasGrill = true, unremovable = true },
 }
 
 local legacyReplacedCampfires = {
@@ -393,14 +393,8 @@ local function checkKitBashObjects(vanillaRef)
                         end
 
                         --if you find an existing campfire, get rid of it
-                        if vanillaCampfires[id] then
+                        if vanillaCampfires[id] and vanillaCampfires[id].unremovable ~= true then
                             logger:debug("removing existing replaced campfire %s", ref.object.id)
-                            table.insert(result.ignoreList, ref)
-                            common.helper.yeet(ref)
-                        end
-
-                        if vanillaCampfires[id] then
-                            logger:debug("Found another campfire that wants to be replaced, yeeting now: %s", ref.object.id)
                             table.insert(result.ignoreList, ref)
                             common.helper.yeet(ref)
                         end
