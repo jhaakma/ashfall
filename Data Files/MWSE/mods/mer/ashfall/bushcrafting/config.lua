@@ -510,6 +510,26 @@ this.bushCraftingRecipes = {
 
     --Novice
     {
+        id = "ashfall_stand_01",
+        description = "A simple wooden stand for displaying decorations and ceramics.",
+        materials = {
+            { material = "wood", count = 4 },
+            { material = "resin", count = 1 }
+        },
+        skillRequirements = {
+            this.survivalTiers.novice
+        },
+        category = this.categories.furniture,
+        soundType = "carve",
+        toolRequirements = {
+            {
+                tool = "knife",
+                equipped = true,
+                conditionPerUse = 4
+            }
+        },
+    },
+    {
         id = "ashfall_planter_01",
         description = "A small wooden planter for growing crops.",
         materials = {
