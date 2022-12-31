@@ -796,7 +796,7 @@ this.bushCraftingRecipes = {
         skillRequirements = {
             this.survivalTiers.apprentice
         },
-        category = this.categories.structures,
+        category = this.categories.furniture,
         soundType = "wood",
         customRequirements = {
             this.customRequirements.wildernessOnly
@@ -812,7 +812,7 @@ this.bushCraftingRecipes = {
         skillRequirements = {
             this.survivalTiers.apprentice
         },
-        category = this.categories.structures,
+        category = this.categories.furniture,
         soundType = "wood",
         customRequirements = {
             this.customRequirements.wildernessOnly
