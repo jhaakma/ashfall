@@ -343,7 +343,6 @@ function Planter:plantSeed(ingredient)
             self:resetPlantValues()
             self.seedlingId = seedling.ingredient.id
             self.plantId = seedling:pickPlant().id
-            tes3.playSound{ sound = "Item Misc Up"}
             event.trigger("Ashfall:registerReference", { reference = self.reference})
             self:updatePlantMesh()
         else
