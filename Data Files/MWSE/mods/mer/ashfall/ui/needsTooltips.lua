@@ -96,13 +96,13 @@ event.register( "itemTileUpdated", updateFoodAndWaterTile )
 
 
 local function onMenuInventorySelectMenu(e)
-    local scrollpane = e.menu:findChild(tes3ui.registerID("MenuInventorySelect_scrollpane"))
-    local itemList = e.menu:findChild(tes3ui.registerID("PartScrollPane_pane"))
+    local scrollpane = e.element:findChild(tes3ui.registerID("MenuInventorySelect_scrollpane"))
+    local itemList = scrollpane:findChild(tes3ui.registerID("PartScrollPane_pane"))
 
     --Disable UI EXP filtering for tea brewing and grilling
     if common.data.inventorySelectTeaBrew or common.data.inventorySelectStew or common.data.inventorySelectTrinket then
         local uiEXPFilterID = tes3ui.registerID("UIEXP:FiltersearchBlock")
-        local filterBlock = e.menu:findChild(uiEXPFilterID)
+        local filterBlock = scrollpane:findChild(uiEXPFilterID)
         if filterBlock then filterBlock.parent.parent.visible = false end
     end
 
@@ -125,10 +125,10 @@ local function onMenuInventorySelectMenu(e)
         -- end
 
     end
-    e.menu:updateLayout()
+    scrollpane:updateLayout()
 
 end
-event.register("menuEnter", onMenuInventorySelectMenu, { priority = -10, filter = "MenuInventorySelect"})
+event.register("uiActivated", onMenuInventorySelectMenu, { priority = -10, filter = "MenuInventorySelect"})
 
 local function createNeedsTooltip(e)
     local tooltip = e.tooltip

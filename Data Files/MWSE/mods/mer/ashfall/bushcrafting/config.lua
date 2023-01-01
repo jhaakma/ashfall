@@ -123,7 +123,12 @@ this.materials = {
     {
         id = "resin",
         name = "Resin",
-        ids = {"ingred_resin_01", "ingred_shalk_resin_01" }
+        ids = {
+            "ingred_resin_01",
+            "ingred_shalk_resin_01",
+            "t_ingcrea_beetleresin_01",
+            "t_ingcrea_yethresin_01",
+        }
     },
     {
         id = "wood",
@@ -172,6 +177,15 @@ this.materials = {
             "ashfall_fabric",
             "misc_de_cloth10",
             "misc_de_cloth11",
+            "t_com_clothbrown_01",
+            "t_com_clothgreen_01",
+            "t_com_clothplain_01",
+            "t_com_clothplain_02",
+            "t_com_clothpurple_01",
+            "t_com_clothrag_01",
+            "t_com_clothrag_02",
+            "t_com_clothred_01",
+            "t_com_clothyellow_01",
         }
     },
     {

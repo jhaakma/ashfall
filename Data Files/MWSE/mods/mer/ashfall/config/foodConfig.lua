@@ -746,6 +746,8 @@ this.ingredTypes = {
     ["watb_chickeneat"] = this.type.food,
     ["watb_frieseat"] = this.type.food,
     ["watb_sodaeat"] = this.type.food,
+
+    ab_ingfood_kwamaloafslice = this.type.food,
 }
 
 return this

@@ -263,6 +263,8 @@ this.bottleList = {
     t_ayl_claypot_02 = this.bottleConfig.pot,
     t_ayl_claypot_03 = this.bottleConfig.pot,
 
+
+
     t_nor_claypot_01 = this.bottleConfig.pot,
     t_nor_claypot_02 = this.bottleConfig.pot,
 
@@ -310,6 +312,7 @@ this.bottleList = {
     t_rga_flask_01 = this.bottleConfig.limewareFlask,
 
     t_com_potionbottle_01 = { capacity = this.bottleConfig.bottle.capacity, weight = this.bottleConfig.bottle.weight },
+    t_com_potionbottle_02 = { capacity = this.bottleConfig.bottle.capacity, weight = this.bottleConfig.bottle.weight },
     t_com_potionbottle_03 = { capacity = this.bottleConfig.bottle.capacity, weight = this.bottleConfig.bottle.weight },
     t_com_potionbottle_04 = { capacity = this.bottleConfig.bottle.capacity, weight = this.bottleConfig.bottle.weight },
 
@@ -320,6 +323,9 @@ this.bottleList = {
 
     t_de_stonewarecup_01 = { capacity = this.bottleConfig.cup.capacity },
     t_de_stonewarecup_02 = { capacity = this.bottleConfig.cup.capacity },
+
+    t_de_stonewarejug_01 = { capacity = this.bottleConfig.jug.capacity },
+    t_de_stonewarepitcher_01 = { capacity = this.bottleConfig.pitcher.capacity },
 
     t_de_stonewarepot_01 = this.bottleConfig.noValPot,
     t_de_stonewarepot_02 = this.bottleConfig.noValPot,
