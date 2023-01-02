@@ -518,4 +518,6 @@ local Interop = {
 
 Interop.bushcrafting = require("mer.ashfall.bushcrafting.config")
 
+Interop.LiquidContainer = require("mer.ashfall.liquid.LiquidContainer")
+
 return Interop

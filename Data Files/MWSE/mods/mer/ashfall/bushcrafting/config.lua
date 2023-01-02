@@ -107,7 +107,7 @@ this.menuOptions = {
                     },
                     callback = function()
                         e.reference.modified = true
-                        tes3ui.leaveMenuMode(menuID)
+                        tes3ui.leaveMenuMode()
                         tes3ui.findMenu(menuID):destroy()
                         tes3.messageBox("Renamed to %s", e.reference.data.customName)
                     end
@@ -128,6 +128,8 @@ this.materials = {
             "ingred_shalk_resin_01",
             "t_ingcrea_beetleresin_01",
             "t_ingcrea_yethresin_01",
+            "ab_ingflor_telvanniresin",
+
         }
     },
     {
