@@ -35,7 +35,8 @@ this.innkeeperClasses = {
 
 
 this.maxSunTemp = 15
-
+this.DEFAULT_EAT_AMOUNT = 20
+this.DEFAULT_DRINK_AMOUNT = 20
 --Campfire values
 this.hotWaterHeatValue = 80
 this.stewWaterCooldownAmount = 100

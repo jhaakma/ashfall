@@ -71,6 +71,7 @@ end
 
 
 local function isFull()
+    if not config.enableHunger then return false end
     local hunger = common.staticConfigs.conditionConfig.hunger:getValue()
     local thirst = common.staticConfigs.conditionConfig.thirst:getValue()
     if hunger < 1 and thirst < 1 then

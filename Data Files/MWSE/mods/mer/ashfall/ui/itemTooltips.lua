@@ -83,8 +83,7 @@ local function addFoodTooltips(item, itemData, tooltip)
     local labelText
     local thisFoodType = foodConfig.getFoodType(item)
     if thisFoodType then
-        if config.enableHunger  then
-            --hunger value
+        if config.enableHunger then
             local nutrition = hungerController.getNutrition(item, itemData)
             if nutrition and nutrition ~= 0 then
                 labelText = string.format("Nutrition: %d", nutrition)

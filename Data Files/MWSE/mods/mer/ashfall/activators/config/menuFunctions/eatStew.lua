@@ -1,4 +1,5 @@
 local common = require ("mer.ashfall.common.common")
+local config = require("mer.ashfall.config").config
 local foodConfig = common.staticConfigs.foodConfig
 return {
     text = function(campfire)
@@ -14,6 +15,7 @@ return {
     end,
     enableRequirements = function(campfire)
         return common.staticConfigs.conditionConfig.hunger:getValue() > 0.01
+            or not config.enableHunger
     end,
     tooltipDisabled = {
         text = "You are full."

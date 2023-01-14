@@ -533,7 +533,7 @@ this.bushCraftingRecipes = {
             { material = "resin", count = 1 }
         },
         skillRequirements = {
-            this.survivalTiers.novice
+            this.survivalTiers.expert
         },
         category = this.categories.furniture,
         soundType = "carve",

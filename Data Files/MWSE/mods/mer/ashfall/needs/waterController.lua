@@ -72,6 +72,7 @@ local function callWaterMenu(e)
                 text = "Drink",
                 enableRequirements = function()
                     return thirst:getValue() > 0.1
+                        or not config.enableThirst
                 end,
                 tooltipDisabled = {
                     text = "You are fully hydrated."
@@ -184,10 +185,13 @@ event.register("Ashfall:ActivateButtonPressed", checkDrinkRain )
 local function doDrinkWater(bottleData)
     --Only drink as much in bottleData
     local thisSipSize = math.min( 100, bottleData.waterAmount )
-
     --Only drink as much as player needs
     local hydrationNeeded = thirst:getValue()
     thisSipSize = math.min( hydrationNeeded, thisSipSize)
+
+    if not config.enableThirst then
+        thisSipSize = common.staticConfigs.DEFAULT_DRINK_AMOUNT
+    end
 
     local amountDrank = thirstController.drinkAmount{amount = thisSipSize, waterType = bottleData.waterType}
     --Tea and stew effects if you drank enough
@@ -213,9 +217,9 @@ end
 local function drinkFromContainer(e)
 
     if common.helper.getIsBlocked(e.item) then return end
-    if not config.enableThirst then return end
+
     --First check potions, gives a little hydration
-    if getIsPotion(e) and config.potionsHydrate then
+    if getIsPotion(e) and config.potionsHydrate and config.enableThirst then
         local thisSipSize = common.staticConfigs.capacities.potion
         thisSipSize = math.min( thirst:getValue(), thisSipSize)
         thirstController.drinkAmount{amount = thisSipSize}

@@ -2,6 +2,7 @@
     Iterates over objects that  and updates their fuel level
 ]]
 local common = require ("mer.ashfall.common.common")
+local config = require("mer.ashfall.config").config
 local logger = common.createLogger("stewerController")
 local LiquidContainer = require("mer.ashfall.liquid.LiquidContainer")
 local foodConfig = common.staticConfigs.foodConfig
@@ -111,22 +112,28 @@ local function eatStew(e)
     end
     local foodRatio = nutritionLevel / maxNutritionLevel
 
-    local hunger = common.staticConfigs.conditionConfig.hunger:getValue()
-    local thirst = common.staticConfigs.conditionConfig.thirst:getValue()
-    logger:debug("hunger: %s", hunger)
-    logger:debug("thirst: %s", thirst)
+    --Calculate amount to eat
+    local highestAmount
+    if config.enableHunger then
+        local hunger = common.staticConfigs.conditionConfig.hunger:getValue()
+        local thirst = common.staticConfigs.conditionConfig.thirst:getValue()
+        logger:debug("hunger: %s", hunger)
+        logger:debug("thirst: %s", thirst)
 
-    local highestNeed = math.max(
-        hunger / foodRatio,
-        thirst
-    )
-    logger:debug("highestNeed: %s", highestNeed)
-    local maxAmount = math.min(e.data.waterAmount, 50, highestNeed )
+        local highestNeed = math.max(
+            hunger / foodRatio,
+            thirst
+        )
+        logger:debug("highestNeed: %s", highestNeed)
+        local maxAmount = math.min(e.data.waterAmount, 50, highestNeed )
 
-    local amountAte = hungerController.eatAmount(maxAmount)
-    local amountDrank = thirstController.drinkAmount{amount = maxAmount, waterType = e.data.waterType}
+        local amountAte = hungerController.eatAmount(maxAmount)
+        local amountDrank = thirstController.drinkAmount{amount = maxAmount, waterType = e.data.waterType}
+        highestAmount = math.max(amountAte, amountDrank)
+    else
+        highestAmount = common.staticConfigs.DEFAULT_EAT_AMOUNT
+    end
 
-    local highestAmount = math.max(amountAte, amountDrank)
     if highestAmount >= 1 then
         --remove old buffs
         for foodType, buff in pairs(stewBuffs) do
@@ -136,32 +143,29 @@ local function eatStew(e)
         end
         tes3.playSound{ reference = tes3.player, sound = "Swallow" }
         e.data.waterAmount = math.max( (e.data.waterAmount - highestAmount), 0)
-
-        if amountAte >= 1 then
-            if e.data.waterHeat and e.data.waterHeat >= common.staticConfigs.hotWaterHeatValue then
-                common.data.stewWarmEffect = common.helper.calculateStewWarmthBuff(e.data.waterHeat)
-            end
-            --Add buffs and set duration
-            for foodType, ingredLevel in pairs(e.data.stewLevels) do
-                --add spell
-                local stewBuff = stewBuffs[foodType]
-                local effectStrength = common.helper.calculateStewBuffStrength(math.min(ingredLevel, 100), stewBuff.min, stewBuff.max)
-                timer.delayOneFrame(function()
-                    local spell = tes3.getObject(stewBuff.id)
-                    local effect = spell.effects[1]
-                    effect.min = effectStrength
-                    effect.max = effectStrength
-                    mwscript.addSpell{ reference = tes3.player, spell = spell }
-                    --Effect maxes out at 10 units, then divide remaining 10 by 10 to get normalised effect
-                    local ateAmountMulti = math.min(highestAmount, 10) / 10
-                    logger:debug("ateAmountMulti %s", ateAmountMulti)
-                    --Give at least half an hour when drinking a small amount
-                    local timeLeft = math.max(0.5, common.helper.calculateStewBuffDuration(e.data.waterHeat) * ateAmountMulti)
-                    tes3.player.data.stewBuffTimeLeft = timeLeft
-                    logger:debug("Set stew duration to %s", tes3.player.data.stewBuffTimeLeft)
-                    event.trigger("Ashfall:registerReference", { reference = tes3.player})
-                end)
-            end
+        if e.data.waterHeat and e.data.waterHeat >= common.staticConfigs.hotWaterHeatValue then
+            common.data.stewWarmEffect = common.helper.calculateStewWarmthBuff(e.data.waterHeat)
+        end
+        --Add buffs and set duration
+        for foodType, ingredLevel in pairs(e.data.stewLevels) do
+            --add spell
+            local stewBuff = stewBuffs[foodType]
+            local effectStrength = common.helper.calculateStewBuffStrength(math.min(ingredLevel, 100), stewBuff.min, stewBuff.max)
+            timer.delayOneFrame(function()
+                local spell = tes3.getObject(stewBuff.id)
+                local effect = spell.effects[1]
+                effect.min = effectStrength
+                effect.max = effectStrength
+                mwscript.addSpell{ reference = tes3.player, spell = spell }
+                --Effect maxes out at 10 units, then divide remaining 10 by 10 to get normalised effect
+                local ateAmountMulti = math.min(highestAmount, 10) / 10
+                logger:debug("ateAmountMulti %s", ateAmountMulti)
+                --Give at least half an hour when drinking a small amount
+                local timeLeft = math.max(0.5, common.helper.calculateStewBuffDuration(e.data.waterHeat) * ateAmountMulti)
+                tes3.player.data.stewBuffTimeLeft = timeLeft
+                logger:debug("Set stew duration to %s", tes3.player.data.stewBuffTimeLeft)
+                event.trigger("Ashfall:registerReference", { reference = tes3.player})
+            end)
         end
     else
         tes3.messageBox("You are full.")

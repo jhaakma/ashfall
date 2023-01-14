@@ -33,10 +33,12 @@ end
 local function updateSwitchNodes(ref)
     local crabCount = math.floor(ref.data.crabCount or 0)
     local crabSwitches = ref.sceneNode:getObjectByName("CRAB_SWITCHES")
+    if crabSwitches == nil then return end
     for _, crabSwitch in ipairs(crabSwitches.children) do
+        logger:debug("crabswitch: %s", crabSwitch.name)
         local name = crabSwitch.name
         local num = tonumber(string.sub(name, string.find(name, '=')+1))
-        logger:trace("switch num: %s", num)
+        logger:debug("switch num: %s", num)
         if crabCount >= num then
             crabSwitch.switchIndex = 1
         else

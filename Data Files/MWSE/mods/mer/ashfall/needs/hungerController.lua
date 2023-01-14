@@ -71,7 +71,7 @@ end
 
 function this.eatAmount( amount )
     if not config.enableHunger then
-        return 0
+        return common.staticConfigs.DEFAULT_EAT_AMOUNT
     end
 
     local currentHunger = hunger:getValue()

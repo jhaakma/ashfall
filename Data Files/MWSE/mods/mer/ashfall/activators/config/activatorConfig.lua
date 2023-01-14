@@ -608,7 +608,6 @@ this.list.tree = Activator:new{
         ['florakstr_tree'] = true, --TR
         ['floravm_tree'] = true, --TR
         ['floraww_tree'] = true, --TR
-        ['ex_t_root_'] = true,
     },
 }
 this.list.stump = Activator:new{
