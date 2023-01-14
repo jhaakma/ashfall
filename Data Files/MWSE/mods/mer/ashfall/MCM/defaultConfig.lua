@@ -83,6 +83,7 @@ return {
     illegalHarvest = true,
     canCampInSettlements = false,
     canCampIndoors = false,
+    canRestOnGround = false,
     showBackpacks = true,
     atronachRecoverMagickaDrinking = true,
     potionsHydrate = true,

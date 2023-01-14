@@ -320,6 +320,14 @@ local function registerModConfig()
             }
 
             categoryMisc:createYesNoButton{
+                label = "Allow Resting Outside without a Bed",
+                description = (
+                    "If this is enabled, you can rest outside on the ground without a bedroll or tent."
+                ),
+                variable = mwse.mcm.createTableVariable{ id = "canRestOnGround", table = config },
+            }
+
+            categoryMisc:createYesNoButton{
                 label = "Diseased Meat",
                 description = (
                     "If this is enabled, meat harvested from diseased or blighted animals can make you sick if you eat it."

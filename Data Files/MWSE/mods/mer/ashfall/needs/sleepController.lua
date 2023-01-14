@@ -111,7 +111,10 @@ local function activateRestMenu (e)
     local labelText = restMenu:findChild( tes3ui.registerID("MenuRestWait_label_text") )
 
     --Prevent rest if not using a bed
-    if isUsingBed ~= true and common.helper.getInside(tes3.player) ~= true then
+    local doForceWait = isUsingBed ~= true
+        and common.helper.getInside(tes3.player) ~= true
+        and config.canRestOnGround ~= true
+    if doForceWait then
         forceWait(restMenu)
         labelText.text = "You must find a bed or go indoors to rest."
     end
