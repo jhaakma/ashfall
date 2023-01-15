@@ -186,42 +186,12 @@ end
     Every frame, check whether the player is looking at
     a static activator
 ]]--
-function ActivatorController.callRayTest()
-    --if not tes3ui.menuMode() then
-        ActivatorController.current = nil
-        ActivatorController.currentRef = nil
-    --end
-
-    local eyePos
-    local eyeVec
-
-
-    --While in the menu, the target is based on cursor position (but only for inventory menu
-    --Outside of the menu, the target is based on the player's viewpoint
-    if tes3ui.menuMode() then
-        local inventory = tes3ui.findMenu("MenuInventory")
-        local inventoryVisible = inventory and inventory.visible == true
-        if inventoryVisible then
-            local cursor = tes3.getCursorPosition()
-            local camera = tes3.worldController.worldCamera.camera
-            eyePos, eyeVec = camera:windowPointToRay{cursor.x, cursor.y}
-        end
-    else
-        eyePos = tes3.getPlayerEyePosition()
-        eyeVec = tes3.getPlayerEyeVector()
-    end
-
-    if not (eyePos or eyeVec) then return end
-
+local function onIndicator(e)
+    local eyePos  = tes3.getPlayerEyePosition()
+    local eyeVec  = tes3.getPlayerEyeVector()
     local activationDistance = tes3.getPlayerActivationDistance()
-
-    local result = tes3.rayTest{
-        position = eyePos,
-        direction = eyeVec,
-        ignore = { tes3.player },
-        maxDistance = activationDistance,
-    }
-
+    local result = e.rayResult
+    ActivatorController.current = nil
     if result and result.reference then
         --Look for activators from list
         local targetRef = result.reference
@@ -244,9 +214,9 @@ function ActivatorController.callRayTest()
             end
         end
     end
-
     createActivatorIndicator()
 end
+event.register("CraftingFramework:StaticActivatorIndicator", onIndicator)
 
 --[[
     triggerActivate:

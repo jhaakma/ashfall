@@ -1,6 +1,6 @@
 local common = require("mer.ashfall.common.common")
 local logger = common.createLogger("mcm")
-local versionController = require("mer.ashfall.versionController")
+local versionController = require("mer.ashfall.common.versionController")
 local config = require("mer.ashfall.config").config
 
 local LINKS_LIST = {

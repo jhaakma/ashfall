@@ -1,7 +1,7 @@
 local common = require("mer.ashfall.common.common")
 local logger = common.createLogger("main")
 local Interop = require("mer.ashfall.interop")
-local versionController = require("mer.ashfall.versionController")
+local versionController = require("mer.ashfall.common.versionController")
 --[[
     Plugin: Ashfall.esp
 --]]
@@ -17,6 +17,7 @@ local function initialized()
         require("mer.ashfall.ui.sephInterop")
         require("mer.ashfall.integrations")
 
+        require("mer.ashfall.activators.activatorController")
         require("mer.ashfall.activators")
         require("mer.ashfall.survival")
 
@@ -51,7 +52,7 @@ local function initialized()
         require('mer.ashfall.harvest')
         require("mer.ashfall.cooking")
 
-
+        require("mer.ashfall.common.dependencyController")
 
         event.trigger("Ashfall:Interop", Interop)
 

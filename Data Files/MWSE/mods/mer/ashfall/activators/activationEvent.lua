@@ -2,14 +2,6 @@ local ActivatorController = require("mer.ashfall.activators.ActivatorController"
 local common = require("mer.ashfall.common.common")
 local logger = common.createLogger("activatorController")
 
-local function triggerActivateKey(e)
-    if (e.keyCode == tes3.getInputBinding(tes3.keybind.activate).code) and (tes3.getInputBinding(tes3.keybind.activate).device == 0) then
-        event.trigger("Ashfall:ActivateButtonPressed")
-    end
-end
-event.register("keyDown", triggerActivateKey )
-
-
 local isBlocked
 local function blockScriptedActivate(e)
     isBlocked = e.doBlock
@@ -23,6 +15,14 @@ local function onActivateKeyPressed(e)
     end
 end
 event.register("Ashfall:ActivateButtonPressed", onActivateKeyPressed)
+
+
+local function triggerActivateKey(e)
+    if (e.keyCode == tes3.getInputBinding(tes3.keybind.activate).code) and (tes3.getInputBinding(tes3.keybind.activate).device == 0) then
+        event.trigger("Ashfall:ActivateButtonPressed")
+    end
+end
+event.register("keyDown", triggerActivateKey )
 
 
 local function triggerActivateMouse(e)

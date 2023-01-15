@@ -84,53 +84,6 @@ end
 event.register("OtherSkills:Ready", onSkillsReady)
 
 
-
-local function checkDependencies()
-    if not skillModule then
-        tes3ui.showMessageMenu({
-            message = "Skills Module is not installed! This is a requirement for Ashfall and the mod will NOT work without it.",
-            buttons = {
-                {
-                    text = "Exit game and go to Skills Module Nexus page",
-                    callback = function()
-                        os.execute("start https://www.nexusmods.com/morrowind/mods/46034")
-                        os.exit()
-                    end
-                },
-                { text = "Continue with a broken game" }
-            }
-        })
-    elseif ( skillModule.version == nil ) or ( skillModule.version < 1.4 ) then
-        tes3ui.showMessageMenu({
-            message = "Outdated version of Skills Module detected.",
-            buttons = {
-                {
-                    text = "Exit game and go to Skills Module Nexus page",
-                    callback = function()
-                        os.execute("start https://www.nexusmods.com/morrowind/mods/46034")
-                        os.exit()
-                    end
-                },
-                { text = "Continue with a broken game" }
-            }
-        })
-    elseif not include("CraftingFramework") then
-        tes3ui.showMessageMenu({
-            message = "Crafting Framework is not installed! This is a requirement for Ashfall and the mod will NOT work without it.",
-            buttons = {
-                {
-                    text = "Exit game and go to Crafting Framework Nexus page",
-                    callback = function()
-                        os.execute("start https://www.nexusmods.com/morrowind/mods/51009")
-                        os.exit()
-                    end
-                },
-                { text = "Continue with a broken game" }
-            }
-        })
-    end
-end
-
 local function initData()
     --Persistent data stored on player reference
     -- ensure data table exists
@@ -149,11 +102,9 @@ local function doUpgrades()
     --this.log:debug("Doing upgrades from previous version")
 end
 
-
 --INITIALISE COMMON--
 local dataLoadedOnce = false
 local function onLoaded()
-    checkDependencies()
     initData()
     doUpgrades()
     this.log:info("Common Data loaded successfully")
