@@ -143,6 +143,7 @@ this.controllers = {
     }
 }
 
+---@param e mobileActivatedEventData
 local function onRefPlaced(e)
     for _, controller in pairs(this.controllers) do
         if controller:requirements(e.reference) then
@@ -150,9 +151,16 @@ local function onRefPlaced(e)
         end
     end
 end
-event.register("referenceSceneNodeCreated", onRefPlaced)
+event.register(tes3.event.referenceActivated, onRefPlaced)
 event.register("Ashfall:registerReference", onRefPlaced)
 
+event.register(tes3.event.loaded, function(e)
+    for _, cell in pairs(tes3.getActiveCells()) do
+        for ref in cell:iterateReferences() do
+            onRefPlaced{ reference = ref }
+        end
+    end
+end)
 
 local function onObjectInvalidated(e)
     local ref = e.object

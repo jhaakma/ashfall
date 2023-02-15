@@ -6,9 +6,6 @@ this.defaultValues = require ("mer.ashfall.MCM.defaultConfig")
 this.messages = require("mer.ashfall.messages.messages")
 local config = require("mer.ashfall.config").config
 --set up logger
-
-
-
 local logger = require("logging.logger")
 ---@type MWSELogger
 this.log = logger.new{

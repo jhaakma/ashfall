@@ -810,12 +810,15 @@ function this.pickUp(reference, playSound)
         return false
     end
 
+    local safeRef = tes3.makeSafeObjectHandle(reference)
     timer.frame.delayOneFrame(function()
-        event.register("activate", stealActivateEvent, { priority = 1000000})
-        if not playSound then
-            event.register("addSound", blockSound, { priority = 1000000})
+        if safeRef and safeRef:valid() then
+            event.register("activate", stealActivateEvent, { priority = 1000000})
+            if not playSound then
+                event.register("addSound", blockSound, { priority = 1000000})
+            end
+            tes3.player:activate(safeRef:getObject())
         end
-        tes3.player:activate(reference)
     end)
 end
 

@@ -1,0 +1,13 @@
+{
+    "name": "Ashfall",
+    "description": "Ashfall is a survival mod with hunger, thirst, tiredness, cooking, camping, crafting, temperature mechanics, as well as new visuals, from seeing frost on your breath in cold weather, watching your food cook on the grill in real time, and seeing your camping gear displayed dynamically on your backpack.",
+    "version": "3.0.33",
+    "dependencies": [
+        {
+            "name": "The Crafting Framework",
+            "metadataFile": "mods/CraftingFramework/metadata.json",
+            "version": ">=1.0.26",
+            "url": "https://www.nexusmods.com/morrowind/mods/51009?tab=files"
+        }
+    ]
+}
