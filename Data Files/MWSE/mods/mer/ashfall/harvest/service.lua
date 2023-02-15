@@ -24,6 +24,10 @@ function HarvestService.checkIllegalToHarvest()
         and tes3.player.cell.restingIsIllegal
 end
 
+function HarvestService.checkHarvested(reference)
+    return reference.data.ashfallDestroyedHarvestable == true
+end
+
 ---@param harvestConfig Ashfall.Harvest.Config
 function HarvestService.showIllegalToHarvestMessage(harvestConfig)
     tes3.messageBox("You must be in the wilderness to harvest.")
@@ -311,8 +315,8 @@ end
 function HarvestService.disableNearbyRefs(harvestableRef, harvestConfig, harvestableHeight)
     logger:debug("disabling nearby refs for %s", harvestableRef)
     local ignoreList = {}
-    ---@param ref tes3reference
     for _, cell in ipairs(tes3.getActiveCells()) do
+        ---@param ref tes3reference
         for ref in cell:iterateReferences() do
             local isValid = ref ~= harvestableRef
                 and harvestConfig.clutter
@@ -327,8 +331,8 @@ function HarvestService.disableNearbyRefs(harvestableRef, harvestConfig, harvest
             end
         end
     end
-    ---@param ref tes3reference
     for _, cell in ipairs(tes3.getActiveCells()) do
+        ---@param ref tes3reference
         for ref in cell:iterateReferences() do
             local activator = ActivatorController.getRefActivator(ref)
             local isValid = ref ~= harvestableRef
@@ -340,7 +344,7 @@ function HarvestService.disableNearbyRefs(harvestableRef, harvestConfig, harvest
                     logger:debug("Found nearby %s", ref)
                     local result = common.helper.getGroundBelowRef{doLog = false, ref = ref, ignoreList = ignoreList}
                     local refBelow = result and result.reference
-                    logger:debug(result and result.reference)
+                    logger:debug("%s", result and result.reference)
                     if refBelow == harvestableRef then
                         local localIgnoreList = table.copy(ignoreList, {})
                         table.insert(localIgnoreList, harvestableRef)
@@ -418,6 +422,7 @@ function HarvestService.demolish(reference, harvestableHeight, harvestConfig)
     --reference.hasNoCollision = true
     --move ref down on a timer then disable
     local safeRef = tes3.makeSafeObjectHandle(reference)
+    if not safeRef then return end
     local iterations = 1000
     local originalLocation = {
         position = {

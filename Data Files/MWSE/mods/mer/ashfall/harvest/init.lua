@@ -79,9 +79,15 @@ local function harvestOnAttack(e)
     end
 
     if not service.validAttackDirection(harvestConfig) then
-    logger:debug("Harvest: Invalid attack direction")
+        logger:debug("Harvest: Invalid attack direction")
         return
     end
+
+    if service.checkHarvested(reference) then
+        logger:debug("Harvest: Can't harvest, already harvested")
+        return
+    end
+
 
     --CHECKS PASS, we are swinging at something
     service.playSound(harvestConfig)
