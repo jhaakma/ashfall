@@ -78,16 +78,17 @@ local function harvestOnAttack(e)
         return
     end
 
+    --Check attack direction
     if not service.validAttackDirection(harvestConfig) then
         logger:debug("Harvest: Invalid attack direction")
         return
     end
 
+    --Check if activator is already harvested
     if service.checkHarvested(reference) then
         logger:debug("Harvest: Can't harvest, already harvested")
         return
     end
-
 
     --CHECKS PASS, we are swinging at something
     service.playSound(harvestConfig)
@@ -106,6 +107,7 @@ local function harvestOnAttack(e)
     --Harvest the resources
     service.harvest(reference, harvestConfig)
 
+    --Disable if  exhausted
     if harvestConfig.destructionLimit and config.disableHarvested then
         service.disableExhaustedHarvestable(reference, harvestConfig)
     end
