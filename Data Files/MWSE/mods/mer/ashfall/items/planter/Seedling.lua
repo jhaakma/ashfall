@@ -4,7 +4,7 @@ local config = require("mer.ashfall.items.planter.config")
 ---@class Ashfall.Seedling
 ---@field ingredient tes3ingredient
 ---@field plant tes3container
----@field logger MWSELogger
+---@field logger mwseLogger
 ---@field plantContainers tes3container[] A list of all containers that have leveled items containing this seedling.
 ---@field seedlingPlantMap table<tes3ingredient, tes3container[]> A map of all seedlings to all containers that have them.
 local Seedling = {

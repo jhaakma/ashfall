@@ -14,7 +14,7 @@ local ActivatorController = require "mer.ashfall.activators.activatorController"
 ---@field timeUntilHarvestable number The time to wait until the plant is harvestable.
 ---@field attachPlant function Attaches a plant to the planter.
 ---@field waterPlanter function Water the planter.
----@field logger MWSELogger
+---@field logger mwseLogger
 local Planter = {
     ATTACH_NODE = "ATTACH_PLANT",
     GH_SWITCH_ID = "HerbalismSwitch",

@@ -7,7 +7,7 @@ this.messages = require("mer.ashfall.messages.messages")
 local config = require("mer.ashfall.config").config
 --set up logger
 local logger = require("logging.logger")
----@type MWSELogger
+---@type mwseLogger
 this.log = logger.new{
     name = "Ashfall",
     --outputFile = "Ashfall.log",
