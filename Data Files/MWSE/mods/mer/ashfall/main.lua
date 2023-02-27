@@ -52,8 +52,6 @@ local function initialized()
         require('mer.ashfall.harvest')
         require("mer.ashfall.cooking")
 
-        require("mer.ashfall.common.dependencyController")
-
         event.trigger("Ashfall:Interop", Interop)
 
         logger:info("%s Initialised", versionController.getVersion())

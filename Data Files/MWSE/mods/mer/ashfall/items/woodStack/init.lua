@@ -33,7 +33,7 @@ function WoodStack.getWoodAmount(reference)
     end
 end
 
----@param recipe craftingFrameworkRecipe
+---@param recipe CraftingFramework.Recipe
 function WoodStack.destroyCallback(recipe, e)
     local reference = e.reference
     if reference.data and reference.data.woodAmount and reference.data.woodAmount > 0 then
