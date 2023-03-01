@@ -192,6 +192,8 @@ local function onIndicator(e)
     local activationDistance = tes3.getPlayerActivationDistance()
     local result = e.rayResult
     ActivatorController.current = nil
+    ActivatorController.currentRef = nil
+    ActivatorController.parentNode = nil
     if result and result.reference then
         --Look for activators from list
         local targetRef = result.reference
