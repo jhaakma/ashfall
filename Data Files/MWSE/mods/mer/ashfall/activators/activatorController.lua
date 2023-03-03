@@ -17,10 +17,44 @@ local DropConfig = require "mer.ashfall.activators.config.DropConfig"
 local itemTooltips = require("mer.ashfall.ui.itemTooltips")
 ActivatorController.list = activatorConfig.list
 ActivatorController.current = nil
+
 ActivatorController.currentRef = nil
 ActivatorController.parentNode = nil
 ActivatorController.subTypes = {}
 
+---@type mwseSafeObjectHandle|nil
+local safeCurrentRef
+setmetatable(ActivatorController, {
+    ---when setting currentRef, create a safeObjectHandle
+    __setindex = function(self, key, val)
+        if key == "currentRef" then
+            if val then
+                safeCurrentRef = tes3.makeSafeObjectHandle(val)
+            else
+                safeCurrentRef = nil
+            end
+        else
+            rawset(self, key, val)
+        end
+    end,
+    ---when getting currentRef, validate and return the safeObjectHandle
+    __index = function(self, key)
+        if key == "currentRef" then
+            if safeCurrentRef and safeCurrentRef:valid() then
+                local ref = safeCurrentRef:getObject()
+                if ref then
+                    return ref
+                else
+                    safeCurrentRef = nil
+                end
+            else
+                safeCurrentRef = nil
+            end
+        else
+            return rawget(self, key)
+        end
+    end
+})
 
 function ActivatorController.registerActivator(activator)
     assert(activator.type ~= nil)
