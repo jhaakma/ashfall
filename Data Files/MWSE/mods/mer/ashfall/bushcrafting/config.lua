@@ -296,6 +296,7 @@ this.bushCraftingRecipes = {
     },
     {
         id = "ashfall_strawbed_s",
+        quickActivateCallback = function(_, e) BedRoll.buttons.sleep.callback(e) end,
         additionalMenuOptions = {
             BedRoll.buttons.sleep,
             BedRoll.buttons.layDown,
@@ -756,6 +757,7 @@ this.bushCraftingRecipes = {
     {
       --tanning rack
         id = "ashfall_tan_rack",
+        quickActivateCallback = function(_, e) this.menuOptions.tanningRackMenu.callback(e) end,
         additionalMenuOptions = {
             this.menuOptions.tanningRackMenu
         },
@@ -902,6 +904,7 @@ this.bushCraftingRecipes = {
     {
         id = "ashfall_hammock",
         maxSteepness = 0,
+        quickActivateCallback = function(_, e) BedRoll.buttons.sleep.callback(e) end,
         additionalMenuOptions = {
             BedRoll.buttons.sleep,
             BedRoll.buttons.layDown,
@@ -952,6 +955,7 @@ this.bushCraftingRecipes = {
         },
         category = this.categories.structures,
         soundType = "wood",
+        quickActivateCallback = function(_, e) CrabPot.buttons.collect.callback(e) end,
         additionalMenuOptions = {
             CrabPot.buttons.collect,
         },
@@ -1031,6 +1035,7 @@ this.bushCraftingRecipes = {
     {
         id = "ashfall_bed_fur",
         maxSteepness = 0,
+        quickActivateCallback = function(_, e) BedRoll.buttons.sleep.callback(e) end,
         additionalMenuOptions = {
             BedRoll.buttons.sleep,
             BedRoll.buttons.layDown,
