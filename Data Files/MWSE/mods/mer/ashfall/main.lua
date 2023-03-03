@@ -54,7 +54,7 @@ local function initialized()
 
         event.trigger("Ashfall:Interop", Interop)
 
-        logger:info("%s Initialised", versionController.getVersion())
+        logger:info("Initialized v%s", versionController.getVersion())
     end
 end
 

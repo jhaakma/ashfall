@@ -1,0 +1,28 @@
+[package]
+name = "Ashfall"
+description = "A camping, survival and needs mod for Morrowind."
+repository = "https://github.com/jhaakma/joy-of-painting"
+authors = ["Merlord"]
+version = "3.0.38"
+[dependencies]
+assets = [
+  "Ashfall.esp",
+  "Icons/ashfall",
+  "Meshes/ashfall",
+  "MWSE/mods/mer/ashfall",
+  "Sound/ashfall",
+  "Textures/Ashfall",
+]
+[tools.mwse]
+lua-mod = "mer.ashfall"
+[dependencies.mwse]
+buildnumber = 3066
+[dependencies.mge-xe]
+version = ">=0.15.0"
+[dependencies.mods."Skills Module"]
+mwse-module = "OtherSkills"
+url = "https://www.nexusmods.com/morrowind/mods/46034?tab=files"
+[dependencies.mods."The Crafting Framework"]
+mwse-module = "CraftingFramework"
+version = "^1.4.0"
+url = "https://www.nexusmods.com/morrowind/mods/51009?tab=files"

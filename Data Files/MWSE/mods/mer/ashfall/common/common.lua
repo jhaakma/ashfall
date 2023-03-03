@@ -17,7 +17,8 @@ this.loggers = {this.log}
 this.createLogger = function(serviceName)
     local logger = logger.new{
         name = string.format("Ashfall - %s", serviceName),
-        logLevel = config.logLevel
+        logLevel = config.logLevel,
+        includeTimestamp = true,
     }
     table.insert(this.loggers, logger)
     return logger
