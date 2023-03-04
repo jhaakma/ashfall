@@ -78,7 +78,7 @@ end
 
 function this.checkForUpdates()
     if config.checkForUpdates then
-        currentVersion = this.getVersion()
+        currentVersion = "v" .. this.getVersion()
         local body, code, headers, status = https.request(
             'http://api.github.com/repos/jhaakma/ashfall/tags')
 
