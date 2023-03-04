@@ -35,6 +35,7 @@ return {
     ashfall_pack_04 = "A backpack made from crude materials provides additional carrying capacity.",
     ashfall_pack_05 = "A large backpack with a shade which provides protection from the heat of the sun.",
     ashfall_pack_06 = "A small backpack made with fur which provides a moderate amount of warmth.",
+    ashfall_pack_07 = "A small backpack made with wicker.",
     --crab pot
     ashfall_crabpot_01_m = "Place underwater and wait to catch crabs and harvest their meat. Catch crabs faster by placing it deep underwater, in an area populated by mudcrabs.",
 

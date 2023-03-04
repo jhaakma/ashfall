@@ -13,6 +13,7 @@ config.backpacks = {
     ashfall_pack_04 = true,
     ashfall_pack_05 = true,
     ashfall_pack_06 = true,
+    ashfall_pack_07 = true,
 }
 
 config.woodAxes = {

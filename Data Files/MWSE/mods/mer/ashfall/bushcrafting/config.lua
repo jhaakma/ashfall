@@ -851,6 +851,22 @@ this.bushCraftingRecipes = {
         soundType = "wood",
         recoverEquipmentMaterials = true,
     },
+    {
+        --Wicker backpack
+        id = "ashfall_pack_07",
+        description = itemDescriptions.ashfall_pack_07,
+        materials = {
+            { material = "wood", count = 3 },
+            { material = "rope", count = 2 },
+            { material = "straw", count = 10 },
+        },
+        skillRequirements = {
+            this.survivalTiers.apprentice
+        },
+        category = this.categories.equipment,
+        soundType = "straw",
+        rotationAxis = 'x',
+    },
 
     --Journeyman
     {

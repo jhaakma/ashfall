@@ -284,7 +284,7 @@ function Planter:updatePlantMesh()
         attachNode.scale = math.remap(self.plantProgress, 0.0, 1.0, 0.1, self:getMaxScale())
         self.reference:updateSceneGraph()
         attachNode:update()
-        ---@diagnostic disable-next-line: undefined-field
+        ---@diagnostic disable-next-line
         attachNode:updateNodeEffects()
 
         self:updateGHNodes()
@@ -467,7 +467,7 @@ function Planter:addItems()
         local count = stack.count + 1
         if item.objectType == tes3.objectType.leveledItem then
             local leveledItem = item
-            ---@diagnostic disable-next-line: assign-type-mismatch
+            ---@diagnostic disable-next-line
             item = leveledItem:pickFrom()
         end
         if item then
