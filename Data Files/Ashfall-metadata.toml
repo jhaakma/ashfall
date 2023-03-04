@@ -4,25 +4,24 @@ description = "A camping, survival and needs mod for Morrowind."
 homepage = "https://www.nexusmods.com/morrowind/mods/49057"
 repository = "https://github.com/jhaakma/ashfall"
 authors = [ "Merlord",]
-version = "3.0.39"
+version = "3.0.40"
+
 [dependencies]
-assets = [
-    "Ashfall.esp",
-    "Icons/ashfall",
-    "Meshes/ashfall",
-    "MWSE/mods/mer/ashfall",
-    "Sound/ashfall",
-    "Textures/Ashfall",
-]
+assets = [ "Ashfall.esp", "Icons/ashfall", "Meshes/ashfall", "MWSE/mods/mer/ashfall", "Sound/ashfall", "Textures/Ashfall",]
+
 [dependencies.mwse]
 buildnumber = 3066
+
 [dependencies.mge-xe]
 version = ">=0.15.0"
+
 [tools.mwse]
 lua-mod = "mer.ashfall"
+
 [dependencies.mods."Skills Module"]
 mwse-module = "OtherSkills"
 url = "https://www.nexusmods.com/morrowind/mods/46034?tab=files"
+
 [dependencies.mods."The Crafting Framework"]
 mwse-module = "CraftingFramework"
 version = "^1.4.0"
