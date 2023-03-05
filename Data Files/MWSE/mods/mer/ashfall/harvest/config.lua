@@ -17,7 +17,11 @@ config.woodaxes = {
     ashfall_woodaxe_steel = {
         effectiveness = 1.8,
         degradeMulti = 0.50,
-    }
+    },
+    ashfall_woodaxe_glass = {
+        effectiveness = 2.0,
+        degradeMulti = 0.50,
+    },
 }
 config.attackDirectionMapping = {
     [1] = {

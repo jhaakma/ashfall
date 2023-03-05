@@ -228,6 +228,13 @@ this.materials = {
         ids = {
             "ashfall_netting"
         }
+    },
+    {
+        id = "raw_glass",
+        name = "Raw Glass",
+        ids = {
+            "ingred_raw_glass_01"
+        }
     }
 }
 this.ingredMaterials = {}
@@ -1130,6 +1137,73 @@ this.bushCraftingRecipes = {
         category = this.categories.equipment,
         soundType = "fabric",
     },
+    --glass weapons
+
+    {
+		id = "ashfall_knife_glass",
+		description = "A simple dagger made of raw glass. Useful for skinning animals and harvesting plant fibres.\n\nNote: Broken bushcrafted weapons can be dismantled for parts by equipping them.",
+		materials = {
+			{ material = "raw_glass", count = 1 },
+			{ material = "wood", count = 1 },
+			{ material = "rope", count = 1 },
+		},
+		skillRequirements = { this.survivalTiers.master },
+		category = this.categories.weapons,
+		soundType = "wood",
+		recoverEquipmentMaterials = true,
+	},
+	{
+		id = "ashfall_woodaxe_glass",
+		description = "A woodaxe made with raw glass. Can be used to harvest firewood.\n\nNote: Broken bushcrafted weapons can be dismantled for parts by equipping them.",
+		materials = {
+			{ material = "raw_glass", count = 2 },
+			{ material = "wood", count = 1 },
+			{ material = "rope", count = 1 },
+		},
+		skillRequirements = { this.survivalTiers.master },
+		category = this.categories.weapons,
+		soundType = "wood",
+		recoverEquipmentMaterials = true,
+	},
+	{
+		id = "ashfall_spear_glass",
+		description = "A wooden spear with a raw glass tip. Useful for hunting game.\n\nNote: Broken bushcrafted weapons can be dismantled for parts by equipping them.",
+		materials = {
+			{ material = "raw_glass", count = 1 },
+			{ material = "wood", count = 2 },
+			{ material = "rope", count = 1 },
+		},
+		skillRequirements = { this.survivalTiers.master },
+		category = this.categories.weapons,
+		soundType = "wood",
+		recoverEquipmentMaterials = true,
+	},
+	{
+		id = "ashfall_pickaxe_glass",
+		description = "A pickaxe made with raw glass. Can be used to harvest stone.\n\nNote: Broken bushcrafted weapons can be dismantled for parts by equipping them.",
+		materials = {
+			{ material = "raw_glass", count = 1 },
+			{ material = "wood", count = 1 },
+			{ material = "rope", count = 2 },
+		},
+		skillRequirements = { this.survivalTiers.master },
+		category = this.categories.weapons,
+		soundType = "wood",
+		recoverEquipmentMaterials = true,
+	},
+	{
+		id = "ashfall_sword_glass",
+		description = "A shortsword made of raw glass. A good lightweight weapon with a simple wooden handle.\n\nNote: Broken bushcrafted weapons can be dismantled for parts by equipping them.",
+		materials = {
+			{ material = "raw_glass", count = 2 },
+			{ material = "wood", count = 1 },
+			{ material = "rope", count = 1 },
+		},
+		skillRequirements = { this.survivalTiers.master },
+		category = this.categories.weapons,
+		soundType = "wood",
+		recoverEquipmentMaterials = true,
+	},
 }
 this.tanningRackRecipes = {
     {

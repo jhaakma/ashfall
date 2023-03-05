@@ -20,6 +20,7 @@ config.woodAxes = {
     ashfall_woodaxe = true,
     ashfall_woodaxe_steel = true,
     ashfall_woodaxe_flint = true,
+    ashfall_woodaxe_glass = true,
 }
 
 return config
