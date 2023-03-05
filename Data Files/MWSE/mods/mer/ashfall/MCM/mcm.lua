@@ -41,6 +41,10 @@ local CREDITS_LIST = {
         text = "Sitting/sleeping animations by Vidi Aquam",
         url = "https://www.nexusmods.com/morrowind/mods/48782",
     },
+    {
+        text = "Glass weapons (and a bunch of other meshes) by Melchior Dahrk",
+        url = "https://www.nexusmods.com/morrowind/users/962116"
+    },
 }
 local SIDE_BAR_DEFAULT =
 [[Use the configuration menu to turn various mechanics, features and udpate messages on or off.
