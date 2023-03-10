@@ -50,6 +50,7 @@ local function initialized()
         require("mer.ashfall.bushcrafting")
         require("mer.ashfall.gearPlacement")
         require('mer.ashfall.harvest')
+        require('mer.ashfall.skinning')
         require("mer.ashfall.cooking")
 
         event.trigger("Ashfall:Interop", Interop)

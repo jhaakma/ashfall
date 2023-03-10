@@ -5,6 +5,7 @@ local harvestConfigs = require("mer.ashfall.harvest.config")
 local ReferenceController = require("mer.ashfall.referenceController")
 local ActivatorController = require("mer.ashfall.activators.activatorController")
 
+---@class Ashfall.HarvestService
 local HarvestService = {}
 
 HarvestService.destroyedHarvestables = ReferenceController.registerReferenceController{
@@ -107,33 +108,38 @@ function HarvestService.getSwingStrength(weapon, weaponData)
     return swingStrength
 end
 
-function HarvestService.getSwingsNeeded(reference, harvestConfig)
+function HarvestService.getCurrentSwings(reference)
+    return reference.tempData.ashfallHarvestSwings or 0
+end
+
+function HarvestService.getSwingsNeeded(reference, harvestSwingsNeeded)
     local swingsNeeded = reference.tempData.ashfallSwingsNeeded
-    if harvestConfig and not swingsNeeded then
-        HarvestService.setSwingsNeeded(reference, harvestConfig)
+    if harvestSwingsNeeded and not swingsNeeded then
+        HarvestService.setSwingsNeeded(reference, harvestSwingsNeeded)
         swingsNeeded = reference.tempData.ashfallSwingsNeeded
     end
     return swingsNeeded
 end
 
-function HarvestService.setSwingsNeeded(reference, harvestConfig)
-    reference.tempData.ashfallSwingsNeeded = math.random(harvestConfig.swingsNeeded, harvestConfig.swingsNeeded + 2)
+function HarvestService.setSwingsNeeded(reference, harvestSwingsNeeded)
+    reference.tempData.ashfallSwingsNeeded = math.random(harvestSwingsNeeded, harvestSwingsNeeded + 2)
 end
 
 ---@param swingStrength number
 ---@param reference tes3reference
----@param harvestConfig Ashfall.Harvest.Config
+---@param swingsNeeded number
 ---@return boolean isHarvested
-function HarvestService.attemptSwing(swingStrength, reference, harvestConfig)
-    local swingsNeeded = HarvestService.getSwingsNeeded(reference, harvestConfig)
-    reference.tempData.ashfallHarvestSwings = reference.tempData.ashfallHarvestSwings or 0
+function HarvestService.attemptSwing(swingStrength, reference, swingsNeeded)
+    local swingsNeeded = HarvestService.getSwingsNeeded(reference, swingsNeeded)
+    reference.tempData.ashfallHarvestSwings = HarvestService.getCurrentSwings(reference)
     local swings = reference.tempData.ashfallHarvestSwings + swingStrength
-    logger:trace("swings before: %s", reference.tempData.ashfallHarvestSwings)
-    logger:trace("swingStrength: %s", swingStrength)
-    logger:trace("swings after: %s", swings)
+    logger:debug("swings before: %s", reference.tempData.ashfallHarvestSwings)
+    logger:debug("swingStrength: %s", swingStrength)
+    logger:debug("swings after: %s", swings)
+    logger:debug("swingsNeeded: %s", swingsNeeded)
+    local isHarvested = swings >= swingsNeeded
     reference.tempData.ashfallHarvestSwings = swings
-    local isHarvested = swings > swingsNeeded
-    logger:trace("isHarvested: %s", isHarvested)
+    logger:debug("isHarvested: %s", isHarvested)
     return isHarvested
 end
 
@@ -145,9 +151,9 @@ end
 
 ---@param weapon tes3equipmentStack
 ---@param swingStrength number
----@param weaponData Ashfall.Harvest.WeaponData
-function HarvestService.degradeWeapon(weapon, swingStrength, weaponData)
-    local degradeMulti = weaponData.degradeMulti or 1.0
+---@param degradeMulti number default: 1
+function HarvestService.degradeWeapon(weapon, swingStrength, degradeMulti)
+    degradeMulti = degradeMulti or 1.0
     logger:trace("degrade multiplier: %s", degradeMulti)
     --Weapon degradation
     weapon.variables.condition = weapon.variables.condition - (4 * swingStrength * degradeMulti)
@@ -202,6 +208,7 @@ function HarvestService.addItems(harvestConfig)
         end
         roll = roll - harvestable.chance
     end
+    return 0
 end
 
 
@@ -228,23 +235,32 @@ function HarvestService.getTotalHarvested(reference)
     return reference.data.ashfallTotalHarvested or 0
 end
 
+function HarvestService.setDestructionLimit(reference, limit)
+    reference.data.ashfallDestructionLimitConfig = limit
+    reference.modified = true
+end
+
+function HarvestService.getDestructionLimit(reference)
+    return reference.data.ashfallDestructionLimitConfig
+end
+
 ---@param reference tes3reference
-function HarvestService.getSetDestructionLimit(reference, destructionLimit)
-    if not reference.data.ashfallDestructionLimit then
+---@param destructionLimitConfig Ashfall.Harvest.Config.DestructionLimitConfig
+function HarvestService.getSetDestructionLimit(reference, destructionLimitConfig)
+    if not reference.data.ashfallDestructionLimitConfig then
         local height = HarvestService.getRefHeight(reference)
-        local minIn = destructionLimit.minHeight
-        local maxIn = destructionLimit.maxHeight
-        local minOut = destructionLimit.min
-        local maxOut = destructionLimit.max
+        local minIn = destructionLimitConfig.minHeight
+        local maxIn = destructionLimitConfig.maxHeight
+        local minOut = destructionLimitConfig.min
+        local maxOut = destructionLimitConfig.max
         local limit = math.remap(height, minIn, maxIn, minOut, maxOut)
         limit = math.clamp(limit, minOut, maxOut)
         limit = math.ceil(limit)
         logger:debug("Ref height: %s", height)
         logger:debug("Set destruction limit to %s", limit)
-        reference.data.ashfallDestructionLimit = limit
-        reference.modified = true
+        HarvestService.setDestructionLimit(reference, limit)
     end
-    return reference.data.ashfallDestructionLimit
+    return reference.data.ashfallDestructionLimitConfig
 end
 
 ---@param reference tes3reference
@@ -253,13 +269,19 @@ function HarvestService.getRefHeight(reference)
 end
 
 ---@param reference tes3reference
+---@param destructionLimit number
+function HarvestService.isExhausted(reference, destructionLimit)
+    local totalHarvested = HarvestService.getTotalHarvested(reference)
+    return totalHarvested >= destructionLimit
+end
+
+---@param reference tes3reference
 ---@param harvestConfig Ashfall.Harvest.Config
 function HarvestService.disableExhaustedHarvestable(reference, harvestConfig)
-    local destructionLimit = harvestConfig.destructionLimit
-    if not destructionLimit then return end
-    local totalHarvested = HarvestService.getTotalHarvested(reference)
-    local destructionLimit = HarvestService.getSetDestructionLimit(reference, destructionLimit)
-    if totalHarvested >= destructionLimit then
+    local destructionLimitConfig = harvestConfig.destructionLimitConfig
+    if not destructionLimitConfig then return end
+    local destructionLimit = HarvestService.getSetDestructionLimit(reference, destructionLimitConfig)
+    if HarvestService.isExhausted(reference, destructionLimit) then
         local harvestableHeight = HarvestService.getRefHeight(reference)
         HarvestService.disableHarvestable(reference, harvestableHeight, harvestConfig)
         if harvestConfig.fallSound then
@@ -383,8 +405,12 @@ end
 function HarvestService.disableHarvestable(reference, harvestableHeight, harvestConfig)
     logger:debug("Disabling harvestable %s", reference)
     reference.data.ashfallTotalHarvested = nil
-    reference.data.ashfallDestructionLimit = nil
-    HarvestService.demolish(reference, harvestableHeight, harvestConfig)
+    reference.data.ashfallDestructionLimitConfig = nil
+    HarvestService.demolish{
+        reference = reference,
+        harvestableHeight = harvestableHeight,
+        fallSpeed = harvestConfig.fallSpeed,
+    }
 end
 
 local m1 = tes3matrix33.new()
@@ -416,74 +442,105 @@ function HarvestService.rotateNodeAwayFromPlayer(reference, currentTime, totalTi
     end
 end
 
----@param reference tes3reference
-function HarvestService.demolish(reference, harvestableHeight, harvestConfig)
+function HarvestService.animateFellNode(e)
+    if e.safeRef:valid() then
+        if e.fellNode then --rotate fell node
+            HarvestService.rotateNodeAwayFromPlayer(e.reference, e.currentIteration, e.iterations, e.playerZ, 10, e.fellNode)
+        end
+        if e.stumpNode then --lower stump node
+            local a = 4
+            local u = 0
+            local t = e.currentIteration/e.iterations
+            local v = u + a * t
+           e. stumpNode.translation = e.stumpNode.translation + tes3vector3.new(0, 0, -(100/e.iterations)*v)
+            e.stumpNode:update()
+        end
+        e.currentIteration = e.currentIteration + 1
+    end
+end
+
+function HarvestService.animateDefault(e)
+    if e.safeRef:valid() then
+        local ref = e.safeRef:getObject()
+        tes3.positionCell{
+            reference = ref,
+            cell = ref.cell,
+            position = {
+                ref.position.x,
+                ref.position.y,
+                ref.position.z - (e.harvestableHeight* 0.5)/e.iterations
+            },
+        }
+       e.currentIteration = e.currentIteration + 1
+    end
+end
+
+---@class HarvestService.demolish.params
+---@field reference tes3reference
+---@field harvestableHeight number
+---@field fallSpeed number **Optional** default 10
+---@field callback fun(ref: tes3reference) **Optional** called when animation is complete
+
+---@param e HarvestService.demolish.params
+function HarvestService.demolish(e)
     --remove collision
     --reference.hasNoCollision = true
     --move ref down on a timer then disable
-    local safeRef = tes3.makeSafeObjectHandle(reference)
+    local safeRef = tes3.makeSafeObjectHandle(e.reference)
     if not safeRef then return end
     local iterations = 1000
     local originalLocation = {
         position = {
-            reference.position.x,
-            reference.position.y,
-            reference.position.z
+            e.reference.position.x,
+            e.reference.position.y,
+            e.reference.position.z
         },
         orientation = {
-            reference.orientation.x,
-            reference.orientation.y,
-            reference.orientation.z,
+            e.reference.orientation.x,
+            e.reference.orientation.y,
+            e.reference.orientation.z,
         }
     }
-    local fellNode = reference.sceneNode:getObjectByName("ASHFALL_TREEFALL")
-    local stumpNode = reference.sceneNode:getObjectByName("ASHFALL_STUMP")
+    local fellNode = e.reference.sceneNode:getObjectByName("ASHFALL_TREEFALL")
+    local stumpNode = e.reference.sceneNode:getObjectByName("ASHFALL_STUMP")
     local playerZ = tes3.player.orientation.z
-    logger:debug("Adding to destroyedHarvestables: %s", reference.id)
+    logger:debug("Adding to destroyedHarvestables: %s", e.reference.id)
 
-    reference.data.ashfallDestroyedHarvestable = true
-    HarvestService.destroyedHarvestables:addReference(reference)
+    e.reference.data.ashfallDestroyedHarvestable = true
+    HarvestService.destroyedHarvestables:addReference(e.reference)
 
     local currentIteration = 0
-    local function animateFellNode(e)
-        if safeRef:valid() then
-            if fellNode then --rotate fell node
-                HarvestService.rotateNodeAwayFromPlayer(reference, currentIteration, iterations, playerZ, 10, fellNode)
-            end
-            if stumpNode then --lower stump node
-                local a = 4
-                local u = 0
-                local t = currentIteration/iterations
-                local v = u + a * t
-                stumpNode.translation = stumpNode.translation + tes3vector3.new(0, 0, -(100/iterations)*v)
-                stumpNode:update()
-            end
-            currentIteration = currentIteration + 1
-        end
-    end
 
-    local function animateDefault()
-        if safeRef:valid() then
-            local ref = safeRef:getObject()
-            tes3.positionCell{
-                reference = ref,
-                cell = ref.cell,
-                position = {
-                    ref.position.x,
-                    ref.position.y,
-                    ref.position.z - (harvestableHeight* 0.5)/iterations
-                },
-            }
-            currentIteration = currentIteration + 1
-        end
-    end
-
-    local duration = harvestConfig.fallSpeed
+    local duration = e.fallSpeed
     timer.start{
         duration = duration/iterations,
         iterations = iterations,
         type = timer.simulate,
-        callback = fellNode and animateFellNode or animateDefault,
+        callback = function()
+            if fellNode then
+                local animParams = {
+                    safeRef = safeRef,
+                    fellNode = fellNode,
+                    stumpNode = stumpNode,
+                    iterations = iterations,
+                    currentIteration = currentIteration,
+                    playerZ = playerZ,
+                    reference = e.reference
+                }
+                HarvestService.animateFellNode(animParams)
+                currentIteration = animParams.currentIteration
+            else
+                local animParams = {
+                    safeRef = safeRef,
+                    iterations = iterations,
+                    currentIteration = currentIteration,
+                    harvestableHeight = e.harvestableHeight,
+                    reference = e.reference
+                }
+                HarvestService.animateDefault(animParams)
+                currentIteration = animParams.currentIteration
+            end
+        end,
     }
     timer.start{
         duration = duration,
@@ -499,7 +556,9 @@ function HarvestService.demolish(reference, harvestableHeight, harvestConfig)
                     position = originalLocation.position,
                     orientation = originalLocation.orientation
                 }
-
+                if e.callback then
+                    e.callback(ref)
+                end
             end
         end
     }

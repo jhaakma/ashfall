@@ -1,10 +1,10 @@
 local this = {}
 
-this.activatorConfig = require("mer.Ashfall.activators.config.activatorConfig")
-this.conditionConfig = require("mer.Ashfall.conditions.conditionConfig")
-this.foodConfig = require("mer.Ashfall.config.foodConfig")
-this.teaConfig = require("mer.Ashfall.config.teaConfig")
-this.campfireConfig = require("mer.Ashfall.config.campfireConfig")
+this.activatorConfig = require("mer.ashfall.activators.config.activatorConfig")
+this.conditionConfig = require("mer.ashfall.conditions.conditionConfig")
+this.foodConfig = require("mer.ashfall.config.foodConfig")
+this.teaConfig = require("mer.ashfall.config.teaConfig")
+this.campfireConfig = require("mer.ashfall.config.campfireConfig")
 
 this.objectIds = {
     firewood = "ashfall_firewood",

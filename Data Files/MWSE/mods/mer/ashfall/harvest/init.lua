@@ -18,7 +18,7 @@ end)
 
 ---@param e attackEventData
 local function harvestOnAttack(e)
-    logger:debug("harvestOnAttack")
+    logger:debug("harvestOnAttack() ENTRY")
     --Get the necessary objects and check conditions--
 
     --Filter to player
@@ -90,6 +90,7 @@ local function harvestOnAttack(e)
         return
     end
 
+    logger:debug("Checks passed, swinging")
     --CHECKS PASS, we are swinging at something
     service.playSound(harvestConfig)
 
@@ -97,22 +98,25 @@ local function harvestOnAttack(e)
     local swingStrength = service.getSwingStrength(weapon, weaponData)
 
     --Degrade weapon and exit if it breaks
-    local weaponBroke = service.degradeWeapon(weapon, swingStrength, weaponData)
-    if weaponBroke then return end
+    local weaponBroke = service.degradeWeapon(weapon, swingStrength, weaponData.degradeMulti)
+    if weaponBroke then
+        logger:debug("Weapon broke")
+        return
+    end
 
     --Accumulate swings and check if it's enough to harvest
-    local didHarvest = service.attemptSwing(swingStrength, reference, harvestConfig)
+    local didHarvest = service.attemptSwing(swingStrength, reference, harvestConfig.swingsNeeded)
     if not didHarvest then return end
-
+    logger:debug("Enough swings, harvesting")
     --Harvest the resources
     service.harvest(reference, harvestConfig)
-
     --Disable if  exhausted
-    if harvestConfig.destructionLimit and config.disableHarvested then
+    if harvestConfig.destructionLimitConfig and config.disableHarvested then
+        logger:debug("Disabling exhausted harvestable")
         service.disableExhaustedHarvestable(reference, harvestConfig)
     end
+    logger:debug("harvestOnAttack() EXIT")
 end
-
 event.register("attack", harvestOnAttack )
 
 --- Reset harvestables on load.

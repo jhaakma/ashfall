@@ -975,13 +975,14 @@ function this.weeksToHours(weeks)
     return this.daysToHours(weeks * 7)
 end
 
+---@param inventory tes3inventory
 function this.getIngredients(inventory)
     local function ingredsIterator(list, parents)
         parents = parents or {}
         for i, node in pairs(list or inventory) do
             if node.object.objectType == tes3.objectType.leveledItem then
-                ---@type tes3leveledItem
                 if parents[node.object] then
+                    mwse.log("Duplicate leveled list detected: %s", node.object.id)
                 else
                     ingredsIterator(node.object.list, table.copy(parents, {[node.object]=table.size(parents)}))
                 end

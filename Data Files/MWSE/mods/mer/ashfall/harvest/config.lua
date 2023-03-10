@@ -65,7 +65,7 @@ config.activatorHarvestData = {
         },
         sound = "ashfall\\chopshort.wav",
         swingsNeeded = 2,
-        destructionLimit = {
+        destructionLimitConfig = {
             min = 8,
             minHeight = 300,
             max = 25,
@@ -115,7 +115,7 @@ config.activatorHarvestData = {
         },
         sound = "ashfall\\chopshort.wav",
         swingsNeeded = 2,
-        destructionLimit = {
+        destructionLimitConfig = {
             min = 8,
             minHeight = 300,
             max = 25,
@@ -164,7 +164,7 @@ config.activatorHarvestData = {
         },
         sound = "ashfall\\chopshort.wav",
         swingsNeeded = 2,
-        destructionLimit = {
+        destructionLimitConfig = {
             min = 10,
             minHeight = 500,
             max = 30,
@@ -250,7 +250,7 @@ config.activatorHarvestData = {
         },
         sound ="ashfall\\chopveg.wav",
         swingsNeeded = 1,
-        destructionLimit = {
+        destructionLimitConfig = {
             min = 8,
             minHeight = 50,
             max = 20,

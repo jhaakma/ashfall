@@ -158,6 +158,8 @@ this.nutrition = {
 }
 
 this.ingredTypes = {
+
+    --vanilla
     ["ingred_human_meat_01"] = this.type.meat,
     ["ingred_adamantium_ore_01"] = this.type.misc,
     ["ingred_alit_hide_01"] = this.type.misc,

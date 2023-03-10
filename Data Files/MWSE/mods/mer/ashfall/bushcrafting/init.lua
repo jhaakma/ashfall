@@ -25,7 +25,15 @@ do -- initialise crafting
 end
 
 local function isMaterial(item)
-    return craftingConfig.ingredMaterials[item.id:lower()]
+    for _, conf in ipairs(craftingConfig.materials) do
+        local material = CraftingFramework.Material.getMaterial(conf.id)
+        if material then
+            if material:itemIsMaterial(item.id) then
+                return true
+            end
+        end
+    end
+    return false
 end
 
 

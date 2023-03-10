@@ -247,7 +247,8 @@ end
 this.bushCraftingRecipes = {
     --Beginner
     {
-        id = "ashfall_rope",
+        id = "bushcraft:ashfall_rope",
+        craftableId = "ashfall_rope",
         description = itemDescriptions.ashfall_rope,
         materials = {
             { material = "fibre", count = 2 }
@@ -260,7 +261,8 @@ this.bushCraftingRecipes = {
     },
     {
         --Straw
-        id = "ashfall_straw",
+        id = "bushcraft:ashfall_straw",
+        craftableId = "ashfall_straw",
         description = itemDescriptions.ashfall_straw,
         materials = {
             { material = "fibre", count = 1 }
@@ -272,7 +274,8 @@ this.bushCraftingRecipes = {
         soundType = "straw",
     },
     {
-        id = "ashfall_torch",
+        id = "bushcraft:ashfall_torch",
+        craftableId = "ashfall_torch",
         description = itemDescriptions.ashfall_torch,
         materials = {
             { material = "resin", count = 1 },
@@ -285,7 +288,8 @@ this.bushCraftingRecipes = {
         soundType = "wood",
     },
     {
-        id = "ashfall_torch_lrg",
+        id = "bushcraft:ashfall_torch_lrg",
+        craftableId = "ashfall_torch_lrg",
         name = "Torch: Large",
         description = "A large torch for lighting up your campsite.",
         materials = {
@@ -302,7 +306,8 @@ this.bushCraftingRecipes = {
         }
     },
     {
-        id = "ashfall_strawbed_s",
+        id = "bushcraft:ashfall_strawbed_s",
+        craftableId = "ashfall_strawbed_s",
         quickActivateCallback = function(_, e) BedRoll.buttons.sleep.callback(e) end,
         additionalMenuOptions = {
             BedRoll.buttons.sleep,
@@ -326,7 +331,8 @@ this.bushCraftingRecipes = {
         },
     },
     {
-        id = "ashfall_wood_stack",
+        id = "bushcraft:ashfall_wood_stack",
+        craftableId = "ashfall_wood_stack",
         description = "A wooden frame for storing large amounts of firewood.",
         materials = {
             { material = "wood", count = 10 }
@@ -347,7 +353,8 @@ this.bushCraftingRecipes = {
     },
     {
         --Lean To
-        id = "ashfall_lean_to_01",
+        id = "bushcraft:ashfall_lean_to_01",
+        craftableId = "ashfall_lean_to_01",
         description = "A simple lean-to provides a bit of shelter from the elements.",
         materials = {
             { material = "straw", count = 8 },
@@ -364,7 +371,8 @@ this.bushCraftingRecipes = {
         }
     },
     {
-        id = "ashfall_knife_flint",
+        id = "bushcraft:ashfall_knife_flint",
+        craftableId = "ashfall_knife_flint",
         description = "A simple dagger made of flint. Useful for skinning animals and harvesting plant fibres.\n\nNote: Broken bushcrafted weapons can be dismantled for parts by equipping them.",
         materials = {
             { material = "flint", count = 1 },
@@ -378,7 +386,8 @@ this.bushCraftingRecipes = {
         recoverEquipmentMaterials = true,
     },
     {
-        id = "ashfall_woodaxe_flint",
+        id = "bushcraft:ashfall_woodaxe_flint",
+        craftableId = "ashfall_woodaxe_flint",
         description = "A woodaxe made with flint. Can be used to harvest firewood.\n\nNote: Broken bushcrafted weapons can be dismantled for parts by equipping them.",
         materials = {
             { material = "flint", count = 2 },
@@ -393,7 +402,8 @@ this.bushCraftingRecipes = {
         recoverEquipmentMaterials = true,
     },
     {
-        id = "ashfall_bowl_01",
+        id = "bushcraft:ashfall_bowl_01",
+        craftableId = "ashfall_bowl_01",
         description = "A handcarved wooden bowl. Can be used to store water or stew.",
         materials = {
             { material = "wood", count = 1},
@@ -413,7 +423,8 @@ this.bushCraftingRecipes = {
         },
     },
     {
-        id = "ashfall_cup_01",
+        id = "bushcraft:ashfall_cup_01",
+        craftableId = "ashfall_cup_01",
         description = "A handcarved wooden cup. Can be used to store water or tea.",
         materials = {
             { material = "wood", count = 1},
@@ -433,7 +444,8 @@ this.bushCraftingRecipes = {
         },
     },
     {
-        id = "ashfall_wood_knife",
+        id = "bushcraft:ashfall_wood_knife",
+        craftableId = "ashfall_wood_knife",
         description = "A handcarved wooden knife.",
         materials = {
             { material = "wood", count = 1},
@@ -453,7 +465,8 @@ this.bushCraftingRecipes = {
         },
     },
     {
-        id = "ashfall_wood_fork",
+        id = "bushcraft:ashfall_wood_fork",
+        craftableId = "ashfall_wood_fork",
         description = "A handcarved wooden fork.",
         materials = {
             { material = "wood", count = 1},
@@ -473,7 +486,8 @@ this.bushCraftingRecipes = {
         },
     },
     {
-        id = "ashfall_wood_spoon",
+        id = "bushcraft:ashfall_wood_spoon",
+        craftableId = "ashfall_wood_spoon",
         description = "A handcarved wooden spoon.",
         materials = {
             { material = "wood", count = 1},
@@ -493,7 +507,8 @@ this.bushCraftingRecipes = {
         },
     },
     {
-        id = "ashfall_wood_plate",
+        id = "bushcraft:ashfall_wood_plate",
+        craftableId = "ashfall_wood_plate",
         description = "A handcarved wooden plate.",
         materials = {
             { material = "wood", count = 1},
@@ -512,7 +527,8 @@ this.bushCraftingRecipes = {
         },
     },
     {
-        id = "ashfall_wood_ladle",
+        id = "bushcraft:ashfall_wood_ladle",
+        craftableId = "ashfall_wood_ladle",
         description = "A handcarved wooden ladle. Can be added to cooking pots to make stews.",
         materials = {
             { material = "wood", count = 1},
@@ -534,7 +550,8 @@ this.bushCraftingRecipes = {
 
     --Novice
     {
-        id = "ashfall_stand_01",
+        id = "bushcraft:ashfall_stand_01",
+        craftableId = "ashfall_stand_01",
         description = "A simple wooden stand for displaying decorations and ceramics.",
         materials = {
             { material = "wood", count = 4 },
@@ -554,7 +571,8 @@ this.bushCraftingRecipes = {
         },
     },
     {
-        id = "ashfall_planter_01",
+        id = "bushcraft:ashfall_planter_01",
+        craftableId = "ashfall_planter_01",
         description = "A small wooden planter for growing crops.",
         materials = {
             { material = "wood", count = 4 },
@@ -580,7 +598,8 @@ this.bushCraftingRecipes = {
         maxSteepness = 15,
     },
     {
-        id = "ashfall_planter_02",
+        id = "bushcraft:ashfall_planter_02",
+        craftableId = "ashfall_planter_02",
         description = "A medium sized wooden planter for growing crops.",
         materials = {
             { material = "wood", count = 6 },
@@ -607,7 +626,8 @@ this.bushCraftingRecipes = {
     },
 
     {
-        id = "ashfall_water_filter",
+        id = "bushcraft:ashfall_water_filter",
+        craftableId = "ashfall_water_filter",
         description = "A water filter that uses plant fibre and coal to purify dirty water.",
         materials = {
             { material = "fibre", count = 4 },
@@ -631,7 +651,8 @@ this.bushCraftingRecipes = {
         }
     },
     {
-        id = "ashfall_fab_cloak",
+        id = "bushcraft:ashfall_fab_cloak",
+        craftableId = "ashfall_fab_cloak",
         previewMesh = "ashfall\\craft\\cloak_fab_preview.nif",
         description = itemDescriptions.ashfall_fab_cloak,
         materials = {
@@ -645,7 +666,8 @@ this.bushCraftingRecipes = {
         recoverEquipmentMaterials = true,
     },
     {
-        id = "ashfall_strawhat",
+        id = "bushcraft:ashfall_strawhat",
+        craftableId = "ashfall_strawhat",
         description = itemDescriptions.ashfall_strawhat,
         materials = {
             { material = "straw", count = 4 }
@@ -659,7 +681,8 @@ this.bushCraftingRecipes = {
         previewMesh = "ashfall\\craft\\strawhat.nif",
     },
     {
-        id = "ashfall_fabric",
+        id = "bushcraft:ashfall_fabric",
+        craftableId = "ashfall_fabric",
         description = itemDescriptions.ashfall_fabric,
         materials = {
             { material = "fibre", count = 4 },
@@ -673,7 +696,8 @@ this.bushCraftingRecipes = {
     },
     {
         --ashfall_cush_crft_01 cushion
-        id = "ashfall_cush_crft_01",
+        id = "bushcraft:ashfall_cush_crft_01",
+        craftableId = "ashfall_cush_crft_01",
         description = itemDescriptions.ashfall_cush_crft_01,
         materials = {
             { material = "fabric", count = 2 },
@@ -686,7 +710,8 @@ this.bushCraftingRecipes = {
         soundType = "fabric",
     },
     {
-        id = "ashfall_sack_01",
+        id = "bushcraft:ashfall_sack_01",
+        craftableId = "ashfall_sack_01",
         placedObject = "ashfall_sack_c",
         description = itemDescriptions.ashfall_sack_01,
         materials = {
@@ -703,7 +728,8 @@ this.bushCraftingRecipes = {
         },
     },
     {
-        id = "ashfall_rug_crft_01",
+        id = "bushcraft:ashfall_rug_crft_01",
+        craftableId = "ashfall_rug_crft_01",
         description = itemDescriptions.ashfall_rug_crft_01,
         materials = {
             { material = "fabric", count = 2 },
@@ -716,7 +742,8 @@ this.bushCraftingRecipes = {
         rotationAxis = 'y',
     },
     {
-        id = "ashfall_spear_flint",
+        id = "bushcraft:ashfall_spear_flint",
+        craftableId = "ashfall_spear_flint",
         description = "A wooden spear with a flint tip. Useful for hunting game.\n\nNote: Broken bushcrafted weapons can be dismantled for parts by equipping them.",
         materials = {
             { material = "flint", count = 1 },
@@ -731,7 +758,8 @@ this.bushCraftingRecipes = {
         recoverEquipmentMaterials = true,
     },
     {
-        id = "ashfall_bow_wood",
+        id = "bushcraft:ashfall_bow_wood",
+        craftableId = "ashfall_bow_wood",
         description = "A simple bow and quiver made of wood.\n\nNote: Broken bushcrafted weapons can be dismantled for parts by equipping them.",
         materials = {
             { material = "wood", count = 3 },
@@ -746,7 +774,8 @@ this.bushCraftingRecipes = {
         previewScale = 1.2,
     },
     {
-        id = "ashfall_arrow_flint",
+        id = "bushcraft:ashfall_arrow_flint",
+        craftableId = "ashfall_arrow_flint",
         description = "A simple arrow with a flint head.",
         materials = {
             { material = "flint", count = 1 },
@@ -763,12 +792,13 @@ this.bushCraftingRecipes = {
     --Apprentice
     {
       --tanning rack
-        id = "ashfall_tan_rack",
-        quickActivateCallback = function(_, e) this.menuOptions.tanningRackMenu.callback(e) end,
+        id = "bushcraft:ashfall_tan_rack",
+        craftableId = "ashfall_tan_rack",
+        description = "A rack for tanning hides to create leather.",
+        quickActivateCallback = function(_, e) this.menuOptions.tanningRackMenu.callback() end,
         additionalMenuOptions = {
             this.menuOptions.tanningRackMenu
         },
-        description = "A rack for tanning hides to create leather.",
         materials = {
             { material = "wood", count = 4 },
             { material = "rope", count = 2 },
@@ -783,7 +813,8 @@ this.bushCraftingRecipes = {
         }
     },
     {
-        id = "ashfall_waterskin",
+        id = "bushcraft:ashfall_waterskin",
+        craftableId = "ashfall_waterskin",
         description = itemDescriptions.ashfall_waterskin,
         materials = {
             { material = "leather", count = 1 },
@@ -797,7 +828,8 @@ this.bushCraftingRecipes = {
         rotationAxis = 'y',
     },
     {
-        id = "ashfall_tent_leather_m",
+        id = "bushcraft:ashfall_tent_leather_m",
+        craftableId = "ashfall_tent_leather_m",
         description = itemDescriptions.ashfall_tent_leather_m,
         materials = {
             { material = "leather", count = 4 },
@@ -812,7 +844,8 @@ this.bushCraftingRecipes = {
         previewMesh = "ashfall\\tent\\tent_leather.nif"
     },
     {
-        id = "ashfall_table_sml_s",
+        id = "bushcraft:ashfall_table_sml_s",
+        craftableId = "ashfall_table_sml_s",
         description = "A tall, crudely made wooden table",
         materials = {
             { material = "wood", count = 6 },
@@ -828,7 +861,8 @@ this.bushCraftingRecipes = {
         }
     },
     {
-        id = "ashfall_table_sml_2_s",
+        id = "bushcraft:ashfall_table_sml_2_s",
+        craftableId = "ashfall_table_sml_2_s",
         description = "A long, crudely made wooden table",
         materials = {
             { material = "wood", count = 8 },
@@ -844,7 +878,8 @@ this.bushCraftingRecipes = {
         }
     },
     {
-        id = "ashfall_pickaxe_flint",
+        id = "bushcraft:ashfall_pickaxe_flint",
+        craftableId = "ashfall_pickaxe_flint",
         description = "A pickaxe made with flint. Can be used to harvest stone.\n\nNote: Broken bushcrafted weapons can be dismantled for parts by equipping them.",
         materials = {
             { material = "flint", count = 1 },
@@ -860,7 +895,8 @@ this.bushCraftingRecipes = {
     },
     {
         --Wicker backpack
-        id = "ashfall_pack_07",
+        id = "bushcraft:ashfall_pack_07",
+        craftableId = "ashfall_pack_07",
         description = itemDescriptions.ashfall_pack_07,
         materials = {
             { material = "wood", count = 3 },
@@ -877,7 +913,8 @@ this.bushCraftingRecipes = {
 
     --Journeyman
     {
-        id = "ashfall_netting",
+        id = "bushcraft:ashfall_netting",
+        craftableId = "ashfall_netting",
         description = "a web of netting crafted from rope.",
         materials = {
             { material = "rope", count = 2 },
@@ -890,7 +927,8 @@ this.bushCraftingRecipes = {
         soundType = "rope",
     },
     {
-        id = "ashfall_chest_01_c",
+        id = "bushcraft:ashfall_chest_01_c",
+        craftableId = "ashfall_chest_01_c",
         description = "A large wooden chest that can be placed on the ground and used as storage.",
         materials = {
             { material = "wood", count = 8 },
@@ -909,7 +947,8 @@ this.bushCraftingRecipes = {
         },
     },
     {
-        id = "ashfall_cov_thatch",
+        id = "bushcraft:ashfall_cov_thatch",
+        craftableId = "ashfall_cov_thatch",
         mesh = tentConfig.coverToMeshMap["ashfall_cov_thatch"],
         description = itemDescriptions.ashfall_cov_thatch,
         materials = {
@@ -925,7 +964,8 @@ this.bushCraftingRecipes = {
         soundType = "straw",
     },
     {
-        id = "ashfall_hammock",
+        id = "bushcraft:ashfall_hammock",
+        craftableId = "ashfall_hammock",
         maxSteepness = 0,
         quickActivateCallback = function(_, e) BedRoll.buttons.sleep.callback(e) end,
         additionalMenuOptions = {
@@ -950,7 +990,8 @@ this.bushCraftingRecipes = {
         }
     },
     {
-        id = "ashfall_pack_04",
+        id = "bushcraft:ashfall_pack_04",
+        craftableId = "ashfall_pack_04",
         description = itemDescriptions.ashfall_pack_04,
         materials = {
             { material = "wood", count = 2 },
@@ -966,7 +1007,8 @@ this.bushCraftingRecipes = {
         soundType = "wood",
     },
     {
-        id = "ashfall_crabpot_02_a",
+        id = "bushcraft:ashfall_crabpot_02_a",
+        craftableId = "ashfall_crabpot_02_a",
         description = itemDescriptions.ashfall_crabpot_01_m,
         materials = {
             { material = "wood", count = 4 },
@@ -988,7 +1030,8 @@ this.bushCraftingRecipes = {
 
     --Expert
     {
-        id = "ashfall_cov_ashl",
+        id = "bushcraft:ashfall_cov_ashl",
+        craftableId = "ashfall_cov_ashl",
         mesh = tentConfig.coverToMeshMap["ashfall_cov_ashl"],
         description = itemDescriptions.ashfall_cov_ashl,
         materials = {
@@ -1004,7 +1047,8 @@ this.bushCraftingRecipes = {
     },
     {
         --Travellers pack
-        id = "ashfall_pack_05",
+        id = "bushcraft:ashfall_pack_05",
+        craftableId = "ashfall_pack_05",
         description = itemDescriptions.ashfall_pack_05,
         materials = {
             { material = "wood", count = 2 },
@@ -1019,7 +1063,8 @@ this.bushCraftingRecipes = {
         soundType = "wood",
     },
     {
-        id = "ashfall_dummy_01",
+        id = "bushcraft:ashfall_dummy_01",
+        craftableId = "ashfall_dummy_01",
         description = "A practice dummy for training your melee skills.",
         materials = {
             { material = "wood", count = 2 },
@@ -1038,7 +1083,8 @@ this.bushCraftingRecipes = {
         }
     },
     {
-        id = "ashfall_target_01",
+        id = "bushcraft:ashfall_target_01",
+        craftableId = "ashfall_target_01",
         description = "A target for practicing your marksman skills.",
         materials = {
             { material = "wood", count = 3 },
@@ -1056,7 +1102,8 @@ this.bushCraftingRecipes = {
         }
     },
     {
-        id = "ashfall_bed_fur",
+        id = "bushcraft:ashfall_bed_fur",
+        craftableId = "ashfall_bed_fur",
         maxSteepness = 0,
         quickActivateCallback = function(_, e) BedRoll.buttons.sleep.callback(e) end,
         additionalMenuOptions = {
@@ -1083,7 +1130,8 @@ this.bushCraftingRecipes = {
 
     --Master
     {
-        id =  "ashfall_cbroll_active",
+        id =  "bushcraft:ashfall_cbroll_active",
+         craftableId = "ashfall_cbroll_active",
         description = "A covered bedroll which provides protection from the elements while sleeping.",
         additionalMenuOptions = {
             BedRoll.buttons.sleep,
@@ -1109,7 +1157,8 @@ this.bushCraftingRecipes = {
     },
     {
         --Nordic backpack
-        id = "ashfall_pack_06",
+        id = "bushcraft:ashfall_pack_06",
+        craftableId = "ashfall_pack_06",
         description = itemDescriptions.ashfall_pack_06,
         materials = {
             { material = "wood", count = 2 },
@@ -1125,7 +1174,8 @@ this.bushCraftingRecipes = {
         soundType = "wood",
     },
     {
-        id = "ashfall_fur_cloak",
+        id = "bushcraft:ashfall_fur_cloak",
+        craftableId = "ashfall_fur_cloak",
         previewMesh = "ashfall\\craft\\cloak_fur_preview.nif",
         description = itemDescriptions.ashfall_fur_cloak,
         materials = {
@@ -1207,14 +1257,25 @@ this.bushCraftingRecipes = {
 }
 this.tanningRackRecipes = {
     {
-        id = "ashfall_leather",
-        name = "Leather",
+        id = "bushcraft:ashfall_leather_hide",
+        craftableId = "ashfall_leather",
+        name = "Leather (from hide)",
         description = itemDescriptions.ashfall_leather,
         materials = {
             { material = "hide", count = 1 }
         },
         soundType = "leather",
-    }
+    },
+    {
+        id = "bushcraft:ashfall_leather_pelt",
+        craftableId = "ashfall_leather",
+        name = "Leather (from fur)",
+        description = itemDescriptions.ashfall_leather,
+        materials = {
+            { material = "fur", count = 1 }
+        },
+        soundType = "leather",
+    },
 }
 
 this.menuEvent = "Ashfall:ActivateBushcrafting"

@@ -76,6 +76,7 @@ do --Initialise Seedling Data
     local startTime = os.clock()
     local containerIngreds = {}
     for container in tes3.iterateObjects(tes3.objectType.container) do
+        ---@cast container tes3container
         if isValidOrganicContainer(container) then
             containerIngreds[container] = {}
             for ingred in common.helper.getIngredients(container.inventory) do
