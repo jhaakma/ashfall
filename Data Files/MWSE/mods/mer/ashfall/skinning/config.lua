@@ -1,12 +1,11 @@
 ---@class Ashfall.Skinning.config
 local skinningConfig = {
     SWINGS_NEEDED = 2,
-    MIN_DESTRUCTION_LIMIT = 4,
-    MAX_DESTRUCTION_LIMIT = 8,
+    MIN_DESTRUCTION_LIMIT = 2,
+    MAX_DESTRUCTION_LIMIT = 5,
     MIN_SURVIVAL_SKILL = 10,
-    MAX_SURVIVAL_SKILL = 50,
+    MAX_SURVIVAL_SKILL = 60,
     HARVEST_VARIANCE = 3,
-
     MIN_HEIGHT = 60,
     MAX_HEIGHT = 400,
     MIN_HEIGHT_EFFECT = 0.25,
@@ -24,6 +23,10 @@ skinningConfig.foodTypes = {
 
 skinningConfig.actorTypes = {
     [tes3.objectType.creature] = true,
+}
+
+skinningConfig.creatureTypes = {
+    [tes3.creatureType.normal] = true
 }
 
 ---@class Ashfall.Skinning.meatConfig
