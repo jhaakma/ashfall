@@ -758,6 +758,21 @@ this.bushCraftingRecipes = {
         recoverEquipmentMaterials = true,
     },
     {
+        id = "bushcraft:ashfall_staff_wood",
+        craftableId = "ashfall_staff_wood",
+        description = "A simple wooden staff. \n\nNote: Broken bushcrafted weapons can be dismantled for parts by equipping them.",
+        materials = {
+            { material = "wood", count = 2 },
+            { material = "rope", count = 1 },
+        },
+        skillRequirements = {
+            this.survivalTiers.novice
+        },
+        category = this.categories.weapons,
+        soundType = "wood",
+        recoverEquipmentMaterials = true,
+    },
+    {
         id = "bushcraft:ashfall_bow_wood",
         craftableId = "ashfall_bow_wood",
         description = "A simple bow and quiver made of wood.\n\nNote: Broken bushcrafted weapons can be dismantled for parts by equipping them.",
