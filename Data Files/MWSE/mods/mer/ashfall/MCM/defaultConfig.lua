@@ -1,5 +1,6 @@
 
-return {
+---@class Ashfall.MCMConfig
+local mcmConfig = {
     showHints = true,
     checkForUpdates = false,
     --intro setup
@@ -61,6 +62,7 @@ return {
     enableBlight = true,
     enableDiseasedMeat = true,
     enableEnvironmentSickness = true,
+    enableSkinning = true,
     enableBranchPlacement = true,
     enableCooking = false,--depreciated
     bushcraftingEnabled = true,
@@ -107,3 +109,4 @@ return {
         clothing = {}
     },
 }
+return mcmConfig

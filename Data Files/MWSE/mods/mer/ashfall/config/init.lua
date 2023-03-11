@@ -1,10 +1,12 @@
 
 
+
 local this = {}
 this.configPath = "ashfall"
 this.defaultConfig = require ("mer.ashfall.MCM.defaultConfig")
 local inMemConfig = mwse.loadConfig(this.configPath, this.defaultConfig)
 
+---@class Ashfall.Config : Ashfall.MCMConfig
 this.config = setmetatable({
     save = function()
         mwse.saveConfig(this.configPath, inMemConfig)

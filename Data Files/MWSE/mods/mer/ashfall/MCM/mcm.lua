@@ -262,6 +262,12 @@ local function registerModConfig()
             }
 
             categoryMisc:createYesNoButton{
+                label = "Enable Skinning",
+                description = "Enable the skinning mechanic. To skin a creature, hack at its corpse with a knife to collect its hide, meat and fur.",
+                variable = mwse.mcm.createTableVariable{ id = "enableSkinning", table = config }
+            }
+
+            categoryMisc:createYesNoButton{
                 label = "Enable Dynamic Branch Placement",
                 description = "Loose branches will spawn near trees, which can be picked up for firewood. May cause a slight delay on cell change on lower end systemss. Disable this if you experience performance issues.",
                 variable = mwse.mcm.createTableVariable{ id = "enableBranchPlacement", table = config }

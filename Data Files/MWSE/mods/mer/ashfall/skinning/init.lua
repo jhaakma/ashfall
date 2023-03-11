@@ -3,6 +3,7 @@ local HarvestService = require("mer.ashfall.harvest.service")
 local SkinningService = require("mer.ashfall.skinning.service")
 local CraftingFramework = include("CraftingFramework")
 local common = require("mer.ashfall.common.common")
+local config = require("mer.ashfall.config").config
 local interop = require("mer.ashfall.interop")
 local logger = common.createLogger("skinningController")
 
@@ -28,51 +29,77 @@ for ingredId, skinnableConfig in pairs(skinningConfig.extraSkinnables) do
     end
 end
 
---When attacked with a knife, harvest ingredients from leveled inventory
+---@param e deathEventData
+event.register(tes3.event.death, function(e)
+    if not config.enableSkinning then return end
+    logger:debug("removeSkinnableIngredientsOnDeath()")
+    local ingredients = SkinningService.calculateSkinnableIngredients(e.reference)
+    if ingredients and table.size(ingredients) > 0 then
+        logger:debug("Found ingredients, removing from corpse")
+        SkinningService.removeIngredientsFromCorpse(e.reference, ingredients)
+        logger:debug("Adding ingred list to data")
+        e.reference.data.ashfall_skinnable_ingredients = ingredients
+    end
+end)
+
 ---@param e attackHitEventData
-local function skinOnAttack(e)
+event.register("attackHit", function(e)
+    if not config.enableSkinning then return end
     logger:debug("skinOnAttack ENTRY")
 
+    do -- player checks
+        --Check reference
+        if e.reference ~= tes3.player then
+            logger:debug("Not player")
+            return
+        end
 
+        --skip if in combat
+        if tes3.mobilePlayer.inCombat then
+            logger:debug("In combat")
+            return
+        end
 
-    --Check reference
-    if e.reference ~= tes3.player then
-        logger:debug("Not player")
-        return
     end
 
-    --skip if in combat
-    if tes3.mobilePlayer.inCombat then
-        logger:debug("In combat")
-        return
-    end
 
     local target = tes3.getPlayerTarget()
 
-    if not target then
-        logger:debug("No target")
+    do --target checks
+        if not target then
+            logger:debug("No target")
+            return
+        end
+
+        --Check ref is dead
+        if not target.mobile then
+            logger:debug("No target mobile")
+            return
+        end
+        if not target.mobile.isDead then
+            logger:debug("Target not dead")
+            return
+        end
+    end
+
+    if HarvestService.checkHarvested(target) then
+        logger:debug("Already harvested")
         return
     end
 
-    --Check ref is dead
-    if not target.mobile then
-        logger:debug("No target mobile")
-        return
-    end
-    if not target.mobile.isDead then
-        logger:debug("Target not dead")
-        return
-    end
-
-    --Get Player Weapon
+    --has weapon Weapon
     local weapon = tes3.player.mobile.readiedWeapon
     if not weapon then
         logger:debug("Harvest: No weapon")
         return
     end
+    if weapon.object.type ~= tes3.weaponType["shortBladeOneHand"] then
+        logger:debug("Not a short blade")
+        tes3.messageBox("Requires Knife.")
+        return
+    end
 
-
-
+    --Get skinnable ingredients
     local ingredients = SkinningService.getSkinnableIngredients(target)
     if (not ingredients) then
         logger:debug("No a valid skinnable reference")
@@ -82,16 +109,7 @@ local function skinOnAttack(e)
         return
     end
 
-    if HarvestService.checkHarvested(target) then
-        logger:debug("Already harvested")
-        return
-    end
-
-    if weapon.object.type ~= tes3.weaponType["shortBladeOneHand"] then
-        logger:debug("Not a short blade")
-        tes3.messageBox("Requires Knife.")
-        return
-    end
+    logger:debug("Checks passed, is skinnable, has ingredients, doing harvest attempt")
 
     tes3.playSound{reference = tes3.player, sound = "corpDRAG"}
 
@@ -141,26 +159,12 @@ local function skinOnAttack(e)
             end
         }
     end
-end
-event.register("attackHit", skinOnAttack)
-
----@param e deathEventData
-local function removeSkinnableIngredientsOnDeath(e)
-    logger:debug("removeSkinnableIngredientsOnDeath()")
-    local ingredients = SkinningService.calculateSkinnableIngredients(e.reference)
-    if ingredients and table.size(ingredients) > 0 then
-        logger:debug("Found ingredients, removing from corpse")
-        SkinningService.removeIngredientsFromCorpse(e.reference, ingredients)
-        logger:debug("Adding ingred list to data")
-        e.reference.data.ashfall_skinnable_ingredients = ingredients
-    end
-end
-event.register(tes3.event.death, removeSkinnableIngredientsOnDeath)
+end)
 
 ---@param e uiObjectTooltipEventData
-local function addTooltipToCorpse(e)
+event.register(tes3.event.uiObjectTooltip, function(e)
+    if not config.enableSkinning then return end
     if SkinningService.getSkinnableIngredients(e.reference) then
-       e.tooltip:createLabel{ text = "Skinnable" }
+        e.tooltip:createLabel{ text = "Skinnable" }
     end
-end
-event.register(tes3.event.uiObjectTooltip, addTooltipToCorpse)
+end)
