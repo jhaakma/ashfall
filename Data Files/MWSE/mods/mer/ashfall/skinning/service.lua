@@ -13,8 +13,10 @@ local SkinningService = {}
 
 local function isValidActor(target)
     local objType = target and target.baseObject.objectType
+    local creatureType = target.object.type
     if not objType then return false end
-    return not not skinningConfig.actorTypes[objType]
+    return skinningConfig.actorTypes[objType] == true
+        and skinningConfig.creatureTypes[creatureType] == true
 end
 
 local function isValidMaterial(ingredient)
@@ -76,7 +78,6 @@ function SkinningService.getSkinnableIngredients(reference)
     and reference.data
     and reference.data.ashfall_skinnable_ingredients
 end
-
 
 ---@param target tes3reference
 ---@return table<string, boolean>|nil
@@ -153,7 +154,9 @@ function SkinningService.calculateDestructionLimit(reference)
         skinningConfig.MAX_SURVIVAL_SKILL,
         skinningConfig.MIN_DESTRUCTION_LIMIT,
         skinningConfig.MAX_DESTRUCTION_LIMIT)
-    destructionLimit = math.clamp(destructionLimit, skinningConfig.MIN_DESTRUCTION_LIMIT, skinningConfig.MAX_DESTRUCTION_LIMIT)
+    destructionLimit = math.clamp(destructionLimit,
+    skinningConfig.MIN_DESTRUCTION_LIMIT,
+    skinningConfig.MAX_DESTRUCTION_LIMIT)
     logger:debug("Initial destructionLimit: %s", destructionLimit)
     --Add some randomness
     destructionLimit = destructionLimit + math.random(0, skinningConfig.HARVEST_VARIANCE)

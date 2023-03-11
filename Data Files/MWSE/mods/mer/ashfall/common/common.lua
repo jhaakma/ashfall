@@ -1,4 +1,5 @@
 --Common
+---@class Ashfall.Common
 local this = {}
 this.staticConfigs = require("mer.ashfall.config.staticConfigs")
 this.helper = require("mer.ashfall.common.helperFunctions")

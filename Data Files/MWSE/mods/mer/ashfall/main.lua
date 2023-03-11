@@ -62,6 +62,7 @@ end
 event.register("UIEXP:sandboxConsole", function(e)
     e.sandbox.ashfall = table.copy(Interop)
     e.sandbox.ashfall.data = common.data
+    e.sandbox.ashfall.common = common
 end)
 
 -- Need to initialise immediately
