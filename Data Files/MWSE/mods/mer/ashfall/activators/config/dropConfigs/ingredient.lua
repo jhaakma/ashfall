@@ -29,7 +29,7 @@ return {
             return false, "No ladle in pot."
         end
 
-        return not not targetRef.data.ladle
+        return true
     end,
     onDrop = function(targetRef, droppedRef)
         local amount = common.helper.getStackCount(droppedRef)
