@@ -1,53 +1,53 @@
+---@class Ashfall.ItemInstance.new.params
+---@field reference tes3reference|nil
+---@field item tes3item|tes3object|nil
+---@field itemData tes3itemData|nil
+---@field owner tes3reference|nil
+
 --[[
-    Represents an individual item and it's associated data,
-    regardless of whether it exists as a reference or an item
+    Represents an individual object and it's associated data,
+    regardless of whether it exists as a reference or an object
     inside an inventory.
 ]]
+---@class Ashfall.ItemInstance : Ashfall.ItemInstance.new.params
 local ItemInstance = {}
-function ItemInstance.new(e)
-    --get input
-    local reference = e.reference
-    local item = reference and reference.object or e.item
-    assert(item, "ItemInstance.new: Either a reference or item must be provided.")
-    local itemData = e.itemData
-    local owner = e.owner
-    --create instance
-    local itemInstance = {
-        item = item,
-        itemData = itemData,
-        reference = reference,
-        owner = owner or tes3.player
-    }
-    --determine metatable for data field
-    local dataMeta
-    if reference then
-        dataMeta = {
-            __index = function(self, key)
-                return itemInstance.reference.data
-            end,
-            __setindex = function(self, key, val)
-                itemInstance.reference.data[key] = val
+
+---@param e Ashfall.ItemInstance.new.params
+---@return Ashfall.ItemInstance
+function ItemInstance:new(e)
+    local itemInstance = setmetatable({}, self)
+    itemInstance.reference = e.reference
+    itemInstance.item = e.item or e.reference.baseObject
+    itemInstance.dataHolder = e.itemData or e.reference
+    itemInstance.id = itemInstance.item.id:lower()
+    -- reference data
+    itemInstance.data = setmetatable({}, {
+        __index = function(_, k)
+            if not (
+                itemInstance.dataHolder
+                and itemInstance.dataHolder.data
+            ) then
+                return nil
             end
-        }
-    else
-        dataMeta = {
-            __index = function(self, key)
-                return itemInstance.itemData
-                    and itemInstance.itemData.data
-                    and itemInstance.itemData.data[key]
-            end,
-            __setindex = function(self, key, val)
-                if not itemInstance.itemData then
-                    itemInstance.itemData = tes3.addItemData{
-                        to = itemInstance.owner,
+            return itemInstance.dataHolder.data.joyOfPainting[k]
+        end,
+        __newindex = function(_, k, v)
+            if not (
+                itemInstance.dataHolder
+                and itemInstance.dataHolder.data
+            ) then
+                if not itemInstance.reference then
+                    --create itemData
+                    itemInstance.dataholder = tes3.addItemData{
+                        to = tes3.player,
                         item = itemInstance.item,
                     }
                 end
-                itemInstance.itemData.data[key] = val
             end
-        }
-    end
-    itemInstance.data = setmetatable({}, dataMeta)
+            itemInstance.dataHolder.data = v
+        end
+    })
     return itemInstance
+
 end
 return ItemInstance

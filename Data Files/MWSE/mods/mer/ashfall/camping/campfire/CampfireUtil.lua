@@ -289,16 +289,16 @@ end
 
 function CampfireUtil.refIsCookingPot(reference)
     return reference.data.utensil == "cookingPot"
-        or common.staticConfigs.cookingPots[item.id:lower()]
+        or common.staticConfigs.cookingPots[reference.baseObject.id:lower()]
 end
 
 function CampfireUtil.refIsKettle(reference)
     return reference.data.utensil == "kettle"
-        or common.staticConfigs.kettles[item.id:lower()]
+        or common.staticConfigs.kettles[reference.baseObject.id:lower()]
 end
 
 function CampfireUtil.isUtensil(ref)
-    return common.staticConfigs.utensils[ref.object.id:lower()] ~= nil
+    return common.staticConfigs.utensils[ref.baseObject.id:lower()] ~= nil
         or ( ref.data and ref.data.utensil ~= nil)
 end
 

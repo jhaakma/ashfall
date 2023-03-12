@@ -8,7 +8,6 @@ return {
     dropText = function(campfire, item, itemData)
         return string.format("Add %s", item.name)
     end,
-    --onDrop for Stew handled separately, this only does tea
     canDrop = function(targetRef, item, itemData)
         local isStewIngred = foodConfig.getStewBuffForId(item)
         if not isStewIngred then
@@ -30,7 +29,7 @@ return {
             return false, "No ladle in pot."
         end
 
-        return true
+        return not not targetRef.data.ladle
     end,
     onDrop = function(targetRef, droppedRef)
         local amount = common.helper.getStackCount(droppedRef)

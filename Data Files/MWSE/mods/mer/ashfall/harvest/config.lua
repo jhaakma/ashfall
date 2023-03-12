@@ -274,7 +274,8 @@ config.activatorHarvestData = {
             return isPick
         end,
         items = {
-            { id = "ashfall_flint", count = 2, chance = 1.0 }
+            { id = "ashfall_stone", count = 2, chance = 0.9 },
+            { id = "ashfall_flint", count = 1, chance = 0.1 },
         },
         sound = "Fx\\Heavy Armor Hit.wav",
         swingsNeeded = 4,

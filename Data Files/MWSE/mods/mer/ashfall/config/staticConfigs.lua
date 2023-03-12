@@ -1,3 +1,17 @@
+---@class Ashfall.UtensilConfig
+---@field type string
+---@field holdsStew boolean
+---@field meshOverride string
+
+---@class Ashfall.WaterVessel : Ashfall.UtensilConfig
+---@field capacity number
+---@field waterMaxScale number
+---@field waterMaxHeight number
+
+---@class Ashfall.CookingPot : Ashfall.WaterVessel
+
+---@class Ashfall.GrillConfig : Ashfall.UtensilConfig
+
 local this = {}
 
 this.activatorConfig = require("mer.ashfall.activators.config.activatorConfig")
@@ -387,6 +401,11 @@ this.bottleList = {
         waterMaxScale = 1.3,
         waterMaxHeight = 4.0,
     },
+    ashfall_cup_02 = {
+        capacity = 35,
+        waterMaxScale = 1.3,
+        waterMaxHeight = 4.0,
+    },
 }
 for id, _ in pairs(this.bottleList) do
     this.activatorConfig.list.waterContainer:addId(id)
@@ -708,6 +727,13 @@ this.utensils = {
     --     waterMaxHeight = 28,
     --     holdsStew = true
     -- },
+    ashfall_bowl_02 = {
+        type = "cookingPot",
+        capacity = 80,
+        waterMaxHeight = 4,
+        waterMaxScale = 1.8,
+        holdsStew = true,
+    },
     ashfall_cooking_pot = {
         type = "cookingPot",
         capacity = 200,

@@ -74,6 +74,7 @@ return {
     ashfall_kettle_09 = { maxSteepness = 0.05 },
 
     ashfall_bowl_01 = { maxSteepness = 0.05 },
+    ashfall_bowl_02 = { maxSteepness = 0.05 },
 
     ashfall_misc_stove_01 = { maxSteepness = 0.05 },
 

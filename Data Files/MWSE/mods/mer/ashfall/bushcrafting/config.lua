@@ -62,6 +62,13 @@ this.tools = {
             return itemStack.object.objectType == tes3.objectType.weapon
             and itemStack.object.type == tes3.weaponType.shortBladeOneHand
         end,
+    },
+    {
+        id = "chizel",
+        name = "Chizel",
+        requirement = function(itemStack)
+            return itemStack.object.id:lower() == "ashfall_chizel_flint"
+        end,
     }
 }
 
@@ -136,6 +143,11 @@ this.materials = {
         id = "wood",
         name = "Wood",
         ids = {"ashfall_firewood"}
+    },
+    {
+        id = "stone",
+        name = "Stone",
+        ids = {"ashfall_stone"}
     },
     {
         id = "hide",
@@ -386,6 +398,21 @@ this.bushCraftingRecipes = {
         recoverEquipmentMaterials = true,
     },
     {
+        id = "bushcraft:ashfall_chizel_flint",
+        craftableId = "ashfall_chizel_flint",
+        description = "A simple chisel made of flint. Useful for carving wood and stone.\n\nNote: Broken bushcrafted weapons can be dismantled for parts by equipping them.",
+        materials = {
+            { material = "flint", count = 1 },
+            { material = "wood", count = 1 },
+        },
+        skillRequirements = {
+            this.survivalTiers.beginner
+        },
+        category = this.categories.weapons,
+        soundType = "wood",
+        recoverEquipmentMaterials = true,
+    },
+    {
         id = "bushcraft:ashfall_woodaxe_flint",
         craftableId = "ashfall_woodaxe_flint",
         description = "A woodaxe made with flint. Can be used to harvest firewood.\n\nNote: Broken bushcrafted weapons can be dismantled for parts by equipping them.",
@@ -401,175 +428,7 @@ this.bushCraftingRecipes = {
         soundType = "wood",
         recoverEquipmentMaterials = true,
     },
-    {
-        id = "bushcraft:ashfall_bowl_01",
-        craftableId = "ashfall_bowl_01",
-        description = "A handcarved wooden bowl. Can be used to store water or stew.",
-        materials = {
-            { material = "wood", count = 1},
-        },
-        toolRequirements = {
-            {
-                tool = "knife",
-                equipped = true,
-                conditionPerUse = 5
-            }
-        },
-        category = this.categories.cutlery,
-        previewScale = 4,
-        soundType = "carve",
-        skillRequirements = {
-            this.survivalTiers.beginner
-        },
-    },
-    {
-        id = "bushcraft:ashfall_cup_01",
-        craftableId = "ashfall_cup_01",
-        description = "A handcarved wooden cup. Can be used to store water or tea.",
-        materials = {
-            { material = "wood", count = 1},
-        },
-        toolRequirements = {
-            {
-                tool = "knife",
-                equipped = true,
-                conditionPerUse = 4
-            }
-        },
-        category = this.categories.cutlery,
-        previewScale = 4,
-        soundType = "carve",
-        skillRequirements = {
-            this.survivalTiers.beginner
-        },
-    },
-    {
-        id = "bushcraft:ashfall_wood_knife",
-        craftableId = "ashfall_wood_knife",
-        description = "A handcarved wooden knife.",
-        materials = {
-            { material = "wood", count = 1},
-        },
-        toolRequirements = {
-            {
-                tool = "knife",
-                equipped = true,
-                conditionPerUse = 2
-            }
-        },
-        category = this.categories.cutlery,
-        rotationAxis = 'y',
-        soundType = "carve",
-        skillRequirements = {
-            this.survivalTiers.beginner
-        },
-    },
-    {
-        id = "bushcraft:ashfall_wood_fork",
-        craftableId = "ashfall_wood_fork",
-        description = "A handcarved wooden fork.",
-        materials = {
-            { material = "wood", count = 1},
-        },
-        toolRequirements = {
-            {
-                tool = "knife",
-                equipped = true,
-                conditionPerUse = 2
-            }
-        },
-        category = this.categories.cutlery,
-        rotationAxis = 'y',
-        soundType = "carve",
-        skillRequirements = {
-            this.survivalTiers.beginner
-        },
-    },
-    {
-        id = "bushcraft:ashfall_wood_spoon",
-        craftableId = "ashfall_wood_spoon",
-        description = "A handcarved wooden spoon.",
-        materials = {
-            { material = "wood", count = 1},
-        },
-        toolRequirements = {
-            {
-                tool = "knife",
-                equipped = true,
-                conditionPerUse = 2
-            }
-        },
-        category = this.categories.cutlery,
-        rotationAxis = 'y',
-        soundType = "carve",
-        skillRequirements = {
-            this.survivalTiers.beginner
-        },
-    },
-    {
-        id = "bushcraft:ashfall_wood_plate",
-        craftableId = "ashfall_wood_plate",
-        description = "A handcarved wooden plate.",
-        materials = {
-            { material = "wood", count = 1},
-        },
-        toolRequirements = {
-            {
-                tool = "knife",
-                equipped = true,
-                conditionPerUse = 4
-            }
-        },
-        category = this.categories.cutlery,
-        soundType = "carve",
-        skillRequirements = {
-            this.survivalTiers.beginner
-        },
-    },
-    {
-        id = "bushcraft:ashfall_wood_ladle",
-        craftableId = "ashfall_wood_ladle",
-        description = "A handcarved wooden ladle. Can be added to cooking pots to make stews.",
-        materials = {
-            { material = "wood", count = 1},
-        },
-        toolRequirements = {
-            {
-                tool = "knife",
-                equipped = true,
-                conditionPerUse = 4
-            }
-        },
-        category = this.categories.cutlery,
-        previewMesh = "ashfall\\craft\\wood_ladle_attach.nif",
-        soundType = "carve",
-        skillRequirements = {
-            this.survivalTiers.beginner
-        },
-    },
 
-    --Novice
-    {
-        id = "bushcraft:ashfall_stand_01",
-        craftableId = "ashfall_stand_01",
-        description = "A simple wooden stand for displaying decorations and ceramics.",
-        materials = {
-            { material = "wood", count = 4 },
-            { material = "resin", count = 1 }
-        },
-        skillRequirements = {
-            this.survivalTiers.expert
-        },
-        category = this.categories.furniture,
-        soundType = "carve",
-        toolRequirements = {
-            {
-                tool = "knife",
-                equipped = true,
-                conditionPerUse = 4
-            }
-        },
-    },
     {
         id = "bushcraft:ashfall_planter_01",
         craftableId = "ashfall_planter_01",
@@ -1293,6 +1152,230 @@ this.tanningRackRecipes = {
     },
 }
 
+this.carvingRecipes = {
+    {
+        id = "bushcraft:ashfall_bowl_01",
+        craftableId = "ashfall_bowl_01",
+        description = "A handcarved wooden bowl. Can be used to store water or stew.",
+        materials = {
+            { material = "wood", count = 1},
+        },
+        toolRequirements = {
+            {
+                tool = "chizel",
+                conditionPerUse = 5
+            }
+        },
+        category = this.categories.cutlery,
+        previewScale = 4,
+        soundType = "carve",
+        skillRequirements = {
+            this.survivalTiers.beginner
+        },
+    },
+    {
+        id = "bushcraft:ashfall_cup_01",
+        craftableId = "ashfall_cup_01",
+        description = "A handcarved wooden cup. Can be used to store water or tea.",
+        materials = {
+            { material = "wood", count = 1},
+        },
+        toolRequirements = {
+            {
+                tool = "chizel",
+                conditionPerUse = 4
+            }
+        },
+        category = this.categories.cutlery,
+        previewScale = 4,
+        soundType = "carve",
+        skillRequirements = {
+            this.survivalTiers.beginner
+        },
+    },
+    {
+        id = "bushcraft:ashfall_wood_knife",
+        craftableId = "ashfall_wood_knife",
+        description = "A handcarved wooden knife.",
+        materials = {
+            { material = "wood", count = 1},
+        },
+        toolRequirements = {
+            {
+                tool = "chizel",
+                conditionPerUse = 2
+            }
+        },
+        category = this.categories.cutlery,
+        rotationAxis = 'y',
+        soundType = "carve",
+        skillRequirements = {
+            this.survivalTiers.beginner
+        },
+    },
+    {
+        id = "bushcraft:ashfall_wood_fork",
+        craftableId = "ashfall_wood_fork",
+        description = "A handcarved wooden fork.",
+        materials = {
+            { material = "wood", count = 1},
+        },
+        toolRequirements = {
+            {
+                tool = "chizel",
+                conditionPerUse = 2
+            }
+        },
+        category = this.categories.cutlery,
+        rotationAxis = 'y',
+        soundType = "carve",
+        skillRequirements = {
+            this.survivalTiers.beginner
+        },
+    },
+    {
+        id = "bushcraft:ashfall_wood_spoon",
+        craftableId = "ashfall_wood_spoon",
+        description = "A handcarved wooden spoon.",
+        materials = {
+            { material = "wood", count = 1},
+        },
+        toolRequirements = {
+            {
+                tool = "chizel",
+                conditionPerUse = 2
+            }
+        },
+        category = this.categories.cutlery,
+        rotationAxis = 'y',
+        soundType = "carve",
+        skillRequirements = {
+            this.survivalTiers.beginner
+        },
+    },
+    {
+        id = "bushcraft:ashfall_wood_plate",
+        craftableId = "ashfall_wood_plate",
+        description = "A handcarved wooden plate.",
+        materials = {
+            { material = "wood", count = 1},
+        },
+        toolRequirements = {
+            {
+                tool = "chizel",
+                conditionPerUse = 4
+            }
+        },
+        category = this.categories.cutlery,
+        soundType = "carve",
+        skillRequirements = {
+            this.survivalTiers.beginner
+        },
+    },
+    {
+        id = "bushcraft:ashfall_wood_ladle",
+        craftableId = "ashfall_wood_ladle",
+        description = "A handcarved wooden ladle. Can be added to cooking pots to make stews.",
+        materials = {
+            { material = "wood", count = 1},
+        },
+        toolRequirements = {
+            {
+                tool = "chizel",
+                conditionPerUse = 4
+            }
+        },
+        category = this.categories.cutlery,
+        previewMesh = "ashfall\\craft\\wood_ladle_attach.nif",
+        soundType = "carve",
+        skillRequirements = {
+            this.survivalTiers.beginner
+        },
+    },
+
+    --Novice
+    {
+        id = "bushcraft:ashfall_cup_2",
+        craftableId = "ashfall_cup_02",
+        description = "A handcarved stone cup. Can be used to store water or tea.",
+        materials = {
+            { material = "stone", count = 1},
+        },
+        toolRequirements = {
+            {
+                tool = "chizel",
+                conditionPerUse = 20
+            }
+        },
+        category = this.categories.cutlery,
+        previewScale = 4,
+        soundType = "carve",
+        skillRequirements = {
+            this.survivalTiers.novice
+        },
+    },
+    {
+        id = "bushcraft:ashfall_bowl_02",
+        craftableId = "ashfall_bowl_02",
+        description = "A handcarved stone bowl. Can be used to store water or stew.",
+        materials = {
+            { material = "stone", count = 1},
+        },
+        toolRequirements = {
+            {
+                tool = "chizel",
+                conditionPerUse = 25
+            }
+        },
+        category = this.categories.cutlery,
+        previewScale = 4,
+        soundType = "carve",
+        skillRequirements = {
+            this.survivalTiers.novice
+        },
+    },
+
+    {
+        id = "bushcraft:ashfall_mortar",
+        craftableId = "ashfall_mortar",
+        description = "A handcarved mortar and pestle for basic alchemy.",
+        materials = {
+            { material = "stone", count = 2},
+        },
+        toolRequirements = {
+            {
+                tool = "chizel",
+                conditionPerUse = 30
+            }
+        },
+        category = this.categories.equipment,
+        soundType = "carve",
+        skillRequirements = {
+            this.survivalTiers.novice
+        },
+    },
+    {
+        id = "bushcraft:ashfall_stand_01",
+        craftableId = "ashfall_stand_01",
+        description = "A simple wooden stand for displaying decorations and ceramics.",
+        materials = {
+            { material = "wood", count = 4 },
+            { material = "resin", count = 1 }
+        },
+        skillRequirements = {
+            this.survivalTiers.expert
+        },
+        category = this.categories.furniture,
+        soundType = "carve",
+        toolRequirements = {
+            {
+                tool = "chizel",
+                conditionPerUse = 10
+            }
+        },
+    },
+}
+
 this.menuEvent = "Ashfall:ActivateBushcrafting"
 this.menuActivators = {
     {
@@ -1307,6 +1390,12 @@ this.menuActivators = {
         type = "event",
         id = "Ashfall:ActivateTanningRack",
         recipes = this.tanningRackRecipes
+    },
+    {
+        name = "Carving",
+        type = "equip",
+        id = "ashfall_chizel_flint",
+        recipes = this.carvingRecipes
     }
 }
 

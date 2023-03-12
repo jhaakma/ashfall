@@ -17,7 +17,6 @@ local foodConfig = require "mer.ashfall.config.foodConfig"
 local teaConfig = require "mer.ashfall.config.teaConfig"
 
 
-
 ---@class Ashfall.LiquidContainer.Data
 ---@field waterAmount number Amount of water in container. Maps to data.waterAmount
 ---@field waterHeat number How hot the water is out of 100. Maps to data.waterHeat
@@ -232,12 +231,11 @@ function LiquidContainer.canTransfer(from, to)
         end
     end
 
-    -- Target of stew must have a ladle
-    local requiresLadle = common.staticConfigs.cookingPots[to.itemId:lower()]
-    local hasLadle = not not to.data.ladle
-    if from.stewLevels and requiresLadle and not hasLadle then
-        return false, "Target must have a ladle."
+    --Uncooked stew can't be transfered
+    if from:isStew() and not from:isCookedStew() then
+        return false, "Can not transfer uncooked stew."
     end
+
     -- Target must have some room to add water
     if to.capacity - to.waterAmount < 1 then
         return false, "Target is full."

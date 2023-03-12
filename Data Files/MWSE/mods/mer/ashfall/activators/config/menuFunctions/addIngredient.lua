@@ -106,10 +106,10 @@ return {
         return isCookingPot and hasWater
     end,
     enableRequirements = function(ref)
-        return  not not ref.data.ladle
+        return not not ref.data.ladle
     end,
     tooltipDisabled = {
-        text = "An Iron Ladle is required to make Stew."
+        text = "A ladle is required to make stew."
     },
     tooltip = function()
         return common.helper.showHint("You can add ingredients by dropping them directly into the cooking pot.")

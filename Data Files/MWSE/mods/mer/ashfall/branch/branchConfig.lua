@@ -79,9 +79,10 @@ this.branchGroups = {
     },
     flint = {
         ids = {
-            "ashfall_flint",
+            --"ashfall_flint",
+            "ashfall_stone",
         },
-        chanceNone = 90,
+        chanceNone = 80,
         minPlaced = 1,
         maxPlaced = 1,
         minDistance = 100,

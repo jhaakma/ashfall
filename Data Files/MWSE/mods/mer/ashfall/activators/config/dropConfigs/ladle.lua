@@ -10,11 +10,12 @@ return {
             return false
         end
         local hasCookingPot = target.data.utensil == "cookingPot"
-        or common.staticConfigs.cookingPots[target.object.id:lower()]
+            or common.staticConfigs.cookingPots[target.object.id:lower()]
         if not hasCookingPot then
             return false
         end
         local hasLadle = target.data.ladle
+
         if hasLadle then
             return false, "Campfire already has a ladle."
         end

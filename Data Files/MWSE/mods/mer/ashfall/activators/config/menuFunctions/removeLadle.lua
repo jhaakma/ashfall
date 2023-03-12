@@ -12,10 +12,13 @@ return  {
         )
     end,
     enableRequirements = function(campfire)
-        return not campfire.data.stewLevels
+        local hasUncookedStew = campfire.data.stewLevels
+            and campfire.data.stewProgress
+            and campfire.data.stewProgress < 100
+        return not hasUncookedStew
     end,
     tooltipDisabled = {
-        text = "Empty Stew before removing Ladle."
+        text = "Empty or finish cooking stew before removing ladle."
     },
     callback = function(campfire)
         local ladleId = "misc_com_iron_ladle" -- Default for legacy ladle boolean
