@@ -54,5 +54,5 @@ return {
     ashfall_leather = "A piece of leather made from tanning animal hide.",
     ashfall_sack_01 = "A partable sack that can be placed on the ground and used to store items.",
     ashfall_fur_cloak = "A cloak made made with fur provides a moderate amount of warmth.",
-    ashfall_fab_cloak = "A cloak made up of a patchwork of thin fabric. Doesn't offer much warmth but it's easy to make."
+    ashfall_fab_cloak = "A cloak made up of a patchwork of thin fabric. Doesn't offer much warmth but it's easy to make.",
 }
