@@ -38,6 +38,8 @@ local mcmConfig = {
         ["urfing"] = true --Moonmoth Legion Fort trader - Nord 400
     },
     foodWaterMerchants = {
+        ["lirielle stoine"] = true, --Rat in the Pot
+        ["darvam hlaren"] = true, --Ald-ruhn council club
         ["arrille"] = true,--seyda neen trader
         ["helviane desele"] = true,--suran madame
         ["ashumanu eraishah"] = true,--suran tradehouse

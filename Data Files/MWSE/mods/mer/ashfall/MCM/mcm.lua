@@ -533,6 +533,16 @@ local function registerModConfig()
 
     end --\Exclusions Page
 
+    local function offersService(npcObject, service)
+        if npcObject.class and npcObject.class[service] then
+            return true
+        end
+        if npcObject.aiConfig and npcObject.aiConfig[service] then
+            return true
+        end
+        return false
+    end
+
     do --Camping gear merchants
         template:createExclusionsPage{
             label = "Camping Merchants",
@@ -546,14 +556,12 @@ local function registerModConfig()
                     callback = function()
                         --Check if npc is able to sell any guar gear
                         local function canSellGear(obj)
-                            if obj.class then
-                                local bartersFields = {
-                                    "bartersMiscItems",
-                                }
-                                for _, field in ipairs(bartersFields) do
-                                    if obj.class[field] == true then
-                                        return true
-                                    end
+                            local bartersFields = {
+                                "bartersMiscItems",
+                            }
+                            for _, field in ipairs(bartersFields) do
+                                if offersService(obj, field) then
+                                    return true
                                 end
                             end
                             return false
@@ -594,7 +602,7 @@ local function registerModConfig()
                                     "bartersIngredients"
                                 }
                                 for _, field in ipairs(bartersFields) do
-                                    if obj.class[field] == true then
+                                    if offersService(obj, field) then
                                         return true
                                     end
                                 end
