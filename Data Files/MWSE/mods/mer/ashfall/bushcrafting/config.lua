@@ -64,10 +64,10 @@ this.tools = {
         end,
     },
     {
-        id = "chizel",
-        name = "Chizel",
+        id = "chisel",
+        name = "chisel",
         requirement = function(itemStack)
-            return itemStack.object.id:lower() == "ashfall_chizel_flint"
+            return itemStack.object.id:lower() == "ashfall_chisel_flint"
         end,
     }
 }
@@ -398,8 +398,8 @@ this.bushCraftingRecipes = {
         recoverEquipmentMaterials = true,
     },
     {
-        id = "bushcraft:ashfall_chizel_flint",
-        craftableId = "ashfall_chizel_flint",
+        id = "bushcraft:ashfall_chisel_flint",
+        craftableId = "ashfall_chisel_flint",
         description = "A simple chisel made of flint. Useful for carving wood and stone.\n\nNote: Broken bushcrafted weapons can be dismantled for parts by equipping them.",
         materials = {
             { material = "flint", count = 1 },
@@ -1162,7 +1162,7 @@ this.carvingRecipes = {
         },
         toolRequirements = {
             {
-                tool = "chizel",
+                tool = "chisel",
                 conditionPerUse = 5
             }
         },
@@ -1182,7 +1182,7 @@ this.carvingRecipes = {
         },
         toolRequirements = {
             {
-                tool = "chizel",
+                tool = "chisel",
                 conditionPerUse = 4
             }
         },
@@ -1202,7 +1202,7 @@ this.carvingRecipes = {
         },
         toolRequirements = {
             {
-                tool = "chizel",
+                tool = "chisel",
                 conditionPerUse = 2
             }
         },
@@ -1222,7 +1222,7 @@ this.carvingRecipes = {
         },
         toolRequirements = {
             {
-                tool = "chizel",
+                tool = "chisel",
                 conditionPerUse = 2
             }
         },
@@ -1242,7 +1242,7 @@ this.carvingRecipes = {
         },
         toolRequirements = {
             {
-                tool = "chizel",
+                tool = "chisel",
                 conditionPerUse = 2
             }
         },
@@ -1262,7 +1262,7 @@ this.carvingRecipes = {
         },
         toolRequirements = {
             {
-                tool = "chizel",
+                tool = "chisel",
                 conditionPerUse = 4
             }
         },
@@ -1281,7 +1281,7 @@ this.carvingRecipes = {
         },
         toolRequirements = {
             {
-                tool = "chizel",
+                tool = "chisel",
                 conditionPerUse = 4
             }
         },
@@ -1303,7 +1303,7 @@ this.carvingRecipes = {
         },
         toolRequirements = {
             {
-                tool = "chizel",
+                tool = "chisel",
                 conditionPerUse = 20
             }
         },
@@ -1323,7 +1323,7 @@ this.carvingRecipes = {
         },
         toolRequirements = {
             {
-                tool = "chizel",
+                tool = "chisel",
                 conditionPerUse = 25
             }
         },
@@ -1344,7 +1344,7 @@ this.carvingRecipes = {
         },
         toolRequirements = {
             {
-                tool = "chizel",
+                tool = "chisel",
                 conditionPerUse = 30
             }
         },
@@ -1369,7 +1369,7 @@ this.carvingRecipes = {
         soundType = "carve",
         toolRequirements = {
             {
-                tool = "chizel",
+                tool = "chisel",
                 conditionPerUse = 10
             }
         },
@@ -1394,7 +1394,7 @@ this.menuActivators = {
     {
         name = "Carving",
         type = "equip",
-        id = "ashfall_chizel_flint",
+        id = "ashfall_chisel_flint",
         recipes = this.carvingRecipes
     }
 }
