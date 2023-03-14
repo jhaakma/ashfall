@@ -83,6 +83,7 @@ this.categories = {
     structures = "Structures",
     equipment = "Equipment",
     cutlery = "Cutlery",
+    tools = "Tools",
     weapons = "Weapons",
     planters = "Planters"
 }
@@ -393,7 +394,7 @@ this.bushCraftingRecipes = {
         skillRequirements = {
             this.survivalTiers.beginner
         },
-        category = this.categories.weapons,
+        category = this.categories.tools,
         soundType = "wood",
         recoverEquipmentMaterials = true,
     },
@@ -408,7 +409,7 @@ this.bushCraftingRecipes = {
         skillRequirements = {
             this.survivalTiers.beginner
         },
-        category = this.categories.weapons,
+        category = this.categories.tools,
         soundType = "wood",
         recoverEquipmentMaterials = true,
     },
@@ -424,7 +425,7 @@ this.bushCraftingRecipes = {
         skillRequirements = {
             this.survivalTiers.beginner
         },
-        category = this.categories.weapons,
+        category = this.categories.tools,
         soundType = "wood",
         recoverEquipmentMaterials = true,
     },
@@ -763,7 +764,7 @@ this.bushCraftingRecipes = {
         skillRequirements = {
             this.survivalTiers.apprentice
         },
-        category = this.categories.weapons,
+        category = this.categories.tools,
         soundType = "wood",
         recoverEquipmentMaterials = true,
     },
@@ -1072,7 +1073,7 @@ this.bushCraftingRecipes = {
 			{ material = "rope", count = 1 },
 		},
 		skillRequirements = { this.survivalTiers.master },
-		category = this.categories.weapons,
+		category = this.categories.tools,
 		soundType = "wood",
 		recoverEquipmentMaterials = true,
 	},
@@ -1085,7 +1086,7 @@ this.bushCraftingRecipes = {
 			{ material = "rope", count = 1 },
 		},
 		skillRequirements = { this.survivalTiers.master },
-		category = this.categories.weapons,
+		category = this.categories.tools,
 		soundType = "wood",
 		recoverEquipmentMaterials = true,
 	},
@@ -1111,7 +1112,7 @@ this.bushCraftingRecipes = {
 			{ material = "rope", count = 2 },
 		},
 		skillRequirements = { this.survivalTiers.master },
-		category = this.categories.weapons,
+		category = this.categories.tools,
 		soundType = "wood",
 		recoverEquipmentMaterials = true,
 	},
