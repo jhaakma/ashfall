@@ -400,7 +400,7 @@ this.bushCraftingRecipes = {
     {
         id = "bushcraft:ashfall_chisel_flint",
         craftableId = "ashfall_chisel_flint",
-        description = "A simple chisel made of flint. Useful for carving wood and stone.\n\nNote: Broken bushcrafted weapons can be dismantled for parts by equipping them.",
+        description = "Equip a chisel to activate the carving menu. \n\nNote: Broken bushcrafted weapons can be dismantled for parts by equipping them.",
         materials = {
             { material = "flint", count = 1 },
             { material = "wood", count = 1 },
