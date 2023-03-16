@@ -83,6 +83,7 @@ this.categories = {
     structures = "Structures",
     equipment = "Equipment",
     cutlery = "Cutlery",
+    utensils = "Utensils",
     tools = "Tools",
     weapons = "Weapons",
     planters = "Planters"
@@ -1286,7 +1287,7 @@ this.carvingRecipes = {
                 conditionPerUse = 4
             }
         },
-        category = this.categories.cutlery,
+        category = this.categories.utensils,
         previewMesh = "ashfall\\craft\\wood_ladle_attach.nif",
         soundType = "carve",
         skillRequirements = {
@@ -1318,7 +1319,7 @@ this.carvingRecipes = {
     {
         id = "bushcraft:ashfall_bowl_02",
         craftableId = "ashfall_bowl_02",
-        description = "A handcarved stone bowl. Can be used to store water or stew.",
+        description = "A handcarved stone bowl. This doubles as a small cooking pot, and be placed over a fire to cook stew.",
         materials = {
             { material = "stone", count = 1},
         },
@@ -1328,7 +1329,7 @@ this.carvingRecipes = {
                 conditionPerUse = 25
             }
         },
-        category = this.categories.cutlery,
+        category = this.categories.utensils,
         previewScale = 4,
         soundType = "carve",
         skillRequirements = {
