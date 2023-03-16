@@ -221,17 +221,59 @@ local function registerModConfig()
             }
         end --\Condition Updates Category
 
+        do -- Enable Features
+            local categoryFeatures = pageGeneral:createCategory{
+                label = "Features",
+                description = "Enable or disable various features of Ashfall."
+            }
+
+            categoryFeatures:createYesNoButton{
+                label = "Enable Bushcrafting ",
+                description = "To activate the bushcrafting menu, equip any item that has 'Bushcrafting Material' in the tooltip.",
+                variable = mwse.mcm.createTableVariable{ id = "bushcraftingEnabled", table = config }
+            }
+
+            categoryFeatures:createYesNoButton{
+                label = "Enable Skinning",
+                description = "Enable the skinning mechanic. To skin a creature, hack at its corpse with a knife to collect its hide, meat and fur.",
+                variable = mwse.mcm.createTableVariable{ id = "enableSkinning", table = config }
+            }
+
+            categoryFeatures:createYesNoButton{
+                label = "Enable Dynamic Branch Placement",
+                description = "Loose branches will spawn near trees, which can be picked up for firewood. May cause a slight delay on cell change on lower end systemss. Disable this if you experience performance issues.",
+                variable = mwse.mcm.createTableVariable{ id = "enableBranchPlacement", table = config }
+            }
+
+            categoryFeatures:createYesNoButton{
+                label = "Enable Frost Breath",
+                description = (
+                    "Adds a frost breath effect to NPCs and the player in cold temperatures. \n\n" ..
+                    "Does not require weather survival mechanics to be active. "
+                ),
+                variable = mwse.mcm.createTableVariable{ id = "showFrostBreath", table = config },
+            }
+
+            categoryFeatures:createYesNoButton{
+                label = "Animated Tree Felling",
+                description = "If this is enabled, trees and vegetation will fall down after you've harvested too many materials from it. They will come back the next time you enter the cell. Realtime shadows and water reflections will not be updated, as this is based on MGE XE distant land statics, which may result in minor visual disparities.",
+                variable = mwse.mcm.createTableVariable{ id = "disableHarvested", table = config}
+            }
+
+            categoryFeatures:createYesNoButton{
+                label = "Enable Diseased Meat",
+                description = (
+                    "If this is enabled, meat harvested from diseased or blighted animals can make you sick if you eat it."
+                ),
+                variable = mwse.mcm.createTableVariable{ id = "enableDiseasedMeat", table = config },
+            }
+        end
+
         do --Miscellanious Category
 
             local categoryMisc = pageGeneral:createCategory{
                 label = "Miscellanious",
-                description = "Ashfall features not directly related to survival mechanics.",
-            }
-
-            categoryMisc:createYesNoButton{
-                label = "Show Hint Tooltips",
-                description = "Show additional tooltips explaining various mechanics.",
-                variable = mwse.mcm.createTableVariable{ id = "showHints", table = config }
+                description = "Ashfall settings not directly related to survival mechanics.",
             }
 
             categoryMisc:createKeyBinder{
@@ -239,6 +281,12 @@ local function registerModConfig()
                 description = "Key Modifier for accessing special options. For example, hold down this key while activating a water bottle to open the water menu (to empty or drink from the bottle directly). Default: Left Shift.",
                 allowCombinations = false,
                 variable = mwse.mcm.createTableVariable{ id = "modifierHotKey", table = config },
+            }
+
+            categoryMisc:createYesNoButton{
+                label = "Show Hint Tooltips",
+                description = "Show additional tooltips explaining various mechanics.",
+                variable = mwse.mcm.createTableVariable{ id = "showHints", table = config }
             }
 
             categoryMisc:createYesNoButton{
@@ -253,33 +301,6 @@ local function registerModConfig()
                     "When enabled, you can die of hunger or thirst. Otherwise you will drop to 1 health."
                 ),
                 variable = mwse.mcm.createTableVariable{ id = "needsCanKill", table = config },
-            }
-
-            categoryMisc:createOnOffButton{
-                label = "Enable Bushcrafting ",
-                description = "To activate the bushcrafting menu, equip any item that has 'Bushcrafting Material' in the tooltip.",
-                variable = mwse.mcm.createTableVariable{ id = "bushcraftingEnabled", table = config }
-            }
-
-            categoryMisc:createYesNoButton{
-                label = "Enable Skinning",
-                description = "Enable the skinning mechanic. To skin a creature, hack at its corpse with a knife to collect its hide, meat and fur.",
-                variable = mwse.mcm.createTableVariable{ id = "enableSkinning", table = config }
-            }
-
-            categoryMisc:createYesNoButton{
-                label = "Enable Dynamic Branch Placement",
-                description = "Loose branches will spawn near trees, which can be picked up for firewood. May cause a slight delay on cell change on lower end systemss. Disable this if you experience performance issues.",
-                variable = mwse.mcm.createTableVariable{ id = "enableBranchPlacement", table = config }
-            }
-
-            categoryMisc:createYesNoButton{
-                label = "Enable Frost Breath",
-                description = (
-                    "Adds a frost breath effect to NPCs and the player in cold temperatures. \n\n" ..
-                    "Does not require weather survival mechanics to be active. "
-                ),
-                variable = mwse.mcm.createTableVariable{ id = "showFrostBreath", table = config },
             }
 
             categoryMisc:createYesNoButton{
@@ -334,20 +355,6 @@ local function registerModConfig()
                     "If this is enabled, you can rest outside on the ground without a bedroll or tent."
                 ),
                 variable = mwse.mcm.createTableVariable{ id = "canRestOnGround", table = config },
-            }
-
-            categoryMisc:createYesNoButton{
-                label = "Diseased Meat",
-                description = (
-                    "If this is enabled, meat harvested from diseased or blighted animals can make you sick if you eat it."
-                ),
-                variable = mwse.mcm.createTableVariable{ id = "enableDiseasedMeat", table = config },
-            }
-
-            categoryMisc:createYesNoButton{
-                label = "Animated Tree Felling",
-                description = "If this is enabled, trees and vegetation will fall down after you've harvested too many materials from it. They will come back the next time you enter the cell. Realtime shadows and water reflections will not be updated, as this is based on MGE XE distant land statics, which may result in minor visual disparities.",
-                variable = mwse.mcm.createTableVariable{ id = "disableHarvested", table = config}
             }
 
         end --\Miscellanious Category
@@ -504,6 +511,27 @@ local function registerModConfig()
             }
         end --\Sleep Category
 
+        do --Natural Materials Placement
+            local categoryNatualMaterials = pageModValues:createCategory{
+                label = "Natural Materials",
+                description = "Natural Materials Placement.",
+            }
+
+            --Determines frequence of materials such as wood, stone, flint etc that spawn in the world
+            categoryNatualMaterials:createSlider{
+                label = "Natural Materials Multiplier",
+                description = string.format(
+                    "Determines how often materials such as wood, stone and flint spawn natrually in the world. "
+                    .."\n\nThe default natural materials multiplier is %s.",
+                    common.defaultValues.naturalMaterialsMultiplier
+                ),
+                min = 0,
+                max = 100,
+                step = 1,
+                jump = 10,
+                variable = mwse.mcm.createTableVariable{ id = "naturalMaterialsMultiplier", table = config },
+            }
+        end
     end --\mod values page
 
     do --Exclusions Page
