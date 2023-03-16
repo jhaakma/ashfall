@@ -61,7 +61,7 @@ config.activatorHarvestData = {
             return isAxe and not isPick
         end,
         items = {
-            { id = "ashfall_firewood", count = 10, chance = 1.0 },
+            { id = "ashfall_firewood", count = 8, chance = 1.0 },
         },
         sound = "ashfall\\chopshort.wav",
         swingsNeeded = 2,
@@ -111,7 +111,7 @@ config.activatorHarvestData = {
             return isAxe and not isPick
         end,
         items = {
-            { id = "ashfall_firewood", count = 10, chance = 1.0 },
+            { id = "ashfall_firewood", count = 8, chance = 1.0 },
         },
         sound = "ashfall\\chopshort.wav",
         swingsNeeded = 2,
@@ -159,7 +159,7 @@ config.activatorHarvestData = {
             return isAxe and not isPick
         end,
         items = {
-            { id = "ashfall_firewood", count = 10, chance = 0.7 },
+            { id = "ashfall_firewood", count = 8, chance = 0.7 },
             { id = "ingred_resin_01", count = 3, chance = 0.3 },
         },
         sound = "ashfall\\chopshort.wav",
@@ -274,8 +274,8 @@ config.activatorHarvestData = {
             return isPick
         end,
         items = {
-            { id = "ashfall_stone", count = 2, chance = 0.9 },
-            { id = "ashfall_flint", count = 1, chance = 0.1 },
+            { id = "ashfall_stone", count = 4, chance = 0.8 },
+            { id = "ashfall_flint", count = 2, chance = 0.2 },
         },
         sound = "Fx\\Heavy Armor Hit.wav",
         swingsNeeded = 4,
