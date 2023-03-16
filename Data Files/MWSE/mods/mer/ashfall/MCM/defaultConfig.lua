@@ -95,6 +95,7 @@ local mcmConfig = {
     disableRainInTents = true,
     disableHarvested = true,
 
+    naturalMaterialsMultiplier = 50,
     globalColdEffect = 0,
     globalWarmEffect = 0,
     hungerRate = 20,

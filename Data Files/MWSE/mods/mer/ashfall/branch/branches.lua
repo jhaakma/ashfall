@@ -107,19 +107,38 @@ end
 local function getNow()
     return tes3.getSimulationTimestamp()
 end
---
+
+local function rollForNone(branchGroup)
+    local roll = math.random(100)
+    common.log:debug("Rolling for none: %s", roll)
+    local multiplier = config.naturalMaterialsMultiplier / 100
+    roll = roll * multiplier
+    common.log:debug("Roll after multiplier: %s", roll)
+    common.log:debug("Chance for none: %s", branchGroup.chanceNone)
+    local isNone = roll < branchGroup.chanceNone
+    common.log:debug("Is none: %s", isNone)
+    return isNone
+end
+
+local function getDropCount(branchGroup)
+    local amount = math.random(branchGroup.minPlaced, branchGroup.maxPlaced)
+    local multiplier = config.naturalMaterialsMultiplier / 100
+    amount = math.floor(amount * multiplier)
+    return amount
+end
+
+
 local cell_list
 --local ignore_list
 local function addBranchesToTree(tree)
     --Select a branch mesh based on region
     local branchGroup = getBranchGroup(tree)
 
-    local chanceNoneRoll = math.random(100)
-    if chanceNoneRoll < branchGroup.chanceNone then
-        common.log:debug("Chance none: %s, roll: %s, not placing debris", branchGroup.chanceNone, chanceNoneRoll)
+    if rollForNone(branchGroup) then
+        common.log:debug("Roll failed, not placing debris")
         return
     end
-    local debrisNum = math.random(branchGroup.minPlaced, branchGroup.maxPlaced)
+    local debrisNum = getDropCount(branchGroup)
     if debrisNum == 0 then return end
 
     for _ = 1, debrisNum do
