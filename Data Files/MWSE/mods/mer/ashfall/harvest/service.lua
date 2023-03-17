@@ -346,7 +346,7 @@ function HarvestService.disableNearbyRefs(harvestableRef, harvestConfig, harvest
             if isValid then
                 logger:trace("%s", ref.id)
                 if common.helper.getCloseEnough({ref1 = ref, ref2 = harvestableRef, distHorizontal = 500, distVertical = 2000}) then
-                    logger:debug("close enough, disabling")
+                    logger:debug("close enough, disabling %s", ref.id)
                     HarvestService.disableHarvestable(ref, harvestableHeight, harvestConfig)
                     table.insert(ignoreList, ref)
                 end
@@ -360,6 +360,7 @@ function HarvestService.disableNearbyRefs(harvestableRef, harvestConfig, harvest
             local isValid = ref ~= harvestableRef
                 and not (harvestConfig.clutter and harvestConfig.clutter[ref.baseObject.id:lower()])
                 and not (activator and activator.type == "woodSource")
+                and (ref.baseObject.objectType ~= tes3.objectType.static)
             if isValid then
                 --Drop nearby loot
                 if common.helper.getCloseEnough({ref1 = ref, ref2 = harvestableRef, distHorizontal = 150, distVertical = 2000, rootHeight = 100}) then
@@ -549,13 +550,13 @@ function HarvestService.demolish(e)
         callback = function()
             if safeRef:valid() then
                 local ref = safeRef:getObject()
-                ref:disable()
                 tes3.positionCell{
                     reference = ref,
                     cell = ref.cell,
                     position = originalLocation.position,
                     orientation = originalLocation.orientation
                 }
+                ref:disable()
                 if e.callback then
                     e.callback(ref)
                 end

@@ -51,6 +51,24 @@ local function onActivateMaterial(e)
 end
 event.register("equip", onActivateMaterial, { filter = tes3.player, priority = -50 } )
 
+---@param e equipEventData
+local function onEquipChisel(e)
+    --Check if equipped item is registered as a chisel Tool
+    if not config.bushcraftingEnabled then
+        return
+    end
+    if not tes3.menuMode() then return end
+    local chisel = CraftingFramework.Tool.getTool("chisel")
+    if chisel then
+        if chisel:itemIsTool(e.item) then
+            logger:debug("Equipped chisel, triggering menu")
+            event.trigger(craftingConfig.carvingEvent)
+            return true
+        end
+    end
+end
+event.register("equip", onEquipChisel, { filter = tes3.player, priority = -50 } )
+
 
 local function createMaterialsTooltip(e)
     if not config.bushcraftingEnabled then return end
@@ -84,3 +102,4 @@ local function customNameTooltip(e)
 end
 
 event.register("uiObjectTooltip", customNameTooltip)
+

@@ -8,7 +8,6 @@ local WoodStack = require("mer.ashfall.items.woodStack")
 local Planter = require("mer.ashfall.items.planter.Planter")
 local config = require("mer.ashfall.config").config
 
-
 this.survivalTiers = {
     beginner = { skill = "Bushcrafting", requirement = 10 },
     novice = { skill = "Bushcrafting", requirement = 20 },
@@ -53,11 +52,11 @@ this.customRequirements = {
     }
 }
 
+---@type CraftingFramework.Tool.data[]
 this.tools = {
     {
         id = "knife",
         name = "Knife",
-        ---@param itemStack tes3itemStack
         requirement = function(itemStack)
             return itemStack.object.objectType == tes3.objectType.weapon
             and itemStack.object.type == tes3.weaponType.shortBladeOneHand
@@ -65,9 +64,25 @@ this.tools = {
     },
     {
         id = "chisel",
-        name = "chisel",
+        name = "Chisel",
+        ids = {
+            "ashfall_chisel_flint",
+            "ab_misc_chiselcold",
+            "ab_misc_chiselhot",
+            "t_com_chisel_01",
+            "t_com_chisel_02",
+            "t_com_chisel_03",
+        },
+    },
+    {
+        id = "hammer",
+        name = "Repair Hammer",
         requirement = function(itemStack)
-            return itemStack.object.id:lower() == "ashfall_chisel_flint"
+            local isRepairItem = itemStack.object.objectType == tes3.objectType.repairItem
+            local isHammer = itemStack.object.id:lower():find("hammer") ~= nil
+            mwse.log("[Ashfall] %s isRepairItem: %s, isHammer: %s",
+                itemStack.object.id, isRepairItem, isHammer)
+            return isRepairItem and isHammer
         end,
     }
 }
@@ -258,6 +273,7 @@ for name, ingredient in pairs(this.materials) do
     end
 end
 
+---@type CraftingFramework.Recipe.data[]
 this.bushCraftingRecipes = {
     --Beginner
     {
@@ -387,7 +403,7 @@ this.bushCraftingRecipes = {
     {
         id = "bushcraft:ashfall_knife_flint",
         craftableId = "ashfall_knife_flint",
-        description = "A simple dagger made of flint. Useful for skinning animals and harvesting plant fibres.\n\nNote: Broken bushcrafted weapons can be dismantled for parts by equipping them.",
+        description = "A simple dagger made of flint. Useful for skinning animals and harvesting plant fibres.\n\nNote: Broken bushcrafted tools and weapons can be dismantled for parts by equipping them.",
         materials = {
             { material = "flint", count = 1 },
             { material = "wood", count = 1 },
@@ -402,7 +418,7 @@ this.bushCraftingRecipes = {
     {
         id = "bushcraft:ashfall_chisel_flint",
         craftableId = "ashfall_chisel_flint",
-        description = "Equip a chisel to activate the carving menu. \n\nNote: Broken bushcrafted weapons can be dismantled for parts by equipping them.",
+        description = "Equip a chisel to activate the carving menu. \n\nNote: Broken bushcrafted tools and weapons can be dismantled for parts by equipping them.",
         materials = {
             { material = "flint", count = 1 },
             { material = "wood", count = 1 },
@@ -414,10 +430,29 @@ this.bushCraftingRecipes = {
         soundType = "wood",
         recoverEquipmentMaterials = true,
     },
+
+    {
+        id = "bushcraft:ashfall_hammer_stone",
+        craftableId = "ashfall_hammer_stone",
+        description = "A hammer made of stone. Can be used for stone chiseling as well as performing basic repairs. \n\nNote: Broken bushcrafted tools and weapons can be dismantled for parts by equipping them.",
+        materials = {
+            { material = "stone", count = 1 },
+            { material = "wood", count = 1 },
+            { material = "rope", count = 1 },
+        },
+        skillRequirements = {
+            this.survivalTiers.beginner
+        },
+        category = this.categories.tools,
+        soundType = "wood",
+        recoverEquipmentMaterials = true,
+        rotationAxis = 'y'
+    },
+
     {
         id = "bushcraft:ashfall_woodaxe_flint",
         craftableId = "ashfall_woodaxe_flint",
-        description = "A woodaxe made with flint. Can be used to harvest firewood.\n\nNote: Broken bushcrafted weapons can be dismantled for parts by equipping them.",
+        description = "A woodaxe made with flint. Can be used to harvest firewood.\n\nNote: Broken bushcrafted tools and weapons can be dismantled for parts by equipping them.",
         materials = {
             { material = "flint", count = 2 },
             { material = "wood", count = 1 },
@@ -605,7 +640,7 @@ this.bushCraftingRecipes = {
     {
         id = "bushcraft:ashfall_spear_flint",
         craftableId = "ashfall_spear_flint",
-        description = "A wooden spear with a flint tip. Useful for hunting game.\n\nNote: Broken bushcrafted weapons can be dismantled for parts by equipping them.",
+        description = "A wooden spear with a flint tip. Useful for hunting game.\n\nNote: Broken bushcrafted tools and weapons can be dismantled for parts by equipping them.",
         materials = {
             { material = "flint", count = 1 },
             { material = "wood", count = 2 },
@@ -621,7 +656,7 @@ this.bushCraftingRecipes = {
     {
         id = "bushcraft:ashfall_staff_wood",
         craftableId = "ashfall_staff_wood",
-        description = "A simple walking stick that doubles as a staff weapon. \n\nNote: Broken bushcrafted weapons can be dismantled for parts by equipping them.",
+        description = "A simple walking stick that doubles as a staff weapon. \n\nNote: Broken bushcrafted tools and weapons can be dismantled for parts by equipping them.",
         materials = {
             { material = "wood", count = 2 },
             { material = "rope", count = 1 },
@@ -636,7 +671,7 @@ this.bushCraftingRecipes = {
     {
         id = "bushcraft:ashfall_bow_wood",
         craftableId = "ashfall_bow_wood",
-        description = "A simple bow and quiver made of wood.\n\nNote: Broken bushcrafted weapons can be dismantled for parts by equipping them.",
+        description = "A simple bow and quiver made of wood.\n\nNote: Broken bushcrafted tools and weapons can be dismantled for parts by equipping them.",
         materials = {
             { material = "wood", count = 3 },
             { material = "rope", count = 3 },
@@ -756,7 +791,7 @@ this.bushCraftingRecipes = {
     {
         id = "bushcraft:ashfall_pickaxe_flint",
         craftableId = "ashfall_pickaxe_flint",
-        description = "A pickaxe made with flint. Can be used to harvest stone.\n\nNote: Broken bushcrafted weapons can be dismantled for parts by equipping them.",
+        description = "A pickaxe made with flint. Can be used to harvest stone.\n\nNote: Broken bushcrafted tools and weapons can be dismantled for parts by equipping them.",
         materials = {
             { material = "flint", count = 1 },
             { material = "wood", count = 1 },
@@ -1067,20 +1102,20 @@ this.bushCraftingRecipes = {
 
     {
 		id = "ashfall_knife_glass",
-		description = "A simple dagger made of raw glass. Useful for skinning animals and harvesting plant fibres.\n\nNote: Broken bushcrafted weapons can be dismantled for parts by equipping them.",
+		description = "A simple dagger made of raw glass. Useful for skinning animals and harvesting plant fibres.\n\nNote: Broken bushcrafted tools and weapons can be dismantled for parts by equipping them.",
 		materials = {
 			{ material = "raw_glass", count = 1 },
 			{ material = "wood", count = 1 },
 			{ material = "rope", count = 1 },
 		},
 		skillRequirements = { this.survivalTiers.master },
-		category = this.categories.tools,
+		category = this.categories.weapons,
 		soundType = "wood",
 		recoverEquipmentMaterials = true,
 	},
 	{
 		id = "ashfall_woodaxe_glass",
-		description = "A woodaxe made with raw glass. Can be used to harvest firewood.\n\nNote: Broken bushcrafted weapons can be dismantled for parts by equipping them.",
+		description = "A woodaxe made with raw glass. Can be used to harvest firewood.\n\nNote: Broken bushcrafted tools and weapons can be dismantled for parts by equipping them.",
 		materials = {
 			{ material = "raw_glass", count = 2 },
 			{ material = "wood", count = 1 },
@@ -1093,7 +1128,7 @@ this.bushCraftingRecipes = {
 	},
 	{
 		id = "ashfall_spear_glass",
-		description = "A wooden spear with a raw glass tip. Useful for hunting game.\n\nNote: Broken bushcrafted weapons can be dismantled for parts by equipping them.",
+		description = "A wooden spear with a raw glass tip. Useful for hunting game.\n\nNote: Broken bushcrafted tools and weapons can be dismantled for parts by equipping them.",
 		materials = {
 			{ material = "raw_glass", count = 1 },
 			{ material = "wood", count = 2 },
@@ -1106,7 +1141,7 @@ this.bushCraftingRecipes = {
 	},
 	{
 		id = "ashfall_pickaxe_glass",
-		description = "A pickaxe made with raw glass. Can be used to harvest stone.\n\nNote: Broken bushcrafted weapons can be dismantled for parts by equipping them.",
+		description = "A pickaxe made with raw glass. Can be used to harvest stone.\n\nNote: Broken bushcrafted tools and weapons can be dismantled for parts by equipping them.",
 		materials = {
 			{ material = "raw_glass", count = 1 },
 			{ material = "wood", count = 1 },
@@ -1119,7 +1154,7 @@ this.bushCraftingRecipes = {
 	},
 	{
 		id = "ashfall_sword_glass",
-		description = "A shortsword made of raw glass. A good lightweight weapon with a simple wooden handle.\n\nNote: Broken bushcrafted weapons can be dismantled for parts by equipping them.",
+		description = "A shortsword made of raw glass. A good lightweight weapon with a simple wooden handle.\n\nNote: Broken bushcrafted tools and weapons can be dismantled for parts by equipping them.",
 		materials = {
 			{ material = "raw_glass", count = 2 },
 			{ material = "wood", count = 1 },
@@ -1155,6 +1190,7 @@ this.tanningRackRecipes = {
 }
 
 this.carvingRecipes = {
+    --Beginner
     {
         id = "bushcraft:ashfall_bowl_01",
         craftableId = "ashfall_bowl_01",
@@ -1307,6 +1343,10 @@ this.carvingRecipes = {
             {
                 tool = "chisel",
                 conditionPerUse = 20
+            },
+            {
+                tool = "hammer",
+                conditionPerUse = 1
             }
         },
         category = this.categories.cutlery,
@@ -1327,6 +1367,10 @@ this.carvingRecipes = {
             {
                 tool = "chisel",
                 conditionPerUse = 25
+            },
+            {
+                tool = "hammer",
+                conditionPerUse = 1
             }
         },
         category = this.categories.utensils,
@@ -1337,10 +1381,11 @@ this.carvingRecipes = {
         },
     },
 
+    --Apprentice
     {
         id = "bushcraft:ashfall_mortar",
         craftableId = "ashfall_mortar",
-        description = "A handcarved mortar and pestle for basic alchemy.",
+        description = "A handcarved stone mortar and pestle for performing basic alchemy.",
         materials = {
             { material = "stone", count = 2},
         },
@@ -1348,24 +1393,31 @@ this.carvingRecipes = {
             {
                 tool = "chisel",
                 conditionPerUse = 30
+            },
+            {
+                tool = "hammer",
+                conditionPerUse = 1
             }
         },
         category = this.categories.equipment,
         soundType = "carve",
         skillRequirements = {
-            this.survivalTiers.novice
+            this.survivalTiers.apprentice
         },
     },
+
+
+    --Journeyman
     {
         id = "bushcraft:ashfall_stand_01",
         craftableId = "ashfall_stand_01",
-        description = "A simple wooden stand for displaying decorations and ceramics.",
+        description = "An elegant carved wooden stand for displaying decorations and ceramics.",
         materials = {
             { material = "wood", count = 4 },
             { material = "resin", count = 1 }
         },
         skillRequirements = {
-            this.survivalTiers.expert
+            this.survivalTiers.journeyman
         },
         category = this.categories.furniture,
         soundType = "carve",
@@ -1376,9 +1428,33 @@ this.carvingRecipes = {
             }
         },
     },
+
+    --Expert
+    -- {
+    --     id = "bushcraft:ashfall_carve_guar",
+    --     craftableId = "ashfall_carve_guar",
+    --     description = "A handcarved wooden guar statue.",
+    --     materials = {
+    --         { material = "wood", count = 1},
+    --     },
+    --     toolRequirements = {
+    --         {
+    --             tool = "chisel",
+    --             conditionPerUse = 10
+    --         }
+    --     },
+    --     previewScale = 2,
+    --     category = this.categories.decoration,
+    --     soundType = "carve",
+    --     skillRequirements = {
+    --         this.survivalTiers.expert
+    --     },
+    -- },
 }
 
 this.menuEvent = "Ashfall:ActivateBushcrafting"
+this.tanningEvent = "Ashfall:ActivateTanningRack"
+this.carvingEvent = "Ashfall:EquipChisel"
 this.menuActivators = {
     {
         name = "Bushcrafting",
@@ -1390,13 +1466,13 @@ this.menuActivators = {
     {
         name = "Tanning Rack",
         type = "event",
-        id = "Ashfall:ActivateTanningRack",
+        id = this.tanningEvent,
         recipes = this.tanningRackRecipes
     },
     {
         name = "Carving",
-        type = "equip",
-        id = "ashfall_chisel_flint",
+        type = "event",
+        id = this.carvingEvent,
         recipes = this.carvingRecipes
     }
 }
