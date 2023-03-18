@@ -1406,6 +1406,48 @@ this.carvingRecipes = {
         },
     },
 
+    --Stone amulet
+    {
+        id = "bushcraft:ashfall_stone_amulet",
+        craftableId = "ashfall_stone_am_01",
+        description = "A handcarved stone amulet.",
+        materials = {
+            { material = "stone", count = 1},
+            { material = "fibre", count = 1}
+        },
+        toolRequirements = {
+            {
+                tool = "chisel",
+                conditionPerUse = 10,
+            },
+        },
+        category = this.categories.equipment,
+        soundType = "carve",
+        skillRequirements = {
+            this.survivalTiers.apprentice
+        },
+    },
+
+    ---ashfall_wood_ring_01
+    {
+        id = "bushcraft:ashfall_wood_ring_01",
+        craftableId = "ashfall_wood_ring_01",
+        description = "A handcarved wooden ring.",
+        materials = {
+            { material = "wood", count = 1},
+        },
+        toolRequirements = {
+            {
+                tool = "chisel",
+                conditionPerUse = 10,
+            },
+        },
+        category = this.categories.equipment,
+        soundType = "carve",
+        skillRequirements = {
+            this.survivalTiers.apprentice
+        },
+    },
 
     --Journeyman
     {
@@ -1430,6 +1472,49 @@ this.carvingRecipes = {
     },
 
     --Expert
+    ---ashfall_wood_ring_02 - engraved, higher enchant capacity
+    {
+        id = "bushcraft:ashfall_wood_ring_02",
+        craftableId = "ashfall_wood_ring_02",
+        description = "An engraved wooden ring.",
+        materials = {
+            { material = "wood", count = 1},
+        },
+        toolRequirements = {
+            {
+                tool = "chisel",
+                conditionPerUse = 15,
+            },
+        },
+        category = this.categories.equipment,
+        soundType = "carve",
+        skillRequirements = {
+            this.survivalTiers.expert
+        },
+    },
+
+    --Engraved amulet
+    {
+        id = "bushcraft:ashfall_stone_amulet_02",
+        craftableId = "ashfall_stone_am_02",
+        description = "An engraved stone amulet.",
+        materials = {
+            { material = "stone", count = 1},
+            { material = "fibre", count = 1}
+        },
+        toolRequirements = {
+            {
+                tool = "chisel",
+                conditionPerUse = 15,
+            },
+        },
+        category = this.categories.equipment,
+        soundType = "carve",
+        skillRequirements = {
+            this.survivalTiers.expert
+        },
+    },
+
     -- {
     --     id = "bushcraft:ashfall_carve_guar",
     --     craftableId = "ashfall_carve_guar",
