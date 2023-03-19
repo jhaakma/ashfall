@@ -1415,9 +1415,10 @@ this.carvingRecipes = {
     {
         id = "bushcraft:ashfall_stone_amulet",
         craftableId = "ashfall_stone_am_01",
-        description = "A handcarved stone amulet.",
+        description = "An amulet made of stones and flint.",
         materials = {
             { material = "stone", count = 1},
+            { material = "flint", count = 1},
             { material = "fibre", count = 1}
         },
         toolRequirements = {
@@ -1502,7 +1503,7 @@ this.carvingRecipes = {
     {
         id = "bushcraft:ashfall_stone_amulet_02",
         craftableId = "ashfall_stone_am_02",
-        description = "An engraved stone amulet.",
+        description = "An stone amulet engraved with runes.",
         materials = {
             { material = "stone", count = 1},
             { material = "fibre", count = 1}
