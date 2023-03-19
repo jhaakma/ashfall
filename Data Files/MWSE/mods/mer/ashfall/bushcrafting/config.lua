@@ -104,6 +104,10 @@ this.categories = {
     planters = "Planters"
 }
 
+this.tanningRacks = {
+    "furn_ex_ashl_guarskin"
+}
+
 --Do common ingred ids first so they have priority
 this.menuOptions = {
     tanningRackMenu = {
@@ -721,7 +725,8 @@ this.bushCraftingRecipes = {
         soundType = "wood",
         customRequirements = {
             this.customRequirements.wildernessOnly
-        }
+        },
+        craftedOnly = false,
     },
     {
         id = "bushcraft:ashfall_waterskin",

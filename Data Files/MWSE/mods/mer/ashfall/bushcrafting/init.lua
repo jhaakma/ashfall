@@ -51,6 +51,7 @@ local function onActivateMaterial(e)
 end
 event.register("equip", onActivateMaterial, { filter = tes3.player, priority = -50 } )
 
+--Chisel
 ---@param e equipEventData
 local function onEquipChisel(e)
     --Check if equipped item is registered as a chisel Tool
@@ -70,6 +71,17 @@ end
 event.register("equip", onEquipChisel, { filter = tes3.player, priority = -50 } )
 
 
+for _, tanningRackId in ipairs(craftingConfig.tanningRacks) do
+    CraftingFramework.StaticActivator.register{
+        objectId = tanningRackId,
+        name = "Tanning Rack",
+        onActivate = function()
+            logger:debug("Tanning Rack Activated")
+            event.trigger(craftingConfig.tanningEvent)
+        end
+    }
+end
+
 local function createMaterialsTooltip(e)
     if not config.bushcraftingEnabled then return end
 
@@ -84,7 +96,6 @@ local function createMaterialsTooltip(e)
         common.helper.addLabelToTooltip(e.tooltip, "Bushcrafting Material", {175/255, 129/255, 184/255})
     end
 end
-
 event.register('uiObjectTooltip', createMaterialsTooltip)
 
 
@@ -100,6 +111,5 @@ local function customNameTooltip(e)
         end
     end
 end
-
 event.register("uiObjectTooltip", customNameTooltip)
 
