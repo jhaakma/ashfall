@@ -4,7 +4,7 @@ local config = require("mer.ashfall.config").config
 local skillModule = include("OtherSkills.skillModule")
 local refController = require("mer.ashfall.referenceController")
 local tentConfig = require("mer.ashfall.camping.tents.tentConfig")
-
+local ReferenceController = require("mer.ashfall.referenceController")
 --Generic Tooltip with header and description
 
 this.createTooltip = require("mer.ashfall.common.tooltip")
@@ -1017,6 +1017,36 @@ function this.showItemRemovedMessage(item, count)
         tes3.messageBox(string.format(tes3.findGMST(tes3.gmst.sNotifyMessage63).value, count, name))
     else
         tes3.messageBox(string.format(tes3.findGMST(tes3.gmst.sNotifyMessage62).value, name))
+    end
+end
+
+---@param ref tes3reference
+function this.isUnlit(ref)
+    if ref.baseObject.objectType == tes3.objectType.light then
+        return ref:getAttachedDynamicLight() == nil
+    end
+    return false
+end
+
+function this.getPlayerNearLitCampfire(e)
+    local maxDistance = e.maxDistance or 340
+    local function checkCampfire(ref)
+        local distance = tes3.player.position:distance(ref.position)
+        return distance < maxDistance
+            and (not ref.disabled)
+            and ref.data.isLit
+            and (not this.isUnlit(ref))
+    end
+    if e.reference then
+        return checkCampfire(e.reference)
+    else
+        local nearFire = false
+        ReferenceController.iterateReferences("fuelConsumer", function(ref)
+            if checkCampfire(ref) then
+                nearFire = true
+            end
+        end)
+        return nearFire
     end
 end
 

@@ -107,12 +107,7 @@ end
     If a heat source is a light object and it has
     no light attachment, block the heat
 ]]
-local function isUnlit(ref)
-    if ref.baseObject.objectType == tes3.objectType.light then
-        return ref:getAttachedDynamicLight() == nil
-    end
-    return false
-end
+
 
 function this.calculateFireEffect()
     if not staticConfigs.conditionConfig.temp:isActive() then return end
@@ -123,10 +118,10 @@ function this.calculateFireEffect()
     local function doCampfireHeat(ref)
         local distance = getDistance(ref)
 
-        local isValid = distance < maxDistance
-            and (not ref.disabled)
-            and ref.data.isLit
-            and (not isUnlit(ref))
+        local isValid = common.helper.getPlayerNearLitCampfire{
+            reference = ref,
+            maxDistance = maxDistance
+        }
 
         if isValid then
             --For survival skill
@@ -154,7 +149,7 @@ function this.calculateFireEffect()
         local distance = getDistance(ref)
         local isValid = distance < maxDistance
             and (not ref.disabled)
-            and (not isUnlit(ref))
+            and (not common.helper.isUnlit(ref))
         if isValid then
             local heatAtMaxDistance = maxFirepitHeat
             checkWarmHands()
@@ -172,7 +167,7 @@ function this.calculateFireEffect()
         local distance = getDistance(ref)
         local isValid = distance < maxDistance
             and (not ref.disabled)
-            and (not isUnlit(ref))
+            and (not common.helper.isUnlit(ref))
         if isValid then
             local heatAtMaxDistance = getHeatSourceValue(ref)
             local heatAtThisDistance = getHeatAtDistance(heatAtMaxDistance, distance)

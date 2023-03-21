@@ -323,6 +323,7 @@ end
 
 local conditionConfig = common.staticConfigs.conditionConfig
 
+---@class Ashfall.Interop
 local Interop = {
     --Block or unblock hunger, thirst and sleep
     blockNeeds = function()
@@ -519,5 +520,11 @@ local Interop = {
 Interop.bushcrafting = require("mer.ashfall.bushcrafting.config")
 
 Interop.LiquidContainer = require("mer.ashfall.liquid.LiquidContainer")
+
+Interop.isPlayerNearCampfire = function(maxDistance)
+    return common.helper.getPlayerNearLitCampfire{
+        maxDistance = maxDistance
+    }
+end
 
 return Interop
