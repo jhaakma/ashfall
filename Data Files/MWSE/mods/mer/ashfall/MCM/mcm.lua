@@ -366,7 +366,6 @@ local function registerModConfig()
             label = "Mod Values"
         }
         addSideBar(pageModValues)
-        pageModValues.noScroll = true
 
 
         do -- Temperature
