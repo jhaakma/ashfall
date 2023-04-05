@@ -1,6 +1,7 @@
 local common = require("mer.ashfall.common.common")
 local logger = common.createLogger("gearPlacement")
 local placementConfig = require("mer.ashfall.gearPlacement.config")
+local Orienter = require("CraftingFramework.components.Orienter")
 --[[
     Orients a placed object and lowers it into the ground so it lays flat against the terrain,
 ]]
@@ -16,7 +17,7 @@ local function onDropGear(e)
             maxSteepness = 0
         end
         if gearValues.maxSteepness then
-            common.helper.orientRefToGround{ ref = e.reference, maxSteepness = maxSteepness }
+            Orienter.orientRefToGround{ ref = e.reference, maxSteepness = maxSteepness }
         end
         if gearValues.drop then
             logger:debug("Dropping %s by %s", e.reference.object.name, gearValues.drop)
