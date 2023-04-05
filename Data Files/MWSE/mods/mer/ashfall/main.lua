@@ -56,6 +56,8 @@ local function initialized()
         event.trigger("Ashfall:Interop", Interop)
 
         logger:info("Initialized v%s", versionController.getVersion())
+    else
+        logger:warn("Ashfall.esp is not active")
     end
 end
 
@@ -67,7 +69,6 @@ end)
 
 -- Need to initialise immediately
 require("mer.ashfall.effects.faderController")
-
 
 event.register("initialized", initialized)
 
