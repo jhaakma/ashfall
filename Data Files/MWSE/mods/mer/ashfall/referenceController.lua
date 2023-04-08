@@ -165,7 +165,7 @@ end)
 local function onObjectInvalidated(e)
     local ref = e.object
     for _, controller in pairs(this.controllers) do
-        if controller.references[ref] == true then
+        if controller.references[ref] then
             controller:removeReference(ref)
         end
     end

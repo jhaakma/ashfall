@@ -30,19 +30,6 @@ function this.getInTent()
     return (tes3.player.data.Ashfall.insideTent or tes3.player.data.Ashfall.insideCoveredBedroll)
 end
 
----@param stack tes3reference
----@return number Returns the number remaining in the stack, if any.
----If it removes all from the stack, the reference is deleted, so make sure to check
-function this.reduceReferenceStack(stack, count)
-    local stackCount = this.getStackCount(stack)
-    if stackCount <= count then
-        this.yeet(stack)
-        return 0
-    else
-        stack.attachments.variables.count = stack.attachments.variables.count - count
-        return stack.attachments.variables.count
-    end
-end
 
 function this.checkRefSheltered(reference)
 
@@ -163,6 +150,20 @@ function this.getStackCount(reference)
         and reference.attachments
         and reference.attachments.variables
         and reference.attachments.variables.count or 1
+end
+
+---@param stack tes3reference
+---@return number Returns the number remaining in the stack, if any.
+---If it removes all from the stack, the reference is deleted, so make sure to check
+function this.reduceReferenceStack(stack, count)
+    local stackCount = this.getStackCount(stack)
+    if stackCount <= count then
+        this.yeet(stack)
+        return 0
+    else
+        stack.attachments.variables.count = stack.attachments.variables.count - count
+        return stack.attachments.variables.count
+    end
 end
 
 

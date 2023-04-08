@@ -626,6 +626,10 @@ this.bushCraftingRecipes = {
         additionalMenuOptions = {
             this.menuOptions.rename
         },
+        containerConfig = {
+            capacity = 100,
+            hasCollision = true,
+        }
     },
     {
         id = "bushcraft:ashfall_rug_crft_01",
@@ -1171,6 +1175,8 @@ this.bushCraftingRecipes = {
 		recoverEquipmentMaterials = true,
 	},
 }
+
+---@type CraftingFramework.Recipe.data[]
 this.tanningRackRecipes = {
     {
         id = "bushcraft:ashfall_leather_hide",
@@ -1194,6 +1200,7 @@ this.tanningRackRecipes = {
     },
 }
 
+---@type CraftingFramework.Recipe.data[]
 this.carvingRecipes = {
     --Beginner
     {
@@ -1459,6 +1466,7 @@ this.carvingRecipes = {
     {
         id = "bushcraft:ashfall_stand_01",
         craftableId = "ashfall_stand_01",
+        placedObject = "ashfall_stand_01_placed",
         description = "An elegant carved wooden stand for displaying decorations and ceramics.",
         materials = {
             { material = "wood", count = 4 },

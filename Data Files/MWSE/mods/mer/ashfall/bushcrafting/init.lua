@@ -24,6 +24,18 @@ do -- initialise crafting
     event.trigger("Ashfall:Bushcrafting_Initialized")
 end
 
+--Vanilla tanning racks
+for _, tanningRackId in ipairs(craftingConfig.tanningRacks) do
+    CraftingFramework.StaticActivator.register{
+        objectId = tanningRackId,
+        name = "Tanning Rack",
+        onActivate = function()
+            logger:debug("Tanning Rack Activated")
+            event.trigger(craftingConfig.tanningEvent)
+        end
+    }
+end
+
 local function isMaterial(item)
     for _, conf in ipairs(craftingConfig.materials) do
         local material = CraftingFramework.Material.getMaterial(conf.id)
@@ -71,16 +83,6 @@ end
 event.register("equip", onEquipChisel, { filter = tes3.player, priority = -50 } )
 
 
-for _, tanningRackId in ipairs(craftingConfig.tanningRacks) do
-    CraftingFramework.StaticActivator.register{
-        objectId = tanningRackId,
-        name = "Tanning Rack",
-        onActivate = function()
-            logger:debug("Tanning Rack Activated")
-            event.trigger(craftingConfig.tanningEvent)
-        end
-    }
-end
 
 local function createMaterialsTooltip(e)
     if not config.bushcraftingEnabled then return end

@@ -31,8 +31,8 @@ end
 local function updateBoilers(e)
 
     local function doUpdate(boilerRef)
-        ---@type Ashfall.LiquidContainer
         local liquidContainer = LiquidContainer.createFromReference(boilerRef)
+        if not liquidContainer then return end
         --logger:trace("BOILER updating %s", boilerRef.object.id)
         liquidContainer.data.lastWaterUpdated = liquidContainer.data.lastWaterUpdated or e.timestamp
         local timeSinceLastUpdate = e.timestamp - liquidContainer.data.lastWaterUpdated
@@ -71,6 +71,5 @@ local function updateBoilers(e)
         end
     end
     ReferenceController.iterateReferences("boiler", doUpdate)
-
 end
 event.register("simulate", updateBoilers)
