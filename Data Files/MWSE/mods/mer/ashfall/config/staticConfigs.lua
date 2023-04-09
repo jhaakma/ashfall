@@ -66,7 +66,27 @@ this.capacities = {
     MAX = 240
 }
 
+---@class Ashfall.waterContainerData
+---@field capacity number How much liquid this container can hold
+---@field holdsStew boolean Whether this container can hold stewBuff
+---@field weight? number The weight override for this item
+---@field value? number The value override for this item
+---@field meshOverride? string The mesh override for this item
+---@field waterMaxScale? number The max scale for the water mesh
+---@field waterMaxHeight? number The max height for the water mesh
+
+---@type table<string, Ashfall.waterContainerData>
+--- A list of common water container configurations
 this.bottleConfig = {
+
+    --Bushcrafted bowl
+    wooden_bowl = {
+        capacity = 60,
+        waterMaxHeight = 4,
+        waterMaxScale = 1.8,
+        holdsStew = true,
+    },
+
     cup = { capacity = 25, weight = 2 },
     glass = { capacity = 25, weight = 2 },
     goblet = { capacity = 25, weight = 2 },
@@ -156,260 +176,10 @@ this.bottleConfig = {
     }, --waterPerDollar = 5.5, waterPerWeight = 30
 }
 
----@class Ashfall.BottleData
----@field capacity number
----@field holdsStew boolean
----@field type string
 
----@type table<string, Ashfall.BottleData>
-this.bottleList = {
-
-    --ashfall stuff
-    ashfall_waterskin = {
-        capacity = 90
-    },
-
-
-    --vial
-    misc_skooma_vial = this.bottleConfig.glass,
-
-    --glasses
-    misc_de_glass_green_01 = this.bottleConfig.glass,
-    misc_de_glass_yellow_01 = this.bottleConfig.glass,
-    --cups
-    misc_com_redware_cup = this.bottleConfig.cup,
-    misc_com_wood_cup_01 = this.bottleConfig.cup,
-    misc_com_wood_cup_02 = this.bottleConfig.cup,
-    misc_lw_cup = this.bottleConfig.cup,
-    misc_imp_silverware_cup = this.bottleConfig.cup,
-    misc_imp_silverware_cup_01 = this.bottleConfig.cup,
-
-    --goblets
-    misc_com_metal_goblet_01 = this.bottleConfig.goblet,
-    misc_com_metal_goblet_02 = this.bottleConfig.goblet,
-    misc_de_goblet_01 = this.bottleConfig.goblet,
-    misc_de_goblet_02 = this.bottleConfig.goblet,
-    misc_de_goblet_03 = this.bottleConfig.goblet,
-    misc_de_goblet_04 = this.bottleConfig.goblet,
-    misc_de_goblet_05 = this.bottleConfig.goblet,
-    misc_de_goblet_06 = this.bottleConfig.goblet,
-    misc_de_goblet_07 = this.bottleConfig.goblet,
-    misc_de_goblet_08 = this.bottleConfig.goblet,
-    misc_de_goblet_09 = this.bottleConfig.goblet,
-    misc_dwrv_goblet00 = this.bottleConfig.goblet,
-    misc_dwrv_goblet10 = this.bottleConfig.goblet,
-    misc_dwrv_goblet00_uni = this.bottleConfig.goblet,
-    misc_dwrv_goblet10_uni = this.bottleConfig.goblet,
-    misc_dwrv_goblet10_tgcp = this.bottleConfig.goblet,
-    misc_de_goblet_01_redas = this.bottleConfig.goblet,
-
-    --tankards
-    misc_com_tankard_01 = this.bottleConfig.tankard,
-    misc_de_tankard_01 = this.bottleConfig.tankard,
-
-
-    --mugs
-    misc_dwrv_mug00 = this.bottleConfig.mug,
-    misc_dwrv_mug00_uni = this.bottleConfig.mug,
-
-    --flasks
-    misc_flask_01 = this.bottleConfig.flask,
-    misc_flask_02 = this.bottleConfig.flask,
-    misc_flask_03 = this.bottleConfig.flask,
-    misc_flask_04 = this.bottleConfig.flask,
-
-    misc_com_redware_flask = this.bottleConfig.flask,
-    misc_lw_flask = this.bottleConfig.limewareFlask,
-
-    --bottles
-    misc_com_bottle_01 = this.bottleConfig.bottle,
-    misc_com_bottle_02 = this.bottleConfig.bottle,
-    misc_com_bottle_04 = this.bottleConfig.bottle,
-    misc_com_bottle_05 = this.bottleConfig.bottle,
-    misc_com_bottle_06 = this.bottleConfig.bottle,
-
-    misc_com_bottle_08 = this.bottleConfig.bottle,
-    misc_com_bottle_09 = this.bottleConfig.bottle,
-    misc_com_bottle_10 = this.bottleConfig.bottle,
-    misc_com_bottle_11 = this.bottleConfig.bottle,
-    misc_com_bottle_13 = this.bottleConfig.bottle,
-    misc_com_bottle_14 = this.bottleConfig.bottle,
-    misc_com_bottle_14_float = this.bottleConfig.bottle,
-    misc_com_bottle_15 = this.bottleConfig.bottle,
-
-    --pots
-    misc_de_pot_blue_01 = this.bottleConfig.pot,
-    misc_de_pot_blue_02 = this.bottleConfig.pot,
-    misc_de_pot_glass_peach_01 = this.bottleConfig.pot,
-    misc_de_pot_glass_peach_02 = this.bottleConfig.pot,
-    misc_de_pot_green_01 = this.bottleConfig.pot,
-    misc_de_pot_mottled_01 = this.bottleConfig.pot,
-    --redware pots
-    misc_de_pot_redware_01 = this.bottleConfig.redwarePot,
-    misc_de_pot_redware_02 = this.bottleConfig.redwarePot,
-    misc_de_pot_redware_03 = this.bottleConfig.redwarePot,
-    misc_de_pot_redware_04 = this.bottleConfig.redwarePot,
-    misc_de_pot_redware_04_uni = this.bottleConfig.redwarePot,
-
-    --jugs
-    misc_com_bottle_03 = this.bottleConfig.jug,
-    misc_com_bottle_07 = this.bottleConfig.jug,
-    misc_com_bottle_07_float = this.bottleConfig.jug,
-    misc_com_bottle_12 = this.bottleConfig.jug,
-
-    --pitchers
-    misc_de_pitcher_01 = this.bottleConfig.pitcher,
-    misc_com_redware_pitcher = this.bottleConfig.redwarePitcher,
-    misc_com_pitcher_metal_01 = this.bottleConfig.metalPitcher,
-    misc_imp_silverware_pitcher = this.bottleConfig.silverwarePitcher,
-    misc_imp_silverware_pitcher_uni = this.bottleConfig.silverwarePitcher,
-
-    misc_dwrv_pitcher00 = this.bottleConfig.dwarvenPitcher,
-    misc_dwrv_pitcher00_uni = this.bottleConfig.dwarvenPitcher,
-
-    --MODS
-
-    --seydaneen gateway
-    misc_com_bottle_water = this.bottleConfig.bottle,
-
-    --Tamriel Data
-    t_ayl_claycup_01 = this.bottleConfig.cup,
-    t_ayl_claypot_01 = this.bottleConfig.pot,
-    t_ayl_claypot_02 = this.bottleConfig.pot,
-    t_ayl_claypot_03 = this.bottleConfig.pot,
-
-
-
-    t_nor_claypot_01 = this.bottleConfig.pot,
-    t_nor_claypot_02 = this.bottleConfig.pot,
-
-    t_rga_blackwarecup_01 = this.bottleConfig.cup,
-    t_rga_redwarecup_01 = this.bottleConfig.cup,
-    t_rga_redwarecup_02 = this.bottleConfig.cup,
-    t_rga_redwarecup_03 = this.bottleConfig.cup,
-
-    t_he_dirennicup_01 = this.bottleConfig.cup,
-    t_he_dirennicup_02 = this.bottleConfig.cup,
-
-    t_he_direnniflask_01a = this.bottleConfig.limewareFlask,
-    t_he_direnniflask_02a = this.bottleConfig.limewareFlask,
-    t_he_direnniflask_03a = this.bottleConfig.limewareFlask,
-    t_he_direnniflask_04a = this.bottleConfig.limewareFlask,
-    t_he_direnniflask_05a = this.bottleConfig.limewareFlask,
-    t_he_direnniflask_06a = this.bottleConfig.limewareFlask,
-    t_he_direnniflask_07a = this.bottleConfig.limewareFlask,
-    t_he_direnniflask_07b = this.bottleConfig.limewareFlask,
-
-    t_he_dirennipot_01 = this.bottleConfig.noValPot,
-    t_he_dirennipot_02 = this.bottleConfig.noValPot,
-    t_he_dirennipot_03 = this.bottleConfig.noValPot,
-    t_he_dirennipot_04 = this.bottleConfig.noValPot,
-
-    t_nor_drinkinghorn_01 = { capacity = this.bottleConfig.tankard.capacity },
-    t_nor_drinkinghorn_02 = { capacity = this.bottleConfig.tankard.capacity },
-    t_nor_drinkinghorn_03 = { capacity = this.bottleConfig.tankard.capacity },
-
-    t_nor_flaskblue_01 = this.bottleConfig.flask,
-    t_nor_flaskblue_02 = this.bottleConfig.flask,
-    t_nor_flaskblue_03 = this.bottleConfig.flask,
-    t_nor_flaskblue_04 = this.bottleConfig.flask,
-
-    t_nor_flaskgreen_01 = this.bottleConfig.flask,
-    t_nor_flaskgreen_02 = this.bottleConfig.flask,
-    t_nor_flaskgreen_03 = this.bottleConfig.flask,
-    t_nor_flaskgreen_04 = this.bottleConfig.flask,
-
-    t_nor_flaskred_01 = this.bottleConfig.flask,
-    t_nor_flaskred_02 = this.bottleConfig.flask,
-    t_nor_flaskred_03 = this.bottleConfig.flask,
-    t_nor_flaskred_04 = this.bottleConfig.flask,
-
-    t_rga_flask_01 = this.bottleConfig.limewareFlask,
-
-    t_com_potionbottle_01 = { capacity = this.bottleConfig.bottle.capacity, weight = this.bottleConfig.bottle.weight },
-    t_com_potionbottle_02 = { capacity = this.bottleConfig.bottle.capacity, weight = this.bottleConfig.bottle.weight },
-    t_com_potionbottle_03 = { capacity = this.bottleConfig.bottle.capacity, weight = this.bottleConfig.bottle.weight },
-    t_com_potionbottle_04 = { capacity = this.bottleConfig.bottle.capacity, weight = this.bottleConfig.bottle.weight },
-
-    t_imp_silverwarecup_01 = { capacity = this.bottleConfig.cup.capacity },
-    t_imp_silverwarecup_02 = { capacity = this.bottleConfig.cup.capacity },
-    t_imp_silverwarecup_03 = { capacity = this.bottleConfig.cup.capacity },
-    t_imp_silverwarepot_01 = this.bottleConfig.noValPot,
-
-    t_de_stonewarecup_01 = { capacity = this.bottleConfig.cup.capacity },
-    t_de_stonewarecup_02 = { capacity = this.bottleConfig.cup.capacity },
-
-    t_de_stonewarejug_01 = { capacity = this.bottleConfig.jug.capacity },
-    t_de_stonewarepitcher_01 = { capacity = this.bottleConfig.pitcher.capacity },
-
-    t_de_stonewarepot_01 = this.bottleConfig.noValPot,
-    t_de_stonewarepot_02 = this.bottleConfig.noValPot,
-    t_de_stonewarepot_03 = this.bottleConfig.noValPot,
-
-    t_com_woodencup_01 = this.bottleConfig.cup,
-    t_nor_woodengoblet_01a = this.bottleConfig.goblet,
-    t_nor_woodengoblet_01b = this.bottleConfig.goblet,
-    t_nor_woodengoblet_01c = this.bottleConfig.goblet,
-    t_nor_woodengoblet_02a = this.bottleConfig.goblet,
-    t_nor_woodengoblet_02b = this.bottleConfig.goblet,
-    t_nor_woodengoblet_03a = this.bottleConfig.goblet,
-    t_nor_woodengoblet_03b = this.bottleConfig.goblet,
-    t_nor_woodengoblet_04a = this.bottleConfig.goblet,
-    t_nor_woodengoblet_04b = this.bottleConfig.goblet,
-    t_nor_woodentankard_01a = this.bottleConfig.mug,
-    t_nor_woodentankard_01b = this.bottleConfig.mug,
-    t_nor_woodenpot_01a = this.bottleConfig.noValPot,
-    t_nor_woodenpot_01b = this.bottleConfig.noValPot,
-    t_nor_woodenpot_02a = this.bottleConfig.noValPot,
-    t_nor_woodenpot_02b = this.bottleConfig.noValPot,
-    t_nor_woodenpot_03a = this.bottleConfig.noValPot,
-    t_nor_woodenpot_03b = this.bottleConfig.noValPot,
-
-    t_de_telvannitankard_01 = this.bottleConfig.tankard,
-    t_com_tankard_01 = this.bottleConfig.tankard,
-    t_de_bluewaretankard01 = this.bottleConfig.tankard,
-    t_de_yellowglasscup01 = this.bottleConfig.cup,
-    t_de_yellowglassflask01 = this.bottleConfig.flask,
-    t_de_yellowglasspot01 = this.bottleConfig.noValPot,
-
-    ashfall_teacup_01 = {
-        capacity = 25,
-        waterMaxScale = 1.9,
-        waterMaxHeight = 2.5,
-    },
-    ashfall_teacup_02 = {
-        capacity = 25,
-        waterMaxScale = 1.9,
-        waterMaxHeight = 2.5,
-    },
-    ashfall_teacup_03 = {
-        capacity = 25,
-        waterMaxScale = 1.9,
-        waterMaxHeight = 2.5,
-    },
-
-    --bushcrafting
-    ashfall_bowl_01 = {
-        capacity = 60,
-        waterMaxHeight = 4,
-        waterMaxScale = 1.8,
-        holdsStew = true,
-    },
-
-    ashfall_cup_01 = {
-        capacity = 25,
-        waterMaxScale = 1.3,
-        waterMaxHeight = 4.0,
-    },
-    ashfall_cup_02 = {
-        capacity = 35,
-        waterMaxScale = 1.3,
-        waterMaxHeight = 4.0,
-    },
-}
-for id, _ in pairs(this.bottleList) do
-    this.activatorConfig.list.waterContainer:addId(id)
-end
+---@type table<string, Ashfall.waterContainerData>
+--- A list of registered water containers
+this.bottleList = {}
 
 this.interiorTempValues = {
     default = -10,

@@ -130,13 +130,15 @@ local function registerWaterSource(e)
     return true
 end
 
+
+
+---comment
 local function registerWaterContainers(e)
     local includeOverrides = e.includeOverrides
     logger:debug("Registering the following water containers:")
     for id, data in pairs(e.data) do
         assert(type(id) == "string", "Water container ID must be a string.")
         id = id:lower()
-
         if type(data) == "table" then
             --Table for manual values
             assert(data.capacity, "Water container data must include a capacity.")
@@ -147,7 +149,6 @@ local function registerWaterContainers(e)
                 value = data.value,
                 holdsStew = data.holdsStew
             }
-            staticConfigs.activatorConfig.list.waterContainer:addId(id)
             logger:debug("    %s: { capacity: %d%s%s%s }",
                 id,
                 data.capacity,
@@ -158,7 +159,6 @@ local function registerWaterContainers(e)
         elseif type(data) == "number" then
             --Number for just setting a capacity
             staticConfigs.bottleList[id] = { capacity = data }
-            staticConfigs.activatorConfig.list.waterContainer:addId(id)
             logger:debug("    %s: { capacity: %s }", id, data)
         elseif type(data) == "string" then
             --String for using existing bottle type
@@ -177,7 +177,6 @@ local function registerWaterContainers(e)
                 value = includeOverrides and thisBottleConfig.value or nil,
                 weight = includeOverrides and thisBottleConfig.weight or nil,
             }
-            staticConfigs.activatorConfig.list.waterContainer:addId(id)
             local finalConfig = staticConfigs.bottleList[id]
             logger:debug("    %s: { capacity: %d%s%s }",
                 id,
@@ -187,6 +186,7 @@ local function registerWaterContainers(e)
                 finalConfig.holdsStew and string.format(", holdsStew: %s", finalConfig.holdsStew) or ""
             )
         end
+        staticConfigs.activatorConfig.list.waterContainer:addId(id)
     end
     return true
 end
@@ -276,7 +276,7 @@ local function registerClimates(e)
             climateConfig.regions[region] = climateData
             logger:debug("    %s: { min: %d, max: %d }", region, climateData.min, climateData.max)
         else
-            mwse.error("Invalid climate data. Must be a table with min/max values, a string matching the following: " .. listValidClimateTypes())
+            logger:error("Invalid climate data. Must be a table with min/max values, a string matching the following: " .. listValidClimateTypes())
         end
     end
     return true

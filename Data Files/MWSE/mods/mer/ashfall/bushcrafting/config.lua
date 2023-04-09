@@ -80,8 +80,6 @@ this.tools = {
         requirement = function(itemStack)
             local isRepairItem = itemStack.object.objectType == tes3.objectType.repairItem
             local isHammer = itemStack.object.id:lower():find("hammer") ~= nil
-            mwse.log("[Ashfall] %s isRepairItem: %s, isHammer: %s",
-                itemStack.object.id, isRepairItem, isHammer)
             return isRepairItem and isHammer
         end,
     }
@@ -157,6 +155,8 @@ this.materials = {
             "t_ingcrea_beetleresin_01",
             "t_ingcrea_yethresin_01",
             "ab_ingflor_telvanniresin",
+            "t_ingcrea_beetleresin_01",
+            "t_ingcrea_yethresin_01",
 
         }
     },
@@ -197,7 +197,10 @@ this.materials = {
     {
         id = "rope",
         name = "Rope",
-        ids = { "ashfall_rope" }
+        ids = {
+            "ashfall_rope",
+            "t_de_coiledrope_01",
+        }
     },
     {
         --straw
@@ -221,6 +224,12 @@ this.materials = {
             "t_com_clothrag_02",
             "t_com_clothred_01",
             "t_com_clothyellow_01",
+            "t_com_clothplain_01",
+            "t_com_clothplainfolded_01",
+            "t_com_clothgreenfolded_01",
+            "t_com_clothredfolded_01",
+            "t_com_clothred_01",
+            "t_com_clothplain_01",
         }
     },
     {
@@ -629,7 +638,7 @@ this.bushCraftingRecipes = {
         containerConfig = {
             capacity = 100,
             hasCollision = true,
-        }
+        },
     },
     {
         id = "bushcraft:ashfall_rug_crft_01",

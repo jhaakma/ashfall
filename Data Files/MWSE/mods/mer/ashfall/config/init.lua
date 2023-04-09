@@ -1,6 +1,3 @@
-
-
-
 local this = {}
 this.configPath = "ashfall"
 this.defaultConfig = require ("mer.ashfall.MCM.defaultConfig")

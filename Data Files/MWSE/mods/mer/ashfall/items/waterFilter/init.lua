@@ -9,10 +9,9 @@ WaterFilter.filterIDs = {
 }
 local config = {
     updateInterval = 0.001,
-    maxWaterAmount = common.staticConfigs.bottleList.ashfall_bowl_01.capacity,
+    maxWaterAmount = common.staticConfigs.bottleConfig.wooden_bowl.capacity,
     waterFilteredPerHour = 15,
 }
-
 
 function WaterFilter.registerWaterFilter(e)
     common.staticConfigs.bottleList[e.id:lower()] = {
@@ -147,15 +146,15 @@ end
 function WaterFilter.filterWaterCallback(filterWaterParams)
     local safeRef = tes3.makeSafeObjectHandle(filterWaterParams.reference)
     timer.delayOneFrame(function()
-        if not safeRef:valid() then return end
+        if not (safeRef and safeRef:valid()) then return end
         local waterFilterRef = safeRef:getObject()
         tes3ui.showInventorySelectMenu{
             title = "Select Water Container",
             noResultsText = "You have no dirty water to filter.",
             filter = WaterFilter.refHasDirtyWater,
             callback = function(inventorySelectEventData)
-                if not item then return end
                 local item = inventorySelectEventData.item
+                if not item then return end
                 local itemData = inventorySelectEventData.itemData
                 WaterFilter.doFilterWater{
                     waterFilterRef = waterFilterRef,
@@ -172,7 +171,7 @@ end
 function WaterFilter.collectWaterCallback(collectWaterParams)
     local safeRef = tes3.makeSafeObjectHandle(collectWaterParams.reference)
     timer.delayOneFrame(function()
-        if not safeRef:valid() then return end
+        if not (safeRef and safeRef:valid()) then return end
         local filterRef = safeRef:getObject()
         tes3ui.showInventorySelectMenu{
             title = "Select Water Container",
@@ -189,11 +188,14 @@ function WaterFilter.collectWaterCallback(collectWaterParams)
                 if e.item then
                     local liquidContainer = LiquidContainer.createFromInventoryInitItemData(e.item, e.itemData)
                     local filterRefContainer = LiquidContainer.createFromReference(filterRef)
+                    if not liquidContainer then return end
+                    if not filterRefContainer then return end
+
                     local amount, errorMsg = filterRefContainer:transferLiquid(liquidContainer, filterRefContainer.waterAmount)
                     if amount then
                         tes3.playSound{ sound = "ashfall_water"}
                         --tes3.messageBox("You collect %d from %s.", amount, e.item.name)
-                    else
+                    elseif errorMsg then
                         tes3.messageBox(errorMsg)
                     end
                 end
