@@ -14,6 +14,7 @@ local ActivatorController = require "mer.ashfall.activators.activatorController"
 ---@field timeUntilHarvestable number The time to wait until the plant is harvestable.
 ---@field attachPlant function Attaches a plant to the planter.
 ---@field waterPlanter function Water the planter.
+---@field lastUpdated number The last time the planter was updated.
 ---@field logger mwseLogger
 local Planter = {
     ATTACH_NODE = "ATTACH_PLANT",
@@ -37,6 +38,10 @@ local Planter = {
 
 Planter.logger = common.createLogger("Planter")
 
+--[[
+    Defines which values are stored on the reference's data table,
+    and what their default values are.
+]]
 local defaultDataValues = {
     waterAmount = {default = 0},
     seedlingId = {default = nil},
@@ -44,9 +49,12 @@ local defaultDataValues = {
     plantProgress = {default = 0},
     timeUntilHarvestable = {default = 0},
     maxScale = {default = nil},
+    lastUpdated = {default = nil},
 }
 
-
+--[[
+    For any data value, get it from the reference's data table if it exists
+]]
 local meta = {
     ---@param tbl Ashfall.Planter
     ---@param key any
@@ -159,11 +167,13 @@ end
 
 function Planter:getGHSwichNode()
     local sceneNode = self.reference and self.reference.sceneNode
+    if not sceneNode then return end
     return sceneNode:getObjectByName(Planter.GH_SWITCH_ID)
 end
 
 function Planter:getPlantNode()
     local sceneNode = self.reference and self.reference.sceneNode
+    if not sceneNode then return end
     return sceneNode:getObjectByName(Planter.ATTACH_NODE)
 end
 
@@ -235,7 +245,7 @@ end
 ]]
 function Planter:updatePlantMesh()
     self.logger:trace("Updating plant mesh")
-    local attachNode = self.reference.sceneNode:getObjectByName(Planter.ATTACH_NODE)
+    local attachNode = self.reference.sceneNode:getObjectByName(Planter.ATTACH_NODE)--[[@as niNode]]
     if not attachNode then
         self.logger:error("No %s node found", Planter.ATTACH_NODE)
         return
@@ -255,7 +265,7 @@ function Planter:updatePlantMesh()
 
     do --attach plant mesh
         self.logger:trace("Attaching plant %s", plant)
-        local mesh = tes3.loadMesh(plant.mesh, false):clone()
+        local mesh = tes3.loadMesh(plant.mesh, false):clone() --[[@as niNode]]
         if not mesh then
             self.logger:error("No mesh found for %s", plant)
             return
@@ -353,7 +363,18 @@ function Planter:plantSeed(ingredient)
     end
 end
 
-function Planter:doRainWater(timePassed)
+---@return number How many hours have passed since growth was updated
+function Planter:getHoursSinceUpdate()
+    self.lastUpdated = self.lastUpdated or tes3.getSimulationTimestamp()
+    local hoursPassed = tes3.getSimulationTimestamp() - self.lastUpdated
+    return hoursPassed
+end
+
+function Planter:updateLastUpdated()
+    self.lastUpdated = tes3.getSimulationTimestamp()
+end
+
+function Planter:doRainWater(hoursPassed)
     local sheltered = common.helper.checkRefSheltered(self.reference)
     if sheltered then return end
     local rainPerHour
@@ -366,20 +387,17 @@ function Planter:doRainWater(timePassed)
     end
     if rainPerHour then
         self.logger:trace("Rain water per hour: %s", rainPerHour)
-        local rainAmount = rainPerHour * timePassed
+        local rainAmount = rainPerHour * hoursPassed
         self.logger:trace("Rain water amount: %s", rainAmount)
         self.waterAmount = math.min(self.waterAmount + rainAmount, self.MAX_WATER_AMOUNT)
         self:updateDirtWater()
     end
 end
 
----@param hoursPassed number
 function Planter:grow(hoursPassed)
-    if self.plantProgress >= 1 then return end
-    if not self.plantId then return end
     self.logger:trace("Growing plant, hours passed: %s", hoursPassed)
     local growthAmount = hoursPassed / self.UNWATERED_HOURS_TO_GROW
-    if self.waterAmount > 0 then
+    if self:hasWater() then
         growthAmount = growthAmount * self.WATER_GROWTH_MULTI
         self.logger:trace("Watered growth: %s", growthAmount)
         local waterUsed = hoursPassed * self.WATER_PER_GROWTH_HOUR
@@ -389,30 +407,54 @@ function Planter:grow(hoursPassed)
     else
         self.logger:trace("Unwatered growth amount: %s", growthAmount)
     end
-
     self.plantProgress = math.clamp(self.plantProgress + growthAmount, 0, 1)
     self:updatePlantMesh()
 end
 
-function Planter:updateTimeToHarvest(hoursPassed)
-    if self.timeUntilHarvestable <= 0 then return end
-    if not self.plantId then return end
-    self.logger:trace("Recoving plant, hours passed: %s", hoursPassed)
+---Update the plant's growth, water, and recovery
+function Planter:progress()
+    local hoursPassed = self:getHoursSinceUpdate()
+    self:updateLastUpdated()
+    self:doRainWater(hoursPassed)
+    if not self:hasPlant() then return end
+    if self:isFullyGrown() then
+        self.logger:trace("fully grown")
+        if not self:readyToHarvest() then
+            self:recover(hoursPassed)
+            self.logger:trace("Plant is fully grown")
+            self:updateGHNodes()
+        end
+    else
+        self:grow(hoursPassed)
+    end
+end
+
+---Recover the plant over time after harvesting
+function Planter:recover(hoursPassed)
+    if self:readyToHarvest() then return end
+    if not self:hasPlant() then return end
+    self.logger:trace("Recovering plant, hours passed: %s", hoursPassed)
     local recoverAmount = hoursPassed
-    if self.waterAmount > 0 then
+    if self:hasWater() then
         recoverAmount = hoursPassed * self.WATER_RECOVER_MULTI
         self.timeUntilHarvestable = self.timeUntilHarvestable - hoursPassed
-        self.logger:trace("Watered recovery: %s", recoverAmount)
+        self.logger:trace("Watered recovery amount: %s", recoverAmount)
         local waterUsed = hoursPassed * self.WATER_PER_RECOVERY_HOUR
         self.logger:trace("Water used: %s", waterUsed)
-        self.waterAmount = math.max(self.waterAmount - waterUsed, 0)
-        self:updateDirtWater()
+        self:reduceWater(waterUsed)
     else
         self.logger:trace("Unwatered recovery amount: %s", recoverAmount)
     end
     self.timeUntilHarvestable = self.timeUntilHarvestable - recoverAmount
 end
 
+---Reduce the water in the planter by a given amount
+function Planter:reduceWater(amount)
+    self.waterAmount = math.max(self.waterAmount - amount, 0)
+    self:updateDirtWater()
+end
+
+---Add water to the planter from a liquid container
 ---@param liquidContainer Ashfall.LiquidContainer How much water to add
 ---@return number How much water was left over
 function Planter:water(liquidContainer)
@@ -447,6 +489,7 @@ function Planter:resetPlantValues()
     self.plantProgress = 0
     self.timeUntilHarvestable = 0
     self.maxScale = nil
+    self.lastUpdated = nil
 end
 
 function Planter:removePlant()
@@ -457,7 +500,6 @@ end
 
 function Planter:addItems()
     self.logger:debug("adding items")
-    --get plant
     local plant = tes3.getObject(self.plantId)
     self.logger:debug("plant: %s", plant.id)
     ---@param stack tes3itemStack
@@ -491,9 +533,7 @@ function Planter:harvest()
     self:addItems()
     tes3.playSound{ sound = "Item Misc Up"}
     if self:canRecover() then
-        --Reset time remaining
         self:resetTimeToHarvest()
-        --Update switch nodes if GH is installed
         self:updateGHNodes()
     else
         self:removePlant()
@@ -531,6 +571,10 @@ end
 
 function Planter:canBeWatered()
     return self.waterAmount < self.MAX_WATER_AMOUNT - 1
+end
+
+function Planter:hasWater()
+    return self.waterAmount > 0
 end
 
 function Planter:hasPlant()

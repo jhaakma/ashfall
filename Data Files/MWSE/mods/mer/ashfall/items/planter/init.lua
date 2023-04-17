@@ -120,59 +120,22 @@ do --Initialise Seedling Data
 end
 
 local GROWTH_CHECK_INTERVAL = 0.005
-local function growSimulate(timestamp)
+--Grow plants over time
+---@param e simulateEventData
+event.register("simulate", function(e)
+    local timestamp = e.timestamp
     tes3.player.tempData.ashfallLastGrowthUpdated = tes3.player.tempData.ashfallLastGrowthUpdated or timestamp
     local lastGrowthUpdated = tes3.player.tempData.ashfallLastGrowthUpdated
     if timestamp - lastGrowthUpdated > GROWTH_CHECK_INTERVAL then
-        local hoursPassed = timestamp - lastGrowthUpdated
         tes3.player.tempData.ashfallLastGrowthUpdated = timestamp
         ReferenceController.iterateReferences("planter", function(planterRef)
             --Grow or recover plant
             local planter = Planter.new(planterRef)
-            if planter and planter.plantId then
-                planter.logger:trace("updating planter")
-                if planter:isFullyGrown() then
-                    planter.logger:trace("fully grown")
-                    planter:updateTimeToHarvest(hoursPassed)
-                    --If time has run out, update the mesh to set the switch nodes
-                    if planter.timeUntilHarvestable <= 0 then
-                        planter.timeUntilHarvestable = 0
-                        planter:updateGHNodes()
-                    end
-                else
-                    planter.logger:trace("not fully grown")
-                    planter:grow(hoursPassed)
-                end
-            end
-        end)
-    end
-end
-
-local RAIN_CHECK_INTERVAL = 0.005
-local function rainSimulate(timestamp)
-    --Check for rain
-    tes3.player.tempData.ashfallLastRainCheck = tes3.player.tempData.ashfallLastRainCheck or timestamp
-    local lastRainCheck = tes3.player.tempData.ashfallLastRainCheck
-    if timestamp - lastRainCheck > RAIN_CHECK_INTERVAL then
-        local hoursPassed = timestamp - lastRainCheck
-        tes3.player.tempData.ashfallLastRainCheck = timestamp
-        ReferenceController.iterateReferences("planter", function(planterRef)
-            --Check for rain
-            local planter = Planter.new(planterRef)
             if planter then
-                planter:doRainWater(hoursPassed)
+                planter:progress()
             end
         end)
     end
-end
-
-
-
---Grow plants over time
----@param e simulateEventData
-event.register("simulate", function(e)
-    growSimulate(e.timestamp)
-    rainSimulate(e.timestamp)
 end)
 
 ---@param e referenceActivatedEventData

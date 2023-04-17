@@ -8,7 +8,7 @@ local mcmConfig = {
     manualTimeScale = 20,
     overrideTimeScale = true,
     overrideFood = true,
-
+    TEST = false,
     --dev stuff
     logLevel = "INFO",
     devFeatures = false,

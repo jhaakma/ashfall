@@ -1184,6 +1184,15 @@ this.bushCraftingRecipes = {
 		recoverEquipmentMaterials = true,
 	},
 }
+if config.debugMode then
+    mwse.log("\n\nTEST: Adding test recipes")
+    table.insert(this.bushCraftingRecipes, {
+        id = "bushcraft:TEST",
+        craftableId = "urn_03",
+        category = "_TEST",
+        scale = 2
+    })
+end
 
 ---@type CraftingFramework.Recipe.data[]
 this.tanningRackRecipes = {
