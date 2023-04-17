@@ -28,7 +28,6 @@ local function douse(bottleData)
     common.data.wetness = common.data.wetness + waterUsed*wetnessPerWater
     event.trigger("Ashfall:updateCondition", { id = "wetness" })
 
-
     --handle bottleData if provided
     if bottleData then
         local liquidContainer = LiquidContainer.createFromData(bottleData)
@@ -204,6 +203,7 @@ local function doDrinkWater(bottleData)
     --Reduce liquid in bottleData
     local liquidContainer = LiquidContainer.createFromData(bottleData)
     if liquidContainer then
+        liquidContainer:setPlaySound(false)
         liquidContainer:reduce(thisSipSize)
     end
 end

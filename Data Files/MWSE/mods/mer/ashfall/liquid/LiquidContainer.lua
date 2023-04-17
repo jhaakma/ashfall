@@ -48,6 +48,7 @@ local teaConfig = require "mer.ashfall.config.teaConfig"
 ---@field stewBuffs table The stew buffs
 ---@field capacity number Maximum water capacity of container
 ---@field holdsStew boolean Flag whether container is able to hold stew. If it can hold stew, it can't hold tea.
+---@field doPlaySound boolean *Default*: `true`. Flag whether to play a sound when adding water to the container
 local LiquidContainer = {}
 
 local dataValues = {
@@ -122,6 +123,7 @@ function LiquidContainer.new(e)
         liquidContainer.holdsStew = bottleData.holdsStew == true
         liquidContainer.reference = reference
         liquidContainer.itemId = id
+        liquidContainer.doPlaySound = true
         setmetatable(liquidContainer, meta )
         if liquidContainer.stewLevels then liquidContainer.waterType = "stew" end
         return liquidContainer
@@ -406,12 +408,20 @@ function LiquidContainer:doGraphicalUpdates()
     tes3ui.updateInventoryTiles()
 end
 
+---@param self Ashfall.LiquidContainer
+---@param bool boolean #Whether to play the water transfer sound when this container is filled or emptied
+function LiquidContainer:setPlaySound(bool)
+    self.doPlaySound = bool
+end
+
 function LiquidContainer:playSound()
-    tes3.playSound({reference = tes3.player, sound = "ashfall_water"})
+    if self.doPlaySound then
+        tes3.playSound({reference = tes3.player, sound = "ashfall_water"})
+    end
 end
 
 ---@alias Ashfall.LiquidContainer.LiquidName
----| '"Dirty Water"'
+---| '"Dirty water"'
 ---| '"Water"'
 ---| '"Stew"'
 ---| '"Soup"'
