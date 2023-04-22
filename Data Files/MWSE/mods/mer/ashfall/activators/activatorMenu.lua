@@ -109,11 +109,13 @@ local function onActivatorActivated(e)
             buttonData = resolveButtonData(buttonData)
             addButton(buttons, buttonData)
         end
+        if table.size(buttons) > 0 then
             tes3ui.showMessageMenu({
                 message = text,
                 buttons = buttons,
                 cancels = true
             })
+        end
     else
         logger:debug("list of valid buttons is empty")
     end
