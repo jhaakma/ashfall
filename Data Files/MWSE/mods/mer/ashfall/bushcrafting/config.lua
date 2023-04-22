@@ -816,7 +816,7 @@ this.bushCraftingRecipes = {
             { material = "rope", count = 2 },
         },
         skillRequirements = {
-            this.survivalTiers.apprentice
+            this.survivalTiers.beginner
         },
         category = this.categories.tools,
         soundType = "wood",
