@@ -93,11 +93,7 @@ event.register("attackHit", function(e)
         logger:debug("Harvest: No weapon")
         return
     end
-    if weapon.object.type ~= tes3.weaponType["shortBladeOneHand"] then
-        logger:debug("Not a short blade")
-        tes3.messageBox("Requires Knife.")
-        return
-    end
+
 
     --Get skinnable ingredients
     local ingredients = SkinningService.getSkinnableIngredients(target)
@@ -106,6 +102,12 @@ event.register("attackHit", function(e)
         return
     elseif table.size(ingredients) == 0 then
         logger:debug("No skinnable ingredients")
+        return
+    end
+
+    if weapon.object.type ~= tes3.weaponType["shortBladeOneHand"] then
+        logger:debug("Not a short blade")
+        tes3.messageBox("Requires Knife.")
         return
     end
 
