@@ -891,6 +891,12 @@ interop.registerActivators{
     t_sky_flora_treepine7snowlog_04 = "wood",
     t_sky_flora_treepine7snowlog_05 = "wood",
     --stump
+    bc_flora_treestump_01 = "stump",
+    bc_flora_treestump_02 = "stump",
+    bc_flora_treestump_03 = "stump",
+    bc_flora_treestump_04 = "stump",
+    bc_flora_treestump_05 = "stump",
+    bc_flora_treestump_06 = "stump",
     flora_bc_tree_12 = "stump",
     flora_bc_tree_13 = "stump",
     flora_bm_snowstump_01 = "stump",
