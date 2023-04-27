@@ -237,7 +237,7 @@ local function updateWaterHeight(reference)
 
     local waterNode = reference.sceneNode:getObjectByName("POT_WATER")
     if waterNode then
-        logger:trace("Found Water Node! Setting height to %s and scale to %s", height, scale)
+        logger:debug("Found Water Node! Setting height to %s and scale to %s", height, scale)
         waterNode.translation.z = height
         waterNode.scale = scale
     end

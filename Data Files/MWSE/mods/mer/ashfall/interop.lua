@@ -147,7 +147,11 @@ local function registerWaterContainers(e)
                 capacity = data.capacity,
                 weight = data.weight,
                 value = data.value,
-                holdsStew = data.holdsStew
+                holdsStew = data.holdsStew,
+                waterMaxHeight = data.waterMaxHeight,
+                waterMinHeight = data.waterMinHeight,
+                minSteamHeight = data.minSteamHeight,
+                waterMaxScale = data.waterMaxScale,
             }
             logger:debug("    %s: { capacity: %d%s%s%s }",
                 id,
