@@ -141,7 +141,7 @@ this.list.tree = Activator:new{
         ["vurt_palm"] = true,
         ["vurt_unicy"] = true,
         ["pine_tree"] = true,--vsw
-        ["mr_flora_graze_tree "] = true, --Rebirth
+        ["mr_flora_graze_tree"] = true, --Rebirth
     },
 }
 this.list.stump = Activator:new{
