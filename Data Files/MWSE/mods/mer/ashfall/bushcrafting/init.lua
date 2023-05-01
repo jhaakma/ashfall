@@ -114,4 +114,3 @@ local function customNameTooltip(e)
     end
 end
 event.register("uiObjectTooltip", customNameTooltip)
-

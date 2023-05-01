@@ -59,6 +59,8 @@ function HarvestService.getWeaponHarvestData(weapon, harvestConfig)
         for pattern, data in pairs(harvestConfig.weaponNamePatterns) do
             if string.match(weapon.object.name:lower(), pattern) then
                 weaponDataFromName = data
+                --cache this weapon
+                harvestConfig.weaponIds[weapon.object.id:lower()] = data
                 break
             end
         end

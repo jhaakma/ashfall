@@ -263,6 +263,20 @@ config.activatorHarvestData = {
         attackDirections = {
             [attackDirection.chop] = true
         },
+        weaponIds = {
+            ashfall_pickaxe_flint = {
+                effectiveness = 1.0,
+                degradeMulti = 1.0,
+            },
+            ashfall_pickaxe_glass = {
+                effectiveness = 1.5,
+                degradeMulti = 0.8,
+            },
+            ["miner's pick"] = {
+                effectiveness = 2.0,
+                degradeMulti = 0.2,
+            }
+        },
         weaponNamePatterns = {
             ["pick"] = {
                 effectiveness = 1.0,

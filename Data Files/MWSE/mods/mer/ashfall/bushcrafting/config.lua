@@ -147,6 +147,13 @@ this.menuOptions = {
 
 this.materials = {
     {
+        id = "sack",
+        name = "Sack",
+        ids = {
+            "ashfall_sack_01"
+        }
+    },
+    {
         id = "resin",
         name = "Resin",
         ids = {
@@ -925,7 +932,7 @@ this.bushCraftingRecipes = {
         materials = {
             { material = "wood", count = 2 },
             { material = "rope", count = 1 },
-            { material = "ashfall_sack_01", count = 1 },
+            { material = "sack", count = 1 },
             { material = "leather", count = 1 },
             { material = "netting", count = 1 },
         },
