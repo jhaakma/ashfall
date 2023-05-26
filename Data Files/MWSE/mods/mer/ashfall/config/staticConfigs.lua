@@ -86,6 +86,11 @@ this.bottleConfig = {
         waterMaxScale = 1.8,
         holdsStew = true,
     },
+    ashfall_bowl_01 = {
+        capacity = 60,
+        waterMaxScale = 1.8,
+        waterMaxHeight = 4.0,
+    },
 
     cup = { capacity = 25, weight = 2 },
     glass = { capacity = 25, weight = 2 },
@@ -497,6 +502,9 @@ this.utensils = {
     --     waterMaxHeight = 28,
     --     holdsStew = true
     -- },
+    --bushcrafting
+
+
     ashfall_bowl_02 = {
         type = "cookingPot",
         capacity = 80,
