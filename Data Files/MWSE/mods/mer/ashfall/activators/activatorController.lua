@@ -221,6 +221,7 @@ end
     a static activator
 ]]--
 local function onIndicator(e)
+    if tes3.player.mobile.controlsDisabled then return end
     local eyePos  = tes3.getPlayerEyePosition()
     local eyeVec  = tes3.getPlayerEyeVector()
     local activationDistance = tes3.getPlayerActivationDistance()
@@ -260,6 +261,7 @@ event.register("CraftingFramework:StaticActivatorIndicator", onIndicator)
     at an activator static then fire an event
 ]]--
 function ActivatorController.doTriggerActivate()
+    if tes3.player.mobile.controlsDisabled then return end
     logger:debug("ActivatorController.doTriggerActivate")
     if (not tes3ui.menuMode()) and doActivate() then
         logger:debug("Do activate")
