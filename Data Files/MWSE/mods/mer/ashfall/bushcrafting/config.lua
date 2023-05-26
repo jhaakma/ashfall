@@ -145,7 +145,17 @@ this.menuOptions = {
     },
 }
 
+---@type CraftingFramework.Material.data
 this.materials = {
+    -- {
+    --     id = "water",
+    --     isMaterial = function(item, itemData)
+    --         return itemData
+    --             and itemData.data
+    --             and itemData.data.waterAmount ~= nil
+    --             and itemData.data.waterAmount > 0
+    --     end
+    -- },
     {
         id = "sack",
         name = "Sack",
@@ -288,8 +298,10 @@ this.materials = {
 }
 this.ingredMaterials = {}
 for name, ingredient in pairs(this.materials) do
-    for _, id in ipairs(ingredient.ids) do
-        this.ingredMaterials[id] = name
+    if ingredient.ids then
+        for _, id in ipairs(ingredient.ids) do
+            this.ingredMaterials[id] = name
+        end
     end
 end
 
@@ -1191,15 +1203,19 @@ this.bushCraftingRecipes = {
 		recoverEquipmentMaterials = true,
 	},
 }
-if config.debugMode then
-    mwse.log("\n\nTEST: Adding test recipes")
-    table.insert(this.bushCraftingRecipes, {
+
+table.insert(this.bushCraftingRecipes,
+    {
         id = "bushcraft:TEST",
-        craftableId = "urn_03",
-        category = "_TEST",
-        scale = 2
-    })
-end
+        craftableId = "mudstove",
+        name = "Mud Stove",
+        category = "--TEST--",
+        scale = 1,
+        knowledgeRequirement = function(_)
+            return  tes3.player.data.merDebugEnabled == true
+        end
+    } --[[@as CraftingFramework.Recipe.data]]
+)
 
 ---@type CraftingFramework.Recipe.data[]
 this.tanningRackRecipes = {

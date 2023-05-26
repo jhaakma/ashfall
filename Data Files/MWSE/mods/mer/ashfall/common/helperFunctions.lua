@@ -128,7 +128,8 @@ function this.movePlayer(e)
                 orientation.z
             },
             cell = e.cell,
-            teleportCompanions = false
+            teleportCompanions = false,
+            suppressFader = true
         }
     else -- avoid positionCell because it sucks
         tes3.player.position = e.position

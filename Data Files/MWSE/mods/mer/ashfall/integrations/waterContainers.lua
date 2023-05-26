@@ -21,9 +21,11 @@ interop.registerWaterContainers({
         waterMaxHeight = 2.5,
     },
 
-    --bushcrafting
-    ashfall_bowl_01 = "wooden_bowl",
-
+    ashfall_bowl_01 = {
+        capacity = 60,
+        waterMaxScale = 1.8,
+        waterMaxHeight = 4.0,
+    },
     ashfall_cup_01 = {
         capacity = 25,
         waterMaxScale = 1.3,
