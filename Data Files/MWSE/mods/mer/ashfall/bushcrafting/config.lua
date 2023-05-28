@@ -761,6 +761,42 @@ this.bushCraftingRecipes = {
         craftedOnly = false,
     },
     {
+        id = "bushcraft:ashfall_screen_leather",
+        craftableId = "ashfall_screen_leather",
+        description = "A partition made of leather.",
+        materials = {
+            { material = "leather", count = 2 },
+            { material = "wood", count = 2 },
+            { material = "rope", count = 1 },
+        },
+        skillRequirements = {
+            this.survivalTiers.apprentice
+        },
+        category = this.categories.structures,
+        soundType = "leather",
+        customRequirements = {
+            this.customRequirements.wildernessOnly
+        },
+    },
+    {
+        id = "bushcraft:ashfall_screen_fabric",
+        craftableId = "ashfall_screen_fabric",
+        description = "A partition made of fabric.",
+        materials = {
+            { material = "fabric", count = 2 },
+            { material = "wood", count = 2 },
+            { material = "rope", count = 1 },
+        },
+        skillRequirements = {
+            this.survivalTiers.apprentice
+        },
+        category = this.categories.structures,
+        soundType = "fabric",
+        customRequirements = {
+            this.customRequirements.wildernessOnly
+        },
+    },
+    {
         id = "bushcraft:ashfall_waterskin",
         craftableId = "ashfall_waterskin",
         description = itemDescriptions.ashfall_waterskin,
