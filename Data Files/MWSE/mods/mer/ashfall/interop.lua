@@ -531,4 +531,8 @@ Interop.isPlayerNearCampfire = function(maxDistance)
     }
 end
 
+local Cushion = require("mer.ashfall.items.cushion")
+Interop.registerCushion = Cushion.register
+
+
 return Interop

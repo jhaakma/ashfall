@@ -261,6 +261,7 @@ event.register("CraftingFramework:StaticActivatorIndicator", onIndicator)
     at an activator static then fire an event
 ]]--
 function ActivatorController.doTriggerActivate()
+    if not tes3.player then return end
     if tes3.player.mobile.controlsDisabled then return end
     logger:debug("ActivatorController.doTriggerActivate")
     if (not tes3ui.menuMode()) and doActivate() then

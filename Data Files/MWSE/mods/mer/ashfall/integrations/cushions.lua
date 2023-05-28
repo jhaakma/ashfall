@@ -1,4 +1,4 @@
-return {
+local cushions = {
     ashfall_cushion_01 = { height = 20 },
     ashfall_cushion_02 = { height = 20 },
     ashfall_cushion_03 = { height = 20 },
@@ -15,3 +15,12 @@ return {
     ashfall_cushion_sq_07 = { height = 10 },
     ashfall_cush_crft_01 = { height = 5 },
 }
+
+local Cushion = require("mer.ashfall.items.cushion")
+for id, data in pairs(cushions) do
+    Cushion.register{
+        id = id,
+        height = data.height
+    }
+end
+

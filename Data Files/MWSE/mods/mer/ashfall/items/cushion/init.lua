@@ -1,7 +1,24 @@
 local common = require("mer.ashfall.common.common")
 local animCtrl = require("mer.ashfall.animation.animationController")
-local cushionConfig = require("mer.ashfall.items.cushion.config")
 local skipActivate
+
+---@class Ashfall.Cushion.config
+---@field id string The id of the cushion
+---@field height number The height of the cushion
+
+---@class Ashfall.Cushion
+local Cushion = {
+    registeredCushions = {}
+}
+
+
+--- Register a cushion
+---@param e Ashfall.Cushion.config
+function Cushion.register(e)
+    Cushion.registeredCushions[e.id:lower()] = {
+        height = e.height
+    }
+end
 
 local function canRest()
     return tes3.canRest()
@@ -68,7 +85,7 @@ end
 local function activateCushion(e)
     if not (e.activator == tes3.player) then return end
     --Check if it's a misc tent ref
-    if cushionConfig[e.target.object.id:lower()] then
+    if Cushion.registeredCushions[e.target.object.id:lower()] then
         --Skip if picking up
         if skipActivate then
             skipActivate = false
@@ -95,3 +112,6 @@ event.register(
     cushionMenu,
     { filter = common.staticConfigs.activatorConfig.types.cushion }
 )
+
+
+return Cushion
