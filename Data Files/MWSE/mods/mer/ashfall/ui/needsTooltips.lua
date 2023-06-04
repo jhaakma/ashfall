@@ -139,22 +139,6 @@ local function createNeedsTooltip(e)
         return
     end
 
-    --recalculate heat whenever you interact with it
-    local bottleData = thirstController.getBottleData(e.object.id)
-    if bottleData then
-        local hasWaterAndHeat = e.itemData
-            and e.itemData.data
-            and e.itemData.data.waterAmount
-            and e.itemData.data.waterHeat
-            and e.itemData.data.waterHeat >= 1
-        if hasWaterAndHeat then
-            if not e.reference then
-                --only update heat on tooltip when in inventory, otherwise it messes with the boilerController update
-                CampfireUtil.updateWaterHeat(e.itemData.data, bottleData.capacity)
-            end
-        end
-    end
-
     --used for item and campfire tooltips
     itemTooltips(e.object, e.itemData, tooltip)
 

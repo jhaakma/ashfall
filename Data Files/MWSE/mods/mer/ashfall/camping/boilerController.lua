@@ -28,48 +28,50 @@ local function addUtensilPatina(campfire,interval)
     end
 end
 
-local function updateBoilers(e)
+local function doUpdate(boilerRef)
+    local timestamp = tes3.getSimulationTimestamp()
+    local liquidContainer = LiquidContainer.createFromReference(boilerRef)
+    if not liquidContainer then return end
+    liquidContainer.data.lastWaterUpdated = liquidContainer.data.lastWaterUpdated or timestamp
+    local timeSinceLastUpdate = timestamp - liquidContainer.data.lastWaterUpdated
 
-    local function doUpdate(boilerRef)
-        local liquidContainer = LiquidContainer.createFromReference(boilerRef)
-        if not liquidContainer then return end
-        --logger:trace("BOILER updating %s", boilerRef.object.id)
-        liquidContainer.data.lastWaterUpdated = liquidContainer.data.lastWaterUpdated or e.timestamp
-        local timeSinceLastUpdate = e.timestamp - liquidContainer.data.lastWaterUpdated
+    if timeSinceLastUpdate < 0 then
+        logger:error("BOILER liquidContainer.data.lastWaterUpdated(%.4f) is ahead of timestamp(%.4f).",
+            liquidContainer.data.lastWaterUpdated, timestamp)
+        --something fucky happened
+        liquidContainer.data.lastWaterUpdated = timestamp
+    end
 
-        --logger:trace("BOILER timeSinceLastUpdate %s", timeSinceLastUpdate)
+    local hasFilledPot = liquidContainer.waterAmount > 0
+    if hasFilledPot then
+        logger:trace("BOILER interval passed, updating heat for %s", liquidContainer)
+        addUtensilPatina(liquidContainer.reference,timeSinceLastUpdate)
+        logger:trace("BOILER hasFilledPot")
+        local bottleData = thirstController.getBottleData(liquidContainer.itemId)
+        local utensilData = CampfireUtil.getUtensilData(liquidContainer.reference)
+        local capacity = (bottleData and bottleData.capacity) or ( utensilData and utensilData.capacity )
 
-        if timeSinceLastUpdate < 0 then
-            logger:error("BOILER liquidContainer.data.lastWaterUpdated(%.4f) is ahead of e.timestamp(%.4f).",
-                liquidContainer.data.lastWaterUpdated, e.timestamp)
-            --something fucky happened
-            liquidContainer.data.lastWaterUpdated = e.timestamp
-        end
-
-        if timeSinceLastUpdate > BOILER_UPDATE_INTERVAL then
-            local hasFilledPot = liquidContainer.waterAmount > 0
-            if hasFilledPot then
-                logger:trace("BOILER interval passed, updating heat for %s", liquidContainer)
-                addUtensilPatina(liquidContainer.reference,timeSinceLastUpdate)
-                logger:trace("BOILER hasFilledPot")
-                local bottleData = thirstController.getBottleData(liquidContainer.itemId)
-                local utensilData = CampfireUtil.getUtensilData(liquidContainer.reference)
-                local capacity = (bottleData and bottleData.capacity) or ( utensilData and utensilData.capacity )
-
-                CampfireUtil.updateWaterHeat(liquidContainer.data, capacity, liquidContainer.reference)
-                if liquidContainer:isBoiling() then
-                    --boil dirty water away
-                    if liquidContainer:getLiquidType() == "dirty" then
-                        liquidContainer.waterType = nil
-                    end
-                end
-                tes3ui.refreshTooltip()
-            else
-                logger:trace("BOILER no filled pot, setting waterUpdated to nil")
-                liquidContainer.data.lastWaterUpdated = nil
+        CampfireUtil.updateWaterHeat(liquidContainer.data, capacity, liquidContainer.reference)
+        if liquidContainer:isBoiling() then
+            --boil dirty water away
+            if liquidContainer:getLiquidType() == "dirty" then
+                liquidContainer.waterType = nil
             end
         end
+        tes3ui.refreshTooltip()
+    else
+        logger:trace("BOILER no filled pot, setting waterUpdated to nil")
+        liquidContainer.data.lastWaterUpdated = nil
     end
-    ReferenceController.iterateReferences("boiler", doUpdate)
 end
-event.register("simulate", updateBoilers)
+
+event.register("loaded", function()
+    timer.start{
+        type = timer.real,--we update boilers inside menumode too
+        duration = 0.1,
+        iterations = -1,
+        callback = function()
+            ReferenceController.iterateReferences("boiler", doUpdate)
+        end,
+    }
+end)

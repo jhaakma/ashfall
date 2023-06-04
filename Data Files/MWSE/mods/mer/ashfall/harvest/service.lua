@@ -367,7 +367,12 @@ function HarvestService.disableNearbyRefs(harvestableRef, harvestConfig, harvest
                 --Drop nearby loot
                 if common.helper.getCloseEnough({ref1 = ref, ref2 = harvestableRef, distHorizontal = 150, distVertical = 2000, rootHeight = 100}) then
                     logger:debug("Found nearby %s", ref)
-                    local result = common.helper.getGroundBelowRef{doLog = false, ref = ref, ignoreList = ignoreList}
+                    local result = common.helper.getGroundBelowRef{
+                        doLog = false,
+                        ref = ref,
+                        ignoreList = ignoreList,
+                        maxDistance = 2000
+                    }
                     local refBelow = result and result.reference
                     logger:debug("%s", result and result.reference)
                     if refBelow == harvestableRef then

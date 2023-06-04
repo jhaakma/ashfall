@@ -83,6 +83,7 @@ local function addGrillPatina(campfire,interval)
         end
     end
 end
+
 --Check whether the player burns the food based on survival skill and whether campfire has grill
 local function checkIfBurned(campfire)
     local burnChance = 1
@@ -117,9 +118,36 @@ local function checkIfBurned(campfire)
     end
 end
 
+
 ---@param ingredReference tes3reference
----@param timestamp number
-local function grillFoodItem(ingredReference, timestamp)
+---@param difference number
+local function doCook(ingredReference, difference)
+    ingredReference.data.grillState = "cooked"
+    tes3.playSound{ sound = "potion fail", pitch = 0.7, reference = ingredReference }
+    common.skills.survival:progressSkill(skillSurvivalGrillingIncrement)
+    event.trigger("Ashfall:ingredCooked", { reference = ingredReference})
+    local justChangedCell = difference > 0.01
+    if not justChangedCell then
+        tes3.messageBox("%s is fully cooked.", ingredReference.object.name)
+    end
+end
+
+---@param ingredReference tes3reference
+---@param difference number
+local function doBurn(ingredReference, difference)
+    ingredReference.data.grillState = "burnt"
+    tes3.playSound{ sound = "potion fail", pitch = 0.9, reference = ingredReference }
+    event.trigger("Ashfall:ingredCooked", { reference = ingredReference})
+    local justChangedCell = difference > 0.01
+    if not justChangedCell then
+        tes3.messageBox("%s has become burnt.", ingredReference.object.name)
+    end
+end
+
+---@param ingredReference tes3reference
+local function grillFoodItem(ingredReference)
+    local timestamp = tes3.getSimulationTimestamp()
+
     --Can only grill certain types of food
     local campfire = common.helper.getHeatFromBelow(ingredReference, "strong")
     if campfire then
@@ -133,7 +161,7 @@ local function grillFoodItem(ingredReference, timestamp)
             ingredReference.data.cookedAmount = ingredReference.data.cookedAmount or 0
 
             local difference = timestamp - ingredReference.data.lastCookUpdated
-            if difference > 0.010 then
+          -- if difference > 0.010 then
 
                 addGrillPatina(campfire, difference)
                 ingredReference.data.lastCookUpdated = timestamp
@@ -159,39 +187,18 @@ local function grillFoodItem(ingredReference, timestamp)
                     and ingredReference.data.grillState ~= "burnt"
 
 
-                local function doCook()
-                    ingredReference.data.grillState = "cooked"
-                    tes3.playSound{ sound = "potion fail", pitch = 0.7, reference = ingredReference }
-                    common.skills.survival:progressSkill(skillSurvivalGrillingIncrement)
-                    event.trigger("Ashfall:ingredCooked", { reference = ingredReference})
-                    local justChangedCell = difference > 0.01
-                    if not justChangedCell then
-                        tes3.messageBox("%s is fully cooked.", ingredReference.object.name)
-                    end
-                end
-
-                local function doBurn()
-                    ingredReference.data.grillState = "burnt"
-                    tes3.playSound{ sound = "potion fail", pitch = 0.9, reference = ingredReference }
-                    event.trigger("Ashfall:ingredCooked", { reference = ingredReference})
-                    local justChangedCell = difference > 0.01
-                    if not justChangedCell then
-                        tes3.messageBox("%s has become burnt.", ingredReference.object.name)
-                    end
-                end
-
                 if justCooked then
                     --Check if food burned immediately
                     if checkIfBurned(campfire) then
-                        doBurn()
+                        doBurn(ingredReference, difference)
                     else
-                        doCook()
+                        doCook(ingredReference, difference)
                     end
                 elseif justBurnt then
-                    doBurn()
+                    doBurn(ingredReference, difference)
                 end
                 tes3ui.refreshTooltip()
-            end
+           -- end
         else
             --reset grill time if campfire is unlit
             resetCookingTime(ingredReference)
@@ -202,14 +209,17 @@ local function grillFoodItem(ingredReference, timestamp)
     end
 end
 
-
---update any food that is currently grilling
-local function grillFoodSimulate(e)
-    ReferenceController.iterateReferences("grillableFood", function(ref)
-        grillFoodItem(ref, e.timestamp)
-    end)
-end
-event.register("simulate", grillFoodSimulate)
+event.register("loaded", function()
+    timer.start{
+        duration = 0.10,
+        iterations = -1,
+        callback = function()
+            ReferenceController.iterateReferences("grillableFood", function(ref)
+                grillFoodItem(ref)
+            end)
+        end
+    }
+end)
 
 
 local function doAddingredToStew(campfire, reference)
@@ -242,44 +252,49 @@ local function doAddingredToStew(campfire, reference)
     end
 end
 
+local function doPlaced(ingredReference)
+    --place in pot
+    local campfire = CampfireUtil.getPlacedOnContainer()
+    if campfire then
+        local utensilData = CampfireUtil.getDataFromUtensilOrCampfire{
+            dataHolder = campfire,
+            object = campfire.object
+        }
+        local hasWater = campfire.data.waterAmount and campfire.data.waterAmount > 0
+        local hasLadle = not not campfire.data.ladle
+        --ingredient placed on a cooking pot with water in it
+        if hasWater and utensilData and utensilData.holdsStew then
+            if not hasLadle then
+                tes3.messageBox("Requires ladle.")
+            else
+                doAddingredToStew(campfire, ingredReference)
+            end
+        end
+    elseif foodConfig.getGrillValues(ingredReference.object) then
+        if ingredReference.data then
+            --Reset grill time for meat and veges
+            ingredReference.data.preventBurning = nil
+            resetCookingTime(ingredReference)
+        end
+        grillFoodItem(ingredReference)
+    end
+end
+
 --Place food on a grill or into a pot
 local function foodPlaced(e)
     if e.reference and e.reference.object then
         local isIngredient = e.reference.object.objectType == tes3.objectType.ingredient
         if not isIngredient then return end
-
+        local safeRef = tes3.makeSafeObjectHandle(e.reference)
         timer.frame.delayOneFrame(function()
-            --place in pot
-            local campfire = CampfireUtil.getPlacedOnContainer()
-            if campfire then
-                local utensilData = CampfireUtil.getDataFromUtensilOrCampfire{
-                    dataHolder = campfire,
-                    object = campfire.object
-                }
-                local hasWater = campfire.data.waterAmount and campfire.data.waterAmount > 0
-                local hasLadle = not not campfire.data.ladle
-                --ingredient placed on a cooking pot with water in it
-                if hasWater and utensilData and utensilData.holdsStew then
-                    if not hasLadle then
-                        tes3.messageBox("Requires ladle.")
-                    else
-                        doAddingredToStew(campfire, e.reference)
-                    end
-                end
-            elseif foodConfig.getGrillValues(e.reference.object) then
-                local timestamp = tes3.getSimulationTimestamp()
-                local ingredReference = e.reference
-                if ingredReference.data then
-                    --Reset grill time for meat and veges
-                    ingredReference.data.preventBurning = nil
-                    resetCookingTime(ingredReference)
-                end
-                grillFoodItem(ingredReference, timestamp)
+            if safeRef and safeRef:valid() then
+                doPlaced(safeRef:getObject())
             end
         end)
     end
 end
 event.register("referenceSceneNodeCreated" , foodPlaced)
+
 
 local function clearUtensilData(e)
     e.utensil = nil
@@ -288,7 +303,6 @@ local function clearUtensilData(e)
     e.utensilData = nil
     e.utensilPatinaAmount = nil
 end
-
 
 --Empty a cooking pot or kettle, reseting all data
 local function clearCampfireUtensilData(e)

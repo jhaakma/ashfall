@@ -602,13 +602,16 @@ function this.getGroundBelowRef(e)
         return
     end
     local height = -ref.object.boundingBox.min.z + (e.rootHeight or 5)
+    local pos = ref.position:copy()
+    pos.z = pos.z + height
     local result = tes3.rayTest{
-        position = {ref.position.x, ref.position.y, ref.position.z + height},
+        position = pos,
         direction = {0, 0, -1},
         ignore = ignoreList or {ref, tes3.player},
         returnNormal = true,
         useBackTriangles = false,
-        root = e.terrainOnly and tes3.game.worldLandscapeRoot or nil
+        root = e.terrainOnly and tes3.game.worldLandscapeRoot or nil,
+        maxDistance = e.maxDistance or 500
     }
     return result
 end
@@ -833,7 +836,11 @@ function this.getHeatFromBelow(ref, requiredHeatType)
     this.iterateRefType("fryingPan", function(fryingPan)
         table.insert(ignoreList, fryingPan)
     end)
-    local result = this.getGroundBelowRef{ ref = ref, ignoreList = ignoreList}
+    local result = this.getGroundBelowRef{
+        ref = ref,
+        ignoreList = ignoreList,
+        maxDistance = 200
+    }
     if not result then return end
     if not result.reference then return end
     local nodes = {

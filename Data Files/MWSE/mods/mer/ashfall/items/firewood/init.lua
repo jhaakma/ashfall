@@ -18,7 +18,10 @@ end
 local function placeCampfire(e)
     --Check how steep the land is
     local maxSteepness = placementConfig.ashfall_firewood.maxSteepness
-    local ground = common.helper.getGroundBelowRef({ref = e.target})
+    local ground = common.helper.getGroundBelowRef{
+        ref = e.target,
+        maxDistance = 1000
+    }
     local tooSteep = (
         ground.normal.x > maxSteepness or
         ground.normal.x < -maxSteepness or
