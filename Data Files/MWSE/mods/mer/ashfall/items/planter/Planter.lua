@@ -22,18 +22,18 @@ local Planter = {
     GH_NORMAL_INDEX = 0,
     GH_HARVESTED_INDEX = 1,
     --growth
-    WATER_PER_GROWTH_HOUR= 1,
-    UNWATERED_HOURS_TO_GROW = common.helper.weeksToHours(4),
-    WATER_GROWTH_MULTI = 4,
+    WATER_PER_GROWTH_HOUR= 1, --how much water is consumed per hour of growth
+    UNWATERED_HOURS_TO_GROW = common.helper.weeksToHours(2), --how many hours it takes to grow when unwatered
+    WATER_GROWTH_MULTI = 4, --How much faster it grows when watered
     --recovery
-    WATER_PER_RECOVERY_HOUR = 1,
-    WATER_RECOVER_MULTI = 3,
-    MIN_UNWATERED_HOURS_TO_HARVEST = common.helper.daysToHours(7),
-    MAX_UNWATERED_HOURS_TO_HARVEST = common.helper.daysToHours(10),
+    WATER_PER_RECOVERY_HOUR = 1, --how much water is consumed per hour of recovery
+    WATER_RECOVER_MULTI = 4, --How much faster it recovers when watered
+    MIN_UNWATERED_HOURS_TO_HARVEST = common.helper.daysToHours(6), -- minimum hours it takes to recover when unwatered
+    MAX_UNWATERED_HOURS_TO_HARVEST = common.helper.daysToHours(10), -- maximum hours it takes to recover when unwatered
     --water
-    MAX_WATER_AMOUNT = 50,
-    WATER_PER_HOUR_RAIN = 200,
-    WATER_PER_HOUR_THUNDER = 400,
+    MAX_WATER_AMOUNT = 50, --maximum amount of water the planter can hold
+    WATER_PER_HOUR_RAIN = 200, --how much water is added per hour when raining
+    WATER_PER_HOUR_THUNDER = 400, --how much water is added per hour when raining
 }
 
 Planter.logger = common.createLogger("Planter")
