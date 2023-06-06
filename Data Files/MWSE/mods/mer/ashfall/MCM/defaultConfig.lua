@@ -15,6 +15,8 @@ local mcmConfig = {
     debugMode = false,
     blocked = {},
 
+    rayTestUpdateMilliseconds = 250,
+
     campingMerchants = {
         ["arrille"] = true,--seyda neen trader - high elf - 800
         ["ra'virr"] = true,--balmora trader - khajiit - 600 gold

@@ -144,12 +144,19 @@ local function doBurn(ingredReference, difference)
     end
 end
 
+local function updateGrillFoodHeatSource(ingredReference)
+    local campfire = common.helper.getHeatFromBelow(ingredReference, "strong")
+    if campfire and campfire.data.isLit then
+        ingredReference.tempData.ashfallHeatSource = campfire
+    else
+        ingredReference.tempData.ashfallHeatSource = nil
+    end
+end
+
 ---@param ingredReference tes3reference
 local function grillFoodItem(ingredReference)
     local timestamp = tes3.getSimulationTimestamp()
-
-    --Can only grill certain types of food
-    local campfire = common.helper.getHeatFromBelow(ingredReference, "strong")
+    local campfire = ingredReference.tempData.ashfallHeatSource
     if campfire then
         if campfire.data.isLit then
             if common.helper.isStack(ingredReference) or ingredReference.data.lastCookUpdated == nil then
@@ -161,44 +168,43 @@ local function grillFoodItem(ingredReference)
             ingredReference.data.cookedAmount = ingredReference.data.cookedAmount or 0
 
             local difference = timestamp - ingredReference.data.lastCookUpdated
-          -- if difference > 0.010 then
 
-                addGrillPatina(campfire, difference)
-                ingredReference.data.lastCookUpdated = timestamp
+            addGrillPatina(campfire, difference)
+            ingredReference.data.lastCookUpdated = timestamp
 
-                local heat = math.max(0, CampfireUtil.getHeat(campfire))
-                logger:debug("Cooking heat: %s", heat)
-                local thisCookMulti = calculateCookMultiplier(heat)
-                logger:debug("Cooking multiplier: %s", thisCookMulti)
-                local weightMulti = calculateCookWeightModifier(ingredReference.object)
-                local thisCookedAmount = difference * thisCookMulti * weightMulti
-                logger:debug("Cooked amount: %s", thisCookedAmount)
-                ingredReference.data.cookedAmount = ingredReference.data.cookedAmount + thisCookedAmount
-                local cookedAmount = ingredReference.data.cookedAmount
+            local heat = math.max(0, CampfireUtil.getHeat(campfire))
+            logger:debug("Cooking heat: %s", heat)
+            local thisCookMulti = calculateCookMultiplier(heat)
+            logger:debug("Cooking multiplier: %s", thisCookMulti)
+            local weightMulti = calculateCookWeightModifier(ingredReference.object)
+            local thisCookedAmount = difference * thisCookMulti * weightMulti
+            logger:debug("Cooked amount: %s", thisCookedAmount)
+            ingredReference.data.cookedAmount = ingredReference.data.cookedAmount + thisCookedAmount
+            local cookedAmount = ingredReference.data.cookedAmount
 
-                local burnLimit = hungerController.getBurnLimit()
-                --- Just cooked - reached 100 cooked but still doesn't have a cooked grill state
-                local justCooked = cookedAmount > 100
-                    and cookedAmount < burnLimit
-                    and ingredReference.data.grillState ~= "cooked"
-                    and ingredReference.data.grillState ~= "burnt"
+            local burnLimit = hungerController.getBurnLimit()
+            --- Just cooked - reached 100 cooked but still doesn't have a cooked grill state
+            local justCooked = cookedAmount > 100
+                and cookedAmount < burnLimit
+                and ingredReference.data.grillState ~= "cooked"
+                and ingredReference.data.grillState ~= "burnt"
 
-                local justBurnt = cookedAmount >= burnLimit
-                    and ingredReference.data.grillState ~= "burnt"
+            local justBurnt = cookedAmount >= burnLimit
+                and ingredReference.data.grillState ~= "burnt"
 
 
-                if justCooked then
-                    --Check if food burned immediately
-                    if checkIfBurned(campfire) then
-                        doBurn(ingredReference, difference)
-                    else
-                        doCook(ingredReference, difference)
-                    end
-                elseif justBurnt then
+            if justCooked then
+                --Check if food burned immediately
+                if checkIfBurned(campfire) then
                     doBurn(ingredReference, difference)
+                else
+                    doCook(ingredReference, difference)
                 end
-                tes3ui.refreshTooltip()
-           -- end
+            elseif justBurnt then
+                doBurn(ingredReference, difference)
+            end
+            tes3ui.refreshTooltip()
+
         else
             --reset grill time if campfire is unlit
             resetCookingTime(ingredReference)
@@ -211,7 +217,20 @@ end
 
 event.register("loaded", function()
     timer.start{
-        duration = 0.10,
+        duration = common.helper.getUpdateIntervalInSeconds(),
+        iterations = -1,
+        callback = function()
+            ReferenceController.iterateReferences("grillableFood", function(ref)
+                updateGrillFoodHeatSource(ref)
+            end)
+        end
+    }
+    ReferenceController.iterateReferences("grillableFood", function(ref)
+        updateGrillFoodHeatSource(ref)
+    end)
+
+    timer.start{
+        duration = 0.05,
         iterations = -1,
         callback = function()
             ReferenceController.iterateReferences("grillableFood", function(ref)
@@ -276,6 +295,7 @@ local function doPlaced(ingredReference)
             ingredReference.data.preventBurning = nil
             resetCookingTime(ingredReference)
         end
+        updateGrillFoodHeatSource(ingredReference)
         grillFoodItem(ingredReference)
     end
 end

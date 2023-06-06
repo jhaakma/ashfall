@@ -9,6 +9,9 @@ local ReferenceController = require("mer.ashfall.referenceController")
 
 this.createTooltip = require("mer.ashfall.common.tooltip")
 
+--overriden in common
+this.logger = require("logging.logger").new{ name = "Ashfall.Helper" }
+
 function this.getHoursPassed()
     return ( tes3.worldController.daysPassed.value * 24 ) + tes3.worldController.hour.value
 end
@@ -613,6 +616,9 @@ function this.getGroundBelowRef(e)
         root = e.terrainOnly and tes3.game.worldLandscapeRoot or nil,
         maxDistance = e.maxDistance or 500
     }
+    if result then
+        this.logger:trace("Found ground below %s at %s", ref, result.intersection)
+    end
     return result
 end
 
@@ -690,7 +696,8 @@ function this.orientRefToGround(params)
         ref = ref,
         ignoreList = ignoreList,
         rootHeight = rootHeight,
-        terrainOnly = terrainOnly
+        terrainOnly = terrainOnly,
+        maxDistance = params.maxDistance
     }
     if not result then return false end
     if not params.skipOrient then
@@ -1057,6 +1064,11 @@ function this.getPlayerNearLitCampfire(e)
         end)
         return nearFire
     end
+end
+
+function this.getUpdateIntervalInSeconds()
+    local millis = config.rayTestUpdateMilliseconds
+    return millis / 1000
 end
 
 return this

@@ -24,6 +24,7 @@ this.createLogger = function(serviceName)
     table.insert(this.loggers, logger)
     return logger
 end
+this.helper.logger = this.createLogger("Helper")
 
 --[[
     Skills

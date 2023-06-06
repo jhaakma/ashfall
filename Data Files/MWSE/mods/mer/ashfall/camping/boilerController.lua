@@ -67,8 +67,8 @@ end
 
 event.register("loaded", function()
     timer.start{
-        type = timer.real,--we update boilers inside menumode too
-        duration = 0.1,
+        --type = timer.real,--we update boilers inside menumode too (why?)
+        duration = common.helper.getUpdateIntervalInSeconds(),
         iterations = -1,
         callback = function()
             ReferenceController.iterateReferences("boiler", doUpdate)

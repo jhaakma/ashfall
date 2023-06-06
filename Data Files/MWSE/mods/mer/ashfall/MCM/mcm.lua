@@ -367,6 +367,23 @@ local function registerModConfig()
         }
         addSideBar(pageModValues)
 
+        do -- updates
+            local categoryUpdates = pageModValues:createCategory{
+                label = "Update Intervals",
+                description = "Update intervals for various features.",
+            }
+
+            categoryUpdates:createSlider{
+                label = "Ray Test Updates (milliseconds)",
+                description = "How often ray test dependend updates are triggered. Increasing this may improve performance but will make tooltips etc update less frequently.",
+                min = 10,
+                max = 2000,
+                step = 10,
+                jump = 100,
+                variable = mwse.mcm.createTableVariable{ id = "rayTestUpdateMilliseconds", table = config },
+                restartRequired = true,
+            }
+        end
 
         do -- Temperature
             local categoryTemperature = pageModValues:createCategory{
