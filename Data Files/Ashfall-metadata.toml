@@ -4,7 +4,7 @@ description = "A camping, survival and needs mod for Morrowind."
 homepage = "https://www.nexusmods.com/morrowind/mods/49057"
 repository = "https://github.com/jhaakma/ashfall"
 authors = [ "Merlord",]
-version = "3.10.1"
+version = "3.10.2"
 
 [dependencies]
 assets = [ "Ashfall.esp", "Icons/ashfall", "Meshes/ashfall", "MWSE/mods/mer/ashfall", "Sound/ashfall", "Textures/Ashfall",]
