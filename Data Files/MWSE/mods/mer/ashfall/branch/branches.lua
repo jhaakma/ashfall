@@ -162,7 +162,12 @@ local function addBranchesToTree(tree)
             scale = scale
         }
         --Drop and orient the branch on the ground
-        local didOrient = common.helper.orientRefToGround({ ref = branch, terrainOnly = true })
+        local didOrient = common.helper.orientRefToGround{
+            ref = branch,
+            terrainOnly = true,
+            maxDistance = 5000
+        }
+
         --Check for fail conditions
         if not didOrient then
             branch:disable()
