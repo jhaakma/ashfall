@@ -2,7 +2,7 @@
 local staticConfigs = require('mer.ashfall.config.staticConfigs')
 local this = {}
 
-
+---@class Ashfall.ReferenceController
 local ReferenceController = {
     new = function(self, o)
         o = o or {}   -- create object if user does not provide one
@@ -194,6 +194,9 @@ function this.iterateReferences(refType, callback)
     end
 end
 
+---@param refType string
+---@param reference tes3reference
+---@return boolean
 function this.isReference(refType, reference)
     return this.controllers[refType]:isReference(reference)
 end
