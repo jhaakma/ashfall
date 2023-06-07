@@ -71,7 +71,7 @@ end
 local function checkFaders()
     for _, faderConfig in pairs(faderConfigs) do
         if not faderConfig.isFading then
-            logger:trace("Not already fading, checking fade values")
+            --logger:trace("Not already fading, checking fade values")
             local condition = conditionConfig[faderConfig.condition]
             local currentValue = condition:getValue()
 

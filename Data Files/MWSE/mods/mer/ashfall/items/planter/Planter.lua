@@ -376,7 +376,10 @@ end
 
 function Planter:doRainWater(hoursPassed)
     local sheltered = common.helper.checkRefSheltered(self.reference)
-    if sheltered then return end
+    if sheltered then
+        self.logger:trace("Planter is sheltered, not getting rain water")
+        return
+    end
     local rainPerHour
      --raining
     if tes3.getCurrentWeather().index == tes3.weather.rain then
@@ -389,7 +392,9 @@ function Planter:doRainWater(hoursPassed)
         self.logger:trace("Rain water per hour: %s", rainPerHour)
         local rainAmount = rainPerHour * hoursPassed
         self.logger:trace("Rain water amount: %s", rainAmount)
-        self.waterAmount = math.min(self.waterAmount + rainAmount, self.MAX_WATER_AMOUNT)
+        --We add a little bit more to the max because when a plant is growing it always drops down a bit, so it would never say 50
+        self.waterAmount = math.clamp(self.waterAmount + rainAmount, 0, self.MAX_WATER_AMOUNT + 0.1)
+        self.logger:trace("Water amount after rain: %s", self.waterAmount)
         self:updateDirtWater()
     end
 end
@@ -413,6 +418,7 @@ end
 
 ---Update the plant's growth, water, and recovery
 function Planter:progress()
+    self.logger:trace("Progressing %s", self.reference)
     local hoursPassed = self:getHoursSinceUpdate()
     self:updateLastUpdated()
     self:doRainWater(hoursPassed)
@@ -427,6 +433,7 @@ function Planter:progress()
     else
         self:grow(hoursPassed)
     end
+    tes3ui.refreshTooltip()
 end
 
 ---Recover the plant over time after harvesting
@@ -544,7 +551,7 @@ function Planter:getTooltipMessages()
     local messages = {}
     if self.waterAmount > 0 then
         table.insert(messages,
-            string.format("Water: %d/%d", self.waterAmount, self.MAX_WATER_AMOUNT))
+            string.format("Water: %d/%d", math.floor(self.waterAmount), self.MAX_WATER_AMOUNT))
     end
     if self.plantId then
         if self.plantProgress < 1 then

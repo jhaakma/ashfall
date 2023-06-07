@@ -119,24 +119,6 @@ do --Initialise Seedling Data
     logger:trace("Time: %.2f", endTime - startTime)
 end
 
-local GROWTH_CHECK_INTERVAL = 0.005
---Grow plants over time
----@param e simulateEventData
-event.register("simulate", function(e)
-    local timestamp = e.timestamp
-    tes3.player.tempData.ashfallLastGrowthUpdated = tes3.player.tempData.ashfallLastGrowthUpdated or timestamp
-    local lastGrowthUpdated = tes3.player.tempData.ashfallLastGrowthUpdated
-    if timestamp - lastGrowthUpdated > GROWTH_CHECK_INTERVAL then
-        tes3.player.tempData.ashfallLastGrowthUpdated = timestamp
-        ReferenceController.iterateReferences("planter", function(planterRef)
-            --Grow or recover plant
-            local planter = Planter.new(planterRef)
-            if planter then
-                planter:progress()
-            end
-        end)
-    end
-end)
 
 ---@param e referenceActivatedEventData
 local function updatePlanterMeshes(e)
@@ -158,6 +140,19 @@ event.register("loaded", function(e)
     ReferenceController.iterateReferences("planter", function(planterRef)
         updatePlanterMeshes({reference = planterRef})
     end)
+    timer.start{
+        duration = common.helper.getUpdateIntervalInSeconds(),
+        iterations = -1,
+        callback = function()
+            ReferenceController.iterateReferences("planter", function(planterRef)
+                --Grow or recover plant
+                local planter = Planter.new(planterRef)
+                if planter then
+                    planter:progress()
+                end
+            end)
+        end
+    }
 end)
 
 
