@@ -28,43 +28,6 @@ local function resetCookingTime(ingredRef)
     end
 end
 
-local function startCookingIngredient(ingredient, timestamp)
-
-    --If you placed a stack, return all but one to the player
-    if common.helper.isStack(ingredient) then
-        logger:debug("Returning grill food stack to player")
-        local count = ingredient.attachments.variables.count
-        mwscript.addItem{ reference = tes3.player, item = ingredient.object, count = (count - 1) }
-        ingredient.attachments.variables.count = 1
-        tes3ui.forcePlayerInventoryUpdate()
-    else
-        --only check data for non-stack I guess?
-        if ingredient.data.grillState == "burnt" then
-            logger:trace("Already burnt")
-            return
-        end
-        if ingredient.data.preventBurning then
-            logger:trace("Prevent burning")
-            return
-        end
-    end
-    timestamp = timestamp or tes3.getSimulationTimestamp()
-    ingredient.data.lastCookUpdated = timestamp
-
-    local difference = timestamp - ingredient.data.lastCookUpdated
-    --only show message if enough time has passed
-    local justChangedCell = difference > 0.01
-    if not justChangedCell then
-        local message = string.format("%s begins to cook.", ingredient.object.name)
-        tes3.messageBox{ message = message }
-    end
-    tes3.playSound{ sound = "potion fail", pitch = 0.8, reference = ingredient }
-
-    -- local smoke = tes3.loadMesh("ashfall\\cookingSmoke.nif"):clone()
-    -- ingredient.sceneNode:attachChild(smoke, true)
-    -- ingredient.sceneNode:update()
-    -- ingredient.sceneNode:updateNodeEffects()
-end
 
 
 local function addGrillPatina(campfire,interval)
@@ -144,23 +107,67 @@ local function doBurn(ingredReference, difference)
     end
 end
 
+local function startCookingIngredient(ingredient, timestamp)
+    if ingredient.data.grillState == "burnt" then
+        logger:trace("Already burnt")
+        return
+    end
+    if ingredient.data.preventBurning then
+        logger:trace("Prevent burning")
+        return
+    end
+    timestamp = timestamp or tes3.getSimulationTimestamp()
+    ingredient.data.lastCookUpdated = timestamp
+
+    local difference = timestamp - ingredient.data.lastCookUpdated
+    --only show message if enough time has passed
+    local justChangedCell = difference > 0.01
+    if not justChangedCell then
+        local message = string.format("%s begins to cook.", ingredient.object.name)
+        tes3.messageBox{ message = message }
+    end
+    tes3.playSound{ sound = "potion fail", pitch = 0.8, reference = ingredient }
+end
+
+
+---@param ingredReference tes3reference
 local function updateGrillFoodHeatSource(ingredReference)
     local campfire = common.helper.getHeatFromBelow(ingredReference, "strong")
     if campfire and campfire.data.isLit then
-        ingredReference.tempData.ashfallHeatSource = campfire
+        --If you placed a stack, return all but one to the player
+        if common.helper.isStack(ingredReference) then
+            logger:debug("Returning grill food stack to player")
+            local count = ingredReference.attachments.variables.count
+            mwscript.addItem{ reference = tes3.player, item = ingredReference.object, count = (count - 1) }
+            ingredReference.attachments.variables.count = 1
+            event.trigger("Ashfall:registerReference", { reference = ingredReference})
+            tes3ui.forcePlayerInventoryUpdate()
+        end
+        if ingredReference.tempData.ashfallHeatSource ~= campfire then
+            logger:debug("Setting grill food heat source to %s", campfire)
+            ingredReference.tempData.ashfallHeatSource = campfire
+            startCookingIngredient(ingredReference)
+        end
     else
-        ingredReference.tempData.ashfallHeatSource = nil
+        --clear heat source
+        local hasHeatSourrce = ingredReference.supportsLuaData
+            and ingredReference.tempData
+            and ingredReference.tempData.ashfallHeatSource
+        if hasHeatSourrce then
+            ingredReference.tempData.ashfallHeatSource = nil
+        end
     end
 end
 
 ---@param ingredReference tes3reference
 local function grillFoodItem(ingredReference)
     local timestamp = tes3.getSimulationTimestamp()
-    local campfire = ingredReference.tempData.ashfallHeatSource
+    local campfire = ingredReference.supportsLuaData
+        and ingredReference.tempData.ashfallHeatSource
     if campfire then
         if campfire.data.isLit then
-            if common.helper.isStack(ingredReference) or ingredReference.data.lastCookUpdated == nil then
-                startCookingIngredient(ingredReference, timestamp)
+            if ingredReference.data.lastCookUpdated == nil then
+                startCookingIngredient(ingredReference)
                 return
             end
 
@@ -290,7 +297,7 @@ local function doPlaced(ingredReference)
             end
         end
     elseif foodConfig.getGrillValues(ingredReference.object) then
-        if ingredReference.data then
+        if ingredReference.supportsLuaData then
             --Reset grill time for meat and veges
             ingredReference.data.preventBurning = nil
             resetCookingTime(ingredReference)

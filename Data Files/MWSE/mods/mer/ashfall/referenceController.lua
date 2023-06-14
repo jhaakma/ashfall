@@ -59,45 +59,52 @@ this.controllers = {
 
     fuelConsumer = ReferenceController:new{
         requirements = function(_, ref)
-            return ref.data and ref.data.fuelLevel
+            return ref.supportsLuaData
+            and ref.data
+            and ref.data.fuelLevel
         end
     },
 
     boiler = ReferenceController:new{
         requirements = function(_, ref)
-            local isboiler = (
-                ref.data and
-                ref.data.waterHeat ~= nil
-            )
+            local isboiler = ref.supportsLuaData
+                and ref.data
+                and ref.data.waterHeat ~= nil
             return isboiler
         end
     },
 
     stewer = ReferenceController:new{
         requirements = function(_, ref)
-            return (ref.data
+            return ref.supportsLuaData
+                and ref.data
                 and ref.data.utensil == "cookingPot"
-                or staticConfigs.cookingPots[ref.object.id:lower()])
-        end
+            or staticConfigs.cookingPots[ref.object.id:lower()]
+        end,
     },
 
     brewer = ReferenceController:new{
         requirements = function(_, ref)
-           return ref.data
-            and ref.data.utensil == "kettle"
+            return ref.supportsLuaData
+                and ref.data
+                and ref.data.utensil == "kettle"
             or staticConfigs.kettles[ref.object.id:lower()]
         end
     },
 
     stewBuffedActor = ReferenceController:new{
         requirements = function(_, ref)
-            return ref.data and ref.data.stewBuffTimeLeft
+            return ref.supportsLuaData
+                and ref.data
+                and ref.data.stewBuffTimeLeft
         end
     },
 
     teaBuffedActor = ReferenceController:new{
         requirements = function(_, ref)
-            return ref.data and ref.data.teaBuffTimeLeft
+            return ref.supportsLuaData
+                and ref.data
+                and ref.data.teaBuffTimeLeft
         end
     },
 
