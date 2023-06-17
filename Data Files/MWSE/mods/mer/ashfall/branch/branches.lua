@@ -130,7 +130,8 @@ end
 
 local cell_list
 --local ignore_list
-local function addBranchesToTree(tree)
+local function addBranchesToTree(tree, cell)
+
     --Select a branch mesh based on region
     local branchGroup = getBranchGroup(tree)
 
@@ -158,7 +159,7 @@ local function addBranchesToTree(tree)
             object = choice,
             position = position,
             orientation =  {0, 0, 0},
-            cell = tree.cell,
+            cell = cell,
             scale = scale
         }
         --Drop and orient the branch on the ground
@@ -215,7 +216,7 @@ local function addBranchesToCell(cell)
         for reference in cell:iterateReferences(tes3.objectType.static) do
             if isSource(reference) then
                 logger:debug("Adding branches to %s", reference.object.id)
-                addBranchesToTree(reference)
+                addBranchesToTree(reference, cell)
             end
         end
     end
