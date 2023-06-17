@@ -101,6 +101,13 @@ this.branchGroups = {
     },
 }
 
+this.activatorTypeGroups = {
+    resinSource = this.branchGroups.ascadianIsles,
+    woodSource = this.branchGroups.ascadianIsles,
+    stoneSource = this.branchGroups.flint_stone,
+    vegetation = this.branchGroups.flint_kelp
+}
+
 --Ids for various fallen branches
 this.branchIds = {}
 for _, branchGroup in pairs(this.branchGroups) do
@@ -160,6 +167,7 @@ this.patternMapping = {
     _wg_ = this.branchGroups.westGash,
     terrain_rock = this.branchGroups.flint_stone,
     terrain_ashland_rock = this.branchGroups.flint_stone,
+
     flora_kelp = this.branchGroups.flint_kelp,
     in_cave_plant00 = this.branchGroups.flint_kelp,
     in_cave_plant10 = this.branchGroups.flint_kelp,

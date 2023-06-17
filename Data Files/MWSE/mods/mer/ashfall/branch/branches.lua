@@ -1,6 +1,7 @@
 local common = require("mer.ashfall.common.common")
 local logger = common.createLogger("branches")
 local config = require("mer.ashfall.config").config
+local ActivatorController = require("mer.ashfall.activators.activatorController")
 local branchConfig = require("mer.ashfall.branch.branchConfig")
 --Branch placement configs
 
@@ -67,8 +68,10 @@ local function getBranchTypeFromTexture(tree)
                 filePath = string.sub(filePath, 1, -5):lower()
                 logger:debug(filePath)
                 local branchGroup = branchConfig.textureMapping[filePath]
-                logger:debug("Found branch group from texture: %s\n", json.encode(branchGroup, { indent = true }))
-                return branchGroup
+                if branchGroup then
+                    logger:debug("Found branch group from texture: %s\n", json.encode(branchGroup, { indent = true }))
+                    return branchGroup
+                end
             end
         end
     end
@@ -95,11 +98,23 @@ local function getBranchTypeBytreeId(tree)
     end
 end
 
+local function getByActivatorType(debris)
+    local activator = ActivatorController.getRefActivator(debris)
+    if activator then
+        local group =  branchConfig.activatorTypeGroups[activator.type]
+        if group then
+            logger:debug("Found branch group from activator type: %s", activator.type)
+            return group
+        end
+    end
+end
+
 local function getBranchGroup(tree)
     local branchGroup = getBranchTypeBytreeId(tree)
                      or getBranchTypeBytreeIdPattern(tree)
                      or getBranchGroupFromRegion(tree)
                      or getBranchTypeFromTexture(tree)
+                     or getByActivatorType(tree)
                      or branchConfig.defaultBranchGroup
     return branchGroup
 end
@@ -130,6 +145,8 @@ end
 
 local cell_list
 --local ignore_list
+---@param tree tes3reference
+---@param cell tes3cell
 local function addBranchesToTree(tree, cell)
 
     --Select a branch mesh based on region
@@ -143,53 +160,59 @@ local function addBranchesToTree(tree, cell)
     if debrisNum == 0 then return end
 
     for _ = 1, debrisNum do
-
         --initial position is randomly near the tree, 500 units higher than the tree's origin
-        local position = {
+        local position = tes3vector3.new(
             tree.position.x + ( math.random(branchGroup.minDistance, branchGroup.maxDistance) * (math.random() < 0.5 and 1 or -1) ),
             tree.position.y + ( math.random(branchGroup.minDistance, branchGroup.maxDistance) * (math.random() < 0.5 and 1 or -1) ),
             tree.position.z + 500
-        }
-        --Branches are all of slightly different sizes
-        local scale = math.random(80, 100) * 0.01
-        local choice = table.choice(branchGroup.ids)
-        --Create the branch
-        common.log:debug("Creating debris (%s) to place at source (%s) at position (%s)", choice, tree, json.encode(position))
-        local branch = tes3.createReference{
-            object = choice,
-            position = position,
-            orientation =  {0, 0, 0},
-            cell = cell,
-            scale = scale
-        }
-        --Drop and orient the branch on the ground
-        local didOrient = common.helper.orientRefToGround{
-            ref = branch,
-            terrainOnly = true,
-            maxDistance = 5000
-        }
+        )
 
-        --Check for fail conditions
-        if not didOrient then
-            branch:disable()
-            mwscript.setDelete{ reference = branch}
-        end
-        --Too steep means it landed on a wall or something
-        local tooSteep = math.abs(branch.orientation.x) > branchConfig.maxSteepness or math.abs(branch.orientation.y) > branchConfig.maxSteepness
-        if tooSteep then
-            common.log:debug("Too steep, deleting debris")
-            branch:disable()
-            mwscript.setDelete{ reference = branch}
-            return
-        end
+        if not cell:isPointInCell( position.x, position.y) then
+            logger:warn("Position is not in cell, skipping")
+        else
+            --Branches are all of slightly different sizes
+            local scale = math.random(80, 100) * 0.01
+            local choice = table.choice(branchGroup.ids)
+            --Create the branch
+            common.log:debug("Creating debris (%s) to place at source (%s) at position (%s)", choice, tree, json.encode(position))
+            local branch = tes3.createReference{
+                object = choice,
+                position = position,
+                orientation =  {0, 0, 0},
+                cell = cell,
+                scale = scale
+            }
+            --Drop and orient the branch on the ground
+            local didOrient = common.helper.orientRefToGround{
+                ref = branch,
+                terrainOnly = true,
+                maxDistance = 5000
+            }
 
-        --Add some random orientation
-        branch.orientation = {
-            branch.orientation.x,
-            branch.orientation.y,
-            math.remap(math.random(), 0, 1, -math.pi, math.pi)
-        }
-        logger:debug("Finished placing debris %s", choice)
+            --Check for fail conditions
+            if not didOrient then
+                branch:disable()
+                ---@diagnostic disable-next-line
+                mwscript.setDelete{ reference = branch}
+            end
+            --Too steep means it landed on a wall or something
+            local tooSteep = math.abs(branch.orientation.x) > branchConfig.maxSteepness or math.abs(branch.orientation.y) > branchConfig.maxSteepness
+            if tooSteep then
+                common.log:debug("Too steep, deleting debris")
+                branch:disable()
+                ---@diagnostic disable-next-line
+                mwscript.setDelete{ reference = branch}
+                return
+            end
+
+            --Add some random orientation
+            branch.orientation = {
+                branch.orientation.x,
+                branch.orientation.y,
+                math.remap(math.random(), 0, 1, -math.pi, math.pi)
+            }
+            logger:debug("Finished placing %s debris %s", debrisNum, choice)
+        end
     end
     logger:debug("Done for Tree %s\n", tree.id)
 end
@@ -209,43 +232,38 @@ local function checkAndRestoreBranch(branch)
 end
 
 local function addBranchesToCell(cell)
+    if cell.isInterior then
+        logger:debug("Skipping interior cell %s", cell.editorName)
+        return
+    end
     logger:debug("Adding branches to %s", cell.editorName)
     --only add branches to cells we haven't added them to before
     if not cell_list[formatCellId(cell)] then
         --Find trees and add branches
         for reference in cell:iterateReferences(tes3.objectType.static) do
             if isSource(reference) then
-                logger:debug("Adding branches to %s", reference.object.id)
+                logger:debug("Adding branches to %s in cell %s", reference.object.id, cell.editorName)
                 addBranchesToTree(reference, cell)
             end
         end
     end
-
     --Find previously placed branches and reactivate them if necessary
     for reference in cell:iterateReferences(tes3.objectType.miscItem) do
         if isBranch(reference) then
             checkAndRestoreBranch(reference)
         end
     end
-
     cell_list[formatCellId(cell)] = true
-
 end
 
 local function updateCells()
     if common.data and config.enableBranchPlacement then
-        logger:debug("Branch placement enabled")
-
+        logger:debug("Debris placement enabled")
         for _, cell in ipairs(tes3.getActiveCells()) do
-            if not cell.isInterior then
-                addBranchesToCell(cell)
-            else
-                logger:debug("Cell is an interior")
-            end
+            addBranchesToCell(cell)
         end
     end
 end
-
 event.register("cellChanged", updateCells)
 
 local function onLoad()
@@ -254,9 +272,7 @@ local function onLoad()
     cell_list = common.data.cellBranchList
     updateCells()
 end
-
 event.register("Ashfall:dataLoaded", onLoad)
-
 
 
 --[[

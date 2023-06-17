@@ -20,6 +20,8 @@ function Activator:isActivator(reference)
     if self.patterns then
         for pattern, _ in pairs(self.patterns) do
             if string.find(reference.baseObject.id:lower(), pattern) ~= nil then
+                --add to ids
+                self:addId(reference.baseObject.id)
                 return true
             end
         end

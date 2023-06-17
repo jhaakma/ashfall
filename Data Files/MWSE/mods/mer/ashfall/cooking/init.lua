@@ -180,12 +180,12 @@ local function grillFoodItem(ingredReference)
             ingredReference.data.lastCookUpdated = timestamp
 
             local heat = math.max(0, CampfireUtil.getHeat(campfire))
-            logger:debug("Cooking heat: %s", heat)
+            logger:trace("Cooking heat: %s", heat)
             local thisCookMulti = calculateCookMultiplier(heat)
-            logger:debug("Cooking multiplier: %s", thisCookMulti)
+            logger:trace("Cooking multiplier: %s", thisCookMulti)
             local weightMulti = calculateCookWeightModifier(ingredReference.object)
             local thisCookedAmount = difference * thisCookMulti * weightMulti
-            logger:debug("Cooked amount: %s", thisCookedAmount)
+            logger:trace("Cooked amount: %s", thisCookedAmount)
             ingredReference.data.cookedAmount = ingredReference.data.cookedAmount + thisCookedAmount
             local cookedAmount = ingredReference.data.cookedAmount
 
