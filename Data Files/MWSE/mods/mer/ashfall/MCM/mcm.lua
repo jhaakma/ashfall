@@ -375,13 +375,12 @@ local function registerModConfig()
 
             categoryUpdates:createSlider{
                 label = "Ray Test Updates (milliseconds)",
-                description = "How often ray test dependend updates are triggered. Increasing this may improve performance but will make tooltips etc update less frequently.",
+                description = "How often ray test dependend updates are triggered. Increasing this may improve performance but will make tooltips etc update less frequently. You must reload your game for this to take effect.",
                 min = 10,
                 max = 2000,
                 step = 10,
                 jump = 100,
                 variable = mwse.mcm.createTableVariable{ id = "rayTestUpdateMilliseconds", table = config },
-                restartRequired = true,
             }
         end
 

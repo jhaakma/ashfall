@@ -167,8 +167,8 @@ local function addBranchesToTree(tree, cell)
             tree.position.z + 500
         )
 
-        if not cell:isPointInCell( position.x, position.y) then
-            logger:warn("Position is not in cell, skipping")
+        if not tes3.getCell{ position = position } then
+            logger:warn("Position is not in a valid cell, skipping")
         else
             --Branches are all of slightly different sizes
             local scale = math.random(80, 100) * 0.01
