@@ -51,7 +51,7 @@ function this.doFrostBreath()
                 return
             end
             local isAlive = ( ref.mobile.health.current > 0 )
-            local isAboveWater = ( ref.mobile.underwater == false )
+            local isAboveWater = ( ref.mobile.isSwimming == false )
             if isCold and isAboveWater and isAlive and checkEnabled() then
                 if isGuar then
                     addBreath(node, 25, 0, 0, 2.0)
