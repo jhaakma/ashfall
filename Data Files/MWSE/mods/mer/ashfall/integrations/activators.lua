@@ -120,7 +120,7 @@ interop.registerActivators{
     t_nor_set_well_04 = "well",
     t_nor_set_well_05 = "well",
     t_rga_set_reach_x_pool_01 = "well",
-    NM_well_red = "well",
+    nm_well_red = "well",
     dim_bc_well = "well",
     --jug
     a_water_jug = "waterJug",
