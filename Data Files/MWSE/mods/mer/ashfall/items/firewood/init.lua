@@ -65,54 +65,61 @@ local function placeCampfire(e)
 end
 
 
+local function isFirewood(ref)
+    return ref.object.id:lower() == common.staticConfigs.objectIds.firewood:lower()
+end
+
 ---@param e activateEventData
 local function onActivateFirewood(e)
     if not (e.activator == tes3.player) then return end
     if skipActivate then return end
     if tes3.menuMode() then return end
-    if  string.lower(e.target.object.id) == common.staticConfigs.objectIds.firewood then
-        if tes3.player.cell.restingIsIllegal then
-            if common.helper.getInside() then
-                return
-            end
-            if not config.canCampInSettlements then
-                return
-            end
-        end
-        if common.helper.getRefUnderwater(e.target) then
-            return
-        end
-
-        local inputController = tes3.worldController.inputController
-        local isModifierKeyPressed = common.helper.isModifierKeyPressed()
-
-        if isModifierKeyPressed then
-            return
-        else
-            tes3ui.showMessageMenu{
-                message = string.format("You have %d %s.", e.target.stackSize, e.target.object.name),
-                buttons = {
-                    {
-                        text = "Create Campfire",
-                        callback = function() placeCampfire(e) end
-                    },
-                    {
-                        text = "Pick Up",
-                        callback = function() pickupFirewood(e.target) end,
-                        tooltip = function()
-                            return common.helper.showHint(
-                                string.format("You can pick firewood up directly by holding down %s and activating.",
-                                    common.helper.getModifierKeyString()
-                                )
-                            )
+    if not isFirewood(e.target) then return end
+    --Hold modifier key to pick up
+    if common.helper.isModifierKeyPressed() then return end
+    tes3ui.showMessageMenu{
+        message = string.format("You have %d %s.", e.target.stackSize, e.target.object.name),
+        buttons = {
+            {
+                text = "Create Campfire",
+                callback = function() placeCampfire(e) end,
+                enableRequirements = function()
+                    if common.helper.getRefUnderwater(e.target) then
+                        return false
+                    end
+                    if tes3.player.cell.restingIsIllegal then
+                        if not config.canCampInSettlements then
+                            return false
                         end
-                    },
-                },
-                cancels = true
-            }
-            return true
-        end
-    end
+                    end
+                    return true
+                end,
+                tooltipDisabled = function()
+                    if common.helper.getRefUnderwater(e.target) then
+                        return {
+                            text = "You can't create a campfire underwater."
+                        }
+                    end
+                    return {
+                        text = "You can't create a campfire in a settlement."
+                    }
+                end
+            },
+            {
+                text = "Pick Up",
+                callback = function() pickupFirewood(e.target) end,
+                tooltip = function()
+                    return common.helper.showHint(
+                        string.format("You can pick firewood up directly by holding down %s and activating.",
+                            common.helper.getModifierKeyString()
+                        )
+                    )
+                end
+            },
+        },
+        cancels = true
+    }
+    return true
 end
 event.register("activate", onActivateFirewood )
 
