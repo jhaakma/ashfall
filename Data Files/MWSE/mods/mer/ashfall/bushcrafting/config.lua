@@ -1,5 +1,5 @@
 local this = {}
-local tentConfig = require("mer.ashfall.camping.tents.tentConfig")
+local tentConfig = require("mer.ashfall.items.tents.tentConfig")
 local itemDescriptions = require("mer.ashfall.config.itemDescriptions")
 local BedRoll = require("mer.ashfall.items.bedroll")
 local WaterFilter = require("mer.ashfall.items.waterFilter")

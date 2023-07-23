@@ -240,6 +240,10 @@ local function checkFaceCovered(e)
         return
     end
 
+    if not tes3.mobilePlayer then
+        return
+    end
+
     if e.object then
         if e.object.objectType == tes3.objectType.armor and e.object.slot == tes3.armorSlot.helmet then
             --logger:trace("is helmet")

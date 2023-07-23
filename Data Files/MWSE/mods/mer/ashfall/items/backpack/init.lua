@@ -2,7 +2,7 @@ local common = require("mer.ashfall.common.common")
 local logger = common.createLogger("backpack")
 local config = require("mer.ashfall.config").config
 local backpackConfig = require("mer.ashfall.items.backpack.config")
-local tentConfig = require("mer.ashfall.camping.tents.tentConfig")
+local tentConfig = require("mer.ashfall.items.tents.tentConfig")
 local backpackSlot = 11
 local backpacks = {}
 

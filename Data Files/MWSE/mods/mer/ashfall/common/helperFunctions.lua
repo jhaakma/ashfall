@@ -3,7 +3,7 @@ local staticConfigs = require("mer.ashfall.config.staticConfigs")
 local config = require("mer.ashfall.config").config
 local skillModule = include("OtherSkills.skillModule")
 local refController = require("mer.ashfall.referenceController")
-local tentConfig = require("mer.ashfall.camping.tents.tentConfig")
+local tentConfig = require("mer.ashfall.items.tents.tentConfig")
 local ReferenceController = require("mer.ashfall.referenceController")
 --Generic Tooltip with header and description
 

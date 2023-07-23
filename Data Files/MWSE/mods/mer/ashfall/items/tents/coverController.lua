@@ -2,7 +2,7 @@ local this = {}
 
 local common = require("mer.ashfall.common.common")
 local logger = common.createLogger("coverController")
-local tentConfig = require("mer.ashfall.camping.tents.tentConfig")
+local tentConfig = require("mer.ashfall.items.tents.tentConfig")
 
 local function getAttachCoverNode(node)
     return node and node:getObjectByName("ATTACH_COVER")

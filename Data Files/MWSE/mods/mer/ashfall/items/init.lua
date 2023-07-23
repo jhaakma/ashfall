@@ -11,4 +11,4 @@ require("mer.ashfall.items.firewood")
 require("mer.ashfall.items.planter")
 require("mer.ashfall.items.teaWarmer")
 require("mer.ashfall.items.waterFilter")
-
+require("mer.ashfall.items.tents.tentController")

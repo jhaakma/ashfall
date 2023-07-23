@@ -1,14 +1,14 @@
 local this = {}
 --initialise modules
-require("mer.ashfall.camping.tents.trinkets.trinketEffects")
-require("mer.ashfall.camping.tents.trinkets.ward")
-require("mer.ashfall.camping.tents.trinkets.dreamcatcher")
-require("mer.ashfall.camping.tents.trinkets.chimes")
-require("mer.ashfall.camping.tents.trinkets.bouquet")
+require("mer.ashfall.items.tents.trinkets.trinketEffects")
+require("mer.ashfall.items.tents.trinkets.ward")
+require("mer.ashfall.items.tents.trinkets.dreamcatcher")
+require("mer.ashfall.items.tents.trinkets.chimes")
+require("mer.ashfall.items.tents.trinkets.bouquet")
 
 local common = require("mer.ashfall.common.common")
 local logger = common.createLogger("trinketController")
-local tentConfig = require("mer.ashfall.camping.tents.tentConfig")
+local tentConfig = require("mer.ashfall.items.tents.tentConfig")
 
 
 

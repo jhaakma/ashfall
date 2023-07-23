@@ -1,15 +1,18 @@
 local common = require("mer.ashfall.common.common")
 local config = require("mer.ashfall.config").config
-local tentConfig = require("mer.ashfall.camping.tents.tentConfig")
-local coverController = require("mer.ashfall.camping.tents.coverController")
-local trinketController = require("mer.ashfall.camping.tents.trinkets.trinketController")
-local lanternController = require("mer.ashfall.camping.tents.lanternController")
+local logger = common.createLogger("tentController")
+local tentConfig = require("mer.ashfall.items.tents.tentConfig")
+local coverController = require("mer.ashfall.items.tents.coverController")
+local trinketController = require("mer.ashfall.items.tents.trinkets.trinketController")
+local lanternController = require("mer.ashfall.items.tents.lanternController")
 local temperatureController = require("mer.ashfall.temperatureController")
+local CraftingFramework = require("CraftingFramework")
 --temperatureController.registerExternalHeatSource{ id = "tentTemp" }
 temperatureController.registerBaseTempMultiplier{ id = "tentTempMulti"}
 local skipActivate
 local currentTent
 
+local MAX_STEEPNESS = 30
 
 local function getActiveFromMisc(miscRef)
     return tentConfig.tentMiscToActiveMap[miscRef.object.id:lower()]
@@ -25,6 +28,58 @@ event.trigger("Ashfall:RegisterReferenceController", {
         return getMiscFromActive(ref)
     end
 })
+
+
+local function getChildIndexByName(collection, name)
+	for i, child in ipairs(collection) do
+		if (name and child and child.name and child.name:lower() == name:lower()) then
+			return i - 1
+		end
+	end
+end
+
+
+local function doPosition(tentRef)
+    tentRef.data.positionerMaxSteepness = MAX_STEEPNESS
+    CraftingFramework.Positioner.startPositioning{
+        target = tentRef,
+        nonCrafted = true,
+        placementSetting = "ground"
+    }
+end
+
+local function setTentSwitchNodes(tent)
+    if tent then
+        --switch base tent
+        local tentNode = tent.sceneNode:getObjectByName("TENT")
+        if tentNode then
+            logger:debug("Found TENT node")
+            local canvasNode = tentNode:getObjectByName("SWITCH_CANVAS")
+            if canvasNode then
+                logger:debug("Found SWITCH_CANVAS node")
+                local onIndex = getChildIndexByName(canvasNode.children, "ON")
+                local offIndex = getChildIndexByName(canvasNode.children, "OFF")
+                local newIndex = common.data.insideTent and offIndex or onIndex
+                canvasNode.switchIndex = newIndex
+                logger:debug("Set tent switch index to %s", newIndex)
+            end
+        end
+        --switch cover
+        local tentCover = tent.sceneNode:getObjectByName("ATTACH_COVER")
+        if tentCover then
+            logger:debug("Found ATTACH_COVER node")
+            local canvasNode = tentCover:getObjectByName("SWITCH_CANVAS")
+            if canvasNode then
+                logger:debug("Found SWITCH_CANVAS node")
+                local onIndex = getChildIndexByName(canvasNode.children, "ON")
+                local offIndex = getChildIndexByName(canvasNode.children, "OFF")
+                local newIndex = common.data.insideTent and offIndex or onIndex
+                canvasNode.switchIndex = newIndex
+                logger:debug("Set cover switch index to %s", newIndex)
+            end
+        end
+    end
+end
 
 local function getTentCoverage(ref)
     --if coverController.tentHasCover()
@@ -46,18 +101,16 @@ local function unpackTent(miscRef)
     timer.delayOneFrame(function()
         local newTent = tes3.createReference {
             object = getActiveFromMisc(miscRef),
-            position = {
-                miscRef.position.x,
-                miscRef.position.y,
-                miscRef.position.z - 10,
-            },
-            orientation = miscRef.orientation:copy(),
+            position = miscRef.position:copy(),
+            orientation = tes3.player.orientation:copy(),
             cell = miscRef.cell
         }
         newTent:updateLighting()
         event.trigger("Ashfall:registerReference", { reference = newTent})
         common.helper.yeet(miscRef)
         tes3.playSound{ sound = "Item Misc Up", reference = tes3.player }
+
+        doPosition(newTent)
     end)
 end
 
@@ -185,6 +238,12 @@ local function activeTentMenu(activeRef)
             end
         },
         {
+            text = "Position",
+            callback = function()
+                doPosition(activeRef)
+            end
+        },
+        {
             text = "Pack Up",
             showRequirements = function()
                 return activeRef.sourceMod == nil
@@ -233,6 +292,14 @@ local function activateTent(e)
 end
 event.register("activate", activateTent)
 
+---@param e referenceActivatedEventData
+event.register("referenceActivated", function(e)
+    if getMiscFromActive(e.reference) then
+        logger:debug("Tent activated, setting switch nodes")
+        setTentSwitchNodes(e.reference)
+    end
+end)
+
 local function setTentTempMulti()
     local tempMulti
     if (not common.data.insideTent)  or ( not currentTent ) then
@@ -259,27 +326,7 @@ local function setTentCoverage()
 
 end
 
-local function setTentSwitchNodes()
-    if currentTent then
-        local onIndex = config.seeThroughTents and 1 or 0
-        --switch base tent
-        local tentNode = currentTent.sceneNode:getObjectByName("TENT")
-        if tentNode then
-            local canvasNode = tentNode:getObjectByName("SWITCH_CANVAS")
-            if canvasNode then
-                canvasNode.switchIndex = common.data.insideTent and onIndex or 0
-            end
-        end
-        --switch cover
-        local tentCover = currentTent.sceneNode:getObjectByName("ATTACH_COVER")
-        if tentCover then
-            local canvasNode = tentCover:getObjectByName("SWITCH_CANVAS")
-            if canvasNode then
-                canvasNode.switchIndex = common.data.insideTent and onIndex or 0
-            end
-        end
-    end
-end
+
 
 
 --If in tent, enemies outside won't prevent rest
@@ -313,7 +360,7 @@ local function setTent(e)
     common.data.hasTentCover = coverController.tentHasCover(currentTent)
     setTentTempMulti()
     setTentCoverage()
-    setTentSwitchNodes()
+    setTentSwitchNodes(currentTent)
 end
 
 event.register(tes3.event.loaded, function()

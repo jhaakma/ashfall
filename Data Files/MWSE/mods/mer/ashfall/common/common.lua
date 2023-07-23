@@ -85,18 +85,31 @@ event.register("OtherSkills:Ready", onSkillsReady)
 
 
 local function initData()
-    --Persistent data stored on player reference
-    -- ensure data table exists
-    local data = tes3.player.data
-    data.Ashfall = data.Ashfall or {}
-    -- create a public shortcut
-    this.data = data.Ashfall
-    -- initialise empty subtables
-    this.data.currentStates = this.data.currentStates or {}
-    this.data.wateredCells = this.data.wateredCells or {}
-    this.data.trinketEffects = this.data.trinketEffects or {}
-    this.data.bandages = this.data.bandages or {}
+    tes3.player.data.Ashfall = tes3.player.data.Ashfall or {}
+    tes3.player.data.currentStates = tes3.player.data.currentStates or {}
+    tes3.player.data.wateredCells = tes3.player.data.wateredCells or {}
+    tes3.player.data.trinketEffects = tes3.player.data.trinketEffects or {}
+    tes3.player.data.bandages = tes3.player.data.bandages or {}
 end
+
+---@class Ashfall.playerData
+this.data = setmetatable({}, {
+    __index = function(t, key)
+        if not ( tes3.player and tes3.player.data) then
+            return nil
+        end
+        initData()
+        return tes3.player.data.Ashfall[key]
+    end,
+    __newindex = function(t, key, value)
+        if not ( tes3.player and tes3.player.data) then
+            logger:error("Could not save data to player, tes3.player not available")
+            return
+        end
+        initData()
+        tes3.player.data.Ashfall[key] = value
+    end
+})
 
 local function doUpgrades()
     --this.log:debug("Doing upgrades from previous version")
@@ -105,7 +118,6 @@ end
 --INITIALISE COMMON--
 local dataLoadedOnce = false
 local function onLoaded()
-    initData()
     doUpgrades()
     this.log:info("Common Data loaded successfully")
     event.trigger("Ashfall:dataLoaded")

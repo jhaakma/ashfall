@@ -1,6 +1,6 @@
 local common = require("mer.ashfall.common.common")
 local logger = common.createLogger("trinketEffects")
-local tentConfig = require("mer.ashfall.camping.tents.tentConfig")
+local tentConfig = require("mer.ashfall.items.tents.tentConfig")
 local ReferenceController = require("mer.ashfall.referenceController")
 
 ReferenceController.registerReferenceController{
