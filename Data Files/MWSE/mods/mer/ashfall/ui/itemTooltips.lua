@@ -83,47 +83,45 @@ local function addFoodTooltips(item, itemData, tooltip)
     local labelText
     local thisFoodType = foodConfig.getFoodType(item)
     if thisFoodType then
-        if config.enableHunger then
-            local nutrition = hungerController.getNutrition(item, itemData)
-            if nutrition and nutrition ~= 0 then
-                labelText = string.format("Nutrition: %d", nutrition)
-                common.helper.addLabelToTooltip(tooltip, labelText)
-            end
-
-            local cookedLabel = ""
-            if foodConfig.getGrillValues(item) then
-
-                --Remove cook state from the ingredient name for TR foods
-                local cookStrings = {
-                    "raw ",
-                    "cooked ",
-                    "grilled ",
-                    "roasted "
-                }
-                local nameLabel = tooltip:findChild(tes3ui.registerID("HelpMenu_name"))
-                for _, pattern in ipairs(cookStrings) do
-                    if string.startswith(nameLabel.text:lower(), pattern) then
-                        nameLabel.text = nameLabel.text:sub(string.len(pattern) + 1, -1)
-                    end
-                end
-
-                --Add Food type and Cook state label to Tooltip
-                local cookedAmount = itemData and itemData.data.cookedAmount
-                if cookedAmount and itemData.data.grillState == nil then
-                    cookedLabel = string.format(" (%d%% Cooked)", cookedAmount)
-                elseif itemData and itemData.data.grillState == "cooked"  then
-                    cookedLabel = " (Cooked)"
-                elseif  itemData and itemData.data.grillState == "burnt" then
-                    cookedLabel = " (Burnt)"
-                else
-                    cookedLabel = " (Raw)"
-                end
-            end
-
-            local foodTypeLabel = string.format("%s%s", thisFoodType, cookedLabel)
-            common.helper.addLabelToTooltip(tooltip, foodTypeLabel)
-
+        local nutrition = hungerController.getNutrition(item, itemData)
+        if nutrition and nutrition ~= 0 then
+            labelText = string.format("Nutrition: %d", nutrition)
+            common.helper.addLabelToTooltip(tooltip, labelText)
         end
+
+        local cookedLabel = ""
+        if foodConfig.getGrillValues(item) then
+
+            --Remove cook state from the ingredient name for TR foods
+            local cookStrings = {
+                "raw ",
+                "cooked ",
+                "grilled ",
+                "roasted "
+            }
+            local nameLabel = tooltip:findChild(tes3ui.registerID("HelpMenu_name"))
+            for _, pattern in ipairs(cookStrings) do
+                if string.startswith(nameLabel.text:lower(), pattern) then
+                    nameLabel.text = nameLabel.text:sub(string.len(pattern) + 1, -1)
+                end
+            end
+
+            --Add Food type and Cook state label to Tooltip
+            local cookedAmount = itemData and itemData.data.cookedAmount
+            if cookedAmount and itemData.data.grillState == nil then
+                cookedLabel = string.format(" (%d%% Cooked)", cookedAmount)
+            elseif itemData and itemData.data.grillState == "cooked"  then
+                cookedLabel = " (Cooked)"
+            elseif  itemData and itemData.data.grillState == "burnt" then
+                cookedLabel = " (Burnt)"
+            else
+                cookedLabel = " (Raw)"
+            end
+        end
+
+        local foodTypeLabel = string.format("%s%s", thisFoodType, cookedLabel)
+        common.helper.addLabelToTooltip(tooltip, foodTypeLabel)
+
 
         --Meat disease/blight
         if config.enableDiseasedMeat then
