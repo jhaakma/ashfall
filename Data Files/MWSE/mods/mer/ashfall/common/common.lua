@@ -86,10 +86,10 @@ event.register("OtherSkills:Ready", onSkillsReady)
 
 local function initData()
     tes3.player.data.Ashfall = tes3.player.data.Ashfall or {}
-    tes3.player.data.currentStates = tes3.player.data.currentStates or {}
-    tes3.player.data.wateredCells = tes3.player.data.wateredCells or {}
-    tes3.player.data.trinketEffects = tes3.player.data.trinketEffects or {}
-    tes3.player.data.bandages = tes3.player.data.bandages or {}
+    tes3.player.data.Ashfall.currentStates = tes3.player.data.Ashfall.currentStates or {}
+    tes3.player.data.Ashfall.wateredCells = tes3.player.data.Ashfall.wateredCells or {}
+    tes3.player.data.Ashfall.trinketEffects = tes3.player.data.Ashfall.trinketEffects or {}
+    tes3.player.data.Ashfall.bandages = tes3.player.data.Ashfall.bandages or {}
 end
 
 ---@class Ashfall.playerData
