@@ -380,11 +380,11 @@ end)
 
 
 local function cullRain(position)
-    local rain = tes3.worldController.weatherController.sceneRainRoot
-    for raindrop in table.traverse{rain} do
-        if not raindrop.appCulled then
-            if position:distance(raindrop.worldTransform.translation) < 400 then
-                raindrop.appCulled = true
+    local particlesActive = tes3.worldController.weatherController.particlesActive
+    for _, particle in pairs(particlesActive) do
+        if not particle.object.appCulled then
+            if position:distance(particle.object.worldTransform.translation) < 400 then
+                particle.object.appCulled = true
             end
         end
     end
