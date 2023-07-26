@@ -181,7 +181,7 @@ event.register("objectInvalidated", onObjectInvalidated)
 
 function this.registerReferenceController(e)
     assert(e.id, "No id provided")
-    assert(e.requirements, "No reference requirements provieded")
+    assert(e.requirements, "No reference requirements provided")
     this.controllers[e.id] =  ReferenceController:new{ requirements = e.requirements }
     return this.controllers[e.id]
 end

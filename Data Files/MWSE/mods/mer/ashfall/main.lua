@@ -53,6 +53,9 @@ local function initialized()
         require('mer.ashfall.skinning')
         require("mer.ashfall.cooking")
 
+        --Enable Verticalisation
+        include("CraftingFramework.components.Verticaliser")
+
         event.trigger("Ashfall:Interop", Interop)
 
         logger:info("Initialized v%s", versionController.getVersion())
