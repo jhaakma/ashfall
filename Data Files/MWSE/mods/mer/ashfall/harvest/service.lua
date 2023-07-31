@@ -34,6 +34,81 @@ function HarvestService.showIllegalToHarvestMessage(harvestConfig)
     tes3.messageBox("You must be in the wilderness to harvest.")
 end
 
+---@class Ashfall.HarvestService.getCurrentHarvestData.params
+---@field ignoreAttackDirection boolean If true, will ignore the attack direction check
+
+--Get the config for the current harvestable
+---@return Ashfall.Harvest.CurrentHarvestData|nil
+---@param e Ashfall.HarvestService.getCurrentHarvestData.params|nil
+function HarvestService.getCurrentHarvestData(e)
+    e = e or {}
+    --Get player target Activator
+    local activator = ActivatorController.getCurrentActivator()
+    if not activator then
+        logger:trace("Harvest: No activator")
+        return
+    end
+    --Get activator Ref
+    local reference = ActivatorController.getCurrentActivatorReference()
+    if not reference then
+        logger:debug("Harvest: No reference")
+        return
+    end
+    --Get harvest config from activator
+    ---@type Ashfall.Harvest.Config
+    local harvestConfig = harvestConfigs.activatorHarvestData[activator.type]
+    if not harvestConfig then
+        logger:trace("Harvest: No harvest config")
+        return
+    end
+    --Get player Weapon
+    local weapon = tes3.player.mobile.readiedWeapon
+    if not weapon then
+        logger:debug("Harvest: No weapon")
+        return
+    end
+    --Get harvest data from weapon
+    local weaponData = HarvestService.getWeaponHarvestData(weapon, harvestConfig)
+    if not weaponData then
+        logger:debug("Harvest: No weapon data")
+        return
+    end
+    --Check if Activator is active
+    local activatorActive = config[activator.mcmSetting] ~= false
+    if not activatorActive then
+        logger:debug("Harvest: Activator not active")
+        return
+    end
+    --Return if illegal to harvest
+    if HarvestService.checkIllegalToHarvest() then
+        HarvestService.showIllegalToHarvestMessage(harvestConfig)
+        logger:debug("Harvest: Illegal to harvest")
+        return
+    end
+    if not e.ignoreAttackDirection then
+        --Check attack direction
+        if not HarvestService.validAttackDirection(harvestConfig) then
+            logger:debug("Harvest: Invalid attack direction")
+            return
+        end
+    end
+    --Check if activator is already harvested
+    if HarvestService.checkHarvested(reference) then
+        logger:debug("Harvest: Can't harvest, already harvested")
+        return
+    end
+    --All checks pass, return the harvest data
+    local currentHarvestData = {
+        reference = reference,
+        activator = activator,
+        harvestConfig = harvestConfig,
+        weapon = weapon,
+        weaponData = weaponData
+    }
+    return currentHarvestData
+end
+
+
 ---@param weapon tes3equipmentStack
 ---@param harvestConfig Ashfall.Harvest.Config
 ---@return Ashfall.Harvest.WeaponData | nil
@@ -77,15 +152,19 @@ function HarvestService.getWeaponHarvestData(weapon, harvestConfig)
     end
 end
 
+function HarvestService.getAttackDirection()
+    return tes3.mobilePlayer.actionData.attackDirection ---@diagnostic disable-line
+end
+
 function HarvestService.validAttackDirection(harvestConfig)
-    local attackDirection = tes3.mobilePlayer.actionData.attackDirection
+    local attackDirection = HarvestService.getAttackDirection()
     return harvestConfig.attackDirections[attackDirection]
 end
 
 ---@param weapon tes3equipmentStack
 ---@return number damageEffect
 function HarvestService.getDamageEffect(weapon)
-    local attackDirection = tes3.mobilePlayer.actionData.attackDirection
+    local attackDirection = HarvestService.getAttackDirection()
     local maxField = harvestConfigs.attackDirectionMapping[attackDirection].max
     local maxDamage = weapon.object[maxField]
     logger:trace("maxDamage: %s", maxDamage)
@@ -158,10 +237,10 @@ function HarvestService.degradeWeapon(weapon, swingStrength, degradeMulti)
     degradeMulti = degradeMulti or 1.0
     logger:trace("degrade multiplier: %s", degradeMulti)
     --Weapon degradation
-    weapon.variables.condition = weapon.variables.condition - (4 * swingStrength * degradeMulti)
+    weapon.itemData.condition = weapon.itemData.condition - (4 * swingStrength * degradeMulti)
     --weapon is broken, unequip
-    if weapon.variables.condition <= 0 then
-        weapon.variables.condition = 0
+    if weapon.itemData.condition <= 0 then
+        weapon.itemData.condition = 0
         tes3.mobilePlayer:unequip{ type = tes3.objectType.weapon }
         return true
     end

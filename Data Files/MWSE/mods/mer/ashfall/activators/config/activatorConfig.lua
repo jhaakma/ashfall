@@ -1,11 +1,15 @@
 local Activator = require("mer.ashfall.activators.Activator")
 local this = {}
 
---[[
-    TODO:
-    Move configs into integrations, move tables into Activator,
-    then remove this file.
-]]
+---@class Ashfall.Activator.Config
+---@field name? string The name of the activator
+---@field type string The type of the activator
+---@field mcmSetting? string The name of the MCM setting that controls whether this activator is active
+---@field ids? table<string, table> A table of ids to register for this activator. Key: id, Value: table of data
+---@field patterns? table<string, boolean> A table of patterns to register for this activator. Key: pattern, Value: true
+---@field isStewer boolean Whether this activator is a stewer
+---@field owned? boolean Whether this activator is owned by NPCs, such as kegs
+
 
 this.types = {
     waterSource = "waterSource",

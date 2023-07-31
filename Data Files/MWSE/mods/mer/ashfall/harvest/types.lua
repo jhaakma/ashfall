@@ -28,3 +28,10 @@
 ---@field fallSound string The sound to play when the harvestable is destroyed
 ---@field clutter table<string, boolean> A list of clutter items that are destroyed alongside this harvestable.
 ---@field dropLoot boolean If set, any items sitting on top of the reference will be "dropped" to the ground
+
+---@class Ashfall.Harvest.CurrentHarvestData
+---@field reference tes3reference The current harvestable reference
+---@field activator Ashfall.Activator.Config The current activator
+---@field harvestConfig Ashfall.Harvest.Config The current harvest config
+---@field weapon tes3equipmentStack The currently equipped weapon
+---@field weaponData Ashfall.Harvest.WeaponData The weapon data for the currently equipped weapon
