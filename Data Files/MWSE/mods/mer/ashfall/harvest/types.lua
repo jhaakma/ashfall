@@ -15,6 +15,8 @@
 
 ---@class Ashfall.Harvest.Config
 ---@field name string Name needed for error message when harvesting is illegal
+---@field defaultAttackDirection tes3.physicalAttackType
+---@field attackDirections table<number, boolean> Key: tes3.physicalAttackType
 ---@field weaponTypes table<number, Ashfall.Harvest.WeaponData> Key: tes3.weaponType
 ---@field weaponIds table<number, Ashfall.Harvest.WeaponData> Key: tes3.weaponType
 ---@field weaponNamePatterns table<string, Ashfall.Harvest.WeaponData> Key: String pattern to search in object name

@@ -119,13 +119,69 @@ local function harvestOnAttack(e)
 end
 event.register("attack", harvestOnAttack )
 
+-- Force a chop action if looking at a harvestable
+---@param e attackStartEventData
+event.register("attackStart", function(e)
+    --Get player target Activator
+    local activator = activatorController.getCurrentActivator()
+    if not activator then
+        logger:debug("Harvest: No activator")
+        return
+    end
+
+
+    logger:debug("Activator type: %s", activator.type)
+
+        --Get harvest config from activator
+    ---@type Ashfall.Harvest.Config
+    local harvestConfig = harvestConfigs.activatorHarvestData[activator.type]
+    if not harvestConfig then
+        logger:debug("Harvest: No harvest config")
+        return
+    end
+
+    --Get Player Weapon
+    local weapon = tes3.player.mobile.readiedWeapon
+    if not weapon then
+        logger:debug("Harvest: No weapon")
+        return
+    end
+
+    --Get harvest data from weapon
+    local weaponData = service.getWeaponHarvestData(weapon, harvestConfig)
+    if not weaponData then
+        logger:debug("Harvest: No weapon data")
+        return
+    end
+
+    if not (harvestConfig.attackDirections and table.size(harvestConfig.attackDirections) > 0) then
+        logger:debug("No attack directions")
+        return
+    end
+
+    --Check if current attack direction doesn't match valid directions for this harvestable
+    if not harvestConfig.attackDirections[e.attackType] then
+        if harvestConfig.defaultAttackDirection then
+            logger:debug("Forcing attack type %s", table.find(tes3.physicalAttackType, harvestConfig.defaultAttackDirection))
+            e.attackType = harvestConfig.defaultAttackDirection
+        else
+            --set to first one in list
+            for attackType, _ in pairs(harvestConfig.attackDirections) do
+                logger:debug("Forcing attack type %s", table.find(tes3.physicalAttackType, attackType))
+                e.attackType = attackType
+                break
+            end
+        end
+    end
+
+end)
+
 --- Reset harvestables on load.
 event.register("loaded", function()
     service.destroyedHarvestables:iterate(function(reference)
         service.enableHarvestable(reference)
     end)
 end)
-
 
 --- Clear any data added when an item was felled from a tree.
 ---@param e activateEventData
@@ -137,3 +193,4 @@ event.register("activate", function(e)
         end
     end
 end)
+

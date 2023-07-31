@@ -1,8 +1,4 @@
-local attackDirection = {
-    slash = 1,
-    chop = 2,
-    stab = 3
-}
+
 local config = {}
 
 config.woodaxes = {
@@ -41,9 +37,10 @@ config.attackDirectionMapping = {
 ---@type table<string, Ashfall.Harvest.Config>
 config.activatorHarvestData = {
     stump = {
+        defaultAttackDirection = tes3.physicalAttackType.chop,
         attackDirections = {
-            [attackDirection.chop] = true,
-            [attackDirection.slash] = true
+            [tes3.physicalAttackType.chop] = true,
+            [tes3.physicalAttackType.slash] = true
         },
         weaponTypes = {
             [tes3.weaponType.axeOneHand] = {
@@ -91,9 +88,10 @@ config.activatorHarvestData = {
         dropLoot = true,
     },
     woodSource = {
+        defaultAttackDirection = tes3.physicalAttackType.chop,
         attackDirections = {
-            [attackDirection.chop] = true,
-            [attackDirection.slash] = true
+            [tes3.physicalAttackType.chop] = true,
+            [tes3.physicalAttackType.slash] = true
         },
         weaponTypes = {
             [tes3.weaponType.axeOneHand] = {
@@ -139,9 +137,10 @@ config.activatorHarvestData = {
         fallSpeed = 1.5,
     },
     resinSource = {
+        defaultAttackDirection = tes3.physicalAttackType.chop,
         attackDirections = {
-            [attackDirection.chop] = true,
-            [attackDirection.slash] = true
+            [tes3.physicalAttackType.chop] = true,
+            [tes3.physicalAttackType.slash] = true
         },
         weaponTypes = {
             [tes3.weaponType.axeOneHand] = {
@@ -224,9 +223,10 @@ config.activatorHarvestData = {
         fallSpeed = 2.0,
     },
     vegetation = {
+        defaultAttackDirection = tes3.physicalAttackType.slash,
         attackDirections = {
-            [attackDirection.chop] = true,
-            [attackDirection.slash] = true,
+            [tes3.physicalAttackType.chop] = true,
+            [tes3.physicalAttackType.slash] = true,
         },
         weaponTypes = {
             [tes3.weaponType.shortBladeOneHand] = {
@@ -260,8 +260,9 @@ config.activatorHarvestData = {
         fallSpeed = 1.0,
     },
     stoneSource = {
+        defaultAttackDirection = tes3.physicalAttackType.chop,
         attackDirections = {
-            [attackDirection.chop] = true
+            [tes3.physicalAttackType.chop] = true
         },
         weaponIds = {
             ashfall_pickaxe_flint = {

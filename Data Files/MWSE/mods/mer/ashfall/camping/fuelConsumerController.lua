@@ -13,7 +13,7 @@ local FUEL_UPDATE_INTERVAL = 0.001
 local function updateFuelConsumer(fuelConsumer)
     local timestamp = tes3.getSimulationTimestamp()
     fuelConsumer.data.lastFuelUpdated = fuelConsumer.data.lastFuelUpdated or timestamp
-    local difference = timestamp - fuelConsumer.data.lastFuelUpdated
+    local difference = math.round(timestamp - fuelConsumer.data.lastFuelUpdated, 4)
 
     if difference < 0 then
         logger:error("FUELCONSUMER fuelConsumer.data.lastFuelUpdated(%.4f) is ahead of e.timestamp(%.4f).",
