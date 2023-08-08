@@ -12,7 +12,7 @@ local function harvestOnAttack(e)
         logger:debug("Harvest: Not player")
         return
     end
-    local data = service.getCurrentHarvestData()
+    local data = service.getCurrentHarvestData{ showIllegalToHarvestMessage = true }
     if not data then
         logger:debug("Harvest: No current harvest data")
         return

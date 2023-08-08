@@ -35,7 +35,8 @@ function HarvestService.showIllegalToHarvestMessage(harvestConfig)
 end
 
 ---@class Ashfall.HarvestService.getCurrentHarvestData.params
----@field ignoreAttackDirection boolean If true, will ignore the attack direction check
+---@field ignoreAttackDirection? boolean If true, will ignore the attack direction check
+---@field showIllegalToHarvestMessage? boolean If true, will show a message if it's illegal to harvest
 
 --Get the config for the current harvestable
 ---@return Ashfall.Harvest.CurrentHarvestData|nil
@@ -81,7 +82,9 @@ function HarvestService.getCurrentHarvestData(e)
     end
     --Return if illegal to harvest
     if HarvestService.checkIllegalToHarvest() then
-        HarvestService.showIllegalToHarvestMessage(harvestConfig)
+        if e.showIllegalToHarvestMessage then
+            HarvestService.showIllegalToHarvestMessage(harvestConfig)
+        end
         logger:debug("Harvest: Illegal to harvest")
         return
     end
@@ -552,6 +555,7 @@ function HarvestService.animateDefault(e)
         tes3.positionCell{
             reference = ref,
             cell = ref.cell,
+            ---@diagnostic disable-next-line: missing-fields
             position = {
                 ref.position.x,
                 ref.position.y,
@@ -565,8 +569,8 @@ end
 ---@class HarvestService.demolish.params
 ---@field reference tes3reference
 ---@field harvestableHeight number
----@field fallSpeed number **Optional** default 10
----@field callback fun(ref: tes3reference) **Optional** called when animation is complete
+---@field fallSpeed? number **Optional** default 10
+---@field callback? fun(ref: tes3reference) **Optional** called when animation is complete
 
 ---@param e HarvestService.demolish.params
 function HarvestService.demolish(e)
