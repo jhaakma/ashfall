@@ -1,4 +1,5 @@
-return {
+---@class Ashfall.itemDescriptions
+local itemDescriptions = {
     ashfall_firewood = "Fuel used at a campfire." ,
     ashfall_bedroll = "A portable bedroll for sleeping out in the wilderness. Provides decent warmth but it won't shelter you from the rain.",
     ashfall_bedroll_ashl = "A portable bedroll for sleeping out in the wilderness. Provides decent warmth but it won't shelter you from the rain.",
@@ -55,4 +56,6 @@ return {
     ashfall_sack_01 = "A partable sack that can be placed on the ground and used to store items.",
     ashfall_fur_cloak = "A cloak made made with fur provides a moderate amount of warmth.",
     ashfall_fab_cloak = "A cloak made up of a patchwork of thin fabric. Doesn't offer much warmth but it's easy to make.",
+    ashfall_workbench_01 = "A workbench that allows you to craft more complex and permanent structures.",
 }
+return itemDescriptions
