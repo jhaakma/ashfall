@@ -9,8 +9,9 @@ end
 local craftingConfig = require("mer.ashfall.bushcrafting.config")
 
 ---@param recipeLists Ashfall.bushcrafting.recipeConfiguration[]
----@return CraftingFramework.Recipe.data[]
+---@return CraftingFramework.Recipe.data[], table<string, boolean>
 local function initialiseRecipeList(recipeLists)
+    local containerIds = {}
     local recipes = {}
     for _, recipeList in ipairs(recipeLists) do
         local tiers = {
@@ -39,10 +40,16 @@ local function initialiseRecipeList(recipeLists)
                     skillRequirement
                 }
                 table.insert(recipes, recipe)
+                if recipe.category == craftingConfig.categories.containers then
+                    local containerId = recipe.placedObject or recipe.craftableId
+                    if containerId then
+                        containerIds[containerId:lower()] = true
+                    end
+                end
             end
         end
     end
-    return recipes
+    return recipes, containerIds
 end
 
 do -- initialise recipes
@@ -51,14 +58,15 @@ do -- initialise recipes
         CraftingFramework.Tool:new(tool)
     end
     for _, activatorConfig in pairs(craftingConfig.menuActivators) do
-
-
         local menuActivatorData = activatorConfig.menuActivator
         logger:debug("Registering Menu Activator: %s", menuActivatorData.name)
-        local recipes = initialiseRecipeList(activatorConfig.recipeLists)
+        local recipes, containerIds = initialiseRecipeList(activatorConfig.recipeLists)
         logger:debug("Recipes: " .. inspect(recipes))
         menuActivatorData.recipes = recipes
         CraftingFramework.MenuActivator:new(menuActivatorData)
+        CraftingFramework.MaterialStorage:new{
+            ids = containerIds,
+        }
     end
     for _, material in ipairs(craftingConfig.materials) do
         logger:debug("Registering Material: %s", material.name)

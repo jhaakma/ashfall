@@ -3,11 +3,45 @@ local logger = common.createLogger("woodStack")
 local config = require ("mer.ashfall.items.woodStack.config")
 local WoodStack = {}
 local refController = require("mer.ashfall.referenceController")
+local MaterialStorage = require("CraftingFramework").MaterialStorage
+
+---@param reference tes3reference
+local function isWoodStack(reference)
+    return reference.sceneNode and reference.sceneNode:getObjectByName("SWITCH_WOODSTACK") ~= nil
+end
 
 refController.registerReferenceController{
     id = "woodStack",
     requirements = function(_, ref)
-        return ref.sceneNode and ref.sceneNode:getObjectByName("SWITCH_WOODSTACK") ~= nil
+        return isWoodStack(ref)
+    end
+}
+
+MaterialStorage:new{
+    isStorage = function(self, reference)
+        return isWoodStack(reference)
+    end,
+    getMaterials = function(self, reference)
+        local woodAmount = WoodStack.getWoodAmount(reference)
+        local item = tes3.getObject("ashfall_firewood")
+        ---@type CraftingFramework.MaterialStorage.storedMaterial
+        local storedMaterial ={
+            item = item,
+            count = woodAmount,
+            storedIn = reference,
+            storageInstance = self
+        }
+        return {storedMaterial}
+    end,
+    removeItem = function(self, params)
+        if params.item.id:lower() ~= "ashfall_firewood" then return 0 end
+        local reference = params.reference
+        local woodAmount = WoodStack.getWoodAmount(reference)
+        local count = math.min(woodAmount, params.count)
+        reference.data.woodAmount = woodAmount - count
+        event.trigger("Ashfall:UpdateAttachNodes", { reference = reference })
+        logger:debug("Removed %s firewood from %s", count, reference)
+        return count
     end
 }
 
