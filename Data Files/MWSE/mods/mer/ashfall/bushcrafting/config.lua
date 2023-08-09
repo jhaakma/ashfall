@@ -1351,6 +1351,7 @@ local workbenchRecipes = {
             },
             category = this.categories.structures,
             soundType = "wood",
+            maxSteepness = 0,
         },
         {  --steps small
             id = "bushcraft:ashfall_steps_sm_01",
@@ -1362,6 +1363,7 @@ local workbenchRecipes = {
             },
             category = this.categories.structures,
             soundType = "wood",
+            maxSteepness = 0,
         },
         {  --steps large
             id = "bushcraft:ashfall_steps_lrg_01",
@@ -1373,6 +1375,7 @@ local workbenchRecipes = {
             },
             category = this.categories.structures,
             soundType = "wood",
+            maxSteepness = 0,
         },
         {  --steps large
             id = "bushcraft:ashfall_overhang_01",
@@ -1386,6 +1389,7 @@ local workbenchRecipes = {
             },
             category = this.categories.structures,
             soundType = "wood",
+            maxSteepness = 0,
         },
         {  --steps large
             id = "bushcraft:ashfall_screen_fabric",
@@ -1409,7 +1413,7 @@ local workbenchRecipes = {
             },
             category = this.categories.structures,
             soundType = "wood",
-            maxSteepness = 0
+            maxSteepness = 0.1
         },
     },
     journeyman = {
