@@ -253,7 +253,7 @@ local function onShiftActivateFood(e)
         end
     end
 end
-event.register("activate", onShiftActivateFood, { filter = tes3.player, priority = -100})
+--event.register("activate", onShiftActivateFood, { filter = tes3.player, priority = -100})
 
 --Interop eat event
 local function onEat(e)
