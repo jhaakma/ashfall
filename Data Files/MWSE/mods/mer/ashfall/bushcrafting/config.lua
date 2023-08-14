@@ -538,6 +538,19 @@ local bushCraftingRecipes = {
             rotationAxis = 'y'
         },
         {
+            id = "bushcraft:ashfall_pickaxe_flint",
+            craftableId = "ashfall_pickaxe_flint",
+            description = "A pickaxe made with flint. Can be used to harvest stone.\n\nNote: Broken bushcrafted tools and weapons can be dismantled for parts by equipping them.",
+            materials = {
+                { material = "flint", count = 1 },
+                { material = "wood", count = 1 },
+                { material = "rope", count = 2 },
+            },
+            category = this.categories.tools,
+            soundType = "wood",
+            recoverEquipmentMaterials = true,
+        },
+        {
             id = "bushcraft:ashfall_woodaxe_flint",
             craftableId = "ashfall_woodaxe_flint",
             description = "A woodaxe made with flint. Can be used to harvest firewood.\n\nNote: Broken bushcrafted tools and weapons can be dismantled for parts by equipping them.",
@@ -781,7 +794,7 @@ local bushCraftingRecipes = {
             soundType = "wood",
             additionalMenuOptions = {
                 this.menuOptions.workbenchMenu,
-                this.menuOptions.realisticRepair,
+                --this.menuOptions.realisticRepair,
             }
         },
         {
@@ -830,19 +843,6 @@ local bushCraftingRecipes = {
             previewMesh = "ashfall\\tent\\tent_leather.nif"
         },
         {
-            id = "bushcraft:ashfall_pickaxe_flint",
-            craftableId = "ashfall_pickaxe_flint",
-            description = "A pickaxe made with flint. Can be used to harvest stone.\n\nNote: Broken bushcrafted tools and weapons can be dismantled for parts by equipping them.",
-            materials = {
-                { material = "flint", count = 1 },
-                { material = "wood", count = 1 },
-                { material = "rope", count = 2 },
-            },
-            category = this.categories.tools,
-            soundType = "wood",
-            recoverEquipmentMaterials = true,
-        },
-        {
             --Wicker backpack
             id = "bushcraft:ashfall_pack_07",
             craftableId = "ashfall_pack_07",
@@ -878,7 +878,7 @@ local bushCraftingRecipes = {
         {
             id = "bushcraft:ashfall_cov_thatch",
             craftableId = "ashfall_cov_thatch",
-            mesh = tentConfig.coverToMeshMap["ashfall_cov_thatch"],
+            previewMesh = tentConfig.coverToMeshMap["ashfall_cov_thatch"],
             description = itemDescriptions.ashfall_cov_thatch,
             materials = {
                 { material = "wood", count = 4 },
@@ -927,7 +927,7 @@ local bushCraftingRecipes = {
         {
             id = "bushcraft:ashfall_cov_ashl",
             craftableId = "ashfall_cov_ashl",
-            mesh = tentConfig.coverToMeshMap["ashfall_cov_ashl"],
+            previewMesh = tentConfig.coverToMeshMap["ashfall_cov_ashl"],
             description = itemDescriptions.ashfall_cov_ashl,
             materials = {
                 { material = "wood", count = 4 },
