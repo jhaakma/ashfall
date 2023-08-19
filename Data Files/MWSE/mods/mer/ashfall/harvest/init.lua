@@ -41,7 +41,7 @@ local function harvestOnAttack(e)
     end
     logger:debug("harvestOnAttack() EXIT")
 end
-event.register("attack", harvestOnAttack )
+event.register("attackHit", harvestOnAttack )
 
 
 --- Force a chop action if looking at a harvestable with a valid weapon
