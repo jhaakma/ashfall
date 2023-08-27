@@ -146,6 +146,7 @@ function SkinningService.removeIngredientsFromCorpse(target, ingredients)
     return removedItems
 end
 
+---@param reference tes3reference
 function SkinningService.calculateDestructionLimit(reference)
     --Set initial value based on skill
     local survivalSkill = common.skills.survival.value
@@ -171,6 +172,13 @@ function SkinningService.calculateDestructionLimit(reference)
     heightEffect = math.clamp(heightEffect,
         skinningConfig.MIN_HEIGHT_EFFECT,
         skinningConfig.MAX_HEIGHT_EFFECT)
+
+    --half number for flying creatures due to bounding box issues
+    if reference.baseObject.flies then
+        logger:debug("Flying creature, halving height effect")
+        heightEffect = heightEffect / 2
+    end
+
     logger:debug("Height effect: %s", heightEffect)
     destructionLimit = math.ceil(destructionLimit * heightEffect)
     logger:debug("DestructionLimit after height effect: %s", destructionLimit)
