@@ -258,8 +258,6 @@ local function activeTentMenu(activeRef)
     }
 end
 
-
-
 local function activateTent(e)
     if not (e.activator == tes3.player) then return end
     --Check if it's a misc tent ref
@@ -322,13 +320,6 @@ local function setTentTempMulti()
     common.data.tentTempMulti = tempMulti
 end
 
-local function setTentCoverage()
-
-end
-
-
-
-
 --If in tent, enemies outside won't prevent rest
 local function checkTentEnemyPreventRest(e)
     if common.helper.getInTent() then
@@ -359,7 +350,6 @@ local function setTent(e)
     common.data.insideTent = insideTent
     common.data.hasTentCover = coverController.tentHasCover(currentTent)
     setTentTempMulti()
-    setTentCoverage()
     setTentSwitchNodes(currentTent)
 end
 
@@ -379,27 +369,6 @@ event.register(tes3.event.loaded, function()
 end)
 
 
-local function cullRain(position)
-    local particlesActive = tes3.worldController.weatherController.particlesActive
-    for _, particle in pairs(particlesActive) do
-        if not particle.object.appCulled then
-            if position:distance(particle.object.worldTransform.translation) < 400 then
-                particle.object.appCulled = true
-            end
-        end
-    end
-end
-
---Must be done each frame to remove the particles as they get added
-local function tentSimulate(e)
-    if config.disableRainInTents then
-        if currentTent and currentTent:valid() then
-            local position = currentTent.position:copy()
-            cullRain(position)
-        end
-    end
-end
-event.register("simulate", tentSimulate)
 
 event.register("objectInvalidated", function(e)
     if currentTent and e.object == currentTent:getObject() then

@@ -94,7 +94,6 @@ local mcmConfig = {
     atronachRecoverMagickaDrinking = true,
     potionsHydrate = true,
     seeThroughTents = true,
-    disableRainInTents = true,
     disableHarvested = true,
 
     naturalMaterialsMultiplier = 50,
