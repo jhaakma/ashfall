@@ -341,6 +341,13 @@ interop.registerActivators{
     t_sky_flora_treebirchbush_02 = "vegetation",
     t_sky_flora_treebirchbush_03 = "vegetation",
     t_sky_flora_treebirchbush_04 = "vegetation",
+    t_sky_flora_bushpine2_01 = "vegetation",
+    t_sky_flora_bushleaves1_01 = "vegetation",
+    t_sky_flora_bushleaves1_02 = "vegetation",
+    t_sky_flora_vicherb01 = "vegetation",
+    t_sky_flora_widowkiss01 = "vegetation",
+    t_sky_flora_vicherb02 = "vegetation",
+    t_sky_flora_wrothggrap01 = "vegetation",
 
     --tree
     flora_t_mushroom_01 = "tree",
