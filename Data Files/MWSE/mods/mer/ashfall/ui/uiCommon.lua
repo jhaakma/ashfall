@@ -7,12 +7,12 @@ local icon_block = tes3ui.registerID("Ashfall:activatorTooltipIconBlock")
 
 function uiCommon.getTooltip()
     local MenuMulti = tes3ui.findMenu(tes3ui.registerID("MenuMulti"))
-    return MenuMulti:findChild(id_indicator)
+    return MenuMulti and MenuMulti:findChild(id_indicator)
 end
 
 function uiCommon.getTooltipContentsBlock()
     local MenuMulti = tes3ui.findMenu(tes3ui.registerID("MenuMulti"))
-    return MenuMulti:findChild(id_contents)
+    return MenuMulti and MenuMulti:findChild(id_contents)
 end
 
 function uiCommon.getTooltipHeader()
@@ -27,6 +27,7 @@ end
 
 function uiCommon.createOrUpdateTooltipMenu(headerText)
     local MenuMulti = tes3ui.findMenu(tes3ui.registerID("MenuMulti"))
+    if not MenuMulti then return end
     local tooltipMenu = MenuMulti:findChild(id_indicator)
         or MenuMulti:createBlock{ id = id_indicator }
     tooltipMenu.visible = true
@@ -35,7 +36,7 @@ function uiCommon.createOrUpdateTooltipMenu(headerText)
     tooltipMenu.absolutePosAlignY = 0.03
     tooltipMenu.autoHeight = true
     tooltipMenu.autoWidth = true
-    local labelBackground = tooltipMenu:createRect({color = {0, 0, 0}})
+    local labelBackground = tooltipMenu:createRect({color = {0, 0, 0}}) ---@diagnostic disable-line
     labelBackground.autoHeight = true
     labelBackground.autoWidth = true
     local labelBorder = labelBackground:createThinBorder({id = id_contents })

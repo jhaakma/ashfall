@@ -37,6 +37,6 @@ return {
             count = 1,
             showMessage = true,
         }
-        common.helper.yeet(reference)
+        reference:delete()
     end
 }

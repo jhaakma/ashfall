@@ -38,7 +38,7 @@ return {
 
         targetRef.data.woodAmount = targetRef.data.woodAmount + woodAdded
         if woodRemaining == 0 then
-            common.helper.yeet(reference)
+            reference:delete()
             tes3.playSound{ reference = tes3.player, sound = "ashfall_add_wood"  }
         else
             reference.attachments.variables.count = reference.attachments.variables.count - woodAdded

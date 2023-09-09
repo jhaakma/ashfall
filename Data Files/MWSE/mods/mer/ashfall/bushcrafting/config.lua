@@ -135,8 +135,10 @@ this.menuOptions = {
             local menuID = "RenameMenu"
             local menu = tes3ui.createMenu{ id = menuID, fixedFrame = true }
             menu.minWidth = 400
+            ---@diagnostic disable
             menu.alignX = 0.5
             menu.alignY = 0
+            ---@diagnostic enable
             menu.autoHeight = true
             local textField = mwse.mcm.createTextField(
                 menu,
@@ -182,7 +184,8 @@ this.menuOptions = {
             return false
         end,
         tooltipDisabled = {
-             text = "You need a repair tool to repair items.",
+            header = nil,
+            text = "You need a repair tool to repair items.",
         },
         callback = function(e)
             --Refactor Realistic Repair

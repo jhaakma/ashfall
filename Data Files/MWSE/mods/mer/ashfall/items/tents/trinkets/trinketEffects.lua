@@ -16,6 +16,7 @@ local function enableTrinketEffect(trinket)
         local spellId = trinket.spell.id
         local spell = tes3.getObject(spellId)
         if not spell then
+            ---@diagnostic disable-next-line
             spell = tes3spell.create(spellId, trinket.spell.name)
             spell.castType = tes3.spellType.ability
             for i=1, #trinket.spell.effects do
@@ -31,6 +32,7 @@ local function enableTrinketEffect(trinket)
                 effect.radius = newEffect.radius
             end
         end
+        ---@diagnostic disable-next-line
         mwscript.addSpell{ reference = tes3.player, spell = spell }
     end
     if trinket.onCallback then
@@ -47,6 +49,7 @@ local function disableTrinketEffect(trinket)
     if common.data.trinketEffects[trinket.id] == nil then return end
     if trinket.spell then
         common.helper.restoreFatigue()
+        ---@diagnostic disable-next-line
         mwscript.removeSpell({ reference = tes3.player, spell = trinket.spell.id})
     elseif trinket.offCallback then
         trinket.offCallback()

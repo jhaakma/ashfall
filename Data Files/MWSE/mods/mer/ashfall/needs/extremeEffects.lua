@@ -85,6 +85,7 @@ local function applyThirstDamage()
     )
     if doDamage then
         local damage = math.max(1, tes3.mobilePlayer.health.current / 10)
+        ---@diagnostic disable-next-line
         tes3.mobilePlayer:applyHealthDamage(damage)
         tes3.messageBox("You are dying of thirst!")
     end

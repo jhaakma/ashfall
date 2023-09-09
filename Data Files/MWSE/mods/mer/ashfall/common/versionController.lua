@@ -6,7 +6,7 @@ local config = require("mer.ashfall.config").config
 local this = {}
 
 function this.getVersion()
-    local metadata = toml.loadMetadata("Ashfall")
+    local metadata = toml.loadMetadata("Ashfall") --[[@as MWSE.Metadata]]
     return metadata.package.version
 end
 
@@ -15,7 +15,7 @@ local showConfirmUpdate
 local showConfirmDisableNotifications
 local function showUpdateMessageBox()
     local msg = string.format('A new version of Ashfall is now available!')
-    ---@type AshfallMessageBoxButton[]
+    ---@type tes3ui.showMessageMenu.params.button[]
     local buttons = {
         {
             text = string.format('Download Ashfall %s', latestVersion),
@@ -34,7 +34,7 @@ local function showUpdateMessageBox()
 end
 
 showConfirmUpdate = function()
-    ---@type AshfallMessageBoxButton[]
+    ---@type tes3ui.showMessageMenu.params.button[]
     local buttons = {
         {
             text = tes3.findGMST(tes3.gmst.sYes).value,
@@ -57,7 +57,7 @@ end
 
 showConfirmDisableNotifications = function()
     local message = "Disable update notifications?"
-    ---@type AshfallMessageBoxButton[]
+    ---@type tes3ui.showMessageMenu.params.button[]
     local buttons = {
         {
             text = tes3.findGMST(tes3.gmst.sYes).value,

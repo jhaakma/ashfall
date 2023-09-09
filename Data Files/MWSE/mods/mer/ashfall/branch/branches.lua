@@ -142,9 +142,6 @@ local function getDropCount(branchGroup)
     return amount
 end
 
-
-local cell_list
---local ignore_list
 ---@param tree tes3reference
 ---@param cell tes3cell
 local function addBranchesToTree(tree, cell)
@@ -178,7 +175,7 @@ local function addBranchesToTree(tree, cell)
             local branch = tes3.createReference{
                 object = choice,
                 position = position,
-                orientation =  {0, 0, 0},
+                orientation = tes3vector3.new(0, 0, 0),
                 cell = cell,
                 scale = scale
             }
@@ -206,11 +203,10 @@ local function addBranchesToTree(tree, cell)
             end
 
             --Add some random orientation
-            branch.orientation = {
+            branch.orientation = tes3vector3.new(
                 branch.orientation.x,
                 branch.orientation.y,
-                math.remap(math.random(), 0, 1, -math.pi, math.pi)
-            }
+                math.remap(math.random(), 0, 1, -math.pi, math.pi))
             logger:debug("Finished placing %s debris %s", debrisNum, choice)
         end
     end
@@ -238,7 +234,7 @@ local function addBranchesToCell(cell)
     end
     logger:debug("Adding branches to %s", cell.editorName)
     --only add branches to cells we haven't added them to before
-    if not cell_list[formatCellId(cell)] then
+    if not common.data.cellBranchList[formatCellId(cell)] then
         --Find trees and add branches
         for reference in cell:iterateReferences(tes3.objectType.static) do
             if isSource(reference) then
@@ -253,7 +249,7 @@ local function addBranchesToCell(cell)
             checkAndRestoreBranch(reference)
         end
     end
-    cell_list[formatCellId(cell)] = true
+    common.data.cellBranchList[formatCellId(cell)] = true
 end
 
 local function updateCells()
@@ -269,7 +265,7 @@ event.register("cellChanged", updateCells)
 local function onLoad()
     logger:debug("data loaded branch placement commencing")
     common.data.cellBranchList = common.data.cellBranchList or {}
-    cell_list = common.data.cellBranchList
+
     updateCells()
 end
 event.register("Ashfall:dataLoaded", onLoad)

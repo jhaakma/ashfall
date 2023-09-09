@@ -119,8 +119,6 @@ do --Initialise Seedling Data
     logger:trace("Time: %.2f", endTime - startTime)
 end
 
-
----@param e referenceActivatedEventData
 local function updatePlanterMeshes(e)
     if ReferenceController.isReference("planter", e.reference) then
         local planter = Planter.new(e.reference)

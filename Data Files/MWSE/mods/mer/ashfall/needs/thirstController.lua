@@ -175,7 +175,7 @@ end
 
 function this.playerHasFillableContainers(source)
     source = source or LiquidContainer.createInfiniteWaterSource()
-    for stack in tes3.iterate(tes3.player.object.inventory.iterator) do
+    for _, stack in pairs(tes3.player.object.inventory) do
         --Check if stack is a water container
         local bottleData = this.getBottleData(stack.object.id)
         if bottleData then
@@ -235,6 +235,7 @@ function this.fillContainer(params)
                         if callback then callback() end
                         --add cost
                         if cost then
+                            ---@diagnostic disable-next-line
                             mwscript.removeItem({ reference = tes3.player, item = "Gold_001", count = cost})
                             local message = string.format(tes3.findGMST(tes3.gmst.sNotifyMessage63).value, cost, "Gold")
                             tes3.messageBox(message)

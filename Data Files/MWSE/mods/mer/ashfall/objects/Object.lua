@@ -1,4 +1,4 @@
-
+---@class Ashfall.Object
 local Object = {}
 
 Object.type = "Object"

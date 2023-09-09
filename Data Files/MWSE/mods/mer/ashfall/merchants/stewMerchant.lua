@@ -46,6 +46,7 @@ local function stewSelectMenu()
                     }
                 })
                 local cost = getStewCost(merchant.object)
+                ---@diagnostic disable-next-line
                 mwscript.removeItem({ reference = tes3.player, item = "Gold_001", count = cost})
                 --tes3.playSound{ reference = tes3.player, sound = "Item Gold Down"}
 
@@ -129,6 +130,7 @@ end
 
 local function createStewButton(menuDialog)
     local parent = merchantMenu.getButtonBlock()
+    if not parent then return end
     local merchant = merchantMenu.getMerchantObject()
     local button = parent:createTextSelect{
         id = merchantMenu.guids.MenuDialog_StewService,

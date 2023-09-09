@@ -150,7 +150,6 @@ this.controllers = {
     }
 }
 
----@param e mobileActivatedEventData
 local function onRefPlaced(e)
     for _, controller in pairs(this.controllers) do
         if controller:requirements(e.reference) then

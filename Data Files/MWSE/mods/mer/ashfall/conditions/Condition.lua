@@ -1,4 +1,25 @@
 local Parent = require("mer.ashfall.objects.Object")
+
+---@class Ashfall.Condition.State
+---@field text string The text to show when the player enters this state
+---@field min number The minimum condition value where this state is active
+---@field max number The maximum condition value where this state is active
+---@field spell? string|function The spell to apply when the player enters this state
+---@field effects? table The effects to apply when the player enters this state
+---@field sound? string The sound to play when the player enters this state
+
+---@class Ashfall.Condition : Ashfall.Object
+---@field id string
+---@field default string
+---@field showMessageOption string The id of the mcm config option which governs whether to show messages for this condition
+---@field enableOption string The id of the mcm config option which governs whether this condition is enabled
+---@field states table<string, Ashfall.Condition.State> A table of states for this condition
+---@field minDebuffState boolean The lowest state where debuffs are applied. Used for calculating the stat multiplier
+---@field min boolean The minimum value for this condition
+---@field max boolean The maximum value for this condition
+---@field getCurrentStateMessage? fun(self: Ashfall.Condition):string A function that returns the message to show when the player enters the current state
+---@field conditionChanged? fun(self: Ashfall.Condition, state: Ashfall.Condition.State) A function that is called when the player enters a new state
+---@field hasSpell? fun(self: Ashfall.Condition):boolean A function that returns whether the player has the spell for the current state
 local Condition = Parent:new()
 local config = require("mer.ashfall.config").config
 Condition.type = "Condition"
@@ -11,15 +32,9 @@ Condition.fields = {
     minDebuffState = true,
     min = true,
     max = true,
-    minCallback = true,
-    maxCallback = true,
     getCurrentStateMessage = true,
-    isAffected = true,
-    getCurrentSpellObj = true,
     conditionChanged = true,
-    updateConditionEffects = true,
     hasSpell = true,
-    getBlights = true,
 }
 
 
@@ -170,7 +185,7 @@ function Condition:getStatMultiplier()
     if self.minDebuffState then
         local minVal =  self.states[self.minDebuffState].min
         local value = math.max(self:getValue(), minVal)
-        return math.remap(value, minVal, 100, 1.0, 0.0)
+        return math.remap(value, minVal, self.max, 1.0, 0.0)
     end
 end
 

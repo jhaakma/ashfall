@@ -605,6 +605,7 @@ local function registerModConfig()
                         end
 
                         local merchants = {}
+                        ---@param obj tes3npcInstance
                         for obj in tes3.iterateObjects(tes3.objectType.npc) do
                             if not (obj.baseObject and obj.baseObject.id ~= obj.id ) then
                                 if canSellGear(obj) then
@@ -648,6 +649,7 @@ local function registerModConfig()
                         end
 
                         local merchants = {}
+                        ---@param obj tes3npcInstance
                         for obj in tes3.iterateObjects(tes3.objectType.npc) do
                             if not (obj.baseObject and obj.baseObject.id ~= obj.id ) then
                                 if canSellGear(obj) then

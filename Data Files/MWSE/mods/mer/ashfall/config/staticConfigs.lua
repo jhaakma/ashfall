@@ -68,7 +68,7 @@ this.capacities = {
 
 ---@class Ashfall.waterContainerData
 ---@field capacity number How much liquid this container can hold
----@field holdsStew boolean Whether this container can hold stewBuff
+---@field holdsStew? boolean Whether this container can hold stewBuff
 ---@field weight? number The weight override for this item
 ---@field value? number The value override for this item
 ---@field meshOverride? string The mesh override for this item

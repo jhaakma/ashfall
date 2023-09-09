@@ -138,6 +138,7 @@ local function updateGrillFoodHeatSource(ingredReference)
         if common.helper.isStack(ingredReference) then
             logger:debug("Returning grill food stack to player")
             local count = ingredReference.attachments.variables.count
+            ---@diagnostic disable-next-line
             mwscript.addItem{ reference = tes3.player, item = ingredReference.object, count = (count - 1) }
             ingredReference.attachments.variables.count = 1
             event.trigger("Ashfall:registerReference", { reference = ingredReference})
@@ -274,7 +275,7 @@ local function doAddingredToStew(campfire, reference)
         common.helper.pickUp(reference)
     else
         tes3.messageBox("Added %s %s to stew.", amountAdded, reference.object.name)
-        common.helper.yeet(reference)
+        reference:delete()
     end
 end
 

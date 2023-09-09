@@ -44,7 +44,7 @@ local IDs = {
 
 local function findHUDElement(id)
     local multiMenu = tes3ui.findMenu(tes3ui.registerID("MenuMulti"))
-    return multiMenu:findChild( id )
+    return multiMenu and multiMenu:findChild( id )
 end
 
 
@@ -89,8 +89,10 @@ function this.updateHUD()
             local rightTempPlayerBar = findHUDElement(IDs.rightTempPlayerBar)
             if leftTempPlayerBar and rightTempPlayerBar then
                 --Cold
-                if tempPlayer < 0 then
 
+                ---@diagnostic disable missing-fields
+
+                if tempPlayer < 0 then
                     leftTempPlayerBar.widget.fillColor = {0.3, 0.5, (0.75 + tempPlayer/400)} --Bluish
                     leftTempPlayerBar.widget.current = tempPlayer
                     --hack
@@ -125,6 +127,8 @@ function this.updateHUD()
                         bar.width = 0
                     end
                 end
+
+                ---@diagnostic enable missing-fields
             end
 
 
@@ -148,7 +152,7 @@ function this.updateHUD()
 
             --HUNGER
             local hungerBar = findHUDElement(IDs.hunger)
-            local hunger = common.coditions.hunger:getValue()
+            local hunger =common.staticConfigs.conditionConfig.hunger
             if needsUI.showHunger() then
                 local newHunger = ( ( 1 - hunger:getValue() / 100 ) * hungerBar.parent.height)
                 hungerBar.height = newHunger

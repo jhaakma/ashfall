@@ -264,61 +264,59 @@ end
 
 function this.cancel()
     if not data then return end
-    --timer.delayOneFrame(function()
-        logger:debug("Cancelling")
-        tes3.runLegacyScript({command = 'DisablePlayerLooking'});
-        if data.usingBed then
-            event.trigger("Ashfall:SetBedTemp", { isUsingBed = false })
+    logger:debug("Cancelling")
+    tes3.runLegacyScript({command = 'DisablePlayerLooking'}); ---@diagnostic disable-line
+    if data.usingBed then
+        event.trigger("Ashfall:SetBedTemp", { isUsingBed = false })
+    end
+    if data.covered then
+        logger:debug("Setting InsideCoveredBedroll to false")
+        common.data.insideCoveredBedroll = false
+    end
+    if data.mesh then
+        logger:debug("Stopping animation")
+        stopAnimation()
+    end
+    if data.speed then
+        logger:debug("Stopping fast time")
+        stopFastTime()
+    end
+    if data.previousLocation then
+        logger:debug("Returning to previous location")
+        common.helper.movePlayer(data.previousLocation)
+        common.helper.togglePlayerCollision(true)
+    end
+    if data.recovering then
+        logger:debug("Removing recovery")
+        common.data.recoveringFatigue = false
+        data.statRecoveryTimer:cancel()
+    end
+    if data.sleeping then
+        logger:debug("disabling isSleeping")
+        common.data.isSleeping = false
+    else
+        common.data.isWaiting = false
+    end
+    if data.collisionRef then
+        if data.collisionRef and data.collisionRef:valid() then
+            logger:debug("Has Collision Ref, setting hasNoCollision to false")
+            data.collisionRef:getObject().hasNoCollision = false
         end
-        if data.covered then
-            logger:debug("Setting InsideCoveredBedroll to false")
-            common.data.insideCoveredBedroll = false
-        end
-        if data.mesh then
-            logger:debug("Stopping animation")
-            stopAnimation()
-        end
-        if data.speed then
-            logger:debug("Stopping fast time")
-            stopFastTime()
-        end
-        if data.previousLocation then
-            logger:debug("Returning to previous location")
-            common.helper.movePlayer(data.previousLocation)
-            common.helper.togglePlayerCollision(true)
-        end
-        if data.recovering then
-            logger:debug("Removing recovery")
-            common.data.recoveringFatigue = false
-            data.statRecoveryTimer:cancel()
-        end
-        if data.sleeping then
-            logger:debug("disabling isSleeping")
-            common.data.isSleeping = false
-        else
-            common.data.isWaiting = false
-        end
-        if data.collisionRef then
-            if data.collisionRef and data.collisionRef:valid() then
-                logger:debug("Has Collision Ref, setting hasNoCollision to false")
-                data.collisionRef:getObject().hasNoCollision = false
-            end
-        end
-        logger:debug("Enabling controls and setting vanity to false, unregistering events")
-        helper.enableControls()
-        tes3.setVanityMode({ enabled = false })
-        event.unregister("save", blockSave)
-        event.unregister("keyDown", checkKeyPress)
-        event.unregister("keyUp", onTabUp, { filter = tes3.getInputBinding(tes3.keybind.togglePOV).code })
-        event.unregister("Ashfall:WakeUp", this.cancel)
+    end
+    logger:debug("Enabling controls and setting vanity to false, unregistering events")
+    helper.enableControls()
+    tes3.setVanityMode({ enabled = false })
+    event.unregister("save", blockSave)
+    event.unregister("keyDown", checkKeyPress)
+    event.unregister("keyUp", onTabUp, { filter = tes3.getInputBinding(tes3.keybind.togglePOV).code })
+    event.unregister("Ashfall:WakeUp", this.cancel)
 
-        if data.callback then
-            logger:debug("Callback")
-            data.callback()
-        end
-        data = nil
-        tes3.runLegacyScript({command = 'EnablePlayerLooking'});
-    --end)
+    if data.callback then
+        logger:debug("Callback")
+        data.callback()
+    end
+    data = nil
+    tes3.runLegacyScript({command = 'EnablePlayerLooking'}); ---@diagnostic disable-line
 end
 
 

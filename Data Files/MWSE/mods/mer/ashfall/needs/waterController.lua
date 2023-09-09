@@ -211,10 +211,12 @@ end
 local function getIsPotion(e)
     return e.item.objectType == tes3.objectType.alchemy
         and not foodConfig.getFoodType(e.item)
-        and not mwscript.getScript()
+        and not mwscript.getScript() ---@diagnostic disable-line
 end
 
+---@param e equipEventData
 local function drinkFromContainer(e)
+    if e.reference ~= tes3.player then return end
 
     if common.helper.getIsBlocked(e.item) then return end
 
@@ -330,7 +332,7 @@ local function drinkFromContainer(e)
         end
     end
 end
-event.register("equip", drinkFromContainer, { filter = tes3.player, priority = -100 } )
+event.register("equip", drinkFromContainer, { priority = -100 } )
 
 
 --First time entering a cell, add water to random bottles/containers

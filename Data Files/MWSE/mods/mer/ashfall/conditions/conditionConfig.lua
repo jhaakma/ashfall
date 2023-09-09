@@ -336,6 +336,7 @@ conditions.blightness = Condition:new{
                     local rollForResist = math.random(100)
                     if rollForResist > tes3.mobilePlayer.resistBlightDisease then
                         local newBlight = table.choice(stateData.blights)
+                        ---@diagnostic disable-next-line
                         mwscript.addSpell({ reference = tes3.player, spell = newBlight })
 
                         stateData.spell = newBlight
@@ -354,7 +355,13 @@ conditions.blightness = Condition:new{
     end,
     hasSpell = function(self)
         if not self.blights then
-            self.blights = self:getBlights()
+            self.blights = {}
+            for spell in tes3.iterateObjects(tes3.objectType.spell) do
+                ---@diagnostic disable-next-line
+                if spell.castType == tes3.spellType.blight then
+                    table.insert( self.blights, spell)
+                end
+            end
         end
         for _, blight in ipairs(self.blights) do
             if tes3.mobilePlayer:isAffectedByObject(blight) then
@@ -362,16 +369,6 @@ conditions.blightness = Condition:new{
             end
         end
     end,
-
-    getBlights = function(self)
-        local blights = {}
-        for spell in tes3.iterateObjects(tes3.objectType.spell) do
-            if spell.castType == tes3.spellType.blight then
-                table.insert(blights, spell)
-            end
-        end
-        return blights
-    end
 }
 
 local fluDiseaseChance = 5
@@ -411,7 +408,7 @@ conditions.flu = Condition:new{
                 if doAddFlu then
                     local fluSpell = tes3.getObject(self.states.hasFlu.spell)
                     self:scaleSpellValues()
-                    mwscript.addSpell({ reference = tes3.player, spell = fluSpell })
+                    mwscript.addSpell({ reference = tes3.player, spell = fluSpell }) ---@diagnostic disable-line
                     self:showUpdateMessages()
                 else
                     self:setValue(0)
@@ -419,6 +416,7 @@ conditions.flu = Condition:new{
             end
         else
             if self:hasSpell() then
+                ---@diagnostic disable-next-line
                 mwscript.removeSpell({ reference = tes3.player, spell = tes3.getObject(self.states.hasFlu.spell) })
                 tes3.messageBox("You no longer have the flu.")
             end

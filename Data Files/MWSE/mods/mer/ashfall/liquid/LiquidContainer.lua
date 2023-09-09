@@ -16,7 +16,6 @@ local logger = common.createLogger("LiquidContainer")
 local foodConfig = require "mer.ashfall.config.foodConfig"
 local teaConfig = require "mer.ashfall.config.teaConfig"
 
-
 ---@class Ashfall.LiquidContainer.Data
 ---@field waterAmount number Amount of water in container. Maps to data.waterAmount
 ---@field waterHeat number How hot the water is out of 100. Maps to data.waterHeat
@@ -33,6 +32,7 @@ local teaConfig = require "mer.ashfall.config.teaConfig"
 
 ---@class Ashfall.LiquidContainer
 ---@field data Ashfall.LiquidContainer.Data The Reference.data or itemData.data
+---@field dataHolder table The Reference or itemData
 ---@field itemId string The id of the item
 ---@field reference tes3reference (Optional) if there is a reference, we need it for updating nodes
 ---@field waterAmount number Amount of water in container. Maps to data.waterAmount
@@ -99,8 +99,8 @@ local meta = {
 ---@class LiquidContainer.ConstructorData
 ---@field id string
 ---@field dataHolder table
----@field reference tes3reference
----@field bottleData table
+---@field reference? tes3reference
+---@field bottleData? table
 
 --[[
     Construct a new Liquid Container.
@@ -114,7 +114,6 @@ function LiquidContainer.new(e)
     local reference = e.reference
     local bottleData = e.bottleData or common.staticConfigs.bottleList[id:lower()]
     if bottleData then
-        ---@type Ashfall.LiquidContainer
         local liquidContainer = {}
         liquidContainer.dataHolder = dataHolder --if null, an item with no itemData
         ---@type Ashfall.LiquidContainer.Data
@@ -126,9 +125,10 @@ function LiquidContainer.new(e)
         liquidContainer.doPlaySound = true
         setmetatable(liquidContainer, meta )
         if liquidContainer.stewLevels then liquidContainer.waterType = "stew" end
-        return liquidContainer
+        return liquidContainer --[[@as Ashfall.LiquidContainer]]
     end
     --Not a valid liquidContainer
+    return nil
 end
 
 --[[

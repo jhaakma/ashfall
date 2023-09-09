@@ -19,7 +19,7 @@ local function removeTeaEffect(teaData)
         --DelayThreeFrames, to give the spell plenty of time to initialise if drinking multiple teas from inventory
         timer.delayOneFrame(function()timer.delayOneFrame(function()timer.delayOneFrame(function()
             common.helper.restoreFatigue()
-            mwscript.removeSpell({ reference = tes3.player, spell = teaData.spell.id})
+            mwscript.removeSpell({ reference = tes3.player, spell = teaData.spell.id}) ---@diagnostic disable-line
         end)end)end)
     elseif teaData.offCallback then
         teaData.offCallback()
@@ -50,7 +50,12 @@ local function updateBuffs(e)
 end
 event.register("simulate", updateBuffs)
 
+---@class Ashfall.onDrinkTea.params
+---@field teaType string
+---@field amountDrank number
+---@field heat number
 
+---@param e Ashfall.onDrinkTea.params
 local function onDrinkTea(e)
     logger:debug("onDrinkTea")
     local teaType = e.teaType
@@ -79,7 +84,7 @@ local function onDrinkTea(e)
         local teaSpell = tes3.getObject(teaData.spell.id)
         if not teaSpell then
             logger:debug("onDrinkTea: Creating new spell")
-            teaSpell = tes3spell.create(teaData.spell.id, teaData.teaName)
+            teaSpell = tes3spell.create(teaData.spell.id, teaData.teaName) ---@diagnostic disable-line
         end
         teaSpell.castType = teaData.spell.spellType or tes3.spellType.ability
         for i=1, #teaData.spell.effects do
@@ -100,7 +105,7 @@ local function onDrinkTea(e)
         --delay 3 frames to let the previous tea spell wear off
         if teaSpell.castType == tes3.spellType.ability then
             logger:debug("Applying tea effect as ability")
-            mwscript.addSpell{ reference = tes3.player, spell = teaSpell }
+            mwscript.addSpell{ reference = tes3.player, spell = teaSpell } ---@diagnostic disable-line
         else
             logger:debug("Applying tea spell as magic source")
             tes3.applyMagicSource{
@@ -119,6 +124,7 @@ local function onDrinkTea(e)
 end
 event.register("Ashfall:DrinkTea", onDrinkTea)
 
+---@param e simulateEventData
 local function updateBrewers(e)
     local function doUpdate(brewerRef_)
         ---@type Ashfall.LiquidContainer

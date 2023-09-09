@@ -22,6 +22,10 @@ local function placeCampfire(e)
         ref = e.target,
         maxDistance = 1000
     }
+    if not ground then
+        tes3.messageBox{ message = "You can't place a campfire here.", buttons = {tes3.findGMST(tes3.gmst.sOK).value}}
+        return
+    end
     local tooSteep = (
         ground.normal.x > maxSteepness or
         ground.normal.x < -maxSteepness or
@@ -32,17 +36,17 @@ local function placeCampfire(e)
         tes3.messageBox{ message = "The ground is too steep here.", buttons = {tes3.findGMST(tes3.gmst.sOK).value}}
         return
     end
-
+    ---@diagnostic disable-next-line
     mwscript.disable({ reference = e.target })
 
     local campfire = tes3.createReference{
         object = common.staticConfigs.objectIds.campfire,
         position = e.target.position,
-        orientation = {
+        orientation = tes3vector3.new(
             e.target.orientation.x,
             e.target.orientation.y,
             tes3.player.orientation.z
-        },
+        ),
         scale = 0.8,
         cell = e.target.cell
     }
@@ -55,7 +59,7 @@ local function placeCampfire(e)
     if remaining > 0 then
         local safeRef = tes3.makeSafeObjectHandle(e.target)
         timer.delayOneFrame(function()
-            if safeRef:valid() then
+            if safeRef and safeRef:valid() then
                 common.helper.pickUp(safeRef:getObject())
             end
         end)
@@ -166,6 +170,7 @@ local function onMagicCasted(e)
                         logger:debug("hasCharge and can light/extinguish")
                         local spell = isFireTouch and "fire bite" or "frostbite"
                         logger:debug("Casting %s", spell)
+                        ---@diagnostic disable-next-line
                         mwscript.explodeSpell{ reference = campfire, spell = spell }
                         timer.start{
                             type = timer.simulate,
@@ -177,6 +182,7 @@ local function onMagicCasted(e)
                                     extinguishFire(campfire)
                                 end
                                 --Exploding spell on a light object causes infinite sound loop, so manually stop the sound
+                                ---@diagnostic disable-next-line
                                 mwscript.stopSound{ reference = campfire, sound = 'destruction cast'}
                             end
                         }
@@ -221,8 +227,8 @@ local function onSpellHit(e)
             logger:debug("on target %s spell expired", isFireSpell and "fire" or "frost")
             local spellRef = e.mobile.reference
             local result =  tes3.rayTest{
-                position = {spellRef.position.x, spellRef.position.y, spellRef.position.z},
-                direction = {0,0,-1},
+                position = tes3vector3.new(spellRef.position.x, spellRef.position.y, spellRef.position.z),
+                direction = tes3vector3.new(0,0,-1),
                 ignore = { spellRef },
                 useBackTriangles = true,
             }

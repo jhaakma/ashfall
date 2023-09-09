@@ -89,10 +89,40 @@ local function initData()
     tes3.player.data.Ashfall.currentStates = tes3.player.data.Ashfall.currentStates or {}
     tes3.player.data.Ashfall.wateredCells = tes3.player.data.Ashfall.wateredCells or {}
     tes3.player.data.Ashfall.trinketEffects = tes3.player.data.Ashfall.trinketEffects or {}
-    tes3.player.data.Ashfall.bandages = tes3.player.data.Ashfall.bandages or {}
 end
 
 ---@class Ashfall.playerData
+---@field currentStates table<string, Ashfall.Condition> A list of the current condition states
+---@field wateredCells table<string, boolean> A list of cells that have been watered
+---@field trinketEffects table
+---@field insideTent boolean
+---@field insideCoveredBedroll boolean
+---@field hasTentCover boolean
+---@field tentTempMulti number
+---@field globalColdEffect number
+---@field globalWarmEffect number
+---@field isSleeping boolean
+---@field isWaiting boolean
+---@field recoveringFatigue boolean
+---@field cellBranchList table<string, boolean>
+---@field teaDrank string
+---@field teaBuffTimeLeft number
+---@field lastTeaBuffUpdated number
+---@field stewWarmEffect number
+---@field blockForFade boolean
+---@field mealTime number
+---@field mealBuff number
+---@field blockNeeds boolean
+---@field blockHunger boolean
+---@field blockThirst boolean
+---@field hungerEffect number
+---@field thirstEffect number
+---@field drinkingRain boolean
+---@field drinkingWaterType string
+---@field isSheltered boolean
+---@field wetness number
+---@field hazardTemp number
+---@field sunShaded boolean
 this.data = setmetatable({}, {
     __index = function(t, key)
         if not ( tes3.player and tes3.player.data) then

@@ -106,6 +106,7 @@ function this.processMealBuffs(scriptInterval)
 
     --Time's up, remove buff
     elseif common.data.mealBuff then
+        ---@diagnostic disable-next-line
         mwscript.removeSpell({ reference = tes3.player, spell = common.data.mealBuff })
         common.data.mealBuff = nil
     end
@@ -213,7 +214,9 @@ local function addDisease(e)
     end
 end
 
+---@param e equipEventData
 local function onEquipFood(e)
+    if e.reference ~= tes3.player then return end
     logger:trace("onEquipFood")
     if common.helper.getIsBlocked(e.item) then
         logger:debug("onEquipFood: Is Blocked")
@@ -228,7 +231,7 @@ local function onEquipFood(e)
     end
 end
 
-event.register("equip", onEquipFood, { filter = tes3.player, priority = -100 } )
+event.register("equip", onEquipFood, { priority = -100 } )
 
 
 local function onShiftActivateFood(e)

@@ -49,12 +49,12 @@ function this.checkRefSheltered(reference)
         and reference.object.boundingBox.max.z or 0
 
     local results = tes3.rayTest{
-        position = {
+        position = tes3vector3.new(
             reference.position.x,
             reference.position.y,
             reference.position.z + (height/2)
-        },
-        direction = {0, 0, 1},
+        ),
+        direction = tes3vector3.new(0, 0, 1),
         findAll = true,
         maxDistance = 5000,
         ignore = {reference},
@@ -105,10 +105,9 @@ end
 --TODO: Null needs to fix collision crashes on Disable/Delete
 function this.yeet(ref, no)
     if no then
-        mwse.error("You called yeet() with a colon, didn't you?")
+        this.logger:error("You called yeet() with a colon, didn't you?")
     end
-    ref:disable()
-    mwscript.setDelete{ reference = ref}
+    ref:delete()
 end
 
 
@@ -125,11 +124,11 @@ function this.movePlayer(e)
         tes3.positionCell{
             reference = tes3.player,
             position = e.position,
-            orientation = {
+            orientation = tes3vector3.new(
                 0,
                 0,
                 orientation.z
-            },
+            ),
             cell = e.cell,
             teleportCompanions = false,
             suppressFader = true
@@ -162,7 +161,7 @@ end
 function this.reduceReferenceStack(stack, count)
     local stackCount = this.getStackCount(stack)
     if stackCount <= count then
-        this.yeet(stack)
+        stack:delete()
         return 0
     else
         stack.attachments.variables.count = stack.attachments.variables.count - count
@@ -333,7 +332,7 @@ function this.createSliderPopup(params)
     okayButton:register("mouseClick",
         function()
             menu:destroy()
-            tes3ui.leaveMenuMode(menuId)
+            tes3ui.leaveMenuMode()
             if params.okayCallback then
                 timer.frame.delayOneFrame(params.okayCallback)
             end
@@ -346,7 +345,7 @@ function this.createSliderPopup(params)
     cancelButton:register("mouseClick",
         function()
             menu:destroy()
-            tes3ui.leaveMenuMode(menuId)
+            tes3ui.leaveMenuMode()
             if params.cancelCallback then
                 timer.frame.delayOneFrame(params.cancelCallback)
             end
@@ -368,7 +367,7 @@ end
 
 function this.enableControls()
     setControlsDisabled(false)
-    tes3.runLegacyScript{command = "EnableInventoryMenu"}
+    tes3.runLegacyScript{command = "EnableInventoryMenu"} ---@diagnostic disable-line
 end
 
 function this.getUniqueCellId(cell)
@@ -506,7 +505,7 @@ function this.tryContractDisease(spellID)
     if roll < catchChance then
         if not tes3.player.object.spells:contains(spell) then
             tes3.messageBox(tes3.findGMST(tes3.gmst.sMagicContractDisease).value, spell.name)
-            mwscript.addSpell{ reference = tes3.player, spell = spell  }
+            mwscript.addSpell{ reference = tes3.player, spell = spell  } ---@diagnostic disable-line
         end
     end
 end
@@ -609,7 +608,7 @@ function this.getGroundBelowRef(e)
     pos.z = pos.z + height
     local result = tes3.rayTest{
         position = pos,
-        direction = {0, 0, -1},
+        direction = tes3vector3.new(0, 0, -1),
         ignore = ignoreList or {ref, tes3.player},
         returnNormal = true,
         useBackTriangles = false,

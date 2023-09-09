@@ -31,7 +31,7 @@ return {
         campfire.data.fuelLevel = campfire.data.fuelLevel + getWoodFuel()
         if stackCount == 1 then
             tes3.messageBox("Added firewood.")
-            common.helper.yeet(reference)
+            reference:delete()
             tes3.playSound{ reference = tes3.player, sound = "ashfall_add_wood"  }
         else
             reference.attachments.variables.count = reference.attachments.variables.count - 1

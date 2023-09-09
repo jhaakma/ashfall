@@ -55,6 +55,7 @@ local function refreshConditions(e)
             if states then
                 local spell = condition:getCurrentSpellObj()
                 if spell and tes3.player.object.spells:contains(spell) then
+                    ---@diagnostic disable-next-line
                     mwscript.addSpell({ reference = tes3.player, spell = spell })
                 end
             end

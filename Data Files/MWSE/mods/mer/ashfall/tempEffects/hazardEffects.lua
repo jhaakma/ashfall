@@ -10,7 +10,7 @@ local maxDistance = 1000
 local function getHeat(ref)
     local hazardTemp = staticConfigs.heatSourceValues[ref.object.id:lower()] or 0
     local heat = 0
-    local distance = mwscript.getDistance({reference = "player", target = ref})
+    local distance = tes3.player.position:distance(ref.position)
 
     --remap so heat is max at distance = 0, and 0 at maxDistance
     if distance < maxDistance then

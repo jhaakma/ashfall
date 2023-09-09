@@ -505,31 +505,32 @@ local function replaceCampfire(e)
             logger:debug("orientation %s", e.reference.orientation)
             logger:debug("hasPlatform %s", data.hasPlatform)
 
+
             local campfire = tes3.createReference{
                 object = replacement,
-                position = {
+                position = tes3vector3.new(
                     e.reference.position.x,
                     e.reference.position.y,
                     e.reference.position.z - (vanillaConfig.rootHeight * e.reference.scale)
-                },
-                orientation = {
+                ),
+                orientation = tes3vector3.new(
                     e.reference.orientation.x,
                     e.reference.orientation.y,
                     e.reference.orientation.z + math.rad(vanillaConfig.rotation or 0)
-                },
+                ),
                 cell = e.reference.cell
             }
             --make sure the position is correct
-            campfire.position = {
+            campfire.position = tes3vector3.new(
                 e.reference.position.x,
                 e.reference.position.y,
                 e.reference.position.z + (vanillaConfig.rootHeight * e.reference.scale)
-            }
-            campfire.orientation = {
+            )
+            campfire.orientation = tes3vector3.new(
                 e.reference.orientation.x,
                 e.reference.orientation.y,
                 e.reference.orientation.z + math.rad(vanillaConfig.rotation or 0)
-            }
+            )
 
             logger:debug("new orientation %s", campfire.orientation)
             campfire.data.dynamicConfig = campfireConfig.getConfig(campfire.object.id)
@@ -573,20 +574,17 @@ local function replaceCampfire(e)
                     local campfireHeight = campfire.position.z - rootHeight
                     local heightDiff = campfireHeight - vanillaHeight
                     logger:debug("Failed to orient, setting height based on bounding box")
-                    campfire.position = {
+                    campfire.position = tes3vector3.new(
                         campfire.position.x,
                         campfire.position.y,
                         campfire.position.z - heightDiff
-                    }
+                    )
                 end
             end
 
             common.helper.yeet(e.reference)
-
-
             logger:debug("------------------moving food")
             moveFood(campfire, data.foodList)
-
             logger:debug("Campfire final supports: %s\n\n", campfire.data.dynamicConfig.supports)
         end
     end

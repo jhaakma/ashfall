@@ -2,6 +2,7 @@
 ---@class Ashfall.MCMConfig
 local mcmConfig = {
     showHints = true,
+    --Check if there is a new version of the mod available
     checkForUpdates = false,
     --intro setup
     doIntro = false,

@@ -38,7 +38,7 @@ local function updateBuffs(e)
 
                 common.helper.restoreFatigue()
                 for _, stewBuff in pairs(foodConfig.getStewBuffList()) do
-                    mwscript.removeSpell({ reference = reference, spell = stewBuff.id})
+                    mwscript.removeSpell({ reference = reference, spell = stewBuff.id}) ---@diagnostic disable-line
                 end
                 tes3.messageBox("Stew effect has worn off.")
 
@@ -138,7 +138,7 @@ local function eatStew(e)
         --remove old buffs
         for foodType, buff in pairs(stewBuffs) do
             if e.data.stewLevels[foodType] == nil then
-                mwscript.removeSpell{ reference = tes3.player, spell = buff.id }
+                mwscript.removeSpell{ reference = tes3.player, spell = buff.id } ---@diagnostic disable-line
             end
         end
         tes3.playSound{ reference = tes3.player, sound = "Swallow" }
@@ -156,7 +156,7 @@ local function eatStew(e)
                 local effect = spell.effects[1]
                 effect.min = effectStrength
                 effect.max = effectStrength
-                mwscript.addSpell{ reference = tes3.player, spell = spell }
+                mwscript.addSpell{ reference = tes3.player, spell = spell } ---@diagnostic disable-line
                 --Effect maxes out at 10 units, then divide remaining 10 by 10 to get normalised effect
                 local ateAmountMulti = math.min(highestAmount, 10) / 10
                 logger:debug("ateAmountMulti %s", ateAmountMulti)
