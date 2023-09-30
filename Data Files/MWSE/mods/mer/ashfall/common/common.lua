@@ -123,6 +123,7 @@ end
 ---@field wetness number
 ---@field hazardTemp number
 ---@field sunShaded boolean
+---@field tempLimit number
 this.data = setmetatable({}, {
     __index = function(t, key)
         if not ( tes3.player and tes3.player.data) then

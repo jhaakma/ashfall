@@ -135,10 +135,8 @@ this.menuOptions = {
             local menuID = "RenameMenu"
             local menu = tes3ui.createMenu{ id = menuID, fixedFrame = true }
             menu.minWidth = 400
-            ---@diagnostic disable
-            menu.alignX = 0.5
-            menu.alignY = 0
-            ---@diagnostic enable
+            menu.childAlignX = 0.5
+            menu.childAlignY = 0
             menu.autoHeight = true
             local textField = mwse.mcm.createTextField(
                 menu,
@@ -149,6 +147,7 @@ this.menuOptions = {
                         table = e.reference.data
                     },
                     callback = function()
+                        e.reference.object.name = e.reference.data.customName
                         e.reference.modified = true
                         tes3ui.leaveMenuMode()
                         tes3ui.findMenu(menuID):destroy()
@@ -183,8 +182,8 @@ this.menuOptions = {
             end
             return false
         end,
+        ---@diagnostic disable-next-line: missing-fields
         tooltipDisabled = {
-            header = nil,
             text = "You need a repair tool to repair items.",
         },
         callback = function(e)
@@ -766,7 +765,8 @@ local bushCraftingRecipes = {
             soundType = "wood",
             customRequirements = {
                 this.customRequirements.wildernessOnly
-            }
+            },
+            scale = 1.1,
         },
         {
             id = "bushcraft:ashfall_table_sml_2_s",
@@ -780,7 +780,8 @@ local bushCraftingRecipes = {
             soundType = "wood",
             customRequirements = {
                 this.customRequirements.wildernessOnly
-            }
+            },
+            scale = 1.3,
         },
     },
     apprentice = {
@@ -878,6 +879,20 @@ local bushCraftingRecipes = {
         },
     },
     journeyman = {
+        {
+            id = "bushcraft:ashfall_basket_01",
+            craftableId = "ashfall_basket_01",
+            description = "A small woven basket.",
+            materials = {
+                { material = "straw", count = 8 },
+                { material = "rope", count = 1 }
+            },
+            category = this.categories.containers,
+            soundType = "straw",
+            additionalMenuOptions = {
+                this.menuOptions.rename
+            },
+        },
         {
             id = "bushcraft:ashfall_cov_thatch",
             craftableId = "ashfall_cov_thatch",
@@ -1259,7 +1274,26 @@ local carvingRecipes = {
             soundType = "carve",
         },
     },
-    journeyman = {},
+    journeyman = {
+        {
+            id = "bushcraft:ashfall_stand_01",
+            craftableId = "ashfall_stand_01",
+            placedObject = "ashfall_stand_01_placed",
+            description = "An elegant carved wooden stand for displaying decorations and ceramics.",
+            materials = {
+                { material = "wood", count = 4 },
+                { material = "resin", count = 1 }
+            },
+            category = this.categories.furniture,
+            soundType = "carve",
+            toolRequirements = {
+                {
+                    tool = "chisel",
+                    conditionPerUse = 20
+                }
+            },
+        },
+    },
     expert = {
         {
             id = "bushcraft:ashfall_wood_ring_02",
@@ -1441,41 +1475,9 @@ local workbenchRecipes = {
             },
             category = this.categories.containers,
             soundType = "wood",
-            additionalMenuOptions = {
-                this.menuOptions.rename
-            },
-        },
-        {
-            id = "bushcraft:ashfall_basket_01",
-            craftableId = "ashfall_basket_01",
-            description = "A small woven basket.",
-            materials = {
-                { material = "straw", count = 8 },
-                { material = "rope", count = 1 }
-            },
-            category = this.categories.containers,
-            soundType = "straw",
-            additionalMenuOptions = {
-                this.menuOptions.rename
-            },
-        },
-        {
-            id = "bushcraft:ashfall_stand_01",
-            craftableId = "ashfall_stand_01",
-            placedObject = "ashfall_stand_01_placed",
-            description = "An elegant carved wooden stand for displaying decorations and ceramics.",
-            materials = {
-                { material = "wood", count = 4 },
-                { material = "resin", count = 1 }
-            },
-            category = this.categories.furniture,
-            soundType = "carve",
-            toolRequirements = {
-                {
-                    tool = "chisel",
-                    conditionPerUse = 10
-                }
-            },
+            -- additionalMenuOptions = {
+            --     this.menuOptions.rename
+            -- },
         },
         {
             id = "bushcraft:ashfall_stool_01",

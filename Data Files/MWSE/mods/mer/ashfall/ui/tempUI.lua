@@ -90,7 +90,7 @@ function this.updateHUD()
             if leftTempPlayerBar and rightTempPlayerBar then
                 --Cold
 
-                ---@diagnostic disable missing-fields
+                ----@diagnostic disable missing-fields
 
                 if tempPlayer < 0 then
                     leftTempPlayerBar.widget.fillColor = {0.3, 0.5, (0.75 + tempPlayer/400)} --Bluish

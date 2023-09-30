@@ -72,15 +72,12 @@ local function onEquipChisel(e)
 end
 event.register("equip", onEquipChisel, { priority = -50 } )
 
-local function buildName(object, customName)
-    return string.format("%s: %s", object.name, customName)
-end
 local function customNameTooltip(e)
     local name = e.itemData and e.itemData.data.customName
     if name then
         local label = e.tooltip:findChild(tes3ui.registerID('HelpMenu_name'))
         if label then
-            label.text = buildName(e.object, name)
+            label.text = name
         end
     end
 end

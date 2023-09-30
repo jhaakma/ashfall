@@ -336,9 +336,13 @@ event.register("preventRest", checkTentEnemyPreventRest)
 
 
 --When sleeping in a tent, you can't be woken up by creatures
+---@param e calcRestInterruptEventData
 local function calcRestInterrupt(e)
     if common.helper.getInTent()  then
-        e.count = 0
+        if e.count > 0 then
+            logger:warn("In tent, preventing rest interrupt")
+            e.count = 0
+        end
     end
 end
 event.register("calcRestInterrupt", calcRestInterrupt)
