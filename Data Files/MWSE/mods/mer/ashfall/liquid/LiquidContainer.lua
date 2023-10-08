@@ -15,6 +15,7 @@ local common = require("mer.ashfall.common.common")
 local logger = common.createLogger("LiquidContainer")
 local foodConfig = require "mer.ashfall.config.foodConfig"
 local teaConfig = require "mer.ashfall.config.teaConfig"
+local HeatUtil = require("mer.ashfall.heat.HeatUtil")
 
 ---@class Ashfall.LiquidContainer.Data
 ---@field waterAmount number Amount of water in container. Maps to data.waterAmount
@@ -29,6 +30,7 @@ local teaConfig = require "mer.ashfall.config.teaConfig"
 ---@field lastWaterHeatUpdated number The last time the water heat was updated
 ---@field stewBuffs table The stew buffs
 ---@field ladle boolean A ladle is attached to the cooking pot
+
 
 ---@class Ashfall.LiquidContainer
 ---@field data Ashfall.LiquidContainer.Data The Reference.data or itemData.data
@@ -299,7 +301,7 @@ function LiquidContainer.transferLiquid(from, to, amount)
     local newHeat =
         (fromHeat*fillAmount + toHeat*to.waterAmount)
         / (fillAmount + to.waterAmount)
-    to:updateHeat(newHeat)
+    to:setHeat(newHeat)
     -- stewProgress
     to.stewProgress = (from.stewProgress*fillAmount + to.stewProgress*to.waterAmount)
         / (fillAmount + to.waterAmount)
@@ -390,7 +392,7 @@ end
 ---@return number #The amount of water that was emptied
 function LiquidContainer:empty()
     local amountEmptied = self.waterAmount
-    self:updateHeat(0)
+    self:setHeat(0)
     for k, _ in pairs(dataValues) do
         self.data[k] = nil
     end
@@ -508,25 +510,11 @@ function LiquidContainer:hasWater()
     return self.waterAmount >= 1
 end
 
----Updates the heat of a liquid container, triggering any node updates and sounds if necessary
 ---@param self Ashfall.LiquidContainer
 ---@param newHeat number
-function LiquidContainer.updateHeat(self, newHeat)
-    local heatBefore = self.data.waterHeat or 0
-    self.waterHeat = math.clamp(newHeat, 0, 100)
-    local heatAfter = self.waterHeat
-    --add sound if crossing the boiling barrior
-    if self.reference and not self.reference.disabled then
-        if heatBefore < common.staticConfigs.hotWaterHeatValue and heatAfter > common.staticConfigs.hotWaterHeatValue then
-            event.trigger("Ashfall:UpdateAttachNodes", { reference = self.reference})
-        end
-        if heatBefore > common.staticConfigs.hotWaterHeatValue and heatAfter < common.staticConfigs.hotWaterHeatValue then
-            logger:debug("No longer hot")
-            event.trigger("Ashfall:UpdateAttachNodes", { reference = self.reference})
-        end
-    end
+function LiquidContainer:setHeat(newHeat)
+    HeatUtil.setHeat(self.data, newHeat, self.reference)
 end
-
 
 
 return LiquidContainer

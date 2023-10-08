@@ -6,7 +6,7 @@ local thirstController = require "mer.ashfall.needs.thirstController"
 local LiquidContainer = require("mer.ashfall.liquid.LiquidContainer")
 local common = require ("mer.ashfall.common.common")
 local logger = common.createLogger("boilerController")
-local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
+local HeatUtil = require("mer.ashfall.heat.HeatUtil")
 local patinaController = require("mer.ashfall.camping.patinaController")
 local BOILER_UPDATE_INTERVAL = 0.001
 local ReferenceController = require("mer.ashfall.referenceController")
@@ -44,14 +44,10 @@ local function doUpdate(boilerRef)
 
     local hasFilledPot = liquidContainer.waterAmount > 0
     if hasFilledPot then
-        logger:trace("BOILER interval passed, updating heat for %s", liquidContainer)
+        logger:trace("Updating heat for %s", liquidContainer)
         addUtensilPatina(liquidContainer.reference,timeSinceLastUpdate)
-        logger:trace("BOILER hasFilledPot")
-        local bottleData = thirstController.getBottleData(liquidContainer.itemId)
-        local utensilData = CampfireUtil.getUtensilData(liquidContainer.reference)
-        local capacity = (bottleData and bottleData.capacity) or ( utensilData and utensilData.capacity )
 
-        CampfireUtil.updateWaterHeat(liquidContainer.data, capacity, liquidContainer.reference)
+        HeatUtil.updateWaterHeat(liquidContainer)
         if liquidContainer:isBoiling() then
             --boil dirty water away
             if liquidContainer:getLiquidType() == "dirty" then
@@ -67,7 +63,6 @@ end
 
 event.register("loaded", function()
     timer.start{
-        --type = timer.real,--we update boilers inside menumode too (why?)
         duration = common.helper.getUpdateIntervalInSeconds(),
         iterations = -1,
         callback = function()
