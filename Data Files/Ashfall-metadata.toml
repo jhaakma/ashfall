@@ -10,7 +10,7 @@ version = "3.14.1"
 assets = [ "Ashfall.esp", "Icons/ashfall", "Meshes/ashfall", "MWSE/mods/mer/ashfall", "Sound/ashfall", "Textures/Ashfall",]
 
 [dependencies.mwse]
-buildnumber = 3251
+buildnumber = 3410
 
 [dependencies.mge-xe]
 version = ">=0.15.0"
