@@ -6,9 +6,9 @@
 
 ]]
 local common = require ("mer.ashfall.common.common")
+local skillConfigs = require("mer.ashfall.config.skillConfigs")
 local logger = common.createLogger("campfireLighting")
 local ReferenceController = require("mer.ashfall.referenceController")
-local skillSurvivalLightFireIncrement = 5
 
 local function initialiseCampfireSoundAndFlame()
     local function doUpdate(campfire)
@@ -138,7 +138,7 @@ local function lightFire(e)
         fuelConsumer.data.fuelLevel = math.max(0, fuelConsumer.data.fuelLevel - 0.5)
         reduceLightTime(lighterData)
         tes3.playSound{ sound = "Fire", reference = fuelConsumer, loop = true }
-        common.skills.survival:progressSkill(skillSurvivalLightFireIncrement)
+        common.skills.survival:exercise(skillConfigs.survival.lightFire.skillGain)
     end
     event.trigger("Ashfall:UpdateAttachNodes", { reference = fuelConsumer})
     event.trigger("Ashfall:Campfire_Enablelight", { campfire = fuelConsumer})
@@ -150,15 +150,15 @@ local function createLightFromRef(ref)
     local lightNode = niPointLight.new()
     lightNode.name = "LIGHTNODE"
     if ref.object.color then
-        lightNode.ambient = tes3vector3.new(0,0,0)
+        lightNode.ambient = tes3vector3.new(0,0,0) --[[@as niColor]]
         lightNode.diffuse = tes3vector3.new(
             ref.object.color[1] / 255,
             ref.object.color[2] / 255,
             ref.object.color[3] / 255
-        )
+        )--[[@as niColor]]
     else
-        lightNode.ambient = tes3vector3.new(0,0,0)
-        lightNode.diffuse = tes3vector3.new(255, 255, 255)
+        lightNode.ambient = tes3vector3.new(0,0,0) --[[@as niColor]]
+        lightNode.diffuse = tes3vector3.new(255, 255, 255) --[[@as niColor]]
     end
     lightNode:setAttenuationForRadius(ref.object.radius)
 

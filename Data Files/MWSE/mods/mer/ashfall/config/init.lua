@@ -62,6 +62,7 @@ local inMemConfig = mwse.loadConfig(this.configPath, this.defaultConfig)
 ---@field restingNeedsMultiplier number
 ---@field travelingNeedsMultiplier number
 ---@field warmthValues table
+---@field enablePatina boolean
 this.config = setmetatable({
     save = function()
         mwse.saveConfig(this.configPath, inMemConfig)

@@ -6,7 +6,7 @@
 ]]--
 local this = {}
 local common = require("mer.ashfall.common.common")
-local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
+local HeatUtil = require("mer.ashfall.heat.HeatUtil")
 local staticConfigs = common.staticConfigs
 local activatorConfig = common.staticConfigs.activatorConfig
 local ReferenceController = require("mer.ashfall.referenceController")
@@ -126,7 +126,7 @@ function this.calculateFireEffect()
         if isValid then
             --For survival skill
             common.data.nearCampfire = true
-            local fuel = CampfireUtil.getHeat(ref)
+            local fuel = HeatUtil.getHeat(ref)
             local isNegativeHeat = fuel < 0
             fuel = math.abs(fuel)
             local heatAtMaxDistance = math.clamp(math.remap(fuel, 0, 10, 0, 60), 0, 60)

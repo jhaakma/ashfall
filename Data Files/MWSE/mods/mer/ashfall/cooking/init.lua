@@ -1,10 +1,11 @@
 local common = require ("mer.ashfall.common.common")
+local skillsConfig = require("mer.ashfall.config.skillConfigs")
 local logger = common.createLogger("cooking")
 local LiquidContainer = require("mer.ashfall.liquid.LiquidContainer")
 local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
+local HeatUtil = require("mer.ashfall.heat.HeatUtil")
 local foodConfig = common.staticConfigs.foodConfig
 local hungerController = require("mer.ashfall.needs.hungerController")
-local skillSurvivalGrillingIncrement = 5
 local patinaController = require("mer.ashfall.camping.patinaController")
 local ReferenceController = require("mer.ashfall.referenceController")
 ----------------------------
@@ -50,7 +51,7 @@ end
 --Check whether the player burns the food based on survival skill and whether campfire has grill
 local function checkIfBurned(campfire)
     local burnChance = 1
-    local survivalSkill = common.skills.survival.value
+    local survivalSkill = common.skills.survival.current
     --Lower survival skill increases burn chance
     local survivalEffect = math.remap(survivalSkill, 0, 100, 1.0, 0.5)
     --Chance to burn doubles if campfire has a grill
@@ -87,7 +88,7 @@ end
 local function doCook(ingredReference, difference)
     ingredReference.data.grillState = "cooked"
     tes3.playSound{ sound = "potion fail", pitch = 0.7, reference = ingredReference }
-    common.skills.survival:progressSkill(skillSurvivalGrillingIncrement)
+    common.skills.survival:exercise(skillsConfig.survival.grill.skillGain)
     event.trigger("Ashfall:ingredCooked", { reference = ingredReference})
     local justChangedCell = difference > 0.01
     if not justChangedCell then
@@ -180,7 +181,7 @@ local function grillFoodItem(ingredReference)
             addGrillPatina(campfire, difference)
             ingredReference.data.lastCookUpdated = timestamp
 
-            local heat = math.max(0, CampfireUtil.getHeat(campfire))
+            local heat = math.max(0, HeatUtil.getHeat(campfire))
             logger:trace("Cooking heat: %s", heat)
             local thisCookMulti = calculateCookMultiplier(heat)
             logger:trace("Cooking multiplier: %s", thisCookMulti)

@@ -1,7 +1,7 @@
 local common = require ("mer.ashfall.common.common")
-local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
+local HeatUtil = require("mer.ashfall.heat.HeatUtil")
 local teaConfig = common.staticConfigs.teaConfig
-local skillSurvivalTeaBrewIncrement = 5
+local skillConfigs = require("mer.ashfall.config.skillConfigs")
 return {
     text = "Brew Tea",
     showRequirements = function(ref)
@@ -31,9 +31,9 @@ return {
                         campfire.data.teaProgress = 0
                         local currentHeat = campfire.data.waterHeat or 0
                         local newHeat = math.max(0, (campfire.data.waterHeat - 10))
-                        CampfireUtil.setHeat(campfire.data, newHeat, campfire)
+                        HeatUtil.setHeat(campfire.data, newHeat, campfire)
 
-                        common.skills.survival:progressSkill(skillSurvivalTeaBrewIncrement)
+                        common.skills.survival:exercise(skillConfigs.survival.brewTea.skillGain)
 
                         tes3.player.object.inventory:removeItem{
                             mobile = tes3.mobilePlayer,

@@ -1,4 +1,5 @@
 local common = require("mer.ashfall.common.common")
+local skillsConfig = require("mer.ashfall.config.skillConfigs")
 local logger = common.createLogger("harvestService")
 local config = require("mer.ashfall.config").config
 local harvestConfigs = require("mer.ashfall.harvest.config")
@@ -257,7 +258,7 @@ end
 
 function HarvestService.calcNumHarvested(harvestable)
     --if skills are implemented, use Survival Skill
-    local survivalSkill = math.clamp(common.skills.survival.value or 30, 0, 100)
+    local survivalSkill = math.clamp(common.skills.survival.current, 0, 100)
     local survivalMulti = math.remap(survivalSkill, 10, 100, 0.25, 1)
     local min = 1
     local max = math.ceil(harvestable.count * survivalMulti)
@@ -302,7 +303,7 @@ end
 ---@return number numHarvested The number of items that were harvested from the reference
 function HarvestService.harvest(reference, harvestConfig)
     HarvestService.resetSwings(reference)
-    common.skills.survival:progressSkill(harvestConfig.swingsNeeded * 2)
+    common.skills.survival:exercise(harvestConfig.swingsNeeded * skillsConfig.survival.harvest.gainPerSwing)
     local numHarvested = HarvestService.addItems(harvestConfig)
     tes3.playSound{ reference = tes3.player, sound = "Item Misc Up"  }
     HarvestService.updateTotalHarvested(reference, numHarvested)

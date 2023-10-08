@@ -439,7 +439,7 @@ local Interop = {
     --Survival skill
     progressSurvivalSkill = function(amount)
         if common.skills.survival then
-            common.skills.survival:progressSkill(amount)
+            common.skills.survival:exercise(amount)
             assert(type(amount) == 'number', "progressSurvivalSkill: amount must be a number")
             logger:debug("Progressing skill by %s points", amount)
             return true
@@ -447,7 +447,7 @@ local Interop = {
     end,
     getSurvivalSkill = function()
         if common.skills.survival then
-            local skillValue = common.skills.survival.value
+            local skillValue = common.skills.survival.current
             logger:debug("getSurvivalSkill: Getting survival skill: %s", skillValue)
             return skillValue
         end

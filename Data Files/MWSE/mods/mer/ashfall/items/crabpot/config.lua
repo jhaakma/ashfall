@@ -11,7 +11,7 @@ local crabpotConfig = {
     interval = 0.5,
     --At max skill, max depth, crab cell = catch 4 per day
     skillEffect = 2.0,--at 100
-    skillProgress = 2,
+    skillProgress = 1,
 }
 
 crabpotConfig.miscToActiveMap = {

@@ -29,60 +29,8 @@ this.helper.logger = this.createLogger("Helper")
 --[[
     Skills
 ]]
-local skillModule = include("OtherSkills.skillModule")
+---@type table<string, SkillsModule.Skill>
 this.skills = {}
---INITIALISE SKILLS--
-local function onSkillsReady()
-    if not skillModule then
-        timer.start({
-            callback = function()
-                tes3.messageBox({message = "Please install Skills Module", buttons = {"Okay"} })
-            end,
-            type = timer.simulate,
-            duration = 1.0
-        })
-
-    end
-
-    if ( skillModule.version == nil ) or ( skillModule.version < 1.4 ) then
-        timer.start({
-            callback = function()
-                tes3.messageBox({message = string.format("Please update Skills Module"), buttons = {"Okay"} })
-            end,
-            type = timer.simulate,
-            duration = 1.0
-        })
-    end
-
-    local skills = {
-        survival = {
-            id = "Ashfall:Survival",
-            name = "Survival",
-            icon = "Icons/ashfall/survival.dds",
-            value = 10,
-            attribute = tes3.attribute.endurance,
-            description = "The Survival skill determines your ability to deal with harsh weather conditions and perform actions such as creating campfires effectively and cooking food with them. A higher survival skill also reduces the chance of getting food poisoning or dysentery from drinking dirty water.",
-            specialization = tes3.specialization.stealth
-        },
-        bushcrafting = {
-            id = "Bushcrafting",
-            name = "Bushcrafting",
-            icon = "Icons/ashfall/bushcrafting.dds",
-            value = 10,
-            attribute = tes3.attribute.intelligence,
-            description = "The Bushcrafting skill determines your ability to craft items from materials gathered in the wilderness. A higher bushcrafting skill unlocks more crafting recipes.",
-            specialization = tes3.specialization.combat
-        }
-    }
-    for skill, data in pairs(skills) do
-        this.log:debug("Registering %s skill", skill)
-        skillModule.registerSkill(data.id, data)
-        this.skills[skill] = skillModule.getSkill(data.id)
-    end
-    this.log:info("Ashfall skills registered")
-end
-event.register("OtherSkills:Ready", onSkillsReady)
-
 
 local function initData()
     tes3.player.data.Ashfall = tes3.player.data.Ashfall or {}
@@ -92,6 +40,12 @@ local function initData()
 end
 
 ---@class Ashfall.playerData
+---@field temp number
+---@field baseTemp number
+---@field tempLimit number
+---@field sunTemp number
+---@field weatherTemp number
+---@field fireTemp number
 ---@field currentStates table<string, Ashfall.Condition> A list of the current condition states
 ---@field wateredCells table<string, boolean> A list of cells that have been watered
 ---@field trinketEffects table
@@ -115,6 +69,7 @@ end
 ---@field blockNeeds boolean
 ---@field blockHunger boolean
 ---@field blockThirst boolean
+---@field blockSleepLoss boolean
 ---@field hungerEffect number
 ---@field thirstEffect number
 ---@field drinkingRain boolean
@@ -123,7 +78,12 @@ end
 ---@field wetness number
 ---@field hazardTemp number
 ---@field sunShaded boolean
----@field tempLimit number
+---@field nearCampfire boolean
+---@field survivalEffect number
+---@field lastTimeScriptsUpdated number The time in game hours at which the last update was run
+---@field diedOfHunger boolean Set to true when the player is killed by hunger, to prevent the death message from showing multiple times
+---@field valuesInitialised boolean Set to true when ScriptTimer updates have run at least once on this save
+---@field inventorySelectTeaBrew boolean Set to true when the player is currently selecting a tea to brew
 this.data = setmetatable({}, {
     __index = function(t, key)
         if not ( tes3.player and tes3.player.data) then

@@ -94,8 +94,8 @@ end
 local function calcThirst()
     if config.needsCanKill then
         if conditionConfig.thirst:getValue() >= 100 then
-            if not common.data.killedByThirst then
-                common.data.killedByThirst = true
+            local isDead = tes3.mobilePlayer.health.current <= 0
+            if isDead then
                 tes3.setStatistic({
                     reference = tes3.mobilePlayer,
                     current = -1,

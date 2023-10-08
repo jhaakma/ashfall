@@ -1,4 +1,5 @@
 local common = require("mer.ashfall.common.common")
+local skillConfigs = require("mer.ashfall.config.skillConfigs")
 local logger = common.createLogger("SkinningService")
 local HarvestService = require("mer.ashfall.harvest.service")
 local skinningConfig = require("mer.ashfall.skinning.config")
@@ -149,7 +150,7 @@ end
 ---@param reference tes3reference
 function SkinningService.calculateDestructionLimit(reference)
     --Set initial value based on skill
-    local survivalSkill = common.skills.survival.value
+    local survivalSkill = common.skills.survival.current
     local destructionLimit = math.remap(survivalSkill,
         skinningConfig.MIN_SURVIVAL_SKILL,
         skinningConfig.MAX_SURVIVAL_SKILL,
@@ -187,7 +188,7 @@ end
 
 function SkinningService.harvest(reference, ingredients)
     HarvestService.resetSwings(reference)
-    common.skills.survival:progressSkill(skinningConfig.SWINGS_NEEDED * 2)
+    common.skills.survival:exercise(skinningConfig.SWINGS_NEEDED * skillConfigs.survival.harvest.gainPerSwing)
     local pickId = table.choice(table.keys(ingredients))
     local pick = tes3.getObject(pickId)
     if not pick then

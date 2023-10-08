@@ -107,16 +107,19 @@ do --Initialise Seedling Data
         end
     end
 
-    logger:trace("Valid seedlings: ")
-    for ingredient, _ in pairs(Seedling.seedlingPlantMap) do
+    --Trace logging : print out all valid seedlings
+    if logger:doLog("TRACE") then
+        logger:trace("Valid seedlings: ")
+        for ingredient, _ in pairs(Seedling.seedlingPlantMap) do
             logger:trace("Seedling: %s", ingredient)
             local containers = Seedling.seedlingPlantMap[ingredient]
             for _, container in pairs(containers) do
                 logger:trace("    Container: %s", container.id)
             end
+        end
+        local endTime = os.clock()
+        logger:trace("Time: %.2f", endTime - startTime)
     end
-    local endTime = os.clock()
-    logger:trace("Time: %.2f", endTime - startTime)
 end
 
 local function updatePlanterMeshes(e)

@@ -1,4 +1,5 @@
 local common = require ("mer.ashfall.common.common")
+local config = require("mer.ashfall.config").config
 local logger = common.createLogger("patinaController")
 local LiquidContainer = require("mer.ashfall.liquid.LiquidContainer")
 local this = {}
@@ -70,6 +71,7 @@ end
 
 
 function this.addPatina(rootNode, amount)
+
     --logger:trace("+++++ADD PATINA")
     if not rootNode then return end
     if not amount then return end

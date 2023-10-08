@@ -5,6 +5,8 @@ local teaConfig   = require("mer.ashfall.config.teaConfig")
 local foodConfig = require("mer.ashfall.config.foodConfig")
 local hungerController = require("mer.ashfall.needs.hungerController")
 local WoodStack = require("mer.ashfall.items.woodStack")
+local LiquidContainer = require("mer.ashfall.liquid.LiquidContainer")
+local HeatUtil = require("mer.ashfall.heat.HeatUtil")
 
 --Todo- refactor and get rid of these duplicate functions
 --They are in CampfireUtil, but that file requires this one already
@@ -283,6 +285,10 @@ end
 
 
 local function additemTooltips(item, itemData, tooltip)
+    local liquidContainer = LiquidContainer.createFromInventory(item, itemData)
+    if liquidContainer then
+        HeatUtil.updateWaterHeat(liquidContainer)
+    end
     addLadleTooltips(item, itemData, tooltip)
     addTeaTooltips(item, itemData, tooltip)
     addWaterTooltips(item, itemData, tooltip)

@@ -2,6 +2,7 @@ local common = require ("mer.ashfall.common.common")
 local logger = common.createLogger("campfireVisuals")
 local patinaController = require("mer.ashfall.camping.patinaController")
 local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
+local HeatUtil = require("mer.ashfall.heat.HeatUtil")
 local ReferenceController = require("mer.ashfall.referenceController")
 local WoodStack = require("mer.ashfall.items.woodStack")
 
@@ -198,7 +199,7 @@ local function updateLightingRadius(reference)
         if not reference.data.isLit then
             reference.light:setAttenuationForRadius(0)
         else
-            local heatLevel = math.abs(CampfireUtil.getHeat(reference))
+            local heatLevel = math.abs(HeatUtil.getHeat(reference))
             local newRadius = math.clamp( ( heatLevel / 10 ), 0.1, 1) * radius
             reference.light:setAttenuationForRadius(newRadius)
         end
@@ -212,7 +213,7 @@ local function updateFireScale(reference)
         reference.sceneNode:getObjectByName("COLD_PARTICLE_NODE"),
     }
     for _, fireNode in ipairs(fireNodes) do
-        local fuelLevel = math.abs(CampfireUtil.getHeat(reference))
+        local fuelLevel = math.abs(HeatUtil.getHeat(reference))
         local newScale = math.remap(fuelLevel, 0, 15, 1, 2)
         newScale = math.clamp(newScale, 1, 2)
         fireNode.scale = newScale

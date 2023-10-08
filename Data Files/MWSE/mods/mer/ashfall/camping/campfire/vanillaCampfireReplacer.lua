@@ -1,6 +1,7 @@
 local common = require ("mer.ashfall.common.common")
 local logger = common.createLogger("vanillaCampfireReplacer")
 local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
+local HeatUtil = require("mer.ashfall.heat.HeatUtil")
 local foodConfig = common.staticConfigs.foodConfig
 local campfireConfig = common.staticConfigs.campfireConfig
 local randomStuffChances = {
@@ -188,7 +189,7 @@ local function addWater(campfire)
         campfire.data.waterAmount = 10 + math.random(50)
         if campfire.data.isLit then
             logger:debug("Setting heat to 100")
-            CampfireUtil.setHeat(campfire.data, 100, campfire)
+            HeatUtil.setHeat(campfire.data, 100, campfire)
         end
         --add tea to kettleswaterHeat
         if campfire.data.utensil == "kettle" then

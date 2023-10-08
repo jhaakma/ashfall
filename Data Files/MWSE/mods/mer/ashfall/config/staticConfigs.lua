@@ -12,6 +12,7 @@
 
 ---@class Ashfall.GrillConfig : Ashfall.UtensilConfig
 
+---@class Ashfall.StaticConfigs
 local this = {}
 
 this.activatorConfig = require("mer.ashfall.activators.config.activatorConfig")
@@ -36,18 +37,16 @@ this.objectIds = {
     pack_w = "ashfall_pack_01",
     pack_n = "ashfall_pack_01",
 }
+
 this.crateIds = {
     camping = "ashfall_crate_camping",
     food = "ashfall_crate_food",
 }
-
 this.innkeeperClasses = {
     publican = true,
     t_sky_publican = true,
     t_cyr_publican = true
 }
-
-
 this.maxSunTemp = 15
 this.DEFAULT_EAT_AMOUNT = 20
 this.DEFAULT_DRINK_AMOUNT = 20
@@ -58,22 +57,22 @@ this.stewIngredientCooldownAmount = 20
 this.stewIngredAddAmount = 25 -- out of pot capacity, not 100
 this.firewoodFuelMulti = 1.5
 this.maxWoodInFire = 15
-
 this.capacities = {
     --cookingPot = 120,
     kettle = 100,
     potion = 15,
     MAX = 240
 }
-
 ---@class Ashfall.waterContainerData
 ---@field capacity number How much liquid this container can hold
 ---@field holdsStew? boolean Whether this container can hold stewBuff
 ---@field weight? number The weight override for this item
 ---@field value? number The value override for this item
+---@field type string? The type of utensil this is
 ---@field meshOverride? string The mesh override for this item
 ---@field waterMaxScale? number The max scale for the water mesh
 ---@field waterMaxHeight? number The max height for the water mesh
+---@field minSteamHeight? number The min height for the steam mesh
 
 ---@type table<string, Ashfall.waterContainerData>
 --- A list of common water container configurations

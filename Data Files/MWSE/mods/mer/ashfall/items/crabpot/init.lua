@@ -61,7 +61,7 @@ local function collectCrabs(ref)
         updateSwitchNodes(ref)
         playCrabSound(ref)
         --progress survival skill for each crab collected
-        common.skills.survival:progressSkill(crabpotConfig.skillProgress * count)
+        common.skills.survival:exercise(crabpotConfig.skillProgress * count)
     end
 end
 
@@ -205,7 +205,7 @@ local function updatePots(e)
             local crabCellEffect = crabPotRef.data.inCrabCell and crabpotConfig.crabCellEffect or 1.0
 
             --catch more crabs with higher survival skill
-            local survivalValue = math.clamp(common.skills.survival.value, 0, 100)
+            local survivalValue = math.clamp(common.skills.survival.current, 0, 100)
             local skillEffect = math.remap(survivalValue, 0, 100, 1.0, crabpotConfig.skillEffect)
 
             --Add some random variation

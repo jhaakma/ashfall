@@ -22,7 +22,7 @@ return {
     onDrop = function(campfire, reference)
         --Firewood
         local function getWoodFuel()
-            local survivalEffect = math.min( math.remap(common.skills.survival.value, 0, 100, 1, 1.5), 1.5)
+            local survivalEffect = math.min( math.remap(common.skills.survival.current, 0, 100, 1, 1.5), 1.5)
             return common.staticConfigs.firewoodFuelMulti * survivalEffect
         end
         local stackCount = common.helper.getStackCount(reference)

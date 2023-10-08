@@ -70,11 +70,8 @@ function this.getBottleData(id)
     return common.staticConfigs.bottleList[id and string.lower(id)]
 end
 
-
-
-
 local function addDysentry(amountDrank)
-    local survival = common.skills.survival.value
+    local survival = common.skills.survival.current
     local survivalRoll = math.random(100)
     if survivalRoll < survival then
         logger:debug("Survival Effect of %s bypassed dysentery with a roll of %s", survival, survivalRoll)

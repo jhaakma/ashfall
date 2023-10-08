@@ -1,54 +1,59 @@
 local common = require ("mer.ashfall.common.common")
 local config = require("mer.ashfall.config").config
+local exposureConfig = require("mer.ashfall.config.skillConfigs").survival.exposure
 local temperatureController = require("mer.ashfall.temperatureController")
 temperatureController.registerBaseTempMultiplier({ id ="survivalEffect"})
-local this = {}
 
-local CHECK_INTERVAL = 0.50
-local MAX_EFFECT = 0.7
+local CHECK_INTERVAL = 0.5
+
 
 --Calculate survival's effect on temperature
-function this.calculate()
-    local survivalEffect = math.remap(common.skills.survival.value, 10, 100, 1.0, MAX_EFFECT)
-    survivalEffect = math.clamp(survivalEffect, 1, MAX_EFFECT)
+local function updateSurvivalTemperatureEffect()
+    local survivalEffect = math.remap(common.skills.survival.current, 10, 100, 1.0, exposureConfig.temperatureEffectMax)
+    survivalEffect = math.clamp(survivalEffect, 1, exposureConfig.temperatureEffectMax)
     common.data.survivalEffect = survivalEffect
 end
 
-
-local function checkConditions()
+local function progressSurvivalSkillFromExposure()
     if not common.data then return end
     if not config.enableTemperatureEffects then return end
 
     local totalIncrease = 0
     --Increase when out in bad weather
     if not common.data.isSheltered then
-        local weatherValues = {
-            [tes3.weather.rain] = 1,
-            [tes3.weather.thunder] = 2,
-            [tes3.weather.snow] = 3,
-            [tes3.weather.ash] = 3,
-            [tes3.weather.blight] = 4,
-            [tes3.weather.blizzard] = 4
-        }
-        local weather = tes3.getCurrentWeather().index
-        local weatherInc = weatherValues[weather] and weatherValues[weather]  or 0
+        local weatherInc = table.get(exposureConfig.weathers, tes3.getCurrentWeather().index, 0)
         totalIncrease = totalIncrease + weatherInc
     end
 
     --Increase when warming up next to a campfire
     if common.data.nearCampfire then
-        local fireInc = math.remap(common.data.fireTemp, 0, 100, 0.5, 3)
-
-        totalIncrease = totalIncrease + fireInc
+        local fireEffect = common.helper.clampmap(
+            common.data.fireTemp,
+            0,
+            100,
+            exposureConfig.fire.min,
+            exposureConfig.fire.max
+        )
+        totalIncrease = totalIncrease + fireEffect
     end
 
-    --Increase when soaking wet
-    if common.data.wetness > 80 then
-        totalIncrease = totalIncrease + 1
+    --Increase when wet
+    if common.data.wetness > common.staticConfigs.conditionConfig.wetness.states.wet.min then
+        local wetnessEffect = common.helper.clampmap(
+            common.data.wetness,
+            common.staticConfigs.conditionConfig.wetness.states.wet.min,
+            common.staticConfigs.conditionConfig.wetness.max,
+            0,
+            exposureConfig.water.max
+        )
+        totalIncrease = totalIncrease + wetnessEffect
     end
+
+    --Multiply by time passed so its' per hour
+    totalIncrease = totalIncrease * CHECK_INTERVAL
 
     if totalIncrease > 0 then
-        common.skills.survival:progressSkill(totalIncrease)
+        common.skills.survival:exercise(totalIncrease)
     end
 end
 
@@ -57,11 +62,11 @@ local function startSurvivalTimer()
         type = timer.game,
         iterations = -1,
         duration = CHECK_INTERVAL,
-        callback = checkConditions
+        callback = function()
+            progressSurvivalSkillFromExposure()
+            updateSurvivalTemperatureEffect()
+        end
     }
 end
 
-event.register("Ashfall:dataLoadedOnce", startSurvivalTimer)
-
-
-return this
+event.register("loaded", startSurvivalTimer)

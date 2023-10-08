@@ -1,7 +1,7 @@
 local this = {}
 local staticConfigs = require("mer.ashfall.config.staticConfigs")
 local config = require("mer.ashfall.config").config
-local skillModule = include("OtherSkills.skillModule")
+local SkillsModule = include("SkillsModule")
 local refController = require("mer.ashfall.referenceController")
 local tentConfig = require("mer.ashfall.items.tents.tentConfig")
 local ReferenceController = require("mer.ashfall.referenceController")
@@ -495,7 +495,7 @@ function this.tryContractDisease(spellID)
         resistDisease = tes3.mobilePlayer.resistBlightDisease
     end
 
-    local survival = skillModule.getSkill("Ashfall:Survival").value
+    local survival = SkillsModule.getSkill("Ashfall:Survival").current
     local resistEffect = math.remap( math.min(resistDisease, 100), 0, 100, 1.0, 0.0 )
     local survivalEffect =  math.remap( math.min(survival, 100), 0, 100, 1.0, maxSurvivalEffect )
 
@@ -539,6 +539,21 @@ function this.iterateRefType(refType, callback)
             refController.controllers[refType].references[ref] = nil
         end
     end
+end
+
+--Remaps and clamps a value
+---@param value number #The value to remap
+---@param inMin number #The minimum value of the input range
+---@param inMax number #The maximum value of the input range
+---@param outMin number #The minimum value of the output range
+---@param outMax number #The maximum value of the output range
+---@return number #The remapped value
+function this.clampmap(value, inMin, inMax, outMin, outMax)
+    return math.clamp(
+        math.remap(value, inMin, inMax, outMin, outMax),
+        outMin,
+        outMax
+    )
 end
 
 function this.traverseRoots(roots)
@@ -784,7 +799,7 @@ function this.calculateStewBuffDuration(waterHeat)
     local waterHeat = waterHeat or 0
     local isCold = waterHeat < staticConfigs.hotWaterHeatValue
     local baseAmount = 8
-    local skill = skillModule.getSkill("Ashfall:Survival").value
+    local skill = SkillsModule.getSkill("Ashfall:Survival").current
     local skillEffect = math.remap(skill, 0, 100, 1.0, 2.0)
     local heatEffect = isCold and 0.5 or 1.0
     return baseAmount * skillEffect * heatEffect
@@ -793,7 +808,7 @@ end
 --Use survival skill to determine how strong a buff should be
 function this.calculateStewBuffStrength(value, min, max)
     local effectValue = math.remap(value, 0, 100, min, max)
-    local skillEffect = math.remap(skillModule.getSkill("Ashfall:Survival").value, 0, 100, 0.25, 1.0)
+    local skillEffect = math.remap(SkillsModule.getSkill("Ashfall:Survival").current, 0, 100, 0.25, 1.0)
     return effectValue * skillEffect
 end
 
@@ -803,7 +818,7 @@ function this.calculateTeaBuffDuration(maxDuration, waterHeat)
     local isCold = waterHeat < staticConfigs.hotWaterHeatValue
     --Drinking more than limit doesn't increase duration
     --Max survival skill doubles duration
-    local survivalSkill = skillModule.getSkill("Ashfall:Survival").value
+    local survivalSkill = SkillsModule.getSkill("Ashfall:Survival").current
     local skillMulti =  math.remap(survivalSkill, 0, 100, 1.0, 2.0)
     --Duration is halved if the tea is cold
     local coldEffect = isCold and 0.5 or 1.0

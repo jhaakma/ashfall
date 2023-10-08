@@ -1310,6 +1310,7 @@ local carvingRecipes = {
             },
             category = this.categories.equipment,
             soundType = "carve",
+            progress = 10
         },
 
         --Engraved amulet
@@ -1329,6 +1330,7 @@ local carvingRecipes = {
             },
             category = this.categories.equipment,
             soundType = "carve",
+            progress = 15
         },
     },
     master = {},

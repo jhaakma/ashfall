@@ -14,9 +14,9 @@ local Parent = require("mer.ashfall.objects.Object")
 ---@field showMessageOption string The id of the mcm config option which governs whether to show messages for this condition
 ---@field enableOption string The id of the mcm config option which governs whether this condition is enabled
 ---@field states table<string, Ashfall.Condition.State> A table of states for this condition
----@field minDebuffState boolean The lowest state where debuffs are applied. Used for calculating the stat multiplier
----@field min boolean The minimum value for this condition
----@field max boolean The maximum value for this condition
+---@field minDebuffState number The lowest state where debuffs are applied. Used for calculating the stat multiplier
+---@field min number The minimum value for this condition
+---@field max number The maximum value for this condition
 ---@field getCurrentStateMessage? fun(self: Ashfall.Condition):string A function that returns the message to show when the player enters the current state
 ---@field conditionChanged? fun(self: Ashfall.Condition, state: Ashfall.Condition.State) A function that is called when the player enters a new state
 ---@field hasSpell? fun(self: Ashfall.Condition):boolean A function that returns whether the player has the spell for the current state
@@ -37,9 +37,12 @@ Condition.fields = {
     hasSpell = true,
 }
 
+---@return Ashfall.Condition
+function Condition:new(data)
+    return Parent.new(self, data)
+end
 
 function Condition:scaleSpellValues()
-
     local state = self:getCurrentStateData()
     local spell = self:getCurrentSpellObj(state)
     if not spell then return end

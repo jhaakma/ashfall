@@ -1,4 +1,6 @@
 local Condition = require("mer.ashfall.conditions.Condition")
+
+---@class Ashfall.Conditions
 local conditions = {}
 
 conditions.hunger = Condition:new{

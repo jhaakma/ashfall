@@ -21,7 +21,7 @@ local foodConfig = common.staticConfigs.foodConfig
 
 function this.getBurnLimit()
     --TODO: Use survival skill to determine
-    local survival = common.skills.survival.value
+    local survival = common.skills.survival.current
     if not survival then
         logger:error("No survival skill found")
         return 150
@@ -41,7 +41,7 @@ function this.getNutrition(object, itemData)
 
     local cookedAmount = itemData and itemData.data.cookedAmount
     if cookedAmount then
-        local survival = common.skills.survival.value
+        local survival = common.skills.survival.current
         local survivalEffect = math.remap(
             survival,
             10, 100,
@@ -178,7 +178,7 @@ local function addFoodPoisoning(e)
     if foodConfig.getFoodType(e.item) == foodConfig.type.meat then
 
         --survival affect gives chance to bypass completely
-        local survival = common.skills.survival.value
+        local survival = common.skills.survival.current
         local survivalRoll = math.random(100)
         if survivalRoll < survival then
             logger:debug("Survival Effect of %s bypassed food poisoning with a roll of %s",survival, survivalRoll)

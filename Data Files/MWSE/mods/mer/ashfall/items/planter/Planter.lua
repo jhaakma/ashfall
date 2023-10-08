@@ -515,7 +515,7 @@ function Planter:addItems()
         local item = stack.object
         local count = stack.count + 1
         if item.objectType == tes3.objectType.leveledItem then
-            local leveledItem = item
+            local leveledItem = item --[[@as tes3leveledItem]]
             ---@diagnostic disable-next-line
             item = leveledItem:pickFrom()
         end

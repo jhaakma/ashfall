@@ -14,7 +14,6 @@ local logger = common.createLogger("activatorController")
 local uiCommon = require("mer.ashfall.ui.uiCommon")
 local ActivatorMenuConfig = require "mer.ashfall.activators.config.ActivatorMenuConfig"
 local DropConfig = require "mer.ashfall.activators.config.DropConfig"
-local itemTooltips = require("mer.ashfall.ui.itemTooltips")
 ActivatorController.list = activatorConfig.list
 ActivatorController.current = nil
 

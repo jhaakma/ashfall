@@ -255,7 +255,8 @@ local function getInternalChangeMultiplier(interval)
     return math.min(comfortMulti * INT_MULTI * interval * result / timeScale.value, 1)
 end
 
-
+---@param interval number Time since last update
+---@param forceUpdate boolean? Force update even if interval is 0
 function this.calculate(interval, forceUpdate)
     if not forceUpdate and interval == 0 then return end
 
@@ -295,15 +296,13 @@ function this.calculate(interval, forceUpdate)
     event.trigger("Ashfall:UpdateHud")
 end
 
-local function update(e)
-
+event.register("Ashfall:updateTemperature", function(e)
     if e.source then
         logger:debug(e.source)
     end
     if common.data.valuesInitialised then
         this.calculate(0, true)
     end
-end
-event.register("Ashfall:updateTemperature", update)
+end)
 
 return this

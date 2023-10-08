@@ -1,7 +1,8 @@
 local common = require ("mer.ashfall.common.common")
 local logger = common.createLogger("tea")
 local teaConfig       = require("mer.ashfall.config.teaConfig")
-local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
+local HeatUtil = require("mer.ashfall.heat.HeatUtil")
+local skillConfigs = require("mer.ashfall.config.skillConfigs")
 return {
     dropText = function(campfire, item, itemData)
         local teaData = teaConfig.teaTypes[item.id:lower()]
@@ -39,11 +40,10 @@ return {
         logger:debug("currentHeat: %s", currentHeat)
         local newHeat = math.max(0, (campfire.data.waterHeat - 10))
         logger:debug("newHeat: %s", newHeat)
-        CampfireUtil.setHeat(campfire.data, newHeat, campfire)
+        HeatUtil.setHeat(campfire.data, newHeat, campfire)
         logger:debug("campfire.data.waterHeat: %s", campfire.data.waterHeat)
 
-        local skillSurvivalTeaBrewIncrement = 5
-        common.skills.survival:progressSkill(skillSurvivalTeaBrewIncrement)
+        common.skills.survival:exercise(skillConfigs.survival.brewTea.skillGain)
         local remaining = common.helper.reduceReferenceStack(reference, 1)
         if remaining > 0 then
             common.helper.pickUp(reference)
