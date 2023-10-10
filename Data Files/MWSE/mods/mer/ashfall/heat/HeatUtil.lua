@@ -34,7 +34,7 @@ end
 function HeatUtil.setHeat(refData, newHeat, reference)
     logger:trace("Setting heat of %s to %s", reference or "[unknown]", newHeat)
     local heatBefore = refData.waterHeat or 0
-    refData.waterHeat = math.clamp(newHeat, 0, 100)
+    refData.waterHeat = math.clamp(newHeat, 0, 100.9)
     local heatAfter = refData.waterHeat
     --add sound if crossing the boiling barrior
     if reference and not reference.disabled then
@@ -49,28 +49,19 @@ function HeatUtil.setHeat(refData, newHeat, reference)
     end
 end
 
-local heatLossAtMinCapacity = 2.5
-local heatLossAtMaxCapacity = 1.0
-local waterHeatRate = 40--base water heat/cooling speed
+
 local minFuelWaterHeat = 5--min fuel multiplier on water heating
 local maxFuelWaterHeat = 10--max fuel multiplier on water heating
+
 ---@param liquidContainer Ashfall.LiquidContainer
-function HeatUtil.updateWaterHeat(liquidContainer)
-    if not liquidContainer.waterAmount then return end
-    local now = tes3.getSimulationTimestamp()
-    liquidContainer.lastWaterUpdated = liquidContainer.lastWaterUpdated or now
-    local timeSinceLastUpdate = now - liquidContainer.lastWaterUpdated
-    liquidContainer.lastWaterUpdated = now
-    liquidContainer.waterHeat = liquidContainer.waterHeat or 0
+---@return number heatEffect
+local function calculateHeatEffect(liquidContainer)
     local oldHeat = liquidContainer.waterHeat
-    --Heats up or cools down depending on fuel/is lit
     local heatEffect = -1--negative if cooling down
         --TODO: Implement heatLossMultiplier based on waterContainer data
     --
     local isNegativeHeat
-
     logger:trace("Water heat: %s", oldHeat)
-
     --Check heat sources for reference
     if liquidContainer.reference then
         local ref = liquidContainer.reference
@@ -79,6 +70,7 @@ function HeatUtil.updateWaterHeat(liquidContainer)
             isNegativeHeat = heat < 0
             heat = math.abs(heat)
             heatEffect = math.remap(heat, 0, common.staticConfigs.maxWoodInFire, minFuelWaterHeat, maxFuelWaterHeat)
+
             logger:trace("BOILER heatEffect: %s", heatEffect)
         else
             logger:trace("Looking for heat source underneath. Strong heat only heats utensils, weak heat doesn't work on pots")
@@ -102,21 +94,37 @@ function HeatUtil.updateWaterHeat(liquidContainer)
             end
         end
     end
+    if isNegativeHeat then
+        heatEffect = -heatEffect
+    end
+    return heatEffect
+end
+
+
+local HEAT_LOSS_EMPTY = 2.5
+local HEAT_LOSS_FULL = 1.0
+local WATER_HEAT_RATE = 40--base water heat/cooling speed
+---@param liquidContainer Ashfall.LiquidContainer
+function HeatUtil.updateWaterHeat(liquidContainer)
+    if not liquidContainer.waterAmount then return end
+    local now = tes3.getSimulationTimestamp()
+    liquidContainer.lastWaterUpdated = liquidContainer.lastWaterUpdated or now
+    local timeSinceLastUpdate = now - liquidContainer.lastWaterUpdated
+    liquidContainer.lastWaterUpdated = now
+    liquidContainer.waterHeat = liquidContainer.waterHeat or 0
+    --Heats up or cools down depending on fuel/is lit
+    local heatEffect = calculateHeatEffect(liquidContainer)
 
     --Amount of water determines how quickly it boils
-
     --We use a hardcoded value instead of capacity because it doesn't make sense to heat up slower when the container is smaller
     local filledAmount = math.min(liquidContainer.waterAmount / 100, 1)
     logger:trace("BOILER filledAmount: %s", filledAmount)
-    local filledAmountEffect = math.remap(filledAmount, 0.0, 1.0, heatLossAtMinCapacity, heatLossAtMaxCapacity)
+    local filledAmountEffect = math.remap(filledAmount, 0.0, 1.0, HEAT_LOSS_EMPTY, HEAT_LOSS_FULL)
     logger:trace("BOILER filledAmountEffect: %s", filledAmountEffect)
 
     --Calculate change
-    local heatChange = timeSinceLastUpdate * heatEffect * filledAmountEffect * waterHeatRate
-    if isNegativeHeat then
-        heatChange = -heatChange
-    end
-    local newHeat = math.max(0, oldHeat + heatChange)
+    local heatChange = timeSinceLastUpdate * heatEffect * filledAmountEffect * WATER_HEAT_RATE
+    local newHeat = math.max(0, liquidContainer.waterHeat + heatChange)
     HeatUtil.setHeat(liquidContainer.data, newHeat, liquidContainer.reference)
 end
 
