@@ -10,6 +10,8 @@ local ratingsConfig = require('mer.ashfall.tempEffects.ratings.ratingsConfig')
 local climateConfig = require('mer.ashfall.config.weatherRegionConfig')
 local teaConfig = require('mer.ashfall.config.teaConfig')
 local ActivatorController = require("mer.ashfall.activators.activatorController")
+local backpackConfig = require("mer.ashfall.items.backpack.config")
+local woodAxeConfig = require("mer.ashfall.harvest.config").woodaxes
 local overrides = require("mer.ashfall.config.overrides")
 
 local function listValidActivatorTypes()
@@ -44,49 +46,6 @@ local function listValidClimateTypes()
     return message
 end
 
-local function registerActivatorType(e)
-    assert(type(e.id) == 'string', "registerActivatorType: Missing id")
-    assert(type(e.name) == 'string', "registerActivatorType: Missing name")
-    assert(type(e.type) == 'string', "registerActivatorType: missing type")
-    if e.ids then
-        assert(type(e.ids) == 'table')
-    end
-    if e.patterns then
-        assert(type(e.patterns) == 'table')
-    end
-    logger:debug("Registering '%s' as a new Activator Type", e.type)
-
-    if not activatorConfig.types[e.type] then
-        logger:debug('Type "%s" does not exist, creating', e.type)
-        activatorConfig.types[e.type] = e.type
-    end
-    local idList = {}
-    if e.ids then
-        for _, id in ipairs(e.ids) do
-            idList[id] = true
-        end
-    end
-    local patternList = {}
-    if e.patterns then
-        for _, id in ipairs(e.patterns) do
-            patternList[id] = true
-        end
-    end
-
-    if not activatorConfig.list[e.id] then
-        activatorConfig.list[e.id] = ActivatorController.registerActivator{
-            name = e.name,
-            type = e.type,
-            ids = idList,
-            patterns = patternList
-        }
-        activatorConfig.subTyps[e.id] = e.id
-    else
-        error(string.format("registerActivatorType: %s already exists as an activator type", e.id))
-    end
-
-    return true
-end
 
 local function registerActivator(id, activatorType, usePatterns)
     assert(type(id) == 'string', "registerActivator(): Invalid id. Must be a string.")
@@ -129,8 +88,6 @@ local function registerWaterSource(e)
     activatorConfig.subTypes[e.name] = e.name
     return true
 end
-
-
 
 ---comment
 local function registerWaterContainers(e)
@@ -240,29 +197,6 @@ local function registerTeas(e)
 end
 event.register("Ashfall:RegisterTeas", registerTeas)
 
-local function registerClothingOrArmor(id, warmth, objectType)
-    ratingsConfig.warmth[objectType].values[id:lower()] = warmth
-    return true
-end
-
-
-local function registerClothings(e)
-    logger:debug("Registering warmth values the following clothing: ")
-    for id, warmth in pairs(e.data) do
-        registerClothingOrArmor(id, warmth, "clothing")
-        logger:debug("   %s: %s", id, warmth)
-    end
-    return true
-end
-
-local function registerArmors(e)
-    logger:debug("Registering warmth values for the following armor: ")
-    for id, warmth in pairs(e.data) do
-        registerClothingOrArmor(id, warmth, "armor")
-        logger:debug("   %s: %s", id, warmth)
-    end
-    return true
-end
 
 local function registerClimates(e)
     logger:debug("Registering climate data for the following regions: ")
@@ -288,7 +222,6 @@ end
 
 
 local function registerWoodAxe(id)
-    local woodAxeConfig = require("mer.ashfall.harvest.config").woodaxes
     --legacy API
     assert(type(id) == 'string', "registerWoodAxes: id must be a string")
     logger:debug(id)
@@ -298,9 +231,8 @@ local function registerWoodAxe(id)
     }
 end
 
-local woodAxeConfig = require("mer.ashfall.items.backpack.config")
 local function registerWoodAxeForBackpack(id)
-    woodAxeConfig.woodAxes[id:lower()] = true
+    backpackConfig.woodAxes[id:lower()] = true
 end
 
 local function registerWoodAxes(data)
@@ -328,198 +260,235 @@ end
 local conditionConfig = common.staticConfigs.conditionConfig
 
 ---@class Ashfall.Interop
-local Interop = {
-    --Block or unblock hunger, thirst and sleep
-    blockNeeds = function()
-        if common.data then
-            common.data.blockNeeds = true
-            return true
-        end
-    end,
-    unblockNeeds = function()
-        if common.data then
-            common.data.blockNeeds = false
-            return true
-        end
-    end,
-    --block or unblock sleep
-    blockSleepLoss = function()
-        if common.data then
-            common.data.blockSleepLoss = true
-            return true
-        end
-    end,
-    unblockSleepLoss = function()
-        if common.data then
-            common.data.blockSleepLoss = false
-            return true
-        end
-    end,
-    --block or unblock hunger
-    blockHunger = function()
-        if common.data then
-            common.data.blockHunger = true
-            return true
-        end
-    end,
-    unblockHunger = function()
-        if common.data then
-            common.data.blockHunger = false
-            return true
-        end
-    end,
-    --block or unblock thirst
-    blockThirst = function()
-        if common.data then
-            common.data.blockThirst = true
-            return true
-        end
-    end,
-    unblockThirst = function()
-        if common.data then
-            common.data.blockThirst = false
-            return true
-        end
-    end,
-    --Getters and Setters for Conditions
-    getHunger = function()
-        return conditionConfig.hunger:getValue()
-    end,
-    setHunger = function(value)
-        return conditionConfig.hunger:setValue(value)
-    end,
-    getThirst = function()
-        return conditionConfig.thirst:getValue()
-    end,
-    setThirst = function(value)
-        return conditionConfig.thirst:setValue(value)
-    end,
-    getTiredness = function()
-        return conditionConfig.tiredness:getValue()
-    end,
-    setTiredness = function(value)
-        return conditionConfig.tiredness:setValue(value)
-    end,
-    getTemp = function()
-        return conditionConfig.temp:getValue()
-    end,
-    setTemp = function(value)
-        return conditionConfig.temp:setValue(value)
-    end,
-    getWetness = function()
-        return conditionConfig.wetness:getValue()
-    end,
-    setWetness = function(value)
-        return conditionConfig.wetness:setValue(value)
-    end,
+local Interop = {}
+
+--Block or unblock hunger, thirst and sleep
+Interop.blockNeeds = function()
+    if common.data then
+        common.data.blockNeeds = true
+        return true
+    end
+end
+
+Interop.unblockNeeds = function()
+    if common.data then
+        common.data.blockNeeds = false
+        return true
+    end
+end
+
+--block or unblock sleep
+Interop.blockSleepLoss = function()
+    if common.data then
+        common.data.blockSleepLoss = true
+        return true
+    end
+end
+
+Interop.unblockSleepLoss = function()
+    if common.data then
+        common.data.blockSleepLoss = false
+        return true
+    end
+end
+
+--block or unblock hunger
+Interop.blockHunger = function()
+    if common.data then
+        common.data.blockHunger = true
+        return true
+    end
+end
+
+Interop.unblockHunger = function()
+    if common.data then
+        common.data.blockHunger = false
+        return true
+    end
+end
+
+--block or unblock thirst
+Interop.blockThirst = function()
+    if common.data then
+        common.data.blockThirst = true
+        return true
+    end
+end
+Interop.unblockThirst = function()
+    if common.data then
+        common.data.blockThirst = false
+        return true
+    end
+end
+--Getters and Setters for Conditions
+Interop.getHunger = function()
+    return conditionConfig.hunger:getValue()
+end
+Interop.setHunger = function(value)
+    return conditionConfig.hunger:setValue(value)
+end
+Interop.getThirst = function()
+    return conditionConfig.thirst:getValue()
+end
+Interop.setThirst = function(value)
+    return conditionConfig.thirst:setValue(value)
+end
+Interop.getTiredness = function()
+    return conditionConfig.tiredness:getValue()
+end
+Interop.setTiredness = function(value)
+    return conditionConfig.tiredness:setValue(value)
+end
+Interop.getTemp = function()
+    return conditionConfig.temp:getValue()
+end
+Interop.setTemp = function(value)
+    return conditionConfig.temp:setValue(value)
+end
+Interop.getWetness = function()
+    return conditionConfig.wetness:getValue()
+end
+Interop.setWetness = function(value)
+    return conditionConfig.wetness:setValue(value)
+end
 
 
-    --object registrations
-    registerActivatorType = registerActivatorType,
-    registerActivators = function(data, usePatterns)
-        return registerActivators({ data = data, usePatterns = usePatterns})
-    end,
-    registerWaterSource = function(data)
-        return registerWaterSource(data)
-    end,
+--object registrations
+Interop.registerActivatorType = function(e)
+    assert(type(e.id) == 'string', "registerActivatorType: Missing id")
+    assert(type(e.name) == 'string', "registerActivatorType: Missing name")
+    assert(type(e.type) == 'string', "registerActivatorType: missing type")
+    if e.ids then
+        assert(type(e.ids) == 'table')
+    end
+    if e.patterns then
+        assert(type(e.patterns) == 'table')
+    end
+    logger:debug("Registering '%s' as a new Activator Type", e.type)
 
-    registerWaterContainers = function(data, includeOverrides)
-        return registerWaterContainers({ data = data, includeOverrides = includeOverrides })
-    end,
-    registerFoods = function(data)
-        return registerFoods({ data = data })
-    end,
-    registerHeatSources = function(data)
-        return registerHeatSources({data = data})
-    end,
-    registerTeas = function(data)
-        return registerTeas({ data = data })
-    end,
-
-    --Survival skill
-    progressSurvivalSkill = function(amount)
-        if common.skills.survival then
-            common.skills.survival:exercise(amount)
-            assert(type(amount) == 'number', "progressSurvivalSkill: amount must be a number")
-            logger:debug("Progressing skill by %s points", amount)
-            return true
-        end
-    end,
-    getSurvivalSkill = function()
-        if common.skills.survival then
-            local skillValue = common.skills.survival.current
-            logger:debug("getSurvivalSkill: Getting survival skill: %s", skillValue)
-            return skillValue
-        end
-    end,
-    --Weather
-    registerClimates = function(data)
-        return registerClimates({ data = data })
-    end,
-
-    getSunlight = function()
-        return common.data and common.data.sunTemp or 0
-    end,
-
-    getSunlightNormalized = function()
-        local normalisedSunlight = 0
-        if common.data then
-            normalisedSunlight = math.clamp( (common.data.sunTemp / common.staticConfigs.maxSunTemp), 0, 1)
-        end
-        return normalisedSunlight
-    end,
-
-    --Misc
-    registerWoodAxes = function(data)
-        return registerWoodAxes(data)
-    end,
-
-
-
-    registerTreeBranches = branchInterop.registerTreeBranches,
-
-    --ratings, WIP, need to add support for ids
-
-    -- registerClothingWarmth = function(data)
-    --     return registerClothings({ data = data })
-    -- end,
-    -- registerArmorWarmth = function(data)
-    --     return registerArmors({ data = data })
-    -- end,
-
-    registerOverrides = function(data)
-        local success = true
-        for id, override in pairs(data) do
-            if type(override) == 'table' then
-                --check override has a weight or value field
-                assert(override.weight or override.value, "Override must have a weight or value field")
-                logger:debug("Registering override for %s", id)
-                overrides[id] = override
-
-            else
-                logger:error("Invalid override data. Must be a table.")
-                success = false
-            end
-        end
-        return success
-    end,
-
-
-    registerUtensil = function(data)
-        local id = data.id
-        local utensilData = data.data
-
-        if utensilData.type == "kettle" or utensilData.type == "cookingPot" then
-            staticConfigs.utensils[id:lower()] = utensilData
-            staticConfigs.bottleList[id:lower()] = utensilData
-            staticConfigs[utensilData.type .. "s"][id] = utensilData
-            staticConfigs.activatorConfig.list[utensilData.type]:addId(id)
-        elseif utensilData.type == "grill" then
-            staticConfigs.grills[data.id:lower()] = utensilData
-            staticConfigs.groundUtensils[data.id:lower()] = utensilData
+    if not activatorConfig.types[e.type] then
+        logger:debug('Type "%s" does not exist, creating', e.type)
+        activatorConfig.types[e.type] = e.type
+    end
+    local idList = {}
+    if e.ids then
+        for _, id in ipairs(e.ids) do
+            idList[id] = true
         end
     end
-}
+    local patternList = {}
+    if e.patterns then
+        for _, id in ipairs(e.patterns) do
+            patternList[id] = true
+        end
+    end
+
+    if not activatorConfig.list[e.id] then
+        activatorConfig.list[e.id] = ActivatorController.registerActivator{
+            name = e.name,
+            type = e.type,
+            ids = idList,
+            patterns = patternList
+        }
+        activatorConfig.subTyps[e.id] = e.id
+    else
+        error(string.format("registerActivatorType: %s already exists as an activator type", e.id))
+    end
+
+    return true
+end
+
+Interop.registerActivators = function(data, usePatterns)
+    return registerActivators({ data = data, usePatterns = usePatterns})
+end
+Interop.registerWaterSource = function(data)
+    return registerWaterSource(data)
+end
+
+Interop.registerWaterContainers = function(data, includeOverrides)
+    return registerWaterContainers({ data = data, includeOverrides = includeOverrides })
+end
+Interop.registerFoods = function(data)
+    return registerFoods({ data = data })
+end
+Interop.registerHeatSources = function(data)
+    return registerHeatSources({data = data})
+end
+Interop.registerTeas = function(data)
+    return registerTeas({ data = data })
+end
+
+--Survival skill
+Interop.progressSurvivalSkill = function(amount)
+    if common.skills.survival then
+        common.skills.survival:exercise(amount)
+        assert(type(amount) == 'number', "progressSurvivalSkill: amount must be a number")
+        logger:debug("Progressing skill by %s points", amount)
+        return true
+    end
+end
+Interop.getSurvivalSkill = function()
+    if common.skills.survival then
+        local skillValue = common.skills.survival.current
+        logger:debug("getSurvivalSkill: Getting survival skill: %s", skillValue)
+        return skillValue
+    end
+end
+--Weather
+Interop.registerClimates = function(data)
+    return registerClimates({ data = data })
+end
+
+Interop.getSunlight = function()
+    return common.data and common.data.sunTemp or 0
+end
+
+Interop.getSunlightNormalized = function()
+    local normalisedSunlight = 0
+    if common.data then
+        normalisedSunlight = math.clamp( (common.data.sunTemp / common.staticConfigs.maxSunTemp), 0, 1)
+    end
+    return normalisedSunlight
+end
+
+
+
+
+Interop.registerTreeBranches = branchInterop.registerTreeBranches
+
+
+Interop.registerOverrides = function(data)
+    local success = true
+    for id, override in pairs(data) do
+        if type(override) == 'table' then
+            --check override has a weight or value field
+            assert(override.weight or override.value, "Override must have a weight or value field")
+            logger:debug("Registering override for %s", id)
+            overrides[id] = override
+
+        else
+            logger:error("Invalid override data. Must be a table.")
+            success = false
+        end
+    end
+    return success
+end
+
+
+Interop.registerUtensil = function(data)
+    local id = data.id
+    local utensilData = data.data
+
+    if utensilData.type == "kettle" or utensilData.type == "cookingPot" then
+        staticConfigs.utensils[id:lower()] = utensilData
+        staticConfigs.bottleList[id:lower()] = utensilData
+        staticConfigs[utensilData.type .. "s"][id] = utensilData
+        staticConfigs.activatorConfig.list[utensilData.type]:addId(id)
+    elseif utensilData.type == "grill" then
+        staticConfigs.grills[data.id:lower()] = utensilData
+        staticConfigs.groundUtensils[data.id:lower()] = utensilData
+    end
+end
 
 Interop.bushcrafting = require("mer.ashfall.bushcrafting.config")
 
@@ -534,5 +503,47 @@ end
 local Cushion = require("mer.ashfall.items.cushion")
 Interop.registerCushion = Cushion.register
 
+local tentConfig = require("mer.ashfall.items.tents.tentConfig")
+Interop.getMiscTentIds = function ()
+    local tentIds = {}
+    for miscId in pairs(tentConfig.tentMiscToActiveMap) do
+        table.insert(tentIds, miscId)
+    end
+    return tentIds
+end
+Interop.getMiscTentCoverIds = function ()
+    local tentCoverIds = {}
+    for miscId in pairs(tentConfig.coverToMeshMap) do
+        table.insert(tentCoverIds, miscId)
+    end
+    return tentCoverIds
+end
+
+----------------------------------------
+--- Wood Axes
+----------------------------------------
+
+-- Get a list of registered woodAxe IDs
+Interop.getWoodAxeIds = function()
+    return table.copy(woodAxeConfig.woodAxes)
+end
+
+Interop.getBackPackWoodAxeIds = function()
+    return table.copy(backpackConfig.woodAxes)
+end
+
+Interop.registerWoodAxes = function(data)
+    return registerWoodAxes(data)
+end
+
+----------------------------------------
+--- Firewood
+----------------------------------------
+
+Interop.getFirewoodIds = function()
+    return {
+        ashfall_firewood = true
+    }
+end
 
 return Interop
