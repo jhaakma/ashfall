@@ -149,7 +149,7 @@ local function onMenuDialogActivated()
     logger:debug("Dialog menu entered")
     local menuDialog = merchantMenu.getDialogMenu()
     -- Get the actor that we're talking with.
-	local mobileActor = menuDialog:getPropertyObject("PartHyperText_actor")
+    local mobileActor = menuDialog:getPropertyObject("PartHyperText_actor")
     local ref = mobileActor.reference
 
     logger:debug("Actor: %s", ref.object.name)

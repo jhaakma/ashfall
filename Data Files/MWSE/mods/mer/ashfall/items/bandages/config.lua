@@ -8,8 +8,8 @@ config.bodyParts = {
 }
 
 config.bandageParts = {
-	[config.bodyParts.leftUpper] = "ashfall_bandage_ua",
-	[config.bodyParts.rightUpper] = "ashfall_bandage_ua",
+    [config.bodyParts.leftUpper] = "ashfall_bandage_ua",
+    [config.bodyParts.rightUpper] = "ashfall_bandage_ua",
     [config.bodyParts.leftWrist] = "ashfall_bandage_wrist",
     [config.bodyParts.rightWrist] = "ashfall_bandage_wrist",
 }

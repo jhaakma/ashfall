@@ -12,16 +12,16 @@ local SEASON_MIN = 0.5
 local SEASON_MAX = 1
 
 local sunWeatherMapping = {
-	[tes3.weather.clear] = 1.0,
-	[tes3.weather.cloudy] = 0.8,
-	[tes3.weather.foggy] = 0.3,
-	[tes3.weather.overcast] = 0.2,
-	[tes3.weather.rain] = 0.1,
-	[tes3.weather.thunder] = 0.0,
-	[tes3.weather.ash] = 0.5,
-	[tes3.weather.blight] = 0.5,
-	[tes3.weather.snow] = 0.5,
-	[tes3.weather.blizzard] = 0.1,
+    [tes3.weather.clear] = 1.0,
+    [tes3.weather.cloudy] = 0.8,
+    [tes3.weather.foggy] = 0.3,
+    [tes3.weather.overcast] = 0.2,
+    [tes3.weather.rain] = 0.1,
+    [tes3.weather.thunder] = 0.0,
+    [tes3.weather.ash] = 0.5,
+    [tes3.weather.blight] = 0.5,
+    [tes3.weather.snow] = 0.5,
+    [tes3.weather.blizzard] = 0.1,
 }
 
 

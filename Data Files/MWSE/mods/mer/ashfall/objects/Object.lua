@@ -17,7 +17,7 @@ function Object:new(data)
 end
 
 function Object:__index(key)
-	return self[key]
+    return self[key]
 end
 
 return Object

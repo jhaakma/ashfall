@@ -147,9 +147,9 @@ local defaultSneezes = {
 
 local function getFileExists(path, fileName)
     for file in lfs.dir(path) do
-		if file == fileName then
-			return true
-		end
+        if file == fileName then
+            return true
+        end
     end
 end
 

@@ -31,11 +31,11 @@ event.trigger("Ashfall:RegisterReferenceController", {
 
 
 local function getChildIndexByName(collection, name)
-	for i, child in ipairs(collection) do
-		if (name and child and child.name and child.name:lower() == name:lower()) then
-			return i - 1
-		end
-	end
+    for i, child in ipairs(collection) do
+        if (name and child and child.name and child.name:lower() == name:lower()) then
+            return i - 1
+        end
+    end
 end
 
 
