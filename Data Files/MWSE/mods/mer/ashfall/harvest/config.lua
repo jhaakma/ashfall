@@ -327,10 +327,17 @@ config.activatorHarvestData = {
             return isPick
         end,
         items = {
-            { id = "T_IngMine_Moonstone_01", count = 4, chance = 1.0 },
+            { id = "T_IngMine_Moonstone_01", count = 1, chance = 1.0 },
         },
         sound = "Fx\\Heavy Armor Hit.wav",
         swingsNeeded = 3,
+        destructionLimitConfig = {
+            min = 2,
+            minHeight = 50,
+            max = 2,
+            maxHeight = 500,
+        },
+        fallSpeed = 1.0,
     }
 }
 
