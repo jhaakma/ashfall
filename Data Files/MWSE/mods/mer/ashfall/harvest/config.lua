@@ -294,6 +294,43 @@ config.activatorHarvestData = {
         },
         sound = "Fx\\Heavy Armor Hit.wav",
         swingsNeeded = 3,
+    },
+
+    --For Danae's Madness mod
+    moonStone = {
+        defaultAttackDirection = tes3.physicalAttackType.chop,
+        attackDirections = {
+            [tes3.physicalAttackType.chop] = true
+        },
+        weaponIds = {
+            ashfall_pickaxe_flint = {
+                effectiveness = 1.0,
+                degradeMulti = 1.0,
+            },
+            ashfall_pickaxe_glass = {
+                effectiveness = 1.5,
+                degradeMulti = 0.8,
+            },
+            ["miner's pick"] = {
+                effectiveness = 2.0,
+                degradeMulti = 0.2,
+            }
+        },
+        weaponNamePatterns = {
+            ["pick"] = {
+                effectiveness = 1.0,
+                degradeMulti = 1.0,
+            }
+        },
+        requirements = function(weapon)
+            local isPick = string.find(weapon.object.id:lower(), "pick")
+            return isPick
+        end,
+        items = {
+            { id = "T_IngMine_Moonstone_01", count = 4, chance = 1.0 },
+        },
+        sound = "Fx\\Heavy Armor Hit.wav",
+        swingsNeeded = 3,
     }
 }
 

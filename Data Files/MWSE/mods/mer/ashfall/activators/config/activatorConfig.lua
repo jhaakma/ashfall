@@ -35,6 +35,7 @@ this.types = {
     stoneSource = "stoneSource",
     waterFilter = "waterFilter",
     woodStack = "woodStack",
+    moonStone = "moonStone",
 }
 
 this.subTypes = {
@@ -287,6 +288,14 @@ this.list.woodStack = Activator:new{
     name = "Wood Stack",
     type = this.types.woodStack,
     ids = { },
+}
+
+this.list.moonStone = Activator:new{
+    name = "Moonstone",
+    type = this.types.moonStone,
+    ids = {
+        ggw_rock_moonstone01  = true
+    }
 }
 
 return this

@@ -9,7 +9,7 @@ local backpacks = {}
 
 local switchNodes = {
     SWITCH_AXE = {
-        items = harvestConfig.woodAxes,
+        items = harvestConfig.woodaxes,
         blockEquip = true,
         attachMesh = true
     },
