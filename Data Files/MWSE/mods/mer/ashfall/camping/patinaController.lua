@@ -141,17 +141,12 @@ local function doPatinaDrop(e)
                             tes3.playSound {sound = 'Swim Right'}
                         end
                     }
-
-                end
-
-                if data.waterAmount then
-                    showMessage = true
-                    event.trigger("Ashfall:Campfire_clear_utensils", { campfire = e.reference})
-
-                end
-
-                if showMessage then
-                    tes3.messageBox("You wash your %s.", common.helper.getGenericUtensilName(e.reference.object))
+                    if data.waterAmount then
+                        event.trigger("Ashfall:Campfire_clear_utensils", { campfire = e.reference})
+                    end
+                    if showMessage then
+                        tes3.messageBox("You wash your %s.", common.helper.getGenericUtensilName(e.reference.object))
+                    end
                 end
             end
         end

@@ -14,14 +14,14 @@ local ReferenceController = require("mer.ashfall.referenceController")
 local function addUtensilPatina(campfire,interval)
     if campfire.sceneNode and campfire.data.utensilId then
         logger:trace("Attempting to add Patina to %s", campfire.data.utensilId)
-        local utensilId = campfire.sceneNode:getObjectByName("ATTACH_HANGER")
+        local node = campfire.sceneNode:getObjectByName("ATTACH_HANGER")
             or campfire.sceneNode:getObjectByName("HANG_UTENSIL")
         local patinaAmount = campfire.data.utensilPatinaAmount or 0
         local newAmount = math.clamp(patinaAmount + interval * 1, 0, 100)
-        local didAddPatina = patinaController.addPatina(utensilId, newAmount)
+        local didAddPatina = patinaController.addPatina(node, newAmount)
         if didAddPatina then
             campfire.data.utensilPatinaAmount = newAmount
-            logger:trace("addUtensilPatina: Added patina to %s node, new amount: %s",utensilId, campfire.data.utensilPatinaAmount)
+            logger:trace("addUtensilPatina: Added patina to %s node, new amount: %s", node, campfire.data.utensilPatinaAmount)
         else
             logger:trace("addUtensilPatina: Mesh incompatible with patina mechanic, did not apply")
         end

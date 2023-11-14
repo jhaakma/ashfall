@@ -38,9 +38,15 @@ function this.doFrostBreath()
     local temp = common.data.weatherTemp
     local isCold = temp < coldLevelNeeded
 
+    ---@param ref tes3reference
+    ---@param isGuar? boolean
     local function addRemoveBreath(ref, isGuar)
+        local valid = ref
+            and ref.mobile
+            and ref.sceneNode
+            and not ref.disabled
 
-        if ( ref.mobile and ref.sceneNode ) then
+        if valid then
             local node
             if isGuar then
                 node = ref.sceneNode:getObjectByName("Bip01 Ponytail12")
@@ -69,7 +75,7 @@ function this.doFrostBreath()
             addRemoveBreath(ref)
         end
         for ref in cell:iterateReferences(tes3.objectType.creature) do
-            if ref.baseObject.id == "mer_tgw_guar" or  ref.baseObject.id == "mer_tgw_guar_w" then
+            if ref.supportsLuaData and ref.data.tgw then
                 addRemoveBreath(ref, true)
             end
         end

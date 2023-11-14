@@ -286,7 +286,8 @@ end
 
 local function additemTooltips(item, itemData, tooltip)
     local liquidContainer = LiquidContainer.createFromInventory(item, itemData)
-    if liquidContainer and tes3ui.menuMode() then
+    local menu = tes3ui.findMenu("MenuInventory")
+    if liquidContainer and tes3ui.menuMode() and menu and menu.visible then
         HeatUtil.updateWaterHeat(liquidContainer)
     end
     addLadleTooltips(item, itemData, tooltip)
