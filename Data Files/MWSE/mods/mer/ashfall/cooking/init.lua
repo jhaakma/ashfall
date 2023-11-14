@@ -48,14 +48,20 @@ local function addGrillPatina(campfire,interval)
     end
 end
 
---Check whether the player burns the food based on survival skill and whether campfire has grill
-local function checkIfBurned(campfire)
-    local burnChance = 1
-    local survivalSkill = common.skills.survival.current
-    --Lower survival skill increases burn chance
-    local survivalEffect = math.remap(survivalSkill, 0, 100, 1.0, 0.5)
-    --Chance to burn doubles if campfire has a grill
-    local grillEffect = campfire.data.hasGrill and 0.25 or 1.0
+---For fire spells, mages with a high destruction skill
+--- Can reduce the chance of burning food.
+local function getDestructionBurnChanceMultiplier()
+    local destructionSkill = math.clamp(tes3.mobilePlayer.skills[tes3.skill.destruction + 1].current, 0, 80)
+    local destructionEffect = math.remap(destructionSkill, 0, 80, 1.5, 0.3)
+    return destructionEffect
+end
+
+--Get the burn chance multiplier from a campfire
+---@param campfire tes3reference
+---@return number
+local function getGrillBurnChanceMultiplier(campfire)
+    --Chance to burn lower if campfire has a grill
+    local grillEffect = campfire.data.hasGrill and 0.25 or 1
     --but wooden grills aren't as good
     local grillId = campfire.data.grillId
     if grillId then
@@ -66,11 +72,25 @@ local function checkIfBurned(campfire)
             grillEffect = 0.5
         end
     end
+    return grillEffect
+end
+
+---@return number survivalEffect The effect of survival skill on burn chance
+local function getSurvivalBurnChanceMultiplier()
+    local survivalSkill = common.skills.survival.current
+    --Lower survival skill increases burn chance
+    local survivalEffect = math.remap(survivalSkill, 0, 100, 1.0, 0.5)
+    return survivalEffect
+end
+
+--Check whether the player burns the food based on survival skill and whether campfire has grill
+---@param burnChanceMultiplier number
+local function checkIfBurned(burnChanceMultiplier)
+    local burnChance = 1
     --Roll for burn chance
     local roll = math.random()
-    local burnChance = burnChance * survivalEffect * grillEffect
-    logger:debug("survivalEffect: %s", survivalEffect)
-    logger:debug("grillEffect: %s", grillEffect)
+    local burnChance = burnChance * burnChanceMultiplier
+    logger:debug("burnChanceMultiplier: %s", burnChanceMultiplier)
     logger:debug("Burn chance: %s", burnChance)
     logger:debug("Roll: %s", roll)
     if roll < burnChance then
@@ -83,30 +103,43 @@ local function checkIfBurned(campfire)
 end
 
 
----@param ingredReference tes3reference
----@param difference number
-local function doCook(ingredReference, difference)
+---@param ingredReference tes3reference # The ingredient reference to cook
+---@param showMessage boolean #Whether to show the "is fully cooked" message
+local function doCook(ingredReference, showMessage)
     ingredReference.data.grillState = "cooked"
+    ingredReference.data.cookedAmount = 100
     tes3.playSound{ sound = "potion fail", pitch = 0.7, reference = ingredReference }
     common.skills.survival:exercise(skillsConfig.survival.grill.skillGain)
     event.trigger("Ashfall:ingredCooked", { reference = ingredReference})
-    local justChangedCell = difference > 0.01
-    if not justChangedCell then
+    if showMessage then
         tes3.messageBox("%s is fully cooked.", ingredReference.object.name)
     end
 end
 
----@param ingredReference tes3reference
----@param difference number
-local function doBurn(ingredReference, difference)
+---@param ingredReference tes3reference # The ingredient reference to burn
+---@param showMessage boolean #Whether to show the "has become burnt" message
+local function doBurn(ingredReference, showMessage)
     ingredReference.data.grillState = "burnt"
+    ingredReference.data.cookedAmount = 100
     tes3.playSound{ sound = "potion fail", pitch = 0.9, reference = ingredReference }
     event.trigger("Ashfall:ingredCooked", { reference = ingredReference})
-    local justChangedCell = difference > 0.01
-    if not justChangedCell then
+    if showMessage then
         tes3.messageBox("%s has become burnt.", ingredReference.object.name)
     end
 end
+
+
+---@param e { reference: tes3reference, burnChanceMultiplier: number, showMessage: boolean }
+local function attemptCook(e)
+    local burnChanceMultiplier = e.burnChanceMultiplier or 1
+    local showMessage = e.showMessage or true
+    if checkIfBurned(burnChanceMultiplier) then
+        doBurn(e.reference, showMessage)
+    else
+        doCook(e.reference, showMessage)
+    end
+end
+
 
 local function startCookingIngredient(ingredient, timestamp)
     if ingredient.data.grillState == "burnt" then
@@ -164,6 +197,7 @@ end
 ---@param ingredReference tes3reference
 local function grillFoodItem(ingredReference)
     local timestamp = tes3.getSimulationTimestamp()
+    ---@type tes3reference|nil|false
     local campfire = ingredReference.supportsLuaData
         and ingredReference.tempData.ashfallHeatSource
     if campfire then
@@ -201,16 +235,18 @@ local function grillFoodItem(ingredReference)
             local justBurnt = cookedAmount >= burnLimit
                 and ingredReference.data.grillState ~= "burnt"
 
-
+            local justChangedCell = difference > 0.01
+            local showMessage = not justChangedCell
             if justCooked then
-                --Check if food burned immediately
-                if checkIfBurned(campfire) then
-                    doBurn(ingredReference, difference)
-                else
-                    doCook(ingredReference, difference)
-                end
+                local burnChanceMulti = getGrillBurnChanceMultiplier(campfire)
+                    * getSurvivalBurnChanceMultiplier()
+                attemptCook{
+                    reference = ingredReference,
+                    burnChanceMultiplier = burnChanceMulti,
+                    showMessage = showMessage
+                }
             elseif justBurnt then
-                doBurn(ingredReference, difference)
+                doBurn(ingredReference, showMessage)
             end
             tes3ui.refreshTooltip()
 
@@ -346,3 +382,96 @@ local function clearCampfireUtensilData(e)
     event.trigger("Ashfall:UpdateAttachNodes", { reference = campfire})
 end
 event.register("Ashfall:Campfire_clear_utensils", clearCampfireUtensilData)
+
+
+local function doFireVfx(ingredRef)
+    tes3.createVisualEffect {
+        position = ingredRef.position,
+        object = "VFX_DestructHit",
+        lifespan = 1,
+        scale = 0.1,
+        verticalOffset = -80
+    }
+end
+
+---Cook food by casting an on-touch fire spell at it
+---@param e magicCastedEventData
+local function onMagicCasted(e)
+    if e.caster ~= tes3.player then return end
+    local isFireTouch
+    for _, effect in ipairs(e.source.effects) do
+        if effect.rangeType == tes3.effectRange.touch then
+            if effect.id == tes3.effect.fireDamage then
+                isFireTouch = true
+                break
+            end
+        end
+    end
+    if not isFireTouch  then return end
+
+    logger:debug("%s", isFireTouch and "Cast fire" or "Cast frost")
+    local target = tes3.getPlayerTarget()
+    local isGrillable = target
+        and common.staticConfigs.foodConfig.getGrillValues(target.object)
+        and not common.helper.isStack(target)
+        and target.data
+        and target.data.grillState ~= "burnt"
+        and target.data.grillState ~= "cooked"
+
+    if target and isGrillable then
+        local burnChanceMulti = getDestructionBurnChanceMultiplier()
+        attemptCook{
+            reference = target,
+            burnChanceMultiplier = burnChanceMulti,
+            showMessage = true
+        }
+        doFireVfx(target)
+    end
+end
+event.register("magicCasted", onMagicCasted)
+
+
+---Cook food by shooting fire at it
+---@param e projectileExpireEventData
+event.register("projectileExpire", function(e)
+    if not (e.mobile.reference and e.mobile.spellInstance) then return end
+    local isFireSpell
+    local rangeFeet = 1
+    for _, effect in ipairs(e.mobile.spellInstance.source.effects) do
+        if effect.rangeType == tes3.effectRange.target then
+            rangeFeet = effect.radius
+            if effect.id == tes3.effect.fireDamage then
+                isFireSpell = true
+                break
+            end
+        end
+    end
+    if not isFireSpell then return end
+    logger:debug("on target %s spell expired", isFireSpell and "fire" or "frost")
+    local spellRef = e.mobile.reference
+    ---@param ingredReference tes3reference
+    ReferenceController.iterateReferences("grillableFood", function(ingredReference)
+        local uncooked = ingredReference.sceneNode
+            and ingredReference.data
+            and ingredReference.data.grillState ~= "burnt"
+            and ingredReference.data.grillState ~= "cooked"
+
+        if uncooked and not common.helper.isStack(ingredReference) then
+            local distance = ingredReference.position:distance(spellRef.position)
+            -- Convert feet to units
+            -- 64 units = 1 yard = 3 feet
+            local rangeYards = rangeFeet / 3
+            local rangeUnits = rangeYards * 64
+            logger:debug("Distance: %s, spell range: %s", distance, rangeUnits)
+            if distance < rangeUnits then
+                local burnChanceMulti = getDestructionBurnChanceMultiplier()
+                attemptCook{
+                    reference = ingredReference,
+                    burnChanceMultiplier = burnChanceMulti,
+                    showMessage = true
+                }
+                doFireVfx(ingredReference)
+            end
+        end
+    end)
+end)

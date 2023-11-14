@@ -5,6 +5,7 @@ local common = require ("mer.ashfall.common.common")
 local logger = common.createLogger("firewood")
 local placementConfig = require("mer.ashfall.gearPlacement.config")
 local activatorController = require "mer.ashfall.activators.activatorController"
+local ReferenceController = require("mer.ashfall.referenceController")
 local config = require("mer.ashfall.config").config
 local skipActivate
 local function pickupFirewood(ref)
@@ -205,14 +206,15 @@ end
 event.register("magicCasted", onMagicCasted)
 
 
---TODO find a way to do this with ranged fire
 ---@param e projectileExpireEventData
 local function onSpellHit(e)
     if e.mobile.reference and e.mobile.spellInstance then
         local isFireSpell
         local isFrostSpell
+        local rangeFeet = 1
         for _, effect in ipairs(e.mobile.spellInstance.source.effects) do
             if effect.rangeType == tes3.effectRange.target then
+                rangeFeet = effect.radius
                 if effect.id == tes3.effect.fireDamage then
                     isFireSpell = true
                     break
@@ -226,29 +228,32 @@ local function onSpellHit(e)
         if isFireSpell or isFrostSpell then
             logger:debug("on target %s spell expired", isFireSpell and "fire" or "frost")
             local spellRef = e.mobile.reference
-            local result =  tes3.rayTest{
-                position = tes3vector3.new(spellRef.position.x, spellRef.position.y, spellRef.position.z),
-                direction = tes3vector3.new(0,0,-1),
-                ignore = { spellRef },
-                useBackTriangles = true,
-            }
-            if result and result.reference then
-                logger:debug("Found target")
-                local campfire = result.reference
-                local hasFuel = campfire.data.fuelLevel and campfire.data.fuelLevel > 0
-                local isLit = campfire.data.isLit
-                if hasFuel then
-                    logger:debug("Target has fuel")
-                    if isFireSpell and not isLit then
-                        logger:debug("lighting fire on target")
-                        event.trigger("Ashfall:fuelConsumer_Alight", { fuelConsumer = campfire})
-                    end
-                    if isLit and isFrostSpell then
-                        logger:debug("Extinguishing fire on target")
-                        extinguishFire(campfire)
+            ---@param campfire tes3reference
+            ReferenceController.iterateReferences("fuelConsumer", function(campfire)
+                local distance = campfire.position:distance(spellRef.position)
+
+                -- Convert feet to units
+                -- 64 units = 1 yard = 3 feet
+                local rangeYards = rangeFeet / 3
+                local rangeUnits = rangeYards * 64
+                logger:debug("Distance: %s, spell range: %s", distance, rangeUnits)
+                if distance < rangeUnits then
+                    logger:debug("Found target")
+                    local hasFuel = campfire.data.fuelLevel and campfire.data.fuelLevel > 0
+                    local isLit = campfire.data.isLit
+                    if hasFuel then
+                        logger:debug("Target has fuel")
+                        if isFireSpell and not isLit then
+                            logger:debug("lighting fire on target")
+                            event.trigger("Ashfall:fuelConsumer_Alight", { fuelConsumer = campfire})
+                        end
+                        if isLit and isFrostSpell then
+                            logger:debug("Extinguishing fire on target")
+                            extinguishFire(campfire)
+                        end
                     end
                 end
-            end
+            end)
         end
     end
 end
