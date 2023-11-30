@@ -7,7 +7,7 @@ local tentConfig = require("mer.ashfall.items.tents.tentConfig")
 local ReferenceController = require("mer.ashfall.referenceController")
 --Generic Tooltip with header and description
 
-this.createTooltip = require("mer.ashfall.common.tooltip")
+this.createTooltip = require("mer.ashfall.common.tooltip").create
 
 --overriden in common
 this.logger = require("logging.logger").new{ name = "Ashfall.Helper" }
@@ -196,7 +196,9 @@ function this.getCloseEnough(e)
 end
 
 
-
+---@param tooltip tes3uiElement
+---@param labelText string
+---@param color? number[]  #from tes3ui.getPalette
 function this.addLabelToTooltip(tooltip, labelText, color)
     local function setupOuterBlock(e)
         e.flowDirection = 'left_to_right'

@@ -83,3 +83,12 @@ local function customNameTooltip(e)
 end
 event.register("uiObjectTooltip", customNameTooltip)
 
+event.register("loaded", function()
+    for sack in pairs(common.data.sacks) do
+        CraftingFramework.Material:new{
+            id = "sack",
+            name = "Empty Sack",
+            ids = { sack }
+        }
+    end
+end)

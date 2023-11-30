@@ -7,6 +7,12 @@ local tentConfig = require("mer.ashfall.items.tents.tentConfig")
 local backpackSlot = 11
 local backpacks = {}
 
+---@class SwitchNodeData
+---@field items table<string, boolean>
+---@field blockEquip? boolean
+---@field attachMesh boolean
+
+---@type table<string, SwitchNodeData>
 local switchNodes = {
     SWITCH_AXE = {
         items = harvestConfig.woodaxes,
@@ -23,6 +29,31 @@ local switchNodes = {
     }
 }
 
+local Backpack = {}
+
+function Backpack.registerBackpack(id)
+    local obj = tes3.getObject(id)
+    -- remap slot to custom backpackSlot
+    obj.slot = backpackSlot
+    -- store the bodypart mesh for later
+    backpacks[id] = obj.mesh:sub(1, -9) .. ".NIF"
+    -- clear bodypart so it doesn't overwrite left pauldron
+     obj.parts[1].type = 255
+     obj.parts[1].male = nil
+end
+
+---@param item tes3item
+function Backpack.isBackpack(item)
+    return backpacks[item.id:lower()] ~= nil
+end
+
+
+---@param switch string
+---@param data SwitchNodeData
+function Backpack.registerSwitchNode(switch, data)
+    switchNodes[switch] = data
+end
+
 
 local function registerBackpacks()
     pcall(function()
@@ -30,14 +61,7 @@ local function registerBackpacks()
         --tes3.addArmorSlot{slot=backpackSlot, name="Backpack"}
     end)
     for id in pairs(backpackConfig.backpacks) do
-        local obj = tes3.getObject(id)
-        -- remap slot to custom backpackSlot
-        obj.slot = backpackSlot
-        -- store the bodypart mesh for later
-        backpacks[id] = obj.mesh:sub(1, -9) .. ".NIF"
-        -- clear bodypart so it doesn't overwrite left pauldron
-         obj.parts[1].type = 255
-         obj.parts[1].male = nil
+        Backpack.registerBackpack(id)
     end
 end
 registerBackpacks()
@@ -274,5 +298,4 @@ event.register("menuExit", updatePlayer)
 event.register("weaponReadied", updatePlayer)
 event.register("Ashfall:triggerPackUpdate", updatePlayer)
 
-
-
+return Backpack

@@ -32,58 +32,56 @@ local function removeBreath(node)
     end
 end
 
+---@param ref tes3reference
+---@param isCold boolean
+---@param isGuar? boolean
+local function addRemoveBreath(ref, isCold, isGuar)
+    local valid = ref
+        and ref.mobile
+        and ref.sceneNode
+        and not ref.disabled
+
+    if valid then
+        local node
+        if isGuar then
+            node = ref.sceneNode:getObjectByName("Bip01 Ponytail12")
+        else
+            node = ref.sceneNode:getObjectByName("Bip01 Head")
+        end
+        if not node then
+            return
+        end
+        local isAlive = ( ref.mobile.health.current > 0 )
+        local isAboveWater = ( ref.mobile.underwater == false )
+        if isCold and isAboveWater and isAlive and checkEnabled() then
+            if isGuar then
+                addBreath(node, 25, 0, 0, 2.0)
+            else
+                addBreath(node, 0, 11, 0)
+            end
+        else
+            removeBreath(node)
+        end
+    end
+end
 
 function this.doFrostBreath()
 
     local temp = common.data.weatherTemp
     local isCold = temp < coldLevelNeeded
 
-    ---@param ref tes3reference
-    ---@param isGuar? boolean
-    local function addRemoveBreath(ref, isGuar)
-        local valid = ref
-            and ref.mobile
-            and ref.sceneNode
-            and not ref.disabled
-
-        if valid then
-            local node
-            if isGuar then
-                node = ref.sceneNode:getObjectByName("Bip01 Ponytail12")
-            else
-                node = ref.sceneNode:getObjectByName("Bip01 Head")
-            end
-            if not node then
-                return
-            end
-            local isAlive = ( ref.mobile.health.current > 0 )
-            local isAboveWater = ( ref.mobile.underwater == false )
-            if isCold and isAboveWater and isAlive and checkEnabled() then
-                if isGuar then
-                    addBreath(node, 25, 0, 0, 2.0)
-                else
-                    addBreath(node, 0, 11, 0)
-                end
-            else
-                removeBreath(node)
-            end
-        end
-    end
-
     for _,cell in pairs(tes3.getActiveCells()) do
         for ref in cell:iterateReferences(tes3.objectType.npc) do
-            addRemoveBreath(ref)
+            addRemoveBreath(ref, isCold)
         end
         for ref in cell:iterateReferences(tes3.objectType.creature) do
             if ref.supportsLuaData and ref.data.tgw then
-                addRemoveBreath(ref, true)
+                addRemoveBreath(ref, isCold, true)
             end
         end
     end
 
-
     local node = tes3.player.sceneNode and tes3.player.sceneNode:getObjectByName("Bip01 Head")
-
     if node then
         if isCold and tes3.mobilePlayer.underwater == false and checkEnabled() then
             addBreath(node, 0, 11, 0)
@@ -91,7 +89,6 @@ function this.doFrostBreath()
             removeBreath(node)
         end
     end
-
     node = tes3.worldController.worldCamera.cameraRoot
     if node then
         local isAboveWater = ( tes3.mobilePlayer.underwater == false )

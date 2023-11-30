@@ -8,7 +8,10 @@ local CrabPot = require("mer.ashfall.items.crabpot")
 local WoodStack = require("mer.ashfall.items.woodStack")
 local Workbench = require("mer.ashfall.items.workbench")
 local Planter = require("mer.ashfall.items.planter.Planter")
+local Material = require("CraftingFramework").Material
 local config = require("mer.ashfall.config").config
+local common = require("mer.ashfall.common.common")
+local logger = common.createLogger("bushcraftingconfig")
 
 ---@type table<string, CraftingFramework.SkillRequirement.data>
 this.survivalTiers = {
@@ -196,7 +199,7 @@ this.menuOptions = {
 this.materials = {
     {
         id = "sack",
-        name = "Sack",
+        name = "Empty Sack",
         ids = {
             "ashfall_sack_01"
         }
@@ -690,6 +693,15 @@ local bushCraftingRecipes = {
             containerConfig = {
                 capacity = 100,
                 hasCollision = true,
+                onCopyCreated = function(self, data)
+                    logger:warn("Registering new sack as material: %s", data.copy.id)
+                    Material:new{
+                        id = "sack",
+                        name = "Empty Sack",
+                        ids = { data.copy.id:lower() }
+                    }
+                    common.data.sacks[data.copy.id:lower()] = true
+                end
             },
         },
         {
@@ -802,6 +814,18 @@ local bushCraftingRecipes = {
             }
         },
         {
+            --bedroll
+            id = "bushcraft:ashfall_bedroll",
+            craftableId = "ashfall_bedroll",
+            description = itemDescriptions.ashfall_bedroll,
+            materials = {
+                { material = "fabric", count = 4 },
+                { material = "straw", count = 10 },
+            },
+            category = this.categories.beds,
+            soundType = "fabric",
+        },
+        {
             --tanning rack
             id = "bushcraft:ashfall_tan_rack",
             craftableId = "ashfall_tan_rack",
@@ -892,6 +916,19 @@ local bushCraftingRecipes = {
             additionalMenuOptions = {
                 this.menuOptions.rename
             },
+        },
+        {
+            id = "bushcraft:ashfall_tent_base_m",
+            craftableId = "ashfall_tent_base_m",
+            description = "A basic tent made of fabric",
+            materials = {
+                { material = "fabric", count = 4 },
+                { material = "wood", count = 6 },
+                { material = "rope", count = 2 },
+            },
+            category = this.categories.survival,
+            soundType = "fabric",
+            previewMesh = "ashfall\\tent\\tent_base.nif"
         },
         {
             id = "bushcraft:ashfall_cov_thatch",

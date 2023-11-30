@@ -1,4 +1,8 @@
-return function(e)
+
+local Tooltip = {}
+
+---@param e { header: string, text: string }
+function Tooltip.create(e)
     local thisHeader, thisLabel = e.header, e.text
     local tooltip = tes3ui.createTooltipMenu()
 
@@ -27,6 +31,6 @@ return function(e)
         descriptionLabel.width = 285
         descriptionLabel.wrapText = true
     end
-
     tooltip:updateLayout()
 end
+return Tooltip

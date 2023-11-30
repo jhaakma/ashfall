@@ -10,7 +10,7 @@ version = "3.16.0"
 assets = [ "Ashfall.esp", "Icons/ashfall", "Meshes/ashfall", "MWSE/mods/mer/ashfall", "Sound/ashfall", "Textures/Ashfall",]
 
 [dependencies.mwse]
-buildnumber = 3410
+buildnumber = 3497
 
 [dependencies.mge-xe]
 version = ">=0.15.0"
@@ -25,5 +25,5 @@ version = "^2.0.0"
 
 [dependencies.mods."The Crafting Framework"]
 mwse-module = "CraftingFramework"
-version = "^1.17.0"
+version = "^1.19.0"
 url = "https://www.nexusmods.com/morrowind/mods/51009?tab=files"

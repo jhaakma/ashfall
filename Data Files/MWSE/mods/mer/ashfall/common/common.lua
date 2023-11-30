@@ -37,6 +37,8 @@ local function initData()
     tes3.player.data.Ashfall.currentStates = tes3.player.data.Ashfall.currentStates or {}
     tes3.player.data.Ashfall.wateredCells = tes3.player.data.Ashfall.wateredCells or {}
     tes3.player.data.Ashfall.trinketEffects = tes3.player.data.Ashfall.trinketEffects or {}
+    tes3.player.data.Ashfall.backpacks = tes3.player.data.Ashfall.backpacks or {}
+    tes3.player.data.Ashfall.sacks = tes3.player.data.Ashfall.sacks or {}
 end
 
 ---@class Ashfall.playerData
@@ -84,6 +86,8 @@ end
 ---@field diedOfHunger boolean Set to true when the player is killed by hunger, to prevent the death message from showing multiple times
 ---@field valuesInitialised boolean Set to true when ScriptTimer updates have run at least once on this save
 ---@field inventorySelectTeaBrew boolean Set to true when the player is currently selecting a tea to brew
+---@field backpacks table<string, boolean> a map of backpack objects which are to be registered on load
+---@field sacks table<string, boolean> a map of sack objects which are to be registered as materials on load
 this.data = setmetatable({}, {
     __index = function(t, key)
         if not ( tes3.player and tes3.player.data) then

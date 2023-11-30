@@ -193,6 +193,7 @@ function this.getCoveredParts()
     }
     --clothing
     local clothingSlots = table.copy(tes3.clothingSlot, { backpack = 11 })
+    ---@param slot number
     for _, slot in pairs(clothingSlots) do
         local stack = tes3.getEquippedItem({ actor = tes3.player, objectType = tes3.objectType.clothing, slot = slot })
         local validSlot = this.isValidClothingSlot(slot)

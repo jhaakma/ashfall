@@ -31,7 +31,6 @@ return {
 
             local charcoal = campfire.data.charcoalLevel or 0
             local recoveredCoal = math.floor(charcoal * 0.75)
-            ---@diagnostic disable-next-line: cast-local-type
             recoveredCoal = math.clamp(recoveredCoal, 0, common.staticConfigs.maxWoodInFire)
             if recoveredCoal > 1 then
                 local coalId = "ashfall_ingred_coal_01"
