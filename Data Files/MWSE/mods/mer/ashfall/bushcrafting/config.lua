@@ -694,7 +694,7 @@ local bushCraftingRecipes = {
                 capacity = 100,
                 hasCollision = true,
                 onCopyCreated = function(self, data)
-                    logger:warn("Registering new sack as material: %s", data.copy.id)
+                    logger:debug("Registering new sack as material: %s", data.copy.id)
                     Material:new{
                         id = "sack",
                         name = "Empty Sack",
@@ -797,6 +797,25 @@ local bushCraftingRecipes = {
         },
     },
     apprentice = {
+        {
+            id = "bushcraft:ashfall_satchel_01",
+            craftableId = "ashfall_satchel_01",
+            description = itemDescriptions.ashfall_satchel_01,
+            materials = {
+                { material = "leather", count = 1 },
+                { material = "fabric", count = 2 },
+            },
+            category = this.categories.containers,
+            soundType = "fabric",
+            additionalMenuOptions = {
+                this.menuOptions.rename
+            },
+            containerConfig = {
+                capacity = 100,
+                weightModifier = 0.8,
+                filter = "ingredients"
+            },
+        },
         {
             --workbench
             id = "bushcraft:ashfall_workbench_01",

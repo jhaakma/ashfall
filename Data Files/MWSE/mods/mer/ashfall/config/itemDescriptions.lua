@@ -57,5 +57,6 @@ local itemDescriptions = {
     ashfall_fur_cloak = "A cloak made made with fur provides a moderate amount of warmth.",
     ashfall_fab_cloak = "A cloak made up of a patchwork of thin fabric. Doesn't offer much warmth but it's easy to make.",
     ashfall_workbench_01 = "A workbench that allows you to craft more complex and permanent structures.",
+    ashfall_satchel_01 = "A small satchel for storing ingredients.",
 }
 return itemDescriptions
