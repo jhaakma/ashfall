@@ -148,7 +148,7 @@ function WaterFilter.filterWaterCallback(filterWaterParams)
     timer.delayOneFrame(function()
         if not (safeRef and safeRef:valid()) then return end
         local waterFilterRef = safeRef:getObject()
-        tes3ui.showInventorySelectMenu{
+        common.helper.showInventorySelectMenu{
             title = "Select Water Container",
             noResultsText = "You have no dirty water to filter.",
             filter = WaterFilter.refHasDirtyWater,
@@ -173,7 +173,7 @@ function WaterFilter.collectWaterCallback(collectWaterParams)
     timer.delayOneFrame(function()
         if not (safeRef and safeRef:valid()) then return end
         local filterRef = safeRef:getObject()
-        tes3ui.showInventorySelectMenu{
+        common.helper.showInventorySelectMenu{
             title = "Select Water Container",
             noResultsText = "You have no containers to fill.",
             filter = function(e)
@@ -186,7 +186,11 @@ function WaterFilter.collectWaterCallback(collectWaterParams)
             end,
             callback = function(e)
                 if e.item then
-                    local liquidContainer = LiquidContainer.createFromInventoryInitItemData(e.item, e.itemData)
+                    local liquidContainer = LiquidContainer.createFromInventoryWithItemData{
+                        item = e.item,
+                        itemData = e.itemData,
+                        reference = e.reference
+                    }
                     local filterRefContainer = LiquidContainer.createFromReference(filterRef)
                     if not liquidContainer then return end
                     if not filterRefContainer then return end

@@ -13,7 +13,7 @@ local foodTypes = {
 }
 
 local function playerHasFood(foodType)
-    for _, stack in pairs(tes3.player.object.inventory) do
+    for _, stack in pairs(common.helper.getInventory()) do
         if foodConfig.getFoodTypeResolveMeat(stack.object) == foodType then
             return true
         end
@@ -36,8 +36,8 @@ local function addIngredient(e)
         itemData = e.itemData,
         count = e.amount,
     }
-    tes3.player.object.inventory:removeItem{
-        mobile = tes3.mobilePlayer,
+    common.helper.removeItem{
+        reference = e.reference,
         item = e.item,
         itemData = e.itemData,
         count = e.amount
@@ -52,7 +52,7 @@ local function ingredientSelect(campfire, foodType)
     common.data.inventorySelectStew = true
     timer.delayOneFrame(function()
         logger:debug("ingedient select menu for stew")
-        tes3ui.showInventorySelectMenu{
+        common.helper.showInventorySelectMenu{
             title = "Select Ingredient:",
             noResultsText = string.format("You do not have any %ss.", string.lower(foodType)),
             filter = function(e)
@@ -66,29 +66,37 @@ local function ingredientSelect(campfire, foodType)
                 if e.item then
                     logger:debug("Selecting ingredient amount for stew")
                     local liquidContainer = LiquidContainer.createFromReference(campfire)
+                    if not liquidContainer then
+                        tes3.messageBox("Error: Could not find liquid container")
+                        return
+                    end
                     local capacity = liquidContainer:getStewCapacity(foodType)
                     local max = math.min(
-                        tes3.getItemCount{ reference = tes3.player, item = e.item },
+                        common.helper.getItemCount{ reference = e.reference, item = e.item },
                         capacity
                     )
                     logger:debug("max: %s", max)
-                    e.amount = 1
-                    e.campfire = campfire
-                    e.foodType = foodType
-                    if max > 1 and not (e.itemData and e.itemData.data) then
+
+                    local eventData = table.copy(e)
+                    e = nil
+
+                    eventData.amount = 1
+                    eventData.campfire = campfire
+                    eventData.foodType = foodType
+                    if max > 1 and not (eventData.itemData and eventData.itemData.data) then
                         common.helper.createSliderPopup{
                             label = "How many?",
                             min = 0,
                             max = max,
                             jump = 1,
-                            table = e,
+                            table = eventData,
                             varId = "amount",
                             okayCallback = function()
-                                addIngredient(e)
+                                addIngredient(eventData)
                             end
                         }
                     else
-                        addIngredient(e)
+                        addIngredient(eventData)
                     end
                 end
             end

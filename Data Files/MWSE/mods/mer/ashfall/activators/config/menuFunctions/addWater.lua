@@ -33,7 +33,7 @@ return {
             return
         end
         timer.delayOneFrame(function()
-            tes3ui.showInventorySelectMenu{
+            common.helper.showInventorySelectMenu{
                 title = "Select Water Container:",
                 noResultsText = ("You don't have any %s."):format(to:getLiquidName()),
                 filter = function(e)
@@ -43,6 +43,7 @@ return {
                 callback = function(e)
                     if e.item then
                         local from = LiquidContainer.createFromInventory(e.item, e.itemData)
+                        if not from then logger:error("Unable to create liquid container from %s", e.item.id) return end
 
                         local capacityRemainingInPot = to.capacity - to.waterAmount
                         local maxAmount = math.min(from.waterAmount, capacityRemainingInPot)

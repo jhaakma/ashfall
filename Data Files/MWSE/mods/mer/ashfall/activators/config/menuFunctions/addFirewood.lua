@@ -7,7 +7,8 @@ local function getWoodFuel()
 end
 
 local function getFirewoodCount()
-    return tes3.getItemCount{ reference = tes3.player, item = common.staticConfigs.objectIds.firewood }
+    local firewood = tes3.getObject(common.staticConfigs.objectIds.firewood)
+    return common.helper.getItemCount{ reference = tes3.player, item = firewood }
 end
 
 local function canAddFireWoodToCampfire(campfire)
@@ -43,7 +44,7 @@ return {
         }
         campfire.data.fuelLevel = (campfire.data.fuelLevel or 0) + getWoodFuel()
         campfire.data.burned = campfire.data.isLit == true
-        tes3.removeItem{ reference = tes3.player, item = common.staticConfigs.objectIds.firewood, playSound = false }
+        common.helper.removeItem{ reference = tes3.player, item = common.staticConfigs.objectIds.firewood, playSound = false }
         event.trigger("Ashfall:UpdateAttachNodes", { reference = campfire})
     end,
 }

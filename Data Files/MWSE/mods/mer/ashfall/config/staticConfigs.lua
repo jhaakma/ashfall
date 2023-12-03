@@ -89,6 +89,7 @@ this.bottleConfig = {
         capacity = 60,
         waterMaxScale = 1.8,
         waterMaxHeight = 4.0,
+        holdsStew = true
     },
 
     cup = { capacity = 25, weight = 2 },

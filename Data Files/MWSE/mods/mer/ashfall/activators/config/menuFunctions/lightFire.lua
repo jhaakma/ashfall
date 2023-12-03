@@ -35,7 +35,7 @@ end
 local function playerHasFlintAndSteel(e)
     --check inventory for flint
     local hasFlint = false
-    for _, stack in pairs(tes3.player.object.inventory) do
+    for _, stack in pairs(common.helper.getInventory()) do
         local flint = CraftingFramework.Material.getMaterial("flint")
         if flint and flint:itemIsMaterial(stack.object.id) then
             hasFlint = true
@@ -45,7 +45,7 @@ local function playerHasFlintAndSteel(e)
     --Check for any short or long blade (as the "steel")
     local hasSteel = false
     local steelWeapon = nil
-    for _, stack in pairs(tes3.player.object.inventory) do
+    for _, stack in pairs(common.helper.getInventory()) do
         if stack.object.objectType == tes3.objectType.weapon then
             local validWeaponTypes = {
                 [tes3.weaponType.shortBladeOneHand] = true,
@@ -113,7 +113,7 @@ local menuConfig = {
                 return
             end
             logger:debug("Opening Inventory Select Menu")
-            tes3ui.showInventorySelectMenu{
+            common.helper.showInventorySelectMenu{
                 title = "Select Firestarter",
                 noResultsText = "You do not have anything to light the fire.",
                 filter = filterFireStarter,

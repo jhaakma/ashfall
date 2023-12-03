@@ -1,7 +1,7 @@
 --TODO
 local common = require ("mer.ashfall.common.common")
 return {
-    dropText = function(campfire, item, data)
+    dropText = function(campfire, item, itemData)
         if campfire.data.isLit then
             if itemData and itemData.data.teaProgress and itemData.data.teaProgress > 0 then
                 return "Heat Tea"

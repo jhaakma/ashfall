@@ -129,7 +129,6 @@ function LiquidContainer.new(e)
         if liquidContainer.stewLevels then liquidContainer.waterType = "stew" end
         return liquidContainer --[[@as Ashfall.LiquidContainer]]
     end
-    --Not a valid liquidContainer
     return nil
 end
 
@@ -149,7 +148,7 @@ function LiquidContainer.createFromReference(reference, bottleData)
 end
 
 --[[
-    Create a Liquid Container from an item in the player's inventory.
+    Create a Liquid Container from an item in an inventory
 ]]
 ---@param item tes3object
 ---@param itemData tes3itemData
@@ -166,6 +165,7 @@ end
 --[[
     Create a Liquid Container from an item in the player's inventory and initialise an itemData for it.
 ]]
+---@deprecated Use LiquidContainer.createFromInventoryWithItemData
 ---@param item tes3object
 ---@param itemData tes3itemData
 ---@return Ashfall.LiquidContainer|nil liquidContainer
@@ -176,6 +176,24 @@ function LiquidContainer.createFromInventoryInitItemData(item, itemData)
             item = item.id
         }
     end
+    return LiquidContainer.new{
+        id = item.id,
+        dataHolder = itemData,
+    }
+end
+
+--[[
+    Create a Liquid Container from an item in the player's inventory and initialise an itemData for it.
+]]
+---@param e { item:tes3item, itemData:tes3itemData?, reference:tes3reference?}
+---@return Ashfall.LiquidContainer|nil liquidContainer
+function LiquidContainer.createFromInventoryWithItemData(e)
+    local reference = e.reference or tes3.player
+    local itemData = e.itemData or tes3.addItemData{
+        to = reference,
+        item = e.item.id
+    }
+    local item = e.item
     return LiquidContainer.new{
         id = item.id,
         dataHolder = itemData,

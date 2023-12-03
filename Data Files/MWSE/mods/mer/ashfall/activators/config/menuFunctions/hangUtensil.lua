@@ -2,12 +2,12 @@ local common = require ("mer.ashfall.common.common")
 local logger = common.createLogger("hangUtensil")
 local CampfireUtil = require ("mer.ashfall.camping.campfire.CampfireUtil")
 
-local function addUtensil(item, campfire, itemData)
-    tes3.removeItem{ reference = tes3.player, item = item, itemData = itemData, playSound = false }
+
+local function addUtensil(reference, item, campfire, itemData)
+    tes3.removeItem{ reference = reference, item = item, itemData = itemData, playSound = false }
     local utensilData = common.staticConfigs.utensils[item.id:lower()]
 
     --tes3.playSound{ reference = tes3.player, sound = "Item Misc Down"  }
-
 
     campfire.data.utensil = utensilData.type
     campfire.data.utensilId = item.id:lower()
@@ -17,10 +17,11 @@ local function addUtensil(item, campfire, itemData)
 
     if utensilData.type == "cookingPot" and not campfire.data.ladle then
         for ladleId, _ in pairs(common.staticConfigs.ladles) do
-            if tes3.getObject(ladleId) then
-                if tes3.getItemCount{ reference = tes3.player, item = ladleId} > 0 then
+            local ladle = tes3.getObject(ladleId)
+            if ladle then
+                if common.helper.getItemCount{ reference = tes3.player, item = ladle} > 0 then
                     logger:debug("Found ladle in inventory, adding to campfire")
-                    tes3.removeItem{ reference = tes3.player, item = ladleId, playSound = false }
+                    common.helper.removeItem{ reference = tes3.player, item = ladleId, playSound = false }
                     campfire.data.ladle = ladleId:lower()
                     break
                 end
@@ -50,7 +51,7 @@ end
 
 local function utensilSelect(campfire)
     timer.delayOneFrame(function()
-        tes3ui.showInventorySelectMenu{
+        common.helper.showInventorySelectMenu{
             title = "Select Utensil",
             noResultsText = "You do not have any utensils.",
             filter = function(e)
@@ -58,7 +59,7 @@ local function utensilSelect(campfire)
             end,
             callback = function(e)
                 if e.item then
-                    addUtensil(e.item, campfire, e.itemData)
+                    addUtensil(e.reference, e.item, campfire, e.itemData)
                 end
             end
         }
@@ -73,9 +74,10 @@ return {
             and not campfire.data.utensil
     end,
     enableRequirements = function()
-        for stack in tes3.iterate(tes3.player.object.inventory.iterator) do
-            if common.staticConfigs.utensils[stack.object.id:lower()] then
-                if CampfireUtil.itemCanBeHanged(stack.object) then
+        for id in pairs(common.staticConfigs.utensils) do
+            local utensil = tes3.getObject(id)
+            if utensil then
+                if common.helper.getItemCount{ reference = tes3.player, item = utensil} > 0 then
                     return true
                 end
             end

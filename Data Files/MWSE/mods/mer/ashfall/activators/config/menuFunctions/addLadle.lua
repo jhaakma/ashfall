@@ -12,8 +12,9 @@ return {
     end,
     enableRequirements = function()
         for id, _ in pairs(common.staticConfigs.ladles) do
-            if tes3.getObject(id) then
-                if tes3.getItemCount{ reference = tes3.player, item = id} > 0 then
+            local ladle = tes3.getObject(id)
+            if ladle then
+                if common.helper.getItemCount{ reference = tes3.player, item = ladle } > 0 then
                     return true
                 end
             end
@@ -28,9 +29,10 @@ return {
     },
     callback = function(campfire)
         for id, _ in pairs(common.staticConfigs.ladles) do
-            if tes3.getObject(id) then
-                if tes3.getItemCount{ reference = tes3.player, item = id} > 0 then
-                    tes3.removeItem{ reference = tes3.player, item = id }
+            local ladle = tes3.getObject(id)
+            if ladle then
+                if common.helper.getItemCount{ reference = tes3.player, item = ladle } > 0 then
+                    common.helper.removeItem{ reference = tes3.player, item = ladle }
                     campfire.data.ladle = id:lower()
                     event.trigger("Ashfall:UpdateAttachNodes", { reference = campfire})
                     break

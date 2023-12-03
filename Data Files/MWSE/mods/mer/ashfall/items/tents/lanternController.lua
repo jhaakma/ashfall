@@ -16,15 +16,15 @@ local function turnLanternOn(tentRef)
     local lightNode = lanternNode:getObjectByName("LanternLight") or niPointLight.new()
     lightNode.name = "LanternLight"
     if lanternItem.color then
-        lightNode.ambient = tes3vector3.new(0,0,0)
+        lightNode.ambient = tes3vector3.new(0,0,0) --[[@as niColor]]
         lightNode.diffuse = tes3vector3.new(
             lanternItem.color[1] / 255,
             lanternItem.color[2] / 255,
             lanternItem.color[3] / 255
-        )
+        ) --[[@as niColor]]
     else
-        lightNode.ambient = tes3vector3.new(0,0,0)
-        lightNode.diffuse = tes3vector3.new(255, 255, 255)
+        lightNode.ambient = tes3vector3.new(0,0,0) --[[@as niColor]]
+        lightNode.diffuse = tes3vector3.new(255, 255, 255) --[[@as niColor]]
     end
     lightNode.translation.z = 0
     lightNode:setAttenuationForRadius(512)
@@ -89,7 +89,7 @@ end
 
 function this.selectLantern(tentRef)
     timer.delayOneFrame(function()
-        tes3ui.showInventorySelectMenu{
+        common.helper.showInventorySelectMenu{
             title = "Select Lantern",
             noResultsText = "You don't have any lanterns.",
             filter = function(e)
@@ -98,7 +98,7 @@ function this.selectLantern(tentRef)
             callback = function(e)
                 if e.item then
                     logger:debug("attaching lantern")
-                    this.attachLantern(tentRef, e.item, e.itemData)
+                    this.attachLantern(e.reference, tentRef, e.item --[[@as tes3light]], e.itemData)
                 end
             end
         }
@@ -125,7 +125,12 @@ local function attachLightToRef(tentRef, lanternItem)
     logger:debug("lantern attached to %s", tentRef.object.id)
 end
 
-function this.attachLantern(tentRef, lanternItem, lanternData)
+---comment
+---@param reference tes3reference
+---@param tentRef tes3reference
+---@param lanternItem tes3light
+---@param lanternData table
+function this.attachLantern(reference, tentRef, lanternItem, lanternData)
     logger:debug("attachLantern: %s", lanternItem)
     local attachLanternNode = getAttachLanternNode(tentRef.sceneNode)
     if attachLanternNode then
@@ -149,7 +154,7 @@ function this.attachLantern(tentRef, lanternItem, lanternData)
             }
         end
         attachLightToRef(tentRef, lanternItem)
-        tes3.removeItem{ reference = tes3.player, item = lanternItem, playSound = false}
+        tes3.removeItem{ reference = reference, item = lanternItem, playSound = false}
         logger:debug("Registering tent with %s as a reference", lanternItem)
     else
         logger:error("%s does not have an ATTACH_LANTERN node.", tentRef.object.id)

@@ -5,12 +5,21 @@ local SkillsModule = include("SkillsModule")
 local refController = require("mer.ashfall.referenceController")
 local tentConfig = require("mer.ashfall.items.tents.tentConfig")
 local ReferenceController = require("mer.ashfall.referenceController")
+local CraftingFramework = require("CraftingFramework")
+local CarryableContainer = CraftingFramework.CarryableContainer
 --Generic Tooltip with header and description
 
 this.createTooltip = require("mer.ashfall.common.tooltip").create
 
 --overriden in common
 this.logger = require("logging.logger").new{ name = "Ashfall.Helper" }
+
+
+this.getItemCount = CarryableContainer.getItemCount
+this.removeItem = CarryableContainer.removeItem
+this.getInventory = CarryableContainer.getFullInventory
+this.showInventorySelectMenu = CraftingFramework.InventorySelectMenu.open
+
 
 function this.getHoursPassed()
     return ( tes3.worldController.daysPassed.value * 24 ) + tes3.worldController.hour.value
@@ -930,11 +939,12 @@ function this.showHint(hint)
     end
 end
 
+---@param materials table<string, number> #A table of itemIds and their required count
 function this.playerHasMaterials(materials)
     if not materials then return false end
     local hasMaterials = true
     for mat, count in pairs(materials) do
-        if tes3.getItemCount{ reference = tes3.player, item = mat } < count then
+        if this.getItemCount{ reference = tes3.player, item = mat } < count then
             hasMaterials =  false
         end
     end
@@ -1086,5 +1096,6 @@ function this.getUpdateIntervalInSeconds()
     local millis = config.rayTestUpdateMilliseconds
     return millis / 1000
 end
+
 
 return this

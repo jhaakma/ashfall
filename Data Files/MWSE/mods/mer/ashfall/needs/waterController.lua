@@ -73,6 +73,7 @@ local function callWaterMenu(e)
                     return thirst:getValue() > 0.1
                         or not config.enableThirst
                 end,
+                ---@diagnostic disable-next-line
                 tooltipDisabled = {
                     text = "You are fully hydrated."
                 },
@@ -88,6 +89,7 @@ local function callWaterMenu(e)
                 enableRequirements = function()
                     return thirstController.playerHasFillableContainers(source)
                 end,
+                ---@diagnostic disable-next-line
                 tooltipDisabled = {
                     text = common.messages.noContainersToFill
                 },
@@ -275,6 +277,7 @@ local function drinkFromContainer(e)
                         enableRequirements = function()
                             return source:isCookedStew()
                         end,
+                        ---@diagnostic disable-next-line
                         tooltipDisabled = {
                             text = "You must finish cooking the stew."
                         },
@@ -300,6 +303,7 @@ local function drinkFromContainer(e)
                         enableRequirements = function()
                             return thirstController.playerHasFillableContainers(source)
                         end,
+                        ---@diagnostic disable-next-line
                         tooltipDisabled = {
                             text = common.messages.noContainersToFill
                         },

@@ -112,6 +112,7 @@ local function onActivate(e)
                     return ref.data.crabCount ~= nil
                         and ref.data.crabCount >= 1
                 end,
+                ---@diagnostic disable-next-line
                 tooltipDisabled = {
                     text = "The Crab Pot is empty."
                 },

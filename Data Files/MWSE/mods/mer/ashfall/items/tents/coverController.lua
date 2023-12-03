@@ -29,7 +29,7 @@ end
 
 function this.selectCover(tentRef)
     timer.delayOneFrame(function()
-        tes3ui.showInventorySelectMenu{
+        common.helper.showInventorySelectMenu{
             title = "Select Tent Cover",
             noResultsText = "You don't have any tent covers.",
             filter = function(e)
@@ -38,7 +38,7 @@ function this.selectCover(tentRef)
             callback = function(e)
                 if e.item then
                     logger:debug("attaching cover")
-                    this.attachCover(tentRef, e.item.id)
+                    this.attachCover(e.reference, tentRef, e.item.id)
                 end
             end
         }
@@ -47,7 +47,7 @@ end
 
 
 
-function this.attachCover(tentRef, coverId)
+function this.attachCover(reference, tentRef, coverId)
     local coverNode = getAttachCoverNode(tentRef.sceneNode)
     if coverNode then
         logger:debug("found cover node for %s", tentRef.object.id)
@@ -62,7 +62,7 @@ function this.attachCover(tentRef, coverId)
             --attach mesh to tent
             attachMeshToRef(tentRef, meshPath)
             tentRef.data.tentCover = coverId
-            tes3.removeItem{ reference = tes3.player, item = coverId, playSound = false}
+            tes3.removeItem{ reference = reference, item = coverId, playSound = false}
         else
             logger:error("%s is not a valid tent cover.", coverId)
         end

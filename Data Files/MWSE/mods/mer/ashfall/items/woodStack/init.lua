@@ -97,7 +97,7 @@ WoodStack.buttons = {
             local capacity = WoodStack.getCapacity(reference.id)
             logger:debug("woodAmount: %s, capacity: %s", woodAmount, capacity)
             local hasRoom = woodAmount < capacity
-            local playerHasWood = tes3.getItemCount{
+            local playerHasWood = common.helper.getItemCount{
                 reference = tes3.player,
                 item = "ashfall_firewood",
             } > 0
@@ -105,7 +105,7 @@ WoodStack.buttons = {
         end,
         tooltipDisabled = {
             text = function()
-                local playerHasWood = tes3.getItemCount{
+                local playerHasWood = common.helper.getItemCount{
                     reference = tes3.player,
                     item = "ashfall_firewood",
                 } > 0
@@ -122,7 +122,7 @@ WoodStack.buttons = {
                 tes3.messageBox("Wood Stack is full.")
                 return
             end
-            local playerWood = tes3.getItemCount{
+            local playerWood = common.helper.getItemCount{
                 reference = tes3.player,
                 item = "ashfall_firewood",
             }
@@ -136,7 +136,7 @@ WoodStack.buttons = {
                 varId = "amount",
                 table = t,
                 okayCallback = function()
-                    tes3.removeItem{
+                    common.helper.removeItem{
                         reference = tes3.player,
                         item = "ashfall_firewood",
                         count = t.amount,

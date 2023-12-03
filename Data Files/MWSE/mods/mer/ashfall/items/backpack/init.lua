@@ -97,7 +97,7 @@ local function attachItem(item, parent)
 end
 
 local function setSwitchNodes(e)
-    logger:trace("backpack setting switch nodes")
+    logger:debug("backpack setting switch nodes")
     local ref = e.reference
     for switch, data in pairs(switchNodes) do
         local switchNode = ref.sceneNode:getObjectByName(switch)
@@ -116,9 +116,9 @@ local function setSwitchNodes(e)
             end
             if not isEquipped then
                 for item, _ in pairs(data.items) do
-                    if ref.object.inventory:contains(item) then
+                    local count = common.helper.getItemCount{ reference = tes3.player, item = item }
+                    if count > 0 then
                         index = 0
-
                         itemToAttach = item
                         break
                     end

@@ -39,7 +39,7 @@ local function itemIsCandle(object)
 end
 
 local function playerHasCandle()
-    for _, stack in pairs(tes3.player.object.inventory) do
+    for _, stack in pairs(common.helper.getInventory()) do
         if itemIsCandle(stack.object) then
             return true
         end
@@ -106,7 +106,7 @@ local function showMenuOnEquipTeaWarmer(e)
                         end,
                         callback = function()
                             timer.delayOneFrame(function()
-                                tes3ui.showInventorySelectMenu{
+                                common.helper.showInventorySelectMenu{
                                     title = "Select Candle",
                                     noResultsText = "No candles found.",
                                     filter = function(e)
@@ -116,7 +116,7 @@ local function showMenuOnEquipTeaWarmer(e)
                                         if e.item then
                                             addFuel(teaWarmer)
                                             tes3.removeItem{
-                                                reference = tes3.player,
+                                                reference = e.reference,
                                                 item = e.item,
                                                 itemData = e.itemData,
                                                 count = 1

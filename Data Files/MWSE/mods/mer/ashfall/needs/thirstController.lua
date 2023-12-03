@@ -164,15 +164,23 @@ function this.callWaterMenuAction(callback)
     common.data.drinkingWaterType = nil
 end
 
+---@param source Ashfall.LiquidContainer
+---@param item tes3item
+---@param itemData tes3itemData
 function this.canTransferFilter(source, item, itemData)
     local target = LiquidContainer.createFromInventory(item, itemData)
     if not target then return false end
-    return source:canTransfer(target)
+
+    local canTransfer, reason = source:canTransfer(target)
+    if not canTransfer then
+        logger:warn("Can't transfer: %s", reason)
+    end
+    return canTransfer
 end
 
 function this.playerHasFillableContainers(source)
     source = source or LiquidContainer.createInfiniteWaterSource()
-    for _, stack in pairs(tes3.player.object.inventory) do
+    for _, stack in pairs(common.helper.getInventory()) do
         --Check if stack is a water container
         local bottleData = this.getBottleData(stack.object.id)
         if bottleData then
@@ -207,7 +215,7 @@ function this.fillContainer(params)
     local callback = params.callback
     timer.delayOneFrame(function()
         local noResultsText =  common.messages.noContainersToFill
-        tes3ui.showInventorySelectMenu{
+        common.helper.showInventorySelectMenu{
             title = "Select Water Container",
             noResultsText = noResultsText,
             filter = function(e)
@@ -215,11 +223,19 @@ function this.fillContainer(params)
             end,
             callback = function(e)
                 if e.item then
-                    local to = LiquidContainer.createFromInventoryInitItemData(e.item, e.itemData)
+                    local to = LiquidContainer.createFromInventoryWithItemData{
+                        item = e.item,
+                        itemData = e.itemData,
+                        reference = e.reference
+                    }
                     if not to then logger:error("Could not create liquid container from inventory item") return end
                     this.callWaterMenuAction(function()
                         if not e.itemData then
-                            e.itemData = tes3.addItemData{ item = e.item, to = tes3.player, updateGUI = true}
+                            e.itemData = tes3.addItemData{
+                                item = e.item --[[@as tes3misc]],
+                                to = e.reference,
+                                updateGUI = true
+                            }
                         end
 
                         --Empty dirty water first if filling from infinite water source

@@ -27,10 +27,11 @@ return {
         local utensilData = common.staticConfigs.utensils[reference.object.id:lower()]
         if utensilData.type == "cookingPot" then
             for ladleId, _ in pairs(common.staticConfigs.ladles) do
-                if tes3.getObject(ladleId) then
-                    if tes3.getItemCount{ reference = tes3.player, item = ladleId} > 0 then
+                local ladle = tes3.getObject(ladleId)
+                if ladle then
+                    if common.helper.getItemCount{ reference = tes3.player, item = ladle } > 0 then
                         logger:debug("Found a ladle to attach to the cooking pot")
-                        tes3.removeItem{ reference = tes3.player, item = ladleId, playSound = false }
+                        common.helper.removeItem{ reference = tes3.player, item = ladle, playSound = false }
                         campfire.data.ladle = ladleId:lower()
                         break
                     end

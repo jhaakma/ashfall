@@ -20,7 +20,7 @@ return {
     callback = function(campfire)
         timer.delayOneFrame(function()
             logger:debug("Opening Inventory Select Menu")
-            tes3ui.showInventorySelectMenu{
+            common.helper.showInventorySelectMenu{
                 title = "Select Water",
                 noResultsText = "You do not have any water to douse the fire.",
                 filter = filterWaterContainer,

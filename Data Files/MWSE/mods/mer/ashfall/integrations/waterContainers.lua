@@ -25,6 +25,7 @@ interop.registerWaterContainers({
         capacity = 60,
         waterMaxScale = 1.8,
         waterMaxHeight = 4.0,
+        holdsStew = true
     },
     ashfall_cup_01 = {
         capacity = 25,

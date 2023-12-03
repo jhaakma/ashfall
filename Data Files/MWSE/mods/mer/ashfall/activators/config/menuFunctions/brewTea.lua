@@ -18,7 +18,7 @@ return {
     callback = function(campfire)
         timer.delayOneFrame(function()
             common.data.inventorySelectTeaBrew = true
-            tes3ui.showInventorySelectMenu{
+            common.helper.showInventorySelectMenu{
                 title = "Brew Tea:",
                 noResultsText = "You have no suitable ingredients.",
                 filter = function(e)
@@ -35,8 +35,8 @@ return {
 
                         common.skills.survival:exercise(skillConfigs.survival.brewTea.skillGain)
 
-                        tes3.player.object.inventory:removeItem{
-                            mobile = tes3.mobilePlayer,
+                        tes3.removeItem{
+                            reference = e.reference,
                             item = e.item,
                             itemData = e.itemData
                         }

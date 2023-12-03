@@ -50,6 +50,7 @@ local function isPlayerLookingAtDummy()
         position = tes3.getPlayerEyePosition(),
         direction = tes3.getPlayerEyeVector(),
         ignore = { tes3.player },
+        accurateSkinned = true
     })
     if result and result.reference then
         return isDummy(result.reference)

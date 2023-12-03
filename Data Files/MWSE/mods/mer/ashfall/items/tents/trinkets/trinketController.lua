@@ -57,7 +57,7 @@ end
 
 function this.selectTrinket(tentRef)
     timer.delayOneFrame(function()
-        tes3ui.showInventorySelectMenu{
+        common.helper.showInventorySelectMenu{
             title = "Select Trinket",
             noResultsText = "You don't have any trinkets.",
             filter = function(e)
@@ -66,15 +66,18 @@ function this.selectTrinket(tentRef)
             callback = function(e)
                 if e.item then
                     logger:debug("attaching trinket")
-                    this.attachTrinket(tentRef, e.item.id)
+                    this.attachTrinket(e.reference, tentRef, e.item.id)
                 end
             end
         }
     end)
 end
 
-
-function this.attachTrinket(tentRef, trinketId)
+---comment
+---@param reference tes3reference
+---@param tentRef tes3reference
+---@param trinketId string
+function this.attachTrinket(reference, tentRef, trinketId)
     logger:debug("attachTrinket: %s", trinketId)
     local trinketNode = getTrinketNode(tentRef.sceneNode)
     if trinketNode then
@@ -89,7 +92,7 @@ function this.attachTrinket(tentRef, trinketId)
         if trinket then
             --attach mesh to tent
             attachMeshToRef(tentRef, trinket)
-            tes3.removeItem{ reference = tes3.player, item = trinketId, playSound = false}
+            tes3.removeItem{ reference = reference, item = trinketId, playSound = false}
         else
             logger:error("%s is not a valid trinket.", trinketId)
         end

@@ -32,7 +32,7 @@ return {
             --remove old sbuffs
             for name, buff in pairs(stewBuffs) do
                 if campfire.data.stewLevels[name] == nil then
-                    mwscript.removeSpell{ reference = companion, spell = buff.id }
+                    tes3.removeSpell{ reference = companion, spell = buff.id }
                 end
             end
 
@@ -46,7 +46,7 @@ return {
                     local effect = spell.effects[1]
                     effect.min = effectStrength
                     effect.max = effectStrength
-                    mwscript.addSpell{ reference = companion, spell = spell }
+                    tes3.addSpell{ reference = companion, spell = spell }
                     companion.reference.data.stewBuffTimeLeft = common.helper.calculateStewBuffDuration(campfire.data.waterHeat)
                     event.trigger("Ashfall:registerReference", { reference = companion})
                 end)

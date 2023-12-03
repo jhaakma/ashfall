@@ -4,6 +4,7 @@ local Backpack = require("mer.ashfall.items.backpack")
 local common = require("mer.ashfall.common.common")
 local logger = common.createLogger("carryableContainers")
 
+
 ---@param self CarryableContainer
 local function doEquip(self)
     local item = self.item --[[@as tes3clothing]]
@@ -21,52 +22,68 @@ local function doOpen(self)
     self:openFromInventory()
 end
 
----@param self CarryableContainer
-local openFromInventory = function(self)
-    logger:debug("Opening from inventory")
-    if CraftingFramework.Util.isQuickModifierDown() then
-        doOpen(self)
-    else
-        doEquip(self)
-    end
-end
+local callbacks = {
+    ---@param self CarryableContainer
+    openFromInventory = function(self)
+        logger:debug("Opening from inventory")
+        if CraftingFramework.Util.isQuickModifierDown() then
+            doOpen(self)
+        else
+            doEquip(self)
+        end
+    end,
+    ---@param self CarryableContainer
+    _openFromInventory = function(self)
+        if CraftingFramework.Util.isQuickModifierDown() then
+            doOpen(self)
+        else
+            tes3ui.showMessageMenu{
+                message = self.item.name,
+                buttons = {
+                    {
+                        text = "Open",
+                        callback = function()
+                            timer.delayOneFrame(function() doOpen(self) end)
+                        end
+                    },
+                    { text = "Equip", callback = function() doEquip(self) end },
+                },
+                cancels = true
+            }
+        end
+    end,
+    ---@param self CarryableContainer
+    ---@param data CarryableContainer.onCopyCreatedData
+    onCopyCreated = function(self, data)
+        logger:trace("onCopyCreated")
+        Backpack.registerBackpack(data.copy.id)
+        common.data.backpacks[data.copy.id:lower()] = true
+    end,
+    ---@param self CarryableContainer
+    getWeightModifier = function(self)
+        logger:trace("getWeightModifier()")
+        --Set weight modifier to 0.1 if the backpack is equipped,
+        --otherwise set it to 1.0
+        local equippedStack = tes3.getEquippedItem{
+            actor = tes3.player,
+            objectType = tes3.objectType.clothing,
+            slot = 11
+        }
+        local isEquipped = equippedStack and equippedStack.object == self.item
+        if isEquipped then
+            logger:trace("- Updating weight for equipped backpack")
+            return self.containerConfig.weightModifier
+        end
+        logger:trace("- Updating weight for unequipped backpack")
+        return 1
+    end,
+    ---@param self CarryableContainer
+    getWeightModifierText = function(self)
+        return string.format("Weight Modifier: %.1fx When Equipped", self.containerConfig.weightModifier)
+    end,
+}
 
----@param self CarryableContainer
----@param data CarryableContainer.onCopyCreatedData
-local function onCopyCreated(self, data)
-    logger:trace("onCopyCreated")
-    Backpack.registerBackpack(data.copy.id)
-    common.data.backpacks[data.copy.id:lower()] = true
-end
 
----@param self CarryableContainer
-local function getWeightModifier(self)
-    logger:trace("getWeightModifier()")
-    --Set weight modifier to 0.1 if the backpack is equipped,
-    --otherwise set it to 1.0
-    local equippedStack = tes3.getEquippedItem{
-        actor = tes3.player,
-        objectType = tes3.objectType.clothing,
-        slot = 11
-    }
-    local isEquipped = equippedStack and equippedStack.object == self.item
-    if isEquipped then
-        logger:trace("- Updating weight for equipped backpack")
-        return self.containerConfig.weightModifier
-    end
-    logger:trace("- Updating weight for unequipped backpack")
-    return 1
-end
-
----@param self CarryableContainer
-local function getWeightModifierText(self)
-    return string.format("Weight Modifier: %.1fx When Equipped", self.containerConfig.weightModifier)
-end
-
-local function getTooltip(self)
-    local key = CraftingFramework.Util.getQuickModifierKeyText()
-    return string.format("Hold %s while equipping to open", key)
-end
 
 ---@type CarryableContainer.containerConfig[]
 local containers = {
@@ -75,11 +92,10 @@ local containers = {
         itemId = "ashfall_pack_01",
         capacity = 120,
         hasCollision = true,
-        openFromInventory = openFromInventory,
-        onCopyCreated = onCopyCreated,
-        getWeightModifier = getWeightModifier,
-        getWeightModifierText = getWeightModifierText,
-        getTooltip = getTooltip,
+        openFromInventory = callbacks.openFromInventory,
+        onCopyCreated = callbacks.onCopyCreated,
+        getWeightModifier = callbacks.getWeightModifier,
+        getWeightModifierText = callbacks.getWeightModifierText,
         weightModifier = 0.3,
     },
     {
@@ -87,11 +103,10 @@ local containers = {
         itemId = "ashfall_pack_02",
         capacity = 120,
         hasCollision = true,
-        openFromInventory = openFromInventory,
-        onCopyCreated = onCopyCreated,
-        getWeightModifier = getWeightModifier,
-        getWeightModifierText = getWeightModifierText,
-        getTooltip = getTooltip,
+        openFromInventory = callbacks.openFromInventory,
+        onCopyCreated = callbacks.onCopyCreated,
+        getWeightModifier = callbacks.getWeightModifier,
+        getWeightModifierText = callbacks.getWeightModifierText,
         weightModifier = 0.3,
     },
     {
@@ -99,11 +114,10 @@ local containers = {
         itemId = "ashfall_pack_03",
         capacity = 120,
         hasCollision = true,
-        openFromInventory = openFromInventory,
-        onCopyCreated = onCopyCreated,
-        getWeightModifier = getWeightModifier,
-        getWeightModifierText = getWeightModifierText,
-        getTooltip = getTooltip,
+        openFromInventory = callbacks.openFromInventory,
+        onCopyCreated = callbacks.onCopyCreated,
+        getWeightModifier = callbacks.getWeightModifier,
+        getWeightModifierText = callbacks.getWeightModifierText,
         weightModifier = 0.5,
     },
     {
@@ -111,11 +125,10 @@ local containers = {
         itemId = "ashfall_pack_04",
         capacity = 100,
         hasCollision = true,
-        openFromInventory = openFromInventory,
-        onCopyCreated = onCopyCreated,
-        getWeightModifier = getWeightModifier,
-        getWeightModifierText = getWeightModifierText,
-        getTooltip = getTooltip,
+        openFromInventory = callbacks.openFromInventory,
+        onCopyCreated = callbacks.onCopyCreated,
+        getWeightModifier = callbacks.getWeightModifier,
+        getWeightModifierText = callbacks.getWeightModifierText,
         weightModifier = 0.5,
     },
     {
@@ -123,11 +136,10 @@ local containers = {
         itemId = "ashfall_pack_05",
         capacity = 150,
         hasCollision = true,
-        openFromInventory = openFromInventory,
-        onCopyCreated = onCopyCreated,
-        getWeightModifier = getWeightModifier,
-        getWeightModifierText = getWeightModifierText,
-        getTooltip = getTooltip,
+        openFromInventory = callbacks.openFromInventory,
+        onCopyCreated = callbacks.onCopyCreated,
+        getWeightModifier = callbacks.getWeightModifier,
+        getWeightModifierText = callbacks.getWeightModifierText,
         weightModifier = 0.5,
     },
     {
@@ -135,11 +147,10 @@ local containers = {
         itemId = "ashfall_pack_06",
         capacity = 120,
         hasCollision = true,
-        openFromInventory = openFromInventory,
-        onCopyCreated = onCopyCreated,
-        getWeightModifier = getWeightModifier,
-        getWeightModifierText = getWeightModifierText,
-        getTooltip = getTooltip,
+        openFromInventory = callbacks.openFromInventory,
+        onCopyCreated = callbacks.onCopyCreated,
+        getWeightModifier = callbacks.getWeightModifier,
+        getWeightModifierText = callbacks.getWeightModifierText,
         weightModifier = 0.3,
     },
     {
@@ -147,11 +158,10 @@ local containers = {
         itemId = "ashfall_pack_07",
         capacity = 100,
         hasCollision = true,
-        openFromInventory = openFromInventory,
-        onCopyCreated = onCopyCreated,
-        getWeightModifier = getWeightModifier,
-        getWeightModifierText = getWeightModifierText,
-        getTooltip = getTooltip,
+        openFromInventory = callbacks.openFromInventory,
+        onCopyCreated = callbacks.onCopyCreated,
+        getWeightModifier = callbacks.getWeightModifier,
+        getWeightModifierText = callbacks.getWeightModifierText,
         weightModifier = 0.7,
     },
 }

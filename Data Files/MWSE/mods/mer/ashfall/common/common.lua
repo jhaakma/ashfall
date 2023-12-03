@@ -88,6 +88,7 @@ end
 ---@field inventorySelectTeaBrew boolean Set to true when the player is currently selecting a tea to brew
 ---@field backpacks table<string, boolean> a map of backpack objects which are to be registered on load
 ---@field sacks table<string, boolean> a map of sack objects which are to be registered as materials on load
+---@field inventorySelectStew boolean True while in the inventory select menu for adding ingredients to stew
 this.data = setmetatable({}, {
     __index = function(t, key)
         if not ( tes3.player and tes3.player.data) then

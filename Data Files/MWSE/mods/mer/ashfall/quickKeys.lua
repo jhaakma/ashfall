@@ -7,6 +7,7 @@ local function isBottle(e)
     return common.staticConfigs.bottleList[e.item.id:lower()]
 end
 
+---@param e filterInventorySelectEventData
 event.register("filterInventorySelect", function(e)
     if isBottle(e) then e.filter = true end
 end, { filter = "quick" })

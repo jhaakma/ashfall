@@ -659,18 +659,19 @@ Planter.buttons = {
             local planter = Planter.new(reference)
             if not planter then return end
             timer.delayOneFrame(function()
-                tes3ui.showInventorySelectMenu{
+                common.helper.showInventorySelectMenu{
                     title = "Select Plant",
                     noResultsText = "You don't have any plantable items.",
                     filter = function(e)
                         return Planter.filterPlantable(e.item)
                     end,
                     callback = function(e)
+                        local item = e.item --[[@as tes3ingredient]]
                         if e.item then
-                            planter:plantSeed(e.item)
+                            planter:plantSeed(item)
                             tes3.removeItem{
-                                reference = tes3.player,
-                                item = e.item,
+                                reference = e.reference,
+                                item = item,
                                 itemData = e.itemData,
                                 count = 1,
                                 playSound = false,
@@ -712,7 +713,7 @@ Planter.buttons = {
             local planter = Planter.new(reference)
             if not planter then return end
             timer.delayOneFrame(function()
-                tes3ui.showInventorySelectMenu{
+                common.helper.showInventorySelectMenu{
                     title = "Select Water Container",
                     noResultsText = "You don't have any water.",
                     filter = function(e)
