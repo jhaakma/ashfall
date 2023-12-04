@@ -588,7 +588,13 @@ function Planter:hasPlant()
     return self.plantId ~= nil
 end
 
-function Planter.filterPlantable(item)
+---@param item tes3item
+---@param itemData tes3itemData
+function Planter.filterPlantable(item, itemData)
+    --Prevent seedlings with data from being used
+    if itemData then
+        return false
+    end
     return Seedling.isSeedling(item)
 end
 
@@ -663,7 +669,7 @@ Planter.buttons = {
                     title = "Select Plant",
                     noResultsText = "You don't have any plantable items.",
                     filter = function(e)
-                        return Planter.filterPlantable(e.item)
+                        return Planter.filterPlantable(e.item, e.itemData)
                     end,
                     callback = function(e)
                         local item = e.item --[[@as tes3ingredient]]
