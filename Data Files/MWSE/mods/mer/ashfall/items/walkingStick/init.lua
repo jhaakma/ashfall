@@ -69,6 +69,7 @@ event.register("itemTileUpdated", onInventoryTileUpdated)
 event.register("uiObjectTooltip", function(e)
     if not e.object then return end
     if not tes3ui.menuMode() then return end
+    if STICK_ID_MAP[e.object.id:lower()] == nil then return end
     local isEquipped = tes3.player.object:hasItemEquipped(e.object)
     if not isEquipped then return end
     local key = common.helper.getModifierKeyString()
