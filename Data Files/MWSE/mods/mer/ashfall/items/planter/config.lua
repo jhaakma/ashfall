@@ -10,6 +10,15 @@ local planterConfig = {
     plantBlacklist = {
         flora_bm_holly_05 = true,
         flora_bm_holly_06 = true,
+        ab_f_tramavine_01 = true,
+        ab_f_tramavine_02 = true,
+        ab_f_tramavine_03 = true,
+        ab_f_comberryhbundle = true,
+        ab_f_goldkanhbundle = true,
+        ["ab_f_hackle-lohbundle"] = true,
+        ab_f_marshmbundle1_o = true,
+        ab_f_marshmbundle2_o = true,
+        ab_o_ashlscathecraw = true,
     },
     floraPatterns = {
         "flora_",
