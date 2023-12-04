@@ -21,6 +21,7 @@ this.getInventory = CarryableContainer.getFullInventory
 this.showInventorySelectMenu = CraftingFramework.InventorySelectMenu.open
 
 
+
 function this.getHoursPassed()
     return ( tes3.worldController.daysPassed.value * 24 ) + tes3.worldController.hour.value
 end
@@ -206,7 +207,7 @@ end
 
 
 ---@param tooltip tes3uiElement
----@param labelText string
+---@param labelText? string
 ---@param color? number[]  #from tes3ui.getPalette
 function this.addLabelToTooltip(tooltip, labelText, color)
     local function setupOuterBlock(e)

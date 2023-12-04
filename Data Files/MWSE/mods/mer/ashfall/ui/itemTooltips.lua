@@ -102,6 +102,7 @@ local function addFoodTooltips(item, itemData, tooltip)
                 "roasted "
             }
             local nameLabel = tooltip:findChild(tes3ui.registerID("HelpMenu_name"))
+            if not nameLabel then return end
             for _, pattern in ipairs(cookStrings) do
                 if string.startswith(nameLabel.text:lower(), pattern) then
                     nameLabel.text = nameLabel.text:sub(string.len(pattern) + 1, -1)

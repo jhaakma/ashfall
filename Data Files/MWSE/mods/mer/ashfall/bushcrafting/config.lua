@@ -729,9 +729,9 @@ local bushCraftingRecipes = {
             recoverEquipmentMaterials = true,
         },
         {
-            id = "bushcraft:ashfall_staff_wood",
-            craftableId = "ashfall_staff_wood",
-            description = "A simple walking stick that doubles as a staff weapon. \n\nNote: Broken bushcrafted tools and weapons can be dismantled for parts by equipping them.",
+            id = "bushcraft:ashfall_walking_stick",
+            craftableId = "ashfall_walking_stick",
+            description = "A simple walking stick that you can hold in your off-hand or as a two-handed staff. When equipped, increases your Athletics skill. \n\nNote: Broken bushcrafted tools and weapons can be dismantled for parts by equipping them.",
             materials = {
                 { material = "wood", count = 2 },
                 { material = "rope", count = 1 },
@@ -739,6 +739,7 @@ local bushCraftingRecipes = {
             category = this.categories.weapons,
             soundType = "wood",
             recoverEquipmentMaterials = true,
+            rotationAxis = 'y',
         },
         {
             id = "bushcraft:ashfall_bow_wood",
