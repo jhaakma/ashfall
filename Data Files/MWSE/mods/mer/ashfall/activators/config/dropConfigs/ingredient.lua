@@ -14,19 +14,30 @@ return {
             return false
         end
 
-        if not CampfireUtil.refIsCookingPot(targetRef) then
+        local liquidContainer = LiquidContainer.createFromReference(targetRef)
+        if not liquidContainer then
             return false
         end
 
-        local hasWater = targetRef.data.waterAmount
-            and targetRef.data.waterAmount > 0
-        if not hasWater then
-            return false, "No water in pot."
+        if not liquidContainer.holdsStew then
+            return false
         end
 
-        local hasLadle = not not targetRef.data.ladle
-        if not hasLadle then
-            return false, "No ladle in pot."
+        if liquidContainer.waterAmount <= 0 then
+            return false
+        end
+
+        local liquidType = liquidContainer:getLiquidType()
+        if liquidType == "dirty" then
+            return false, "Water is dirty."
+        end
+
+        if liquidType == "tea" then
+            return false
+        end
+
+        if not liquidContainer.ladle then
+            return false, "Needs a ladle."
         end
 
         return true

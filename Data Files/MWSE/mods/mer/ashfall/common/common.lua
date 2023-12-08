@@ -34,11 +34,14 @@ this.skills = {}
 
 local function initData()
     tes3.player.data.Ashfall = tes3.player.data.Ashfall or {}
-    tes3.player.data.Ashfall.currentStates = tes3.player.data.Ashfall.currentStates or {}
-    tes3.player.data.Ashfall.wateredCells = tes3.player.data.Ashfall.wateredCells or {}
-    tes3.player.data.Ashfall.trinketEffects = tes3.player.data.Ashfall.trinketEffects or {}
-    tes3.player.data.Ashfall.backpacks = tes3.player.data.Ashfall.backpacks or {}
-    tes3.player.data.Ashfall.sacks = tes3.player.data.Ashfall.sacks or {}
+    local data = tes3.player.data.Ashfall
+    data.currentStates = data.currentStates or {}
+    data.wateredCells = data.wateredCells or {}
+    data.trinketEffects = data.trinketEffects or {}
+    data.backpacks = data.backpacks or {}
+    data.woodAxesForHarvesting = data.woodAxesForHarvesting or {}
+    data.woodAxesForBackpack = data.woodAxesForBackpack or {}
+    data.sacks = data.sacks or {}
 end
 
 ---@class Ashfall.playerData
@@ -88,6 +91,8 @@ end
 ---@field inventorySelectTeaBrew boolean Set to true when the player is currently selecting a tea to brew
 ---@field backpacks table<string, boolean> a map of backpack objects which are to be registered on load
 ---@field sacks table<string, boolean> a map of sack objects which are to be registered as materials on load
+---@field woodAxesForHarvesting table<string, boolean> a map of woodaxe objects which are to be registered for harvesting on load
+---@field woodAxesForBackpack table<string, boolean> a map of woodaxe objects which are to be registered for backpack display on load
 ---@field inventorySelectStew boolean True while in the inventory select menu for adding ingredients to stew
 this.data = setmetatable({}, {
     __index = function(t, key)

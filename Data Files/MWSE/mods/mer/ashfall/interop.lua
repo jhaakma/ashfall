@@ -10,8 +10,8 @@ local ratingsConfig = require('mer.ashfall.tempEffects.ratings.ratingsConfig')
 local climateConfig = require('mer.ashfall.config.weatherRegionConfig')
 local teaConfig = require('mer.ashfall.config.teaConfig')
 local ActivatorController = require("mer.ashfall.activators.activatorController")
+local WoodAxe = require("mer.ashfall.items.woodaxe")
 local backpackConfig = require("mer.ashfall.items.backpack.config")
-local woodAxeConfig = require("mer.ashfall.harvest.config").woodaxes
 local overrides = require("mer.ashfall.config.overrides")
 
 local function listValidActivatorTypes()
@@ -221,44 +221,6 @@ local function registerClimates(e)
 end
 
 
-local function registerWoodAxe(id)
-    --legacy API
-    assert(type(id) == 'string', "registerWoodAxes: id must be a string")
-    logger:debug(id)
-    woodAxeConfig[id:lower()] = {
-        effectiveness = 1.5,
-        degradeMulti = 0.5,
-    }
-end
-
-local function registerWoodAxeForBackpack(id)
-    backpackConfig.woodAxes[id:lower()] = true
-end
-
-local function registerWoodAxes(data)
-    logger:info("Registering Wood Axes")
-    for _, v in pairs(data) do
-        if type(v) == "string" then
-            logger:info("as string")
-            registerWoodAxe(v)
-        elseif type(v) == "table" then
-            logger:info("as table")
-            local id = v.id
-            assert(id)
-            registerWoodAxe(id)
-            if v.registerForBackpacks then
-                logger:info("Register for backpacks")
-                registerWoodAxeForBackpack(id)
-            end
-        else
-            logger:error("Invalid values passed to registerWoodAxes")
-        end
-    end
-    return true
-end
-
-local conditionConfig = common.staticConfigs.conditionConfig
-
 ---@class Ashfall.Interop
 local Interop = {}
 
@@ -320,6 +282,8 @@ Interop.unblockThirst = function()
         return true
     end
 end
+
+local conditionConfig = common.staticConfigs.conditionConfig
 --Getters and Setters for Conditions
 Interop.getHunger = function()
     return conditionConfig.hunger:getValue()
@@ -525,15 +489,34 @@ end
 
 -- Get a list of registered woodAxe IDs
 Interop.getWoodAxeIds = function()
-    return table.copy(woodAxeConfig.woodAxes)
+    return table.copy(WoodAxe.harvestConfig)
 end
 
 Interop.getBackPackWoodAxeIds = function()
     return table.copy(backpackConfig.woodAxes)
 end
 
-Interop.registerWoodAxes = function(data)
-    return registerWoodAxes(data)
+---@param data { id: string, registerForBackpacks: boolean }[]
+function Interop.registerWoodAxes(data)
+    logger:info("Registering Wood Axes")
+    for _, v in pairs(data) do
+        if type(v) == "string" then
+            logger:info("as string")
+            WoodAxe.registerForHarvesting(v)
+        elseif type(v) == "table" then
+            logger:info("as table")
+            local id = v.id
+            assert(id)
+            WoodAxe.registerForHarvesting(id)
+            if v.registerForBackpacks then
+                logger:info("Register for backpacks")
+                WoodAxe.registerForBackpack(id)
+            end
+        else
+            logger:error("Invalid values passed to registerWoodAxes")
+        end
+    end
+    return true
 end
 
 ----------------------------------------

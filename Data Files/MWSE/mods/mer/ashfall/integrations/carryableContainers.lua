@@ -55,9 +55,9 @@ local callbacks = {
     ---@param self CarryableContainer
     ---@param data CarryableContainer.onCopyCreatedData
     onCopyCreated = function(self, data)
-        logger:trace("onCopyCreated")
-        Backpack.registerBackpack(data.copy.id)
-        common.data.backpacks[data.copy.id:lower()] = true
+        -- logger:trace("onCopyCreated")
+        -- Backpack.registerBackpack(data.copy.id)
+        -- common.data.backpacks[data.copy.id:lower()] = true
     end,
     ---@param self CarryableContainer
     getWeightModifier = function(self)

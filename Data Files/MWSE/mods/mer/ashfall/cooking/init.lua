@@ -320,20 +320,20 @@ local function doPlaced(ingredReference)
     --place in pot
     local campfire = CampfireUtil.getPlacedOnContainer()
     if campfire then
-        local utensilData = CampfireUtil.getDataFromUtensilOrCampfire{
-            dataHolder = campfire,
-            object = campfire.object
-        }
-        local hasWater = campfire.data.waterAmount and campfire.data.waterAmount > 0
-        local hasLadle = not not campfire.data.ladle
-        --ingredient placed on a cooking pot with water in it
-        if hasWater and utensilData and utensilData.holdsStew then
-            if not hasLadle then
-                tes3.messageBox("Requires ladle.")
-            else
-                doAddingredToStew(campfire, ingredReference)
-            end
-        end
+        -- local utensilData = CampfireUtil.getDataFromUtensilOrCampfire{
+        --     dataHolder = campfire,
+        --     object = campfire.object
+        -- }
+        -- local hasWater = campfire.data.waterAmount and campfire.data.waterAmount > 0
+        -- local hasLadle = not not campfire.data.ladle
+        -- --ingredient placed on a cooking pot with water in it
+        -- if hasWater and utensilData and utensilData.holdsStew then
+        --     if not hasLadle then
+        --         tes3.messageBox("Requires ladle.")
+        --     else
+        --         doAddingredToStew(campfire, ingredReference)
+        --     end
+        -- end
     elseif foodConfig.getGrillValues(ingredReference.object) then
         if ingredReference.supportsLuaData then
             --Reset grill time for meat and veges

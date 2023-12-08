@@ -251,6 +251,15 @@ local function onLoaded(e)
     end
 end
 
+---@param e objectCreatedEventData
+event.register("objectCreated", function(e)
+    if e.copiedFrom and Backpack.isBackpack(e.copiedFrom) then
+        logger:info("objectCreated: registering backpack %s", e.object.id)
+        Backpack.registerBackpack(e.object.id)
+        common.data.backpacks[e.object.id:lower()] = true
+    end
+end)
+
 event.register("loaded", onLoaded)
 event.register("equipped", onEquipped)
 event.register("unequipped", onUnequipped)
