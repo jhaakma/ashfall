@@ -496,7 +496,7 @@ Interop.getBackPackWoodAxeIds = function()
     return table.copy(backpackConfig.woodAxes)
 end
 
----@param data { id: string, registerForBackpacks: boolean }[]
+---@param data (string|{ id: string, registerForBackpacks: boolean })[]
 function Interop.registerWoodAxes(data)
     logger:info("Registering Wood Axes")
     for _, v in pairs(data) do
