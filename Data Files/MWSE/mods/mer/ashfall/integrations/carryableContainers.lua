@@ -53,6 +53,13 @@ local callbacks = {
         end
     end,
     ---@param self CarryableContainer
+    ---@param data CarryableContainer.onCopyCreatedData
+    onCopyCreated = function(self, data)
+        -- logger:trace("onCopyCreated")
+        -- Backpack.registerBackpack(data.copy.id)
+        -- common.data.backpacks[data.copy.id:lower()] = true
+    end,
+    ---@param self CarryableContainer
     getWeightModifier = function(self)
         logger:trace("getWeightModifier()")
         --Set weight modifier to 0.1 if the backpack is equipped,
@@ -86,6 +93,7 @@ local containers = {
         capacity = 120,
         hasCollision = true,
         openFromInventory = callbacks.openFromInventory,
+        onCopyCreated = callbacks.onCopyCreated,
         getWeightModifier = callbacks.getWeightModifier,
         getWeightModifierText = callbacks.getWeightModifierText,
         weightModifier = 0.3,
@@ -96,6 +104,7 @@ local containers = {
         capacity = 120,
         hasCollision = true,
         openFromInventory = callbacks.openFromInventory,
+        onCopyCreated = callbacks.onCopyCreated,
         getWeightModifier = callbacks.getWeightModifier,
         getWeightModifierText = callbacks.getWeightModifierText,
         weightModifier = 0.3,
@@ -106,6 +115,7 @@ local containers = {
         capacity = 120,
         hasCollision = true,
         openFromInventory = callbacks.openFromInventory,
+        onCopyCreated = callbacks.onCopyCreated,
         getWeightModifier = callbacks.getWeightModifier,
         getWeightModifierText = callbacks.getWeightModifierText,
         weightModifier = 0.5,
@@ -116,6 +126,7 @@ local containers = {
         capacity = 100,
         hasCollision = true,
         openFromInventory = callbacks.openFromInventory,
+        onCopyCreated = callbacks.onCopyCreated,
         getWeightModifier = callbacks.getWeightModifier,
         getWeightModifierText = callbacks.getWeightModifierText,
         weightModifier = 0.5,
@@ -126,6 +137,7 @@ local containers = {
         capacity = 150,
         hasCollision = true,
         openFromInventory = callbacks.openFromInventory,
+        onCopyCreated = callbacks.onCopyCreated,
         getWeightModifier = callbacks.getWeightModifier,
         getWeightModifierText = callbacks.getWeightModifierText,
         weightModifier = 0.5,
@@ -136,6 +148,7 @@ local containers = {
         capacity = 120,
         hasCollision = true,
         openFromInventory = callbacks.openFromInventory,
+        onCopyCreated = callbacks.onCopyCreated,
         getWeightModifier = callbacks.getWeightModifier,
         getWeightModifierText = callbacks.getWeightModifierText,
         weightModifier = 0.3,
@@ -146,6 +159,7 @@ local containers = {
         capacity = 100,
         hasCollision = true,
         openFromInventory = callbacks.openFromInventory,
+        onCopyCreated = callbacks.onCopyCreated,
         getWeightModifier = callbacks.getWeightModifier,
         getWeightModifierText = callbacks.getWeightModifierText,
         weightModifier = 0.7,
