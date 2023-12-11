@@ -36,7 +36,7 @@ return {
             return false
         end
 
-        if not liquidContainer.ladle then
+        if not liquidContainer.data.ladle then
             return false, "Needs a ladle."
         end
 
