@@ -138,6 +138,7 @@ end
 ---@param reference tes3reference
 ---@return Ashfall.LiquidContainer|nil liquidContainer
 function LiquidContainer.createFromReference(reference, bottleData)
+    if not reference.supportsLuaData then return nil end
     local id = (reference.data and reference.data.utensilId) or reference.baseObject.id
     return LiquidContainer.new{
         id = id,

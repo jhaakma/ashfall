@@ -106,7 +106,7 @@ local HEAT_LOSS_FULL = 1.0
 local WATER_HEAT_RATE = 40--base water heat/cooling speed
 ---@param liquidContainer Ashfall.LiquidContainer
 function HeatUtil.updateWaterHeat(liquidContainer)
-    if not liquidContainer.waterAmount then return end
+    if liquidContainer.waterAmount <= 0 then return end
     local now = tes3.getSimulationTimestamp()
     liquidContainer.lastWaterUpdated = liquidContainer.lastWaterUpdated or now
     local timeSinceLastUpdate = now - liquidContainer.lastWaterUpdated

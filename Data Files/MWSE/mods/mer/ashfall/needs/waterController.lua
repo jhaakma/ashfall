@@ -376,7 +376,7 @@ event.register("cellChanged", addWaterToWorld)
 
 ---@param e itemDroppedEventData
 local function clearDataOnDrop(e)
-    if e.reference.data then
+    if e.reference.supportsLuaData then
         e.reference.data.lastWaterUpdated = nil
         e.reference.data.lastBrewUpdated = nil
         e.reference.data.lastStewUpdated = nil
