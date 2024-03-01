@@ -473,7 +473,7 @@ local bushCraftingRecipes = {
         {
             id = "bushcraft:ashfall_wood_stack",
             craftableId = "ashfall_wood_stack",
-            description = "A wooden frame for storing large amounts of firewood.",
+            description = "A wooden frame for storing large amounts of firewood. Firewood stored in a nearby wood stack can be used for crafting.",
             materials = {
                 { material = "wood", count = 10 }
             },

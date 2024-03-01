@@ -320,13 +320,22 @@ function this.createSliderPopup(params)
     local sliderBlock = menu:createBlock()
     sliderBlock.width = 500
     sliderBlock.autoHeight = true
+
+    local min = params.min or 0
+    local max = params.max or 100
+    local maxJump = math.max(1, max - min)
+
+    local jump = params.jump or math.ceil(maxJump / 5)
+    jump = math.clamp(jump, 1, maxJump)
+
     mwse.mcm.createSlider(
         menu,
+        ---@diagnostic disable-next-line --convertToLabelValue should be optional
         {
             label = params.label,
-            min = params.min or 0,
-            max = params.max or 100,
-            jump = params.jump or 10,
+            min = min,
+            max = max,
+            jump = jump,
             variable = mwse.mcm.createTableVariable{
                 id = params.varId,
                 table = params.table
