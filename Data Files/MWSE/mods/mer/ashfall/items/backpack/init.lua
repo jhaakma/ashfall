@@ -194,18 +194,23 @@ local function onEquipped(e)
     if not fileName then
         return
     end
+
     -- get parent for attaching
     local parent = e.reference.sceneNode:getObjectByName("Bip01 Spine1")
+
     -- detach old backpack mesh
     detachBackpack(parent)
     -- attach new backpack mesh
     attachBackpack(parent, fileName, e.reference)
-    setSwitchNodes{reference=e.reference}
+
+    --timer.delayOneFrame(function()
+        setSwitchNodes{reference=e.reference}
+    --end)
+
     -- update parent scene node
     parent:update()
     parent:updateNodeEffects()
 end
-event.register("equipped", onEquipped)
 
 
 local function onUnequipped(e)
@@ -227,7 +232,7 @@ local function onUnequipped(e)
     parent:update()
     parent:updateNodeEffects()
 end
-event.register("unequipped", onUnequipped)
+
 
 local function onMobileActivated(e)
     if e.reference.object.equipment then
@@ -236,16 +241,15 @@ local function onMobileActivated(e)
         end
     end
 end
-event.register("mobileActivated", onMobileActivated)
 
-event.register("loaded", function(e)
+local function onLoaded(e)
     onMobileActivated{reference=tes3.player}
     for i, cell in ipairs(tes3.getActiveCells()) do
         for ref in cell:iterateReferences(tes3.objectType.npc) do
             onMobileActivated{reference=ref}
         end
     end
-end)
+end
 
 ---@param e objectCreatedEventData
 event.register("objectCreated", function(e)
@@ -256,6 +260,10 @@ event.register("objectCreated", function(e)
     end
 end)
 
+event.register("loaded", onLoaded)
+event.register("equipped", onEquipped)
+event.register("unequipped", onUnequipped)
+event.register("mobileActivated", onMobileActivated)
 event.register("activate", function(e)
     if e.activator == tes3.player then
         timer.delayOneFrame(function()

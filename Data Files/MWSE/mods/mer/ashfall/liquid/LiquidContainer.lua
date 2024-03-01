@@ -48,6 +48,7 @@ local HeatUtil = require("mer.ashfall.heat.HeatUtil")
 ---@field lastBrewUpdated number The last time the tea was updated
 ---@field lastWaterHeatUpdated number The last time the water heat was updated
 ---@field stewBuffs table The stew buffs
+---@field ladle boolean A ladle is attached to the cooking pot
 ---@field capacity number Maximum water capacity of container
 ---@field holdsStew boolean Flag whether container is able to hold stew. If it can hold stew, it can't hold tea.
 ---@field doPlaySound boolean *Default*: `true`. Flag whether to play a sound when adding water to the container
@@ -65,6 +66,7 @@ local dataValues = {
     lastBrewUpdated = {default = nil},
     lastWaterHeatUpdated = {default = nil},
     stewBuffs = {default = nil},
+    ladle = {default = nil},
 }
 
 local meta = {
@@ -138,7 +140,6 @@ end
 ---@param reference tes3reference
 ---@return Ashfall.LiquidContainer|nil liquidContainer
 function LiquidContainer.createFromReference(reference, bottleData)
-    if not reference.supportsLuaData then return nil end
     local id = (reference.data and reference.data.utensilId) or reference.baseObject.id
     return LiquidContainer.new{
         id = id,
