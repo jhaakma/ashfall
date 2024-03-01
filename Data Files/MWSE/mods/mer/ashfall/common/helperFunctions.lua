@@ -330,7 +330,6 @@ function this.createSliderPopup(params)
 
     mwse.mcm.createSlider(
         menu,
-        ---@diagnostic disable-next-line --convertToLabelValue should be optional
         {
             label = params.label,
             min = min,

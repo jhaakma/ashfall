@@ -348,13 +348,13 @@ Interop.registerActivatorType = function(e)
     end
 
     if not activatorConfig.list[e.id] then
-        activatorConfig.list[e.id] = ActivatorController.registerActivator{
+        ActivatorController.registerActivator{
+            id = e.id,
             name = e.name,
             type = e.type,
             ids = idList,
             patterns = patternList
         }
-        activatorConfig.subTyps[e.id] = e.id
     else
         error(string.format("registerActivatorType: %s already exists as an activator type", e.id))
     end
