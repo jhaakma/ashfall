@@ -66,7 +66,7 @@ local dataValues = {
     lastBrewUpdated = {default = nil},
     lastWaterHeatUpdated = {default = nil},
     stewBuffs = {default = nil},
-    ladle = {default = nil},
+    ladle = {default = nil, keepOnEmpty = true},
 }
 
 local meta = {
@@ -414,7 +414,9 @@ function LiquidContainer:empty()
     local amountEmptied = self.waterAmount
     self:setHeat(0)
     for k, _ in pairs(dataValues) do
-        self.data[k] = nil
+        if not dataValues[k].keepOnEmpty then
+            self.data[k] = nil
+        end
     end
     self:doGraphicalUpdates()
     return amountEmptied
