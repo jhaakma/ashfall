@@ -106,6 +106,14 @@ local meta = {
 ---@field reference? tes3reference
 ---@field bottleData? table
 
+---@param dataHolder tes3reference | tes3itemData | nil
+local function dataHolderIsValid(dataHolder)
+    return dataHolder == nil
+    or dataHolder.supportsLuaData
+    or not (dataHolder.count and dataHolder.count > 1)
+end
+
+
 --[[
     Construct a new Liquid Container.
     Data Holder is Optional, but only for using as a filter. Mandatory if you want to actually transfer liquid
@@ -113,6 +121,9 @@ local meta = {
 ---@param e LiquidContainer.ConstructorData
 ---@return Ashfall.LiquidContainer|nil liquidContainer
 function LiquidContainer.new(e)
+    if not dataHolderIsValid(e.dataHolder) then
+        return nil
+    end
     local id = e.id
     local dataHolder = e.dataHolder
     local reference = e.reference
@@ -412,10 +423,12 @@ end
 ---Empty a water container, clearing item data and triggering any node updates.
 ---@return number #The amount of water that was emptied
 function LiquidContainer:empty()
+    logger:debug("Emptying %s", self)
     local amountEmptied = self.waterAmount
     self:setHeat(0)
     for k, _ in pairs(dataValues) do
         if not dataValues[k].keepOnEmpty then
+            logger:debug("Clearing %s", k)
             self.data[k] = nil
         end
     end

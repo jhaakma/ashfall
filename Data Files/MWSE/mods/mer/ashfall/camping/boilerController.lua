@@ -32,6 +32,8 @@ local function doUpdate(boilerRef)
     local timestamp = tes3.getSimulationTimestamp()
     local liquidContainer = LiquidContainer.createFromReference(boilerRef)
     if not liquidContainer then return end
+    if liquidContainer.waterAmount == 0 then return end
+
     liquidContainer.data.lastWaterUpdated = liquidContainer.data.lastWaterUpdated or timestamp
     local timeSinceLastUpdate = timestamp - liquidContainer.data.lastWaterUpdated
 

@@ -195,82 +195,78 @@ local function addTeaTooltips(item, itemData, tooltip)
 end
 
 local function addStewTooltips(item, itemData, tooltip)
-    if itemData and itemData.data.stewLevels then
-        local outerBlock = tooltip:createBlock{}
-                outerBlock.autoHeight = true
-                outerBlock.autoWidth = true
-                outerBlock.childAlignX = 0.5
-                outerBlock.flowDirection = "top_to_bottom"
 
-        logger:trace("Stew Tooltips")
-        local stewName = foodConfig.isStewNotSoup(itemData.data.stewLevels) and "Stew" or "Soup"
+    local liquidContainer = LiquidContainer.createFromInventory(item, itemData)
+    if not (liquidContainer and liquidContainer.stewLevels) then return end
 
-        local progress = ( itemData.data.stewProgress or 0 )
-        local progressText
+    local outerBlock = tooltip:createBlock{}
+            outerBlock.autoHeight = true
+            outerBlock.autoWidth = true
+            outerBlock.childAlignX = 0.5
+            outerBlock.flowDirection = "top_to_bottom"
 
-        logger:trace("progress: %d", progress)
-        if progress < 100 then
-            progressText = string.format("%s (%d%% Cooked)", stewName, progress )
-        elseif itemData.data.waterHeat < common.staticConfigs.hotWaterHeatValue then
-            progressText = string.format("%s (Cold)", stewName)
-        else
-            progressText = string.format("%s (Cooked)", stewName)
-        end
-        local stewProgressLabel = outerBlock:createLabel({ text = progressText })
-        stewProgressLabel.color = tes3ui.getPalette("header_color")
-        centerText(stewProgressLabel)
+    logger:trace("Stew Tooltips")
+    local stewName = foodConfig.isStewNotSoup(liquidContainer.stewLevels) and "Stew" or "Soup"
 
+    local progressText
 
-        for foodType, ingredLevel in pairs(itemData.data.stewLevels) do
-            local block = outerBlock:createBlock{}
-                block.autoHeight = true
-                block.autoWidth = true
-                block.childAlignX = 0.5
-            local value = math.min(ingredLevel, 100)
-            local stewBuff = foodConfig.getStewBuffForFoodType(foodType)
-            local spell = tes3.getObject(stewBuff.id)
-            local effect = spell.effects[1]
+    logger:trace("progress: %d", liquidContainer.stewProgress)
+    if liquidContainer.stewProgress < 100 then
+        progressText = string.format("%s (%d%% Cooked)", stewName, liquidContainer.stewProgress )
+    elseif liquidContainer.waterHeat < common.staticConfigs.hotWaterHeatValue then
+        progressText = string.format("%s (Cold)", stewName)
+    else
+        progressText = string.format("%s (Cooked)", stewName)
+    end
+    local stewProgressLabel = outerBlock:createLabel({ text = progressText })
+    stewProgressLabel.color = tes3ui.getPalette("header_color")
+    centerText(stewProgressLabel)
 
-            local ingredText = string.format("(%d%% %s)", value, foodType )
-            local ingredLabel
+    for foodType, ingredLevel in pairs(liquidContainer.stewLevels) do
+        local block = outerBlock:createBlock{}
+            block.autoHeight = true
+            block.autoWidth = true
+            block.childAlignX = 0.5
+        local value = math.min(ingredLevel, 100)
+        local stewBuff = foodConfig.getStewBuffForFoodType(foodType)
+        local spell = tes3.getObject(stewBuff.id)
+        local effect = spell.effects[1]
 
-            if progress >= 100 then
+        local ingredText = string.format("(%d%% %s)", value, foodType )
+        local ingredLabel
+        if liquidContainer.stewProgress >= 100 then
+            local image = block:createImage{path=("icons\\" .. effect.object.icon)}
+            image.wrapText = false
+            image.borderLeft = 4
 
-
-
-                local image = block:createImage{path=("icons\\" .. effect.object.icon)}
-                image.wrapText = false
-                image.borderLeft = 4
-
-                --"Fortify Health"
-                local statName
-                if effect.attribute ~= -1 then
-                    local stat = effect.attribute
-                    statName = tes3.findGMST(888 + stat).value
-                elseif effect.skill ~= -1 then
-                    local stat = effect.skill
-                    statName = tes3.findGMST(896 + stat).value
-                end
-                local effectNameText
-                local effectName = tes3.findGMST(1283 + effect.id).value
-                if statName then
-                    effectNameText = effectName:match("%S+") .. " " .. statName
-                else
-                    effectNameText = effectName
-                end
-                --points " 25 points "
-                local pointsText = string.format("%d pts", common.helper.calculateStewBuffStrength(value, stewBuff.min, stewBuff.max) )
-                --for X hours
-                local duration = common.helper.calculateStewBuffDuration(itemData.data.waterHeat)
-                local hoursText = string.format("for %d hour%s", duration, (duration >= 2 and "s" or "") )
-
-                ingredLabel = block:createLabel{text = string.format("%s %s: %s %s %s", spell.name, ingredText, effectNameText, pointsText, hoursText) }
-                ingredLabel.wrapText = false
-                ingredLabel.borderLeft = 4
-            else
-                ingredLabel = tooltip:createLabel{text = ingredText }
-                centerText(ingredLabel)
+            --"Fortify Health"
+            local statName
+            if effect.attribute ~= -1 then
+                local stat = effect.attribute
+                statName = tes3.findGMST(888 + stat).value
+            elseif effect.skill ~= -1 then
+                local stat = effect.skill
+                statName = tes3.findGMST(896 + stat).value
             end
+            local effectNameText
+            local effectName = tes3.findGMST(1283 + effect.id).value
+            if statName then
+                effectNameText = effectName:match("%S+") .. " " .. statName
+            else
+                effectNameText = effectName
+            end
+            --points " 25 points "
+            local pointsText = string.format("%d pts", common.helper.calculateStewBuffStrength(value, stewBuff.min, stewBuff.max) )
+            --for X hours
+            local duration = common.helper.calculateStewBuffDuration(liquidContainer.waterHeat)
+            local hoursText = string.format("for %d hour%s", duration, (duration >= 2 and "s" or "") )
+
+            ingredLabel = block:createLabel{text = string.format("%s %s: %s %s %s", spell.name, ingredText, effectNameText, pointsText, hoursText) }
+            ingredLabel.wrapText = false
+            ingredLabel.borderLeft = 4
+        else
+            ingredLabel = tooltip:createLabel{text = ingredText }
+            centerText(ingredLabel)
         end
     end
 end

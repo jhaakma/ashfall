@@ -58,30 +58,35 @@ end
 local function updateStewers(e)
 
     local function doUpdate(stewerRef)
-        stewerRef.data.lastStewUpdated = stewerRef.data.lastStewUpdated or e.timestamp
-        local difference = e.timestamp - stewerRef.data.lastStewUpdated
+        local liquidContainer = LiquidContainer.createFromReference(stewerRef)
+        if not liquidContainer then return end
+        if liquidContainer.waterAmount == 0 then return end
+
+        liquidContainer.lastStewUpdated = liquidContainer.lastStewUpdated or e.timestamp
+        local difference = e.timestamp - liquidContainer.lastStewUpdated
 
         if difference < 0 then
-            logger:error("STEWER stewerRef.data.lastStewUpdated(%.4f) is ahead of e.timestamp(%.4f).",
-                stewerRef.data.lastStewUpdated, e.timestamp)
+            logger:error("STEWER liquidContainer.lastStewUpdated(%.4f) is ahead of e.timestamp(%.4f).",
+                liquidContainer.lastStewUpdated, e.timestamp)
             --something fucky happened
-            stewerRef.data.lastStewUpdated = e.timestamp
+            liquidContainer.lastStewUpdated = e.timestamp
         end
 
         if difference > STEWER_UPDATE_INTERVAL then
-            stewerRef.data.lastStewUpdated = e.timestamp
-            local hasWater = stewerRef.data.waterAmount and stewerRef.data.waterAmount > 0
+            liquidContainer.lastStewUpdated = e.timestamp
+            local hasWater = liquidContainer.waterAmount and liquidContainer.waterAmount > 0
             if hasWater then
-                stewerRef.data.waterHeat = stewerRef.data.waterHeat or 0
-                local waterIsBoiling = stewerRef.data.waterHeat and stewerRef.data.waterHeat >= common.staticConfigs.hotWaterHeatValue
-                local hasStew = stewerRef.data.stewLevels
+                liquidContainer.waterHeat = liquidContainer.waterHeat or 0
+                local waterIsBoiling = liquidContainer.waterHeat and liquidContainer.waterHeat >= common.staticConfigs.hotWaterHeatValue
+                local hasStew = liquidContainer.stewLevels
                 if waterIsBoiling and hasStew then
                     --Cook the stew
-                    stewerRef.data.stewProgress = stewerRef.data.stewProgress or 0
-                    local waterHeatEffect = common.helper.calculateWaterHeatEffect(stewerRef.data.waterHeat)
-                    stewerRef.data.stewProgress = math.clamp((stewerRef.data.stewProgress + ( difference * stewCookRate * waterHeatEffect )), 0, 100)
+
+                    liquidContainer.stewProgress = liquidContainer.stewProgress or 0
+                    local waterHeatEffect = common.helper.calculateWaterHeatEffect(liquidContainer.waterHeat)
+                    liquidContainer.stewProgress = math.clamp((liquidContainer.stewProgress + ( difference * stewCookRate * waterHeatEffect )), 0, 100)
                 else
-                    stewerRef.data.lastStewUpdated = nil
+                    liquidContainer.lastStewUpdated = nil
                 end
             end
         end

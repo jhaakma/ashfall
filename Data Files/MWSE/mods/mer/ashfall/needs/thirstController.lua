@@ -223,6 +223,13 @@ function this.fillContainer(params)
             end,
             callback = function(e)
                 if e.item then
+                    if not e.itemData then
+                        e.itemData = tes3.addItemData{
+                            item = e.item --[[@as tes3misc]],
+                            to = e.reference,
+                            updateGUI = true
+                        }
+                    end
                     local to = LiquidContainer.createFromInventoryWithItemData{
                         item = e.item,
                         itemData = e.itemData,
@@ -230,14 +237,6 @@ function this.fillContainer(params)
                     }
                     if not to then logger:error("Could not create liquid container from inventory item") return end
                     this.callWaterMenuAction(function()
-                        if not e.itemData then
-                            e.itemData = tes3.addItemData{
-                                item = e.item --[[@as tes3misc]],
-                                to = e.reference,
-                                updateGUI = true
-                            }
-                        end
-
                         --Empty dirty water first if filling from infinite water source
                         if source:isInfinite() and to:getLiquidType() == "dirty" then
                             logger:debug("Removing dirty water when filling from infinite clean source")

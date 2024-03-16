@@ -76,10 +76,11 @@ this.controllers = {
 
     stewer = ReferenceController:new{
         requirements = function(_, ref)
-            return ref.supportsLuaData
+            local isPot = ref.supportsLuaData
                 and ref.data
                 and ref.data.utensil == "cookingPot"
-            or staticConfigs.cookingPots[ref.object.id:lower()]
+                or staticConfigs.cookingPots[ref.object.id:lower()]
+            return isPot
         end,
     },
 

@@ -316,10 +316,13 @@ local function drinkFromContainer(e)
                     {
                         text = "Empty",
                         callback = function()
+                            logger:debug("Emptying container from 'drinkFromContainer' menu")
                             local liquidContainer = LiquidContainer.createFromData(e.itemData.data)
                             if liquidContainer then
                                 liquidContainer:empty()
                                 tes3.playSound({reference = tes3.player, sound = "ashfall_water"})
+                            else
+                                logger:error("Could not create liquid container from data")
                             end
                         end
                     },

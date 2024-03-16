@@ -152,7 +152,7 @@ function ActivatorController.getAttachmentName(reference, activatorMenuConfig)
     if activatorMenuConfig.name then
         return activatorMenuConfig.name
     elseif activatorMenuConfig.idPath then
-        local objId = reference.data[activatorMenuConfig.idPath]
+        local objId = reference.supportsLuaData and reference.data[activatorMenuConfig.idPath]
         if objId then
             local obj = tes3.getObject(objId)
             return common.helper.getGenericUtensilName(obj)
