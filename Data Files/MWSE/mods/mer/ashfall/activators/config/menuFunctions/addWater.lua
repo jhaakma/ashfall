@@ -50,11 +50,14 @@ return {
                         local t = { amount = maxAmount }
                         common.helper.createSliderPopup{
                             label = "Add water",
-                            min = 1,
+                            min = maxAmount > 1 and 1 or 0,
                             max = maxAmount,
                             varId = "amount",
                             table = t,
                             okayCallback = function()
+                                if t.amount == 0 then
+                                    return
+                                end
                                 from:transferLiquid(to, t.amount)
                             end
                         }

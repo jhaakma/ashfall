@@ -131,11 +131,14 @@ WoodStack.buttons = {
             local t = { amount = maxAmount }
             common.helper.createSliderPopup{
                 label = "Add Firewood",
-                min = 1,
+                min = maxAmount > 1 and 1 or 0,
                 max = maxAmount,
                 varId = "amount",
                 table = t,
                 okayCallback = function()
+                    if t.amount == 0 then
+                        return
+                    end
                     common.helper.removeItem{
                         reference = tes3.player,
                         item = "ashfall_firewood",
@@ -165,11 +168,14 @@ WoodStack.buttons = {
             local t = { amount = woodAmount }
             common.helper.createSliderPopup{
                 label = "Remove Firewood",
-                min = 1,
+                min = woodAmount > 1 and 1 or 0,
                 max = woodAmount,
                 varId = "amount",
                 table = t,
                 okayCallback = function()
+                    if t.amount == 0 then
+                        return
+                    end
                     tes3.addItem{
                         reference = tes3.player,
                         item = "ashfall_firewood",

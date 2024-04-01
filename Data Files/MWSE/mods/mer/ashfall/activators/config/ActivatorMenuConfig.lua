@@ -240,7 +240,6 @@ ActivatorMenuConfig.nodeMapping = {
         },
         tooltipExtra = function(ref, tooltip)
             if not ref.data then return end
-            logger:debug("DROP_WOODSTACK")
             local WoodStack = require("mer.ashfall.items.woodStack")
             if ref.data.woodAmount then
                 local label = tooltip:createLabel{
