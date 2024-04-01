@@ -148,6 +148,7 @@ end
 ]]
 
 --Returns a table of bodyParts covered by this item
+---@return table|nil
 local function getItemBodyParts(object)
     local mapper
     if object.objectType == tes3.objectType.armor then
@@ -199,8 +200,10 @@ function this.getCoveredParts()
         local validSlot = this.isValidClothingSlot(slot)
         if stack and validSlot then
             local parts = getItemBodyParts(stack.object)
-            for _, part in ipairs(parts) do
-                partsCovered[part] = true
+            if parts then
+                for _, part in ipairs(parts) do
+                    partsCovered[part] = true
+                end
             end
         end
     end
@@ -211,8 +214,10 @@ function this.getCoveredParts()
         local validSlot = ( slot ~= tes3.armorSlot.shield )
         if stack and validSlot then
             local parts = getItemBodyParts(stack.object)
-            for _, part in ipairs(parts) do
-                partsCovered[part] = true
+            if parts then
+                for _, part in ipairs(parts) do
+                    partsCovered[part] = true
+                end
             end
         end
     end
