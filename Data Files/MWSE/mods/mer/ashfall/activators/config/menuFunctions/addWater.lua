@@ -8,18 +8,19 @@ local logger = common.createLogger("MenuFunction:AddWater")
 
 return {
     text = "Add Water",
-    showRequirements = function(targetRef)
+    showRequirements = function(reference)
 
+        if not reference.supportsLuaData then return false end
         local maxCapacity = campfireUtil.getUtensilCapacity{
-            dataHolder = targetRef,
-            object = targetRef.object
+            dataHolder = reference,
+            object = reference.object
         }
 
-        local needsWater = (not targetRef.data.waterAmount)
-            or targetRef.data.waterAmount < maxCapacity
+        local needsWater = (not reference.data.waterAmount)
+            or reference.data.waterAmount < maxCapacity
 
-        local isTea = teaConfig.teaTypes[targetRef.data.waterType] ~= nil
-        return needsWater and campfireUtil.isWaterContainer(targetRef) and not isTea
+        local isTea = teaConfig.teaTypes[reference.data.waterType] ~= nil
+        return needsWater and campfireUtil.isWaterContainer(reference) and not isTea
     end,
     tooltip = function()
         return common.helper.showHint(

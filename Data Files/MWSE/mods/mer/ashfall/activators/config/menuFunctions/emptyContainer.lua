@@ -5,6 +5,7 @@ local campfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 return {
     text = "Empty",
     showRequirements = function(reference)
+        if not reference.supportsLuaData then return false end
         return campfireUtil.isWaterContainer(reference)
             and reference.data.waterAmount
             and reference.data.waterAmount > 0

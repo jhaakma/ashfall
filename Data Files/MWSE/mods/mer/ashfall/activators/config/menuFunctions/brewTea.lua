@@ -5,6 +5,7 @@ local skillConfigs = require("mer.ashfall.config.skillConfigs")
 return {
     text = "Brew Tea",
     showRequirements = function(ref)
+        if not ref.supportsLuaData then return false end
         local isKettle = ref.data.utensil == "kettle"
             or common.staticConfigs.kettles[ref.object.id:lower()]
         local hasWater = ref.data.waterAmount and ref.data.waterAmount > 0

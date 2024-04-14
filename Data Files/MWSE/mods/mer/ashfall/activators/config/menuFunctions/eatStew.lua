@@ -6,22 +6,24 @@ return {
         local stewName = foodConfig.isStewNotSoup(campfire.data.stewLevels) and "Stew" or "Soup"
         return string.format("Eat %s", stewName)
     end,
-    showRequirements = function(campfire)
+    showRequirements = function(reference)
+
+        if not reference.supportsLuaData then return false end
         return (
-            campfire.data.stewLevels and
-            campfire.data.stewProgress and
-            campfire.data.stewProgress == 100
+            reference.data.stewLevels and
+            reference.data.stewProgress and
+            reference.data.stewProgress == 100
         )
     end,
-    enableRequirements = function(campfire)
+    enableRequirements = function(reference)
         return common.staticConfigs.conditionConfig.hunger:getValue() > 0.01
             or not config.enableHunger
     end,
     tooltipDisabled = {
         text = "You are full."
     },
-    callback = function(campfire)
-        event.trigger("Ashfall:eatStew", { data = campfire.data})
-        event.trigger("Ashfall:UpdateAttachNodes", { reference = campfire})
+    callback = function(reference)
+        event.trigger("Ashfall:eatStew", { data = reference.data})
+        event.trigger("Ashfall:UpdateAttachNodes", { reference = reference})
     end
 }

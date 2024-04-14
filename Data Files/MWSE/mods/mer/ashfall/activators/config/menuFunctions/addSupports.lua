@@ -59,12 +59,13 @@ end
 
 return {
     text = "Add Supports",
-    showRequirements = function(campfire)
+    showRequirements = function(reference)
+        if not reference.supportsLuaData then return false end
         return (
-            campfire.sceneNode:getObjectByName("ATTACH_SUPPORTS") and
-            not campfire.data.supportsId and
-            campfire.data.dynamicConfig and
-            campfire.data.dynamicConfig.supports == "dynamic"
+            reference.sceneNode:getObjectByName("ATTACH_SUPPORTS") and
+            not reference.data.supportsId and
+            reference.data.dynamicConfig and
+            reference.data.dynamicConfig.supports == "dynamic"
         )
     end,
     enableRequirements = function()

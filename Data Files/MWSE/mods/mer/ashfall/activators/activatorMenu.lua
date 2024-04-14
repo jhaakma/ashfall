@@ -29,7 +29,6 @@ local function onActivatorActivated(e)
     logger:debug("ENTRY onActivatorActivated")
     local reference = e.ref
     if not reference then return end
-    if not reference.supportsLuaData then return end
     local activatorMenuConfig = e.activatorMenuConfig
         or ActivatorController.getActivatorMenuConfig(reference, e.node)
 
@@ -63,6 +62,7 @@ local function onActivatorActivated(e)
         end
         return
     end
+
     local function addButton(tbl, buttonData)
         local showButton = (
             buttonData.showRequirements == nil or

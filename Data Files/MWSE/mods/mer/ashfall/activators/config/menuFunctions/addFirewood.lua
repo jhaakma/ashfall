@@ -11,24 +11,26 @@ local function getFirewoodCount()
     return common.helper.getItemCount{ reference = tes3.player, item = firewood }
 end
 
-local function canAddFireWoodToCampfire(campfire)
-    local fuelLevel = campfire.data.fuelLevel or 0
+local function canAddFireWoodToCampfire(reference)
+    local fuelLevel = reference.data.fuelLevel or 0
     return fuelLevel < common.staticConfigs.maxWoodInFire
 end
 
-local function getDisabledText(campfire)
+local function getDisabledText(reference)
     return {
-        text = canAddFireWoodToCampfire(campfire) and "You have no Firewood." or "Max fuel level reached."
+        text = canAddFireWoodToCampfire(reference) and "You have no Firewood." or "Max fuel level reached."
     }
 end
 
 return {
     text = "Add Firewood",
-    showRequirements = function(campfire)
-        return true
+    showRequirements = function(reference)
+        return reference.supportsLuaData
     end,
-    enableRequirements = function(campfire)
-        return getFirewoodCount() > 0 and canAddFireWoodToCampfire(campfire)
+    enableRequirements = function(reference)
+        return reference.supportsLuaData
+        and getFirewoodCount() > 0
+        and canAddFireWoodToCampfire(reference)
     end,
     tooltip = function()
         return common.helper.showHint(
@@ -36,15 +38,15 @@ return {
         )
     end,
     tooltipDisabled = getDisabledText,
-    callback = function(campfire)
+    callback = function(reference)
         tes3.playSound{
             reference = tes3.player,
             sound = "ashfall_add_wood",
             loop = false
         }
-        campfire.data.fuelLevel = (campfire.data.fuelLevel or 0) + getWoodFuel()
-        campfire.data.burned = campfire.data.isLit == true
+        reference.data.fuelLevel = (reference.data.fuelLevel or 0) + getWoodFuel()
+        reference.data.burned = reference.data.isLit == true
         common.helper.removeItem{ reference = tes3.player, item = common.staticConfigs.objectIds.firewood, playSound = false }
-        event.trigger("Ashfall:UpdateAttachNodes", { reference = campfire})
+        event.trigger("Ashfall:UpdateAttachNodes", { reference = reference})
     end,
 }

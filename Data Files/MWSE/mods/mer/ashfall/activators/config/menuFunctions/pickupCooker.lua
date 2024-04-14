@@ -3,6 +3,8 @@ local common = require ("mer.ashfall.common.common")
 return {
     text = "Pick Up",
     showRequirements = function(reference)
+
+        if not reference.supportsLuaData then return false end
         return (not reference.data.grillId)
             and (not reference.data.utensilId)
             and (not reference.data.supportsId)

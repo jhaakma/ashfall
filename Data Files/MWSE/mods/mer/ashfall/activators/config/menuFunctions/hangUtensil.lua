@@ -68,10 +68,11 @@ end
 
 return {
     text = "Hang Utensil",
-    showRequirements = function(campfire)
+    showRequirements = function(reference)
+        if not reference.supportsLuaData then return false end
         return
-            campfire.sceneNode:getObjectByName("HANG_UTENSIL")
-            and not campfire.data.utensil
+            reference.sceneNode:getObjectByName("HANG_UTENSIL")
+                and not reference.data.utensil
     end,
     enableRequirements = function()
         for id in pairs(common.staticConfigs.utensils) do

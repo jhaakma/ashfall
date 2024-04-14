@@ -2,15 +2,15 @@ local common = require ("mer.ashfall.common.common")
 
 return {
     text = "Destroy Campfire",
-    showRequirements = function(campfire)
+    showRequirements = function(reference)
+        if not reference.supportsLuaData then return false end
         return (
-            not campfire.data.grillId and
-            not campfire.data.utensilId and
-            not campfire.data.isLit and
-            not campfire.data.supportsId and
-            not campfire.data.bellowsId and
-            (campfire.data.dynamicConfig and
-            campfire.data.dynamicConfig.campfire == "dynamic")
+            not reference.data.grillId and
+            not reference.data.utensilId and
+            not reference.data.isLit and
+            not reference.data.supportsId and
+            not reference.data.bellowsId and
+            (reference.data.dynamicConfig and reference.data.dynamicConfig.campfire == "dynamic")
         )
     end,
     callback = function(campfire)

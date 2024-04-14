@@ -2,16 +2,17 @@ local common = require ("mer.ashfall.common.common")
 local logger = common.createLogger("removeSupports")
 return {
     text = "Remove Supports",
-    showRequirements = function(campfire)
+    showRequirements = function(reference)
+        if not reference.supportsLuaData then return false end
         return (
-            campfire.sceneNode:getObjectByName("ATTACH_SUPPORTS")
-            and campfire.data.supportsId
-            and campfire.data.dynamicConfig
-            and campfire.data.dynamicConfig.supports == "dynamic"
+            reference.sceneNode:getObjectByName("ATTACH_SUPPORTS")
+            and reference.data.supportsId
+            and reference.data.dynamicConfig
+            and reference.data.dynamicConfig.supports == "dynamic"
         )
     end,
-    enableRequirements = function(campfire)
-        return campfire.data.utensil == nil
+    enableRequirements = function(reference)
+        return reference.data.utensil == nil
     end,
     tooltipDisabled = {
         text = "Utensil must be removed first."
@@ -22,8 +23,8 @@ return {
             common.helper.getModifierKeyString()
         ))
     end,
-    callback = function(campfire)
-        local supports = campfire.data.supportsId
+    callback = function(reference)
+        local supports = reference.data.supportsId
         local data = common.staticConfigs.supports[supports:lower()]
 
         logger:debug("Removing supports %s", supports)
@@ -39,14 +40,14 @@ return {
         else
             tes3.addItem{
                 reference = tes3.player,
-                item = campfire.data.supportsId,
+                item = reference.data.supportsId,
                 count = 1,
                 playSound = false,
                 showMessage = true,
             }
         end
-        campfire.data.supportsId = nil
+        reference.data.supportsId = nil
         common.helper.playDeconstructionSound()
-        event.trigger("Ashfall:UpdateAttachNodes", { reference = campfire})
+        event.trigger("Ashfall:UpdateAttachNodes", { reference = reference})
     end
 }

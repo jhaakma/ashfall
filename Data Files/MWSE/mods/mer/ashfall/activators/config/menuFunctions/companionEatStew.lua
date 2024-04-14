@@ -13,31 +13,32 @@ end
 
 return {
     text = "Feed Companions",
-    showRequirements = function(campfire)
+    showRequirements = function(reference)
+
+        if not reference.supportsLuaData then return false end
         getNearbyCompanions()
         return (
-            campfire.data.stewLevels and
-            campfire.data.stewProgress and
-            campfire.data.stewProgress == 100 and
+            reference.data.stewLevels and
+            reference.data.stewProgress and
+            reference.data.stewProgress == 100 and
            #(nearbyCompanions) > 0
         )
     end,
-    callback = function(campfire)
-
-        local maxAvailable = math.min(campfire.data.waterAmount, 25 * #nearbyCompanions)
+    callback = function(reference)
+        local maxAvailable = math.min(reference.data.waterAmount, 25 * #nearbyCompanions)
         local stewPerCompanion = maxAvailable / #nearbyCompanions
 
         local stewBuffs = foodConfig.getStewBuffList()
         for _, companion in ipairs(nearbyCompanions) do
             --remove old sbuffs
             for name, buff in pairs(stewBuffs) do
-                if campfire.data.stewLevels[name] == nil then
+                if reference.data.stewLevels[name] == nil then
                     tes3.removeSpell{ reference = companion, spell = buff.id }
                 end
             end
 
             --Add buffs and set duration
-            for foodType, ingredLevel in pairs(campfire.data.stewLevels) do
+            for foodType, ingredLevel in pairs(reference.data.stewLevels) do
                 --add spell
                 local stewBuff = stewBuffs[foodType]
                 local effectStrength = common.helper.calculateStewBuffStrength(math.min(ingredLevel, 100), stewBuff.min, stewBuff.max)
@@ -47,20 +48,20 @@ return {
                     effect.min = effectStrength
                     effect.max = effectStrength
                     tes3.addSpell{ reference = companion, spell = spell }
-                    companion.reference.data.stewBuffTimeLeft = common.helper.calculateStewBuffDuration(campfire.data.waterHeat)
+                    companion.reference.data.stewBuffTimeLeft = common.helper.calculateStewBuffDuration(reference.data.waterHeat)
                     event.trigger("Ashfall:registerReference", { reference = companion})
                 end)
             end
             tes3.playSound{ reference = companion, sound = "Swallow" }
             event.trigger("Ashfall:Eat", { reference = companion.reference, amount = stewPerCompanion})
         end
-        local stewName = foodConfig.isStewNotSoup(campfire.data.stewLevels) and "stew" or "soup"
+        local stewName = foodConfig.isStewNotSoup(reference.data.stewLevels) and "stew" or "soup"
         tes3.messageBox("Your companions eat the %s.", stewName)
 
-        campfire.data.waterAmount = campfire.data.waterAmount - maxAvailable
+        reference.data.waterAmount = reference.data.waterAmount - maxAvailable
 
-        if campfire.data.waterAmount < 1 then
-            event.trigger("Ashfall:Campfire_clear_utensils", { campfire = campfire})
+        if reference.data.waterAmount < 1 then
+            event.trigger("Ashfall:Campfire_clear_utensils", { campfire = reference})
         end
 
     end

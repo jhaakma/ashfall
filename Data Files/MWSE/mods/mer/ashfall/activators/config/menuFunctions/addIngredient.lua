@@ -107,14 +107,18 @@ end
 return {
     text = "Add Ingredient",
     showRequirements = function(ref)
-        local isCookingPot = ref.data.utensil == "cookingPot"
-            or common.staticConfigs.cookingPots[ref.object.id:lower()]
-        local hasWater = ref.data.waterAmount
+        local isCookingPot = ref.supportsLuaData
+            and (ref.data.utensil == "cookingPot"
+                or common.staticConfigs.cookingPots[ref.object.id:lower()])
+        local hasWater = ref.supportsLuaData
+            and ref.data.waterAmount
             and ref.data.waterAmount > 0
-        return isCookingPot and hasWater
+        return isCookingPot
+            and hasWater
     end,
     enableRequirements = function(ref)
-        return not not ref.data.ladle
+        return ref.supportsLuaData
+        and (not not ref.data.ladle)
     end,
     tooltipDisabled = {
         text = "A ladle is required to make stew."

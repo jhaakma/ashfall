@@ -10,6 +10,7 @@ return {
         ))
     end,
     enableRequirements = function(reference)
+        if not reference.supportsLuaData then return false end
         return takeWood.enableRequirements{ reference = reference }
     end,
     tooltipDisabled = takeWood.tooltipDisabled,

@@ -27,17 +27,19 @@ end
 
 return {
     text = "Add Candle",
-    enableRequirements = function(campfire)
-        return playerHasCandle() and hasRoomForCandle(campfire)
+    enableRequirements = function(reference)
+        return reference.supportsLuaData
+            and playerHasCandle()
+            and hasRoomForCandle(reference)
     end,
     tooltipDisabled = getDisabledText,
-    callback = function(campfire)
+    callback = function(reference)
         tes3.playSound{
             reference = tes3.player,
             sound = "Item Misc Up",
             loop = false
         }
-        campfire.data.fuelLevel = 10
-        event.trigger("Ashfall:UpdateAttachNodes", { reference = campfire})
+        reference.data.fuelLevel = 10
+        event.trigger("Ashfall:UpdateAttachNodes", { reference = reference})
     end,
 }

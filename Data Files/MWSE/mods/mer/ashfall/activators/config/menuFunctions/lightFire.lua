@@ -90,17 +90,19 @@ end
 
 local menuConfig = {
     text = "Light Fire",
-    showRequirements = function(campfire)
+    showRequirements = function(reference)
+
+        if not reference.supportsLuaData then return false end
         return (
-            not campfire.data.isLit and
-            campfire.data.fuelLevel and
-            campfire.data.fuelLevel > 0.5
+            not reference.data.isLit and
+            reference.data.fuelLevel and
+            reference.data.fuelLevel > 0.5
         )
     end,
     tooltip = function()
         return common.helper.showHint("You can light the fire by dropping a flint and steel or a torch directly onto it.")
     end,
-    callback = function(campfire)
+    callback = function(reference)
         timer.delayOneFrame(function()
             local hasFlintAndSteel, weapon = playerHasFlintAndSteel()
             if hasFlintAndSteel then
@@ -109,7 +111,7 @@ local menuConfig = {
                 else
                     tes3.messageBox("You light the fire with a flint and steel.")
                 end
-                event.trigger("Ashfall:fuelConsumer_Alight", { fuelConsumer = campfire, lighterData = nil})
+                event.trigger("Ashfall:fuelConsumer_Alight", { fuelConsumer = reference, lighterData = nil})
                 return
             end
             logger:debug("Opening Inventory Select Menu")
@@ -120,7 +122,7 @@ local menuConfig = {
                 callback = function(e)
                     if e.item then
                         logger:debug("showInventorySelectMenu Callback")
-                        event.trigger("Ashfall:fuelConsumer_Alight", { fuelConsumer = campfire, lighterData = e.itemData})
+                        event.trigger("Ashfall:fuelConsumer_Alight", { fuelConsumer = reference, lighterData = e.itemData})
                     end
                 end,
             }

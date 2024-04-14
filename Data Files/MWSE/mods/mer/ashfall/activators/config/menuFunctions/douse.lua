@@ -2,17 +2,19 @@ local common = require("mer.ashfall.common.common")
 
 return {
     text = "Douse",
-    showRequirements = function(campfire)
+    showRequirements = function(reference)
+
+        if not reference.supportsLuaData then return false end
         local wetness = common.staticConfigs.conditionConfig.wetness
-        return campfire.data.waterAmount
-            and campfire.data.waterAmount > 0
+        return reference.data.waterAmount
+            and reference.data.waterAmount > 0
             and common.data.wetness <= wetness.states.soaked.max
-            and (campfire.data.waterType == "dirty" or not campfire.data.waterType)
-            and (not campfire.data.stewLevels)
-            and (not campfire.data.waterHeat or campfire.data.waterHeat < common.staticConfigs.hotWaterHeatValue)
+            and (reference.data.waterType == "dirty" or not reference.data.waterType)
+            and (not reference.data.stewLevels)
+            and (not reference.data.waterHeat or reference.data.waterHeat < common.staticConfigs.hotWaterHeatValue)
     end,
-    callback = function(campfire)
-        event.trigger("Ashfall:Douse", { data = campfire.data })
-        event.trigger("Ashfall:UpdateAttachNodes", { reference = campfire})
+    callback = function(reference)
+        event.trigger("Ashfall:Douse", { data = reference.data })
+        event.trigger("Ashfall:UpdateAttachNodes", { reference = reference})
     end
 }

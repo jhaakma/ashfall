@@ -77,12 +77,13 @@ end
 
 return {
     text = "Place Utensil",
-    showRequirements = function(campfire)
-        return (not campfire.data.grillId) and campfire.sceneNode:getObjectByName("ATTACH_GRILL")
-            or (not campfire.data.bellowsId) and campfire.sceneNode:getObjectByName("ATTACH_BELLOWS")
+    showRequirements = function(reference)
+        if not reference.supportsLuaData then return false end
+        return (not reference.data.grillId) and reference.sceneNode:getObjectByName("ATTACH_GRILL")
+            or (not reference.data.bellowsId) and reference.sceneNode:getObjectByName("ATTACH_BELLOWS")
     end,
-    enableRequirements = function(campfire)
-        if campfire.sceneNode:getObjectByName("ATTACH_GRILL") and not campfire.data.grillId then
+    enableRequirements = function(reference)
+        if reference.sceneNode:getObjectByName("ATTACH_GRILL") and not reference.data.grillId then
             for id, data in pairs(common.staticConfigs.grills) do
                 local item = tes3.getObject(id)
                 if item then
@@ -96,7 +97,7 @@ return {
                 end
             end
         end
-        if campfire.sceneNode:getObjectByName("ATTACH_BELLOWS") and not campfire.data.bellowsId then
+        if reference.sceneNode:getObjectByName("ATTACH_BELLOWS") and not reference.data.bellowsId then
             for id, _ in pairs(common.staticConfigs.bellows) do
                 local item = tes3.getObject(id)
                 if item then

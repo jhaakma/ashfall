@@ -478,6 +478,13 @@ function LiquidContainer:getLiquidName()
     end
 end
 
+---@alias Ashfall.LiquidContainer.LiquidType
+---| '"dirty"'
+---| '"tea"'
+---| '"stew"'
+---| '"clean"'
+
+---@return Ashfall.LiquidContainer.LiquidType
 function LiquidContainer:getLiquidType()
     if self.waterType == "dirty" then
         return "dirty"
@@ -544,6 +551,13 @@ end
 
 function LiquidContainer:hasWater()
     return self.waterAmount >= 1
+end
+
+--[[
+
+]]
+function LiquidContainer:canDrink()
+
 end
 
 ---@param self Ashfall.LiquidContainer

@@ -6,6 +6,9 @@ local LiquidContainer = require("mer.ashfall.liquid.LiquidContainer")
 return  {
     text = "Fill Container",
     showRequirements = function(reference)
+
+        if not reference.supportsLuaData then return false end
+
         local source = LiquidContainer.createFromReference(reference)
         if not source then return false end
         local hasWaterAmount = source.waterAmount > 0

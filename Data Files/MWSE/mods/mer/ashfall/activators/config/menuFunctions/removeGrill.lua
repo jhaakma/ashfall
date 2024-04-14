@@ -6,11 +6,13 @@ return {
         local grill = tes3.getObject(grillId)
         return string.format("Remove %s", common.helper.getGenericUtensilName(grill) or "Utensil")
     end,
-    showRequirements = function(campfire)
+    showRequirements = function(reference)
+
+        if not reference.supportsLuaData then return false end
         return (
-            campfire.data.grillId
-            and (not campfire.data.dynamicConfig) or
-            campfire.data.dynamicConfig.grill == "dynamic"
+            reference.data.grillId
+            and (not reference.data.dynamicConfig) or
+            reference.data.dynamicConfig.grill == "dynamic"
         )
     end,
     tooltip = function()
@@ -19,8 +21,8 @@ return {
             common.helper.getModifierKeyString()
         ))
     end,
-    callback = function(campfire)
-        local grillId = campfire.data.grillId
+    callback = function(reference)
+        local grillId = reference.data.grillId
         local grillData = common.staticConfigs.grills[grillId:lower()]
         if grillData and grillData.materials then
             logger:debug("Grill was crafted, adding back .5 materials")
@@ -48,18 +50,18 @@ return {
         end
 
         --add patina data
-        if campfire.data.grillPatinaAmount then
+        if reference.data.grillPatinaAmount then
             local itemData = tes3.addItemData{
                 to = tes3.player,
-                item = campfire.data.grillId,
+                item = reference.data.grillId,
             }
-            itemData.data.patinaAmount = campfire.data.grillPatinaAmount
+            itemData.data.patinaAmount = reference.data.grillPatinaAmount
         end
         --clear data and trigger updates
-        campfire.data.grillId = nil
-        campfire.data.hasGrill = nil
-        campfire.data.grillPatinaAmount = nil
-        event.trigger("Ashfall:UpdateAttachNodes", { reference = campfire,})
+        reference.data.grillId = nil
+        reference.data.hasGrill = nil
+        reference.data.grillPatinaAmount = nil
+        event.trigger("Ashfall:UpdateAttachNodes", { reference = reference,})
         --drop any cooking ingredients
         logger:debug("Finding ingredients to drop")
         for _, cell in pairs( tes3.getActiveCells() ) do
@@ -67,7 +69,7 @@ return {
                 logger:debug("ingredient: %s", ingredient.object.id)
                 if common.helper.getCloseEnough{
                     --TODO: Implement using grill position
-                    ref1 = campfire, ref2 = ingredient,
+                    ref1 = reference, ref2 = ingredient,
                     distVertical = 300,
                     distHorizontal = 50
                 } then

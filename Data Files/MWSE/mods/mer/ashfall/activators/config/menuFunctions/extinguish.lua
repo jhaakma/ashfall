@@ -11,13 +11,14 @@ end
 
 return {
     text = "Extinguish",
-    showRequirements = function(campfire)
-        return campfire.data.isLit and not campfire.data.isStatic
+    showRequirements = function(reference)
+        if not reference.supportsLuaData then return false end
+        return reference.data.isLit and not reference.data.isStatic
     end,
     tooltip = function()
         return common.helper.showHint("You can extinguish the fire by dropping a water-filled container directly onto it.")
     end,
-    callback = function(campfire)
+    callback = function(reference)
         timer.delayOneFrame(function()
             logger:debug("Opening Inventory Select Menu")
             common.helper.showInventorySelectMenu{
@@ -29,7 +30,7 @@ return {
                         local liquidContainer = LiquidContainer.createFromInventory(e.item, e.itemData)
                         if liquidContainer then
                             logger:debug("showInventorySelectMenu Callback")
-                            event.trigger("Ashfall:fuelConsumer_Extinguish", {fuelConsumer = campfire, playSound = true})
+                            event.trigger("Ashfall:fuelConsumer_Extinguish", {fuelConsumer = reference, playSound = true})
                             liquidContainer:reduce(10)
                             tes3.playSound{ reference = tes3.player, sound = "ashfall_water" }
                         end
