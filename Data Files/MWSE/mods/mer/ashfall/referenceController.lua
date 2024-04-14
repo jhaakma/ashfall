@@ -65,14 +65,14 @@ this.controllers = {
         end
     },
 
-    boiler = ReferenceController:new{
-        requirements = function(_, ref)
-            local isboiler = ref.supportsLuaData
-                and ref.data
-                and ref.data.waterHeat ~= nil
-            return isboiler
-        end
-    },
+    -- boiler = ReferenceController:new{
+    --     requirements = function(_, ref)
+    --         local isboiler = ref.supportsLuaData
+    --             and ref.data
+    --             and ref.data.waterHeat ~= nil
+    --         return isboiler
+    --     end
+    -- },
 
     stewer = ReferenceController:new{
         requirements = function(_, ref)
@@ -179,9 +179,11 @@ local function onObjectInvalidated(e)
 end
 event.register("objectInvalidated", onObjectInvalidated)
 
+---@param e { id: string, requirements: fun(self: Ashfall.ReferenceController, ref: tes3reference): boolean }
 function this.registerReferenceController(e)
     assert(e.id, "No id provided")
     assert(e.requirements, "No reference requirements provided")
+    assert(this.controllers[e.id] == nil, "Reference controller already registered")
     this.controllers[e.id] =  ReferenceController:new{ requirements = e.requirements }
     return this.controllers[e.id]
 end

@@ -11,6 +11,14 @@ local patinaController = require("mer.ashfall.camping.patinaController")
 local BOILER_UPDATE_INTERVAL = 0.001
 local ReferenceController = require("mer.ashfall.referenceController")
 
+ReferenceController.registerReferenceController{
+    id = "boiler",
+    requirements = function(_, ref)
+        local liquidContainer = LiquidContainer.createFromReference(ref)
+        return liquidContainer and liquidContainer.waterAmount > 0
+    end
+}
+
 local function addUtensilPatina(campfire,interval)
     if campfire.sceneNode and campfire.data.utensilId then
         logger:trace("Attempting to add Patina to %s", campfire.data.utensilId)
