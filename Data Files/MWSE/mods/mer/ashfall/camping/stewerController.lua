@@ -12,6 +12,18 @@ local ReferenceController = require("mer.ashfall.referenceController")
 local stewCookRate = 40
 local STEWER_UPDATE_INTERVAL = 0.001
 
+local staticConfigs = require('mer.ashfall.config.staticConfigs')
+
+ReferenceController.registerReferenceController{
+    id = "stewer",
+    requirements = function(_, ref)
+        local isPot = ref.supportsLuaData
+            and ref.data
+            and ref.data.utensil == "cookingPot"
+            or staticConfigs.cookingPots[ref.object.id:lower()]
+        return isPot
+    end,
+}
 
 --Warmth from Stew
 local function firstDataLoaded()

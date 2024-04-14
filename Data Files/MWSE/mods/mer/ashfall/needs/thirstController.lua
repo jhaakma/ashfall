@@ -173,7 +173,7 @@ function this.canTransferFilter(source, item, itemData)
 
     local canTransfer, reason = source:canTransfer(target)
     if not canTransfer then
-        logger:warn("Can't transfer: %s", reason)
+        --logger:warn("Can't transfer: %s", reason)
     end
     return canTransfer
 end

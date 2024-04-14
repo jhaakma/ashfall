@@ -10,6 +10,15 @@ local fuelDecayRainEffect = 1.4
 local fuelDecayThunderEffect = 1.6
 local FUEL_UPDATE_INTERVAL = 0.001
 
+ReferenceController.registerReferenceController{
+    id = "fuelConsumer",
+    requirements = function(_, ref)
+        return ref.supportsLuaData
+        and ref.data
+        and ref.data.fuelLevel
+    end
+}
+
 local function updateFuelConsumer(fuelConsumer)
     local timestamp = tes3.getSimulationTimestamp()
     fuelConsumer.data.lastFuelUpdated = fuelConsumer.data.lastFuelUpdated or timestamp

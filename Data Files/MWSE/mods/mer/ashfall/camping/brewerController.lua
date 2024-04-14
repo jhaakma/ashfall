@@ -12,6 +12,16 @@ temperatureController.registerBaseTempMultiplier({ id = "hollyTeaEffect", coldOn
 local brewRate = 160
 local BREWER_UPDATE_INTERVAL = 0.001
 local ReferenceController = require("mer.ashfall.referenceController")
+local staticConfigs = require('mer.ashfall.config.staticConfigs')
+
+ReferenceController.registerReferenceController{
+    id = "brewer",
+    requirements = function(_, ref)
+        return ref.supportsLuaData
+            and ref.data
+            and ref.data.utensil == "kettle" or staticConfigs.kettles[ref.object.id:lower()]
+    end
+}
 
 local function removeTeaEffect(teaData)
     logger:debug("onDrinkTea: removing previous effect")
