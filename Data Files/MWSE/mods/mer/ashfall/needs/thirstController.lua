@@ -167,15 +167,12 @@ end
 ---@param source Ashfall.LiquidContainer
 ---@param item tes3item
 ---@param itemData tes3itemData
+---@return boolean, string?
 function this.canTransferFilter(source, item, itemData)
     local target = LiquidContainer.createFromInventory(item, itemData)
     if not target then return false end
-
     local canTransfer, reason = source:canTransfer(target)
-    if not canTransfer then
-        --logger:warn("Can't transfer: %s", reason)
-    end
-    return canTransfer
+    return canTransfer, reason
 end
 
 function this.playerHasFillableContainers(source)
@@ -206,6 +203,7 @@ function this.playerHasFillableContainers(source)
     return false
 end
 
+
 --Fill a bottle to max water capacity
 function this.fillContainer(params)
     params = params or {}
@@ -214,12 +212,15 @@ function this.fillContainer(params)
     local source = params.source or LiquidContainer.createInfiniteWaterSource()
     local callback = params.callback
     timer.delayOneFrame(function()
-        local noResultsText =  common.messages.noContainersToFill
         common.helper.showInventorySelectMenu{
             title = "Select Water Container",
-            noResultsText = noResultsText,
+            noResultsText = common.messages.noContainersToFill,
             filter = function(e)
-                return this.canTransferFilter(source, e.item, e.itemData)
+                local canTransfer, reason = this.canTransferFilter(source, e.item, e.itemData)
+                if reason then
+                    logger:trace(reason)
+                end
+                return canTransfer
             end,
             callback = function(e)
                 if e.item then

@@ -335,7 +335,14 @@ this.materials = {
         ids = {
             "ingred_raw_glass_01"
         }
-    }
+    },
+    {
+        id = "paper",
+        name = "Paper",
+        ids = {
+            "sc_paper plain",
+        }
+    },
 }
 this.ingredMaterials = {}
 for name, ingredient in pairs(this.materials) do
@@ -921,6 +928,18 @@ local bushCraftingRecipes = {
                 this.menuOptions.rename
             },
         },
+        {
+            id = "bushcraft:ashfall_shoji_lamp_01",
+            craftableId = "ashfall_shoji_lamp_01",
+            description = "A lantern made of paper and wood.",
+            materials = {
+                { material = "wood", count = 2 },
+                { material = "paper", count = 2 },
+                { material = "resin", count = 1 }
+            },
+            category = this.categories.survival,
+            soundType = "wood",
+        }
     },
     journeyman = {
         {
