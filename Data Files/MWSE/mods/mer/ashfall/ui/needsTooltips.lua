@@ -140,7 +140,12 @@ local function createNeedsTooltip(e)
     end
 
     --used for item and campfire tooltips
-    itemTooltips(e.object, e.itemData, tooltip)
+    itemTooltips.addItemTooltips{
+        item = e.object,
+        itemData = e.itemData,
+        reference = e.reference,
+        tooltip = tooltip
+    }
 
     local icon = e.tooltip:findChild(tes3ui.registerID("HelpMenu_icon"))
     if icon then

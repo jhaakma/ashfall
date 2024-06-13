@@ -155,7 +155,12 @@ event.register("activate", function(e)
                     "pickup",
                 },
                 tooltipExtra = function(campfire, tooltip)
-                    itemTooltips(campfire.object, campfire.itemData, tooltip)
+                    itemTooltips.addItemTooltips{
+                        item = campfire.object,
+                        itemData = campfire.itemData,
+                        reference = campfire,
+                        tooltip = tooltip
+                    }
                 end
             }
 

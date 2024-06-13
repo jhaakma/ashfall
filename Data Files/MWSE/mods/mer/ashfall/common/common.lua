@@ -94,6 +94,7 @@ end
 ---@field woodAxesForHarvesting table<string, boolean> a map of woodaxe objects which are to be registered for harvesting on load
 ---@field woodAxesForBackpack table<string, boolean> a map of woodaxe objects which are to be registered for backpack display on load
 ---@field inventorySelectStew boolean True while in the inventory select menu for adding ingredients to stew
+---@field inventorySelectTrinket boolean True while in the inventory select menu for adding trinkets to the trinket bag
 this.data = setmetatable({}, {
     __index = function(t, key)
         if not ( tes3.player and tes3.player.data) then

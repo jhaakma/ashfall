@@ -148,7 +148,12 @@ ActivatorMenuConfig.nodeMapping = {
         },
         shiftCommand = "removeUtensil",
         tooltipExtra = function(reference, tooltip)
-            itemTooltips(reference.object, reference.itemData, tooltip)
+            itemTooltips.addItemTooltips{
+                item = reference.object,
+                itemData = reference.itemData,
+                reference = reference,
+                tooltip = tooltip
+            }
         end,
     },
     KETTLE = {
@@ -170,7 +175,12 @@ ActivatorMenuConfig.nodeMapping = {
         shiftCommand = "removeUtensil",
 
         tooltipExtra = function(reference, tooltip)
-            itemTooltips(reference.object, reference.itemData, tooltip)
+            itemTooltips.addItemTooltips{
+                item = reference.object,
+                itemData = reference.itemData,
+                reference = reference,
+                tooltip = tooltip
+            }
         end,
     },
     SWITCH_LADLE = {
