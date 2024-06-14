@@ -33,7 +33,7 @@ local function registerCampfire(e)
 
         --Legacy kettle Id
         if e.reference.data.kettleId then
-            logger:info("Found campfire with kettleId, replacing with utensilId")
+            logger:debug("Found campfire with kettleId, replacing with utensilId")
             e.reference.data.utensilId = e.reference.data.kettleId
             e.reference.data.kettleId = nil
         end
@@ -55,11 +55,11 @@ local function registerCampfire(e)
                 else
                     e.reference.data.utensilId = "ashfall_cooking_pot"
                 end
-                logger:info("Found campfire with a utensil and no utensilId, setting to %s",
+                logger:debug("Found campfire with a utensil and no utensilId, setting to %s",
                     e.reference.data.utensilId)
             elseif oldCookingPots[e.reference.data.utensilId] then
                 e.reference.data.utensilId = "ashfall_cooking_pot"
-                logger:info("Found campfire with an invalid cooking pot, setting to %s",
+                logger:debug("Found campfire with an invalid cooking pot, setting to %s",
                     e.reference.data.utensilId)
             end
         end
@@ -76,7 +76,7 @@ local function registerCampfire(e)
             local data = common.staticConfigs.utensils[e.reference.data.utensilId]
             local capacity = data and data.capacity or 100
             e.reference.data.waterCapacity = capacity
-            logger:info("Found campfire with a utensil and no water capacity, setting to %s. utensilID: %s",
+            logger:debug("Found campfire with a utensil and no water capacity, setting to %s. utensilID: %s",
                 capacity, e.reference.data.utensilId)
         end
     end

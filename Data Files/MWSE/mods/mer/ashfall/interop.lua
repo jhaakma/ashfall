@@ -501,15 +501,15 @@ function Interop.registerWoodAxes(data)
     logger:info("Registering Wood Axes")
     for _, v in pairs(data) do
         if type(v) == "string" then
-            logger:info("as string")
+            logger:trace("as string")
             WoodAxe.registerForHarvesting(v)
         elseif type(v) == "table" then
-            logger:info("as table")
+            logger:trace("as table")
             local id = v.id
             assert(id)
             WoodAxe.registerForHarvesting(id)
             if v.registerForBackpacks then
-                logger:info("Register for backpacks")
+                logger:trace("Register for backpacks")
                 WoodAxe.registerForBackpack(id)
             end
         else

@@ -172,18 +172,18 @@ end
 
 ---@param e unequippedEventData
 event.register("unequipped", function(e)
-    logger:info("unequipped %s", e.item)
+    logger:trace("unequipped %s", e.item)
     local isBackpack = Backpack.isBackpack(e.item)
     if not isBackpack then
-        logger:info("not a backpack")
+        logger:trace("not a backpack")
         return
     end
     local container = CarryableContainer:new{ item = e.item, itemData = e.itemData }
     if not container then
-        logger:info("not a carryable container")
+        logger:trace("not a carryable container")
         return
     end
-    logger:info("- updating stats on unequip")
+    logger:trace("- updating stats on unequip")
     container:updateStats()
 end)
 
