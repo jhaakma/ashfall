@@ -299,14 +299,14 @@ function itemTooltips.addItemTooltips(e)
     local liquidContainer
     if e.reference then
         liquidContainer = LiquidContainer.createFromReference(e.reference)
+        if not e.item then
+            e.item = e.reference.object
+        end
+        if not e.itemData then
+            e.itemData = e.reference.itemData
+        end
     else
         liquidContainer = LiquidContainer.createFromInventory(e.item, e.itemData)
-    end
-    if not e.item then
-        e.item = e.reference.object
-    end
-    if not e.itemData then
-        e.itemData = e.reference.itemData
     end
 
     local menu = tes3ui.findMenu("MenuInventory")
