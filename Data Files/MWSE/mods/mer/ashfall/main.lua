@@ -53,6 +53,7 @@ local function initialized()
         require('mer.ashfall.skinning')
         require("mer.ashfall.cooking")
 
+        require("mer.ashfall.effects.shader")
         --Enable Verticalisation
         include("CraftingFramework.components.Verticaliser")
 
@@ -72,6 +73,11 @@ end)
 
 -- Need to initialise immediately
 require("mer.ashfall.effects.faderController")
+
+event.register(tes3.event.dialogueEnvironmentCreated, function(e)
+    local env = e.environment
+    env.Ashfall = Interop
+end)
 
 event.register("initialized", initialized)
 

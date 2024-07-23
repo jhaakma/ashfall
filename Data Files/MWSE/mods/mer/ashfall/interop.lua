@@ -1,4 +1,8 @@
 
+
+---@class Ashfall.Interop
+local Interop = {}
+
 local branchInterop = require "mer.ashfall.branch.branchInterop"
 
 local common = require("mer.ashfall.common.common")
@@ -13,6 +17,7 @@ local ActivatorController = require("mer.ashfall.activators.activatorController"
 local WoodAxe = require("mer.ashfall.items.woodaxe")
 local backpackConfig = require("mer.ashfall.items.backpack.config")
 local overrides = require("mer.ashfall.config.overrides")
+local LiquidContainer = require("mer.ashfall.liquid.LiquidContainer")
 
 local function listValidActivatorTypes()
     local message = '\n'
@@ -47,182 +52,6 @@ local function listValidClimateTypes()
 end
 
 
-local function registerActivator(id, activatorType, usePatterns)
-    assert(type(id) == 'string', "registerActivator(): Invalid id. Must be a string.")
-
-    local activator = activatorConfig.list[activatorType]
-    assert(activator, string.format("registerActivator(): %s is an invalid activator type. Valid types include: %s",
-            activatorType, listValidActivatorTypes()))
-
-    if usePatterns then
-        activator:addPattern(id)
-    else
-        activator:addId(id)
-    end
-    logger:debug("    %s as %s", id, activatorType)
-end
-
-local function registerActivators(e)
-    logger:debug("Registering the following activator %s: ", (e.usePatterns and "patterns" or "ids"))
-    for id, activatorType in pairs(e.data) do
-        registerActivator(id, activatorType, e.usePatterns)
-    end
-    return true
-end
-event.register("Ashfall:RegisterActivators", registerActivators)
-
-local function registerWaterSource(e)
-    assert(type(e.name) == "string", "registerWaterSource(): No name string provided")
-    assert(type(e.ids) == "table", "registerWaterSource(): No table of ids provided")
-    local waterType = e.isDirty and activatorConfig.types.dirtyWaterSource or activatorConfig.types.waterSource
-
-    local idList = {}
-    for _, id in ipairs(e.ids) do
-        idList[id] = true
-    end
-    activatorConfig.list[e.name] = ActivatorController.registerActivator{
-        name = e.name,
-        type = waterType,
-        ids = idList
-    }
-    activatorConfig.subTypes[e.name] = e.name
-    return true
-end
-
----comment
-local function registerWaterContainers(e)
-    local includeOverrides = e.includeOverrides
-    logger:debug("Registering the following water containers:")
-    for id, data in pairs(e.data) do
-        assert(type(id) == "string", "Water container ID must be a string.")
-        id = id:lower()
-        if type(data) == "table" then
-            --Table for manual values
-            assert(data.capacity, "Water container data must include a capacity.")
-            assert(type(data.capacity) == "number", "Capacity must be a number.")
-            staticConfigs.bottleList[id] = {
-                capacity = data.capacity,
-                weight = data.weight,
-                value = data.value,
-                holdsStew = data.holdsStew,
-                waterMaxHeight = data.waterMaxHeight,
-                waterMinHeight = data.waterMinHeight,
-                minSteamHeight = data.minSteamHeight,
-                waterMaxScale = data.waterMaxScale,
-            }
-            logger:debug("    %s: { capacity: %d%s%s%s }",
-                id,
-                data.capacity,
-                data.weight and string.format(", weight: %s", data.weight) or "",
-                data.value and string.format(", weight: %s", data.value) or "",
-                data.holdsStew and string.format(", holdsStew: %s", data.holdsStew) or ""
-            )
-        elseif type(data) == "number" then
-            --Number for just setting a capacity
-            staticConfigs.bottleList[id] = { capacity = data }
-            logger:debug("    %s: { capacity: %s }", id, data)
-        elseif type(data) == "string" then
-            --String for using existing bottle type
-            local thisBottleConfig = staticConfigs.bottleConfig[data]
-
-            assert(
-                thisBottleConfig,
-                string.format("%s is not a valid water container type. Valid types include: %s",
-                    data, listValidWaterContainers())
-            )
-
-            --add to config
-            staticConfigs.bottleList[id] = {
-                capacity = thisBottleConfig.capacity,
-                holdsStew = thisBottleConfig.holdsStew,
-                value = includeOverrides and thisBottleConfig.value or nil,
-                weight = includeOverrides and thisBottleConfig.weight or nil,
-            }
-            local finalConfig = staticConfigs.bottleList[id]
-            logger:debug("    %s: { capacity: %d%s%s }",
-                id,
-                finalConfig.capacity,
-                finalConfig.weight and string.format(", weight: %s", finalConfig.weight) or "",
-                finalConfig.value and string.format(", weight: %s", finalConfig.value) or "",
-                finalConfig.holdsStew and string.format(", holdsStew: %s", finalConfig.holdsStew) or ""
-            )
-        end
-        staticConfigs.activatorConfig.list.waterContainer:addId(id)
-    end
-    return true
-end
-event.register("Ashfall:RegisterWaterContainers", registerWaterContainers)
-
-local function registerFoods(e)
-    logger:debug("Registering the following food items: ")
-    for id, foodType in pairs(e.data) do
-        assert(type(id) == "string", "Water container ID must be a string.")
-        assert(foodConfig.type[foodType], string.format("%s is not a valid food type. Valid types include: %s", foodType, listValidFoodTypes() ))
-
-        foodConfig.addFood(id, foodType)
-        logger:debug("    %s: %s", id, foodType)
-    end
-    return true
-end
-event.register("Ashfall:RegisterFoods", registerFoods)
-
-local function registerHeatSources(e)
-    logger:debug("Registering the following heat sources: ")
-    for id, temp in pairs(e.data) do
-        assert(type(id) == "string", "RegisterHeatSources: id must be a string")
-        assert(type(temp) == "number", "RegisterHeatSources: temp value must be a number")
-        staticConfigs.heatSourceValues[id:lower()] = temp
-        logger:debug("    %s: %s", id, temp)
-    end
-    return true
-end
-event.register("Ashfall:RegisterHeatSources", registerHeatSources)
-
-
-
-local function registerTeas(e)
-    for id, teaData in pairs(e.data) do
-        assert(type(id) == 'string', "id must be a valid string")
-        assert(type(teaData.teaName) == 'string', "teaData.teaName must be a string")
-        assert(type(teaData.teaDescription) == 'string', "teaData.teaDescription must be a string")
-        assert(type(teaData.effectDescription) == 'string', "teaData.effectDescription must be a string")
-        local spell = teaData.spell
-        if spell then
-            assert(type(spell.id) == 'string', "spell id must be string")
-            assert(type(spell.effects) == 'table', "Spell effects must be table")
-        end
-        teaConfig.teaTypes[id:lower()] = teaData
-    end
-    return true
-end
-event.register("Ashfall:RegisterTeas", registerTeas)
-
-
-local function registerClimates(e)
-    logger:debug("Registering climate data for the following regions: ")
-    for region, data in pairs(e.data) do
-        region = region:lower()
-        if type(data) == 'table' then
-            assert(data.min, "Missing min climate value.")
-            assert(data.max, "Missing max climate value.")
-            climateConfig.regions[region] = data
-            logger:debug("    %s: { min: %d, max: %d }", region, data.min, data.max)
-        elseif type(data) == 'string' then
-            local climateType = data:lower()
-            local climateData = climateConfig.climate[climateType]
-            assert(climateData, string.format("Invalid Climate type. Must be ones of the following: %s", listValidClimateTypes()))
-            climateConfig.regions[region] = climateData
-            logger:debug("    %s: { min: %d, max: %d }", region, climateData.min, climateData.max)
-        else
-            logger:error("Invalid climate data. Must be a table with min/max values, a string matching the following: " .. listValidClimateTypes())
-        end
-    end
-    return true
-end
-
-
----@class Ashfall.Interop
-local Interop = {}
 
 --Block or unblock hunger, thirst and sleep
 Interop.blockNeeds = function()
@@ -362,24 +191,151 @@ Interop.registerActivatorType = function(e)
     return true
 end
 
-Interop.registerActivators = function(data, usePatterns)
-    return registerActivators({ data = data, usePatterns = usePatterns})
-end
-Interop.registerWaterSource = function(data)
-    return registerWaterSource(data)
+
+local function registerActivator(id, activatorType, usePatterns)
+    assert(type(id) == 'string', "registerActivator(): Invalid id. Must be a string.")
+
+    local activator = activatorConfig.list[activatorType]
+    assert(activator, string.format("registerActivator(): %s is an invalid activator type. Valid types include: %s",
+            activatorType, listValidActivatorTypes()))
+
+    if usePatterns then
+        activator:addPattern(id)
+    else
+        activator:addId(id)
+    end
+    logger:debug("    %s as %s", id, activatorType)
 end
 
-Interop.registerWaterContainers = function(data, includeOverrides)
-    return registerWaterContainers({ data = data, includeOverrides = includeOverrides })
+Interop.registerActivators = function(data, usePatterns)
+    logger:debug("Registering the following activator %s: ", (usePatterns and "patterns" or "ids"))
+    for id, activatorType in pairs(data) do
+        registerActivator(id, activatorType, usePatterns)
+    end
+    return true
 end
+
+Interop.registerWaterSource = function(data)
+    assert(type(data.name) == "string", "registerWaterSource(): No name string provided")
+    assert(type(data.ids) == "table", "registerWaterSource(): No table of ids provided")
+    local waterType = data.isDirty and activatorConfig.types.dirtyWaterSource or activatorConfig.types.waterSource
+
+    local idList = {}
+    for _, id in ipairs(data.ids) do
+        idList[id] = true
+    end
+    activatorConfig.list[data.name] = ActivatorController.registerActivator{
+        name = data.name,
+        type = waterType,
+        ids = idList
+    }
+    activatorConfig.subTypes[data.name] = data.name
+    return true
+end
+
+Interop.registerWaterContainers = function(e, includeOverrides)
+    logger:debug("Registering the following water containers:")
+    for id, data in pairs(e) do
+        assert(type(id) == "string", "Water container ID must be a string.")
+        id = id:lower()
+        if type(data) == "table" then
+            --Table for manual values
+            assert(data.capacity, "Water container data must include a capacity.")
+            assert(type(data.capacity) == "number", "Capacity must be a number.")
+            staticConfigs.bottleList[id] = {
+                capacity = data.capacity,
+                weight = data.weight,
+                value = data.value,
+                holdsStew = data.holdsStew,
+                waterMaxHeight = data.waterMaxHeight,
+                waterMinHeight = data.waterMinHeight,
+                minSteamHeight = data.minSteamHeight,
+                waterMaxScale = data.waterMaxScale,
+            }
+            logger:debug("    %s: { capacity: %d%s%s%s }",
+                id,
+                data.capacity,
+                data.weight and string.format(", weight: %s", data.weight) or "",
+                data.value and string.format(", weight: %s", data.value) or "",
+                data.holdsStew and string.format(", holdsStew: %s", data.holdsStew) or ""
+            )
+            if data.type then
+                Interop.registerUtensil{ id = id, data = data }
+            end
+        elseif type(data) == "number" then
+            --Number for just setting a capacity
+            staticConfigs.bottleList[id] = { capacity = data }
+            logger:debug("    %s: { capacity: %s }", id, data)
+        elseif type(data) == "string" then
+            --String for using existing bottle type
+            local thisBottleConfig = staticConfigs.bottleConfig[data]
+
+            assert(
+                thisBottleConfig,
+                string.format("%s is not a valid water container type. Valid types include: %s",
+                    data, listValidWaterContainers())
+            )
+
+            --add to config
+            staticConfigs.bottleList[id] = {
+                capacity = thisBottleConfig.capacity,
+                holdsStew = thisBottleConfig.holdsStew,
+                value = includeOverrides and thisBottleConfig.value or nil,
+                weight = includeOverrides and thisBottleConfig.weight or nil,
+            }
+            local finalConfig = staticConfigs.bottleList[id]
+            logger:debug("    %s: { capacity: %d%s%s }",
+                id,
+                finalConfig.capacity,
+                finalConfig.weight and string.format(", weight: %s", finalConfig.weight) or "",
+                finalConfig.value and string.format(", weight: %s", finalConfig.value) or "",
+                finalConfig.holdsStew and string.format(", holdsStew: %s", finalConfig.holdsStew) or ""
+            )
+        end
+        staticConfigs.activatorConfig.list.waterContainer:addId(id)
+    end
+    return true
+end
+
+
+
 Interop.registerFoods = function(data)
-    return registerFoods({ data = data })
+    logger:debug("Registering the following food items: ")
+    for id, foodType in pairs(data) do
+        assert(type(id) == "string", "Water container ID must be a string.")
+        assert(foodConfig.type[foodType], string.format("%s is not a valid food type. Valid types include: %s", foodType, listValidFoodTypes() ))
+
+        foodConfig.addFood(id, foodType)
+        logger:debug("    %s: %s", id, foodType)
+    end
+    return true
 end
+
+
 Interop.registerHeatSources = function(data)
-    return registerHeatSources({data = data})
+    logger:debug("Registering the following heat sources: ")
+    for id, temp in pairs(data) do
+        assert(type(id) == "string", "RegisterHeatSources: id must be a string")
+        assert(type(temp) == "number", "RegisterHeatSources: temp value must be a number")
+        staticConfigs.heatSourceValues[id:lower()] = temp
+        logger:debug("    %s: %s", id, temp)
+    end
 end
+
 Interop.registerTeas = function(data)
-    return registerTeas({ data = data })
+    for id, teaData in pairs(data) do
+        assert(type(id) == 'string', "id must be a valid string")
+        assert(type(teaData.teaName) == 'string', "teaData.teaName must be a string")
+        assert(type(teaData.teaDescription) == 'string', "teaData.teaDescription must be a string")
+        assert(type(teaData.effectDescription) == 'string', "teaData.effectDescription must be a string")
+        local spell = teaData.spell
+        if spell then
+            assert(type(spell.id) == 'string', "spell id must be string")
+            assert(type(spell.effects) == 'table', "Spell effects must be table")
+        end
+        teaConfig.teaTypes[id:lower()] = teaData
+    end
+    return true
 end
 
 --Survival skill
@@ -391,6 +347,7 @@ Interop.progressSurvivalSkill = function(amount)
         return true
     end
 end
+
 Interop.getSurvivalSkill = function()
     if common.skills.survival then
         local skillValue = common.skills.survival.current
@@ -398,9 +355,28 @@ Interop.getSurvivalSkill = function()
         return skillValue
     end
 end
+
 --Weather
-Interop.registerClimates = function(data)
-    return registerClimates({ data = data })
+Interop.registerClimates = function(e)
+    logger:debug("Registering climate data for the following regions: ")
+    for region, data in pairs(e) do
+        region = region:lower()
+        if type(data) == 'table' then
+            assert(data.min, "Missing min climate value.")
+            assert(data.max, "Missing max climate value.")
+            climateConfig.regions[region] = data
+            logger:debug("    %s: { min: %d, max: %d }", region, data.min, data.max)
+        elseif type(data) == 'string' then
+            local climateType = data:lower()
+            local climateData = climateConfig.climate[climateType]
+            assert(climateData, string.format("Invalid Climate type. Must be ones of the following: %s", listValidClimateTypes()))
+            climateConfig.regions[region] = climateData
+            logger:debug("    %s: { min: %d, max: %d }", region, climateData.min, climateData.max)
+        else
+            logger:error("Invalid climate data. Must be a table with min/max values, a string matching the following: " .. listValidClimateTypes())
+        end
+    end
+    return true
 end
 
 Interop.getSunlight = function()
@@ -415,11 +391,7 @@ Interop.getSunlightNormalized = function()
     return normalisedSunlight
 end
 
-
-
-
 Interop.registerTreeBranches = branchInterop.registerTreeBranches
-
 
 Interop.registerOverrides = function(data)
     local success = true
@@ -438,11 +410,10 @@ Interop.registerOverrides = function(data)
     return success
 end
 
-
+---@param data { id: string, data: Ashfall.UtensilConfig|Ashfall.waterContainerData }
 Interop.registerUtensil = function(data)
     local id = data.id
     local utensilData = data.data
-
     if utensilData.type == "kettle" or utensilData.type == "cookingPot" then
         staticConfigs.utensils[id:lower()] = utensilData
         staticConfigs.bottleList[id:lower()] = utensilData
@@ -519,14 +490,51 @@ function Interop.registerWoodAxes(data)
     return true
 end
 
-----------------------------------------
---- Firewood
-----------------------------------------
+
+---@param data { id: string }
+function Interop.registerSunshade(data)
+    staticConfigs.shadeEquipment[data.id:lower()] = true
+end
+
+
+---------------------------------------
+---- Other
+---------------------------------------
 
 Interop.getFirewoodIds = function()
     return {
         ashfall_firewood = true
     }
+end
+
+
+--- Check if the player has tea in their inventory
+--- id: string - The id of the tea to check for. If nil, will return true if any tea is found
+--- brewedOnly: boolean - (Default: true). If true, will only check for brewed tea
+---@param e { id: string?, brewedOnly: boolean|nil } | nil
+function Interop.hasTea(e)
+    e = e or {}
+    for _, stack in pairs(tes3.player.object.inventory) do
+        if stack.variables then
+            for _, data in pairs(stack.variables) do
+                local liquid = LiquidContainer.createFromInventory(stack.object, data)
+                if liquid then
+                    local isTeaMethod = (e.brewedOnly == false) and liquid.isTea or liquid.isBrewedTea
+                    local isTea = isTeaMethod(liquid)
+                    if isTea then
+                        if e.id then
+                            if liquid.waterType == e.id:lower() then
+                                return true
+                            end
+                        else
+                            return true
+                        end
+                    end
+                end
+            end
+        end
+    end
+    return false
 end
 
 return Interop
