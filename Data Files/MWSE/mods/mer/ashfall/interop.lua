@@ -513,6 +513,9 @@ end
 --- brewedOnly: boolean - (Default: true). If true, will only check for brewed tea
 ---@param e { id: string?, brewedOnly: boolean|nil } | nil
 function Interop.hasTea(e)
+    if type(e) == "string" then
+        e = { id = e }
+    end
     e = e or {}
     for _, stack in pairs(tes3.player.object.inventory) do
         if stack.variables then

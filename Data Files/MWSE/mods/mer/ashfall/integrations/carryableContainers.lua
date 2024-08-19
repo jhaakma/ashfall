@@ -16,6 +16,17 @@ local function doEquip(self)
     self:updateStats()
 end
 
+local function replaceAndEquip(self)
+    if not self:isCopy() then
+        self:replaceInInventory()
+        timer.frame.delayOneFrame(function()
+            doEquip(self)
+        end)
+    else
+        doEquip(self)
+    end
+end
+
 ---@param self CarryableContainer
 local function doOpen(self)
     logger:debug("Opening backpack `%s`", self.item.id)
@@ -29,7 +40,7 @@ local callbacks = {
         if CraftingFramework.Util.isQuickModifierDown() then
             doOpen(self)
         else
-            doEquip(self)
+            replaceAndEquip(self)
         end
     end,
     ---@param self CarryableContainer
