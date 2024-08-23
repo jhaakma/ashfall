@@ -61,9 +61,9 @@ local function ingredientSelect(campfire, foodType)
                     --Can only grill meat and veges
                 )
             end,
-            callback = function(e) --select how many
+            callback = function(callbackParams)
                 common.data.inventorySelectStew = nil
-                if e.item then
+                if callbackParams.item then
                     logger:debug("Selecting ingredient amount for stew")
                     local liquidContainer = LiquidContainer.createFromReference(campfire)
                     if not liquidContainer then
@@ -72,18 +72,21 @@ local function ingredientSelect(campfire, foodType)
                     end
                     local capacity = liquidContainer:getStewCapacity(foodType)
                     local max = math.min(
-                        common.helper.getItemCount{ reference = e.reference, item = e.item },
+                        callbackParams.count,
                         capacity
                     )
                     logger:debug("max: %s", max)
 
-                    local eventData = table.copy(e)
-                    e = nil
-
+                    local eventData = table.copy(callbackParams)
                     eventData.amount = 1
                     eventData.campfire = campfire
                     eventData.foodType = foodType
-                    if max > 1 and not (eventData.itemData and eventData.itemData.data) then
+
+                    local totalInInventory = callbackParams.reference.object.inventory:getItemCount(callbackParams.item)
+                    local amountSelected = callbackParams.count
+                    local selectedAll = totalInInventory == amountSelected
+                    local hasItemData = eventData.itemData and eventData.itemData.data
+                    if selectedAll == true and max > 1 and not hasItemData then
                         common.helper.createSliderPopup{
                             label = "How many?",
                             min = 0,
