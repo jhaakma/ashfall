@@ -994,6 +994,7 @@ end
 ---@field blend number The amount of blending between the ground and decal texture
 ---@field texturingProperty niTexturingProperty
 ---@field object any
+
 ---@return Ashfall.GroundTextureInfo|nil
 function this.getGroundTextureInfo(e)
     local rayhit = tes3.rayTest({

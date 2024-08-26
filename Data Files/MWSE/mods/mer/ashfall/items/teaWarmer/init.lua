@@ -31,11 +31,11 @@ local function itemIsCandle(object)
         return object.id:lower():find("candle") ~= nil
     end
     if midnightOilInterop then
-        if object.id:lower() == "mer_lntrn_candle" then
-        end
         local candleIds = midnightOilInterop.getCandleIds()
         return candleIds[object.id:lower()] ~= nil
     end
+
+    return false
 end
 
 local function playerHasCandle()
