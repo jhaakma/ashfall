@@ -3,7 +3,7 @@
 local tooltipsComplete = include("Tooltips Complete.interop")
 local itemDescriptions = require("mer.ashfall.config.itemDescriptions")
 
-for id, description in ipairs(itemDescriptions) do
+for id, description in pairs(itemDescriptions) do
     if tooltipsComplete then
         if tes3.getObject(id) then
             tooltipsComplete.addTooltip(id, description)
