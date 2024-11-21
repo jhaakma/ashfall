@@ -71,6 +71,8 @@ end
 
 
 function this.addPatina(rootNode, amount)
+    --Patina mechanics disabled
+    do return end
 
     --logger:trace("+++++ADD PATINA")
     if not rootNode then return end
@@ -99,6 +101,8 @@ function this.addPatina(rootNode, amount)
 end
 
 local function doPatinaDrop(e)
+    do return end
+
     if e.reference and e.reference.sceneNode and e.reference.data then
         local data = e.reference.data
         local patinaAmount = data.patinaAmount

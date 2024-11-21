@@ -96,7 +96,7 @@ local function onRefSceneNodeCreatedAddCovers(e)
         attachMeshToRef(e.reference, meshPath)
     end
 end
-event.register("referenceSceneNodeCreated", onRefSceneNodeCreatedAddCovers)
+event.register("referenceActivated", onRefSceneNodeCreatedAddCovers)
 
 
 return this

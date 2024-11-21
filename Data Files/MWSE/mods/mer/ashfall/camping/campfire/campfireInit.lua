@@ -94,4 +94,4 @@ local function registerCampfire(e)
         event.trigger("Ashfall:registerReference", { reference = campfire})
     end
 end
-event.register("referenceSceneNodeCreated", registerCampfire)
+event.register("referenceActivated", registerCampfire)

@@ -173,5 +173,5 @@ local function disableLighting(e)
         end
     end
 end
-event.register("referenceSceneNodeCreated", disableLighting)
+event.register("referenceActivated", disableLighting)
 

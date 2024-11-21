@@ -135,7 +135,6 @@ local function updatePlanterMeshes(e)
     end
 end
 
-event.register("referenceSceneNodeCreated", updatePlanterMeshes)
 event.register("referenceActivated", updatePlanterMeshes)
 event.register("loaded", function(e)
     ReferenceController.iterateReferences("planter", function(planterRef)

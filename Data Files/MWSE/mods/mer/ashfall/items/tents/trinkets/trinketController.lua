@@ -131,7 +131,7 @@ local function onRefSceneNodeCreatedAddTrinkets(e)
         end
     end
 end
-event.register("referenceSceneNodeCreated", onRefSceneNodeCreatedAddTrinkets)
+event.register("referenceActivated", onRefSceneNodeCreatedAddTrinkets)
 
 
 return this

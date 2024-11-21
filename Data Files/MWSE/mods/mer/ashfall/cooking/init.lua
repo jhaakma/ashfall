@@ -358,7 +358,7 @@ local function foodPlaced(e)
         end)
     end
 end
-event.register("referenceSceneNodeCreated" , foodPlaced)
+event.register("referenceActivated" , foodPlaced)
 
 
 local function clearUtensilData(e)

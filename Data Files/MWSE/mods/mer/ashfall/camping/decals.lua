@@ -112,4 +112,4 @@ local function ingredPlaced(e)
     -- end
     -- event.register("enterFrame", f, {doOnce=true})
 end
-event.register("referenceSceneNodeCreated", ingredPlaced)
+event.register("referenceActivated", ingredPlaced)
