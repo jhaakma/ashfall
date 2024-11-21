@@ -578,6 +578,17 @@ local bushCraftingRecipes = {
     },
     novice = {
         {
+            id = "bushcraft:AB_alc_HealBandage01",
+            craftableId = "AB_alc_HealBandage01",
+            description = "A bandage made from fabric and resin. Can be used to heal minor wounds.",
+            materials = {
+                { material = "fabric", count = 1 },
+                { material = "resin", count = 2 },
+            },
+            category = this.categories.survival,
+            soundType = "fabric",
+        },
+        {
             id = "bushcraft:ashfall_planter_01",
             craftableId = "ashfall_planter_01",
             description = "A small wooden planter for growing crops.",
