@@ -31,6 +31,7 @@ return {
         return reference.supportsLuaData
             and playerHasCandle()
             and hasRoomForCandle(reference)
+            and not common.helper.getRefUnderwater(reference)
     end,
     tooltipDisabled = getDisabledText,
     callback = function(reference)

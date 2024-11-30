@@ -90,8 +90,10 @@ end
 
 local menuConfig = {
     text = "Light Fire",
+    enableRequirements = function(reference)
+        return not common.helper.getRefUnderwater(reference)
+    end,
     showRequirements = function(reference)
-
         if not reference.supportsLuaData then return false end
         return (
             not reference.data.isLit and

@@ -57,6 +57,17 @@ local function collectCrabs(ref)
             count = count,
             showMessage = true,
         }
+
+        local crabshell = "mer_crabshell"
+        if tes3.getObject(crabshell) then
+            tes3.addItem{
+                reference = tes3.player,
+                item = crabshell,
+                count = count,
+                showMessage = true,
+            }
+        end
+
         ref.data.crabCount = 0
         updateSwitchNodes(ref)
         playCrabSound(ref)
@@ -175,7 +186,7 @@ local function onGearDropped(e)
         common.helper.yeet(e.reference)
     end
 end
-event.register("Ashfall:GearDropped", onGearDropped)
+event.register(tes3.event.itemDropped, onGearDropped)
 
 ---@param e referenceActivatedEventData
 local function initCrabPotRef(e)

@@ -37,7 +37,7 @@ local mcmConfig = {
         ["baissa"] = true,--Vivec foreign quarter trader - Khajiit - 100
         ["sedam omalen"] = true,--Ald Velothi's only trader - Dark Elf 400
         ["ferele athram"] = true, --Tel Aruhn trader
-        ["urfing"] = true --Moonmoth Legion Fort trader - Nord 400
+        ["urfing"] = true, --Moonmoth Legion Fort trader - Nord 400
     },
     foodWaterMerchants = {
         ["lirielle stoine"] = true, --Rat in the Pot

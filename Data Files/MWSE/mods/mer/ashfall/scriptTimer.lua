@@ -30,17 +30,10 @@ local function getInterval(hoursPassed)
     common.data.lastTimeScriptsUpdated = common.data.lastTimeScriptsUpdated or hoursPassed
     local interval = math.abs(hoursPassed - common.data.lastTimeScriptsUpdated)
     --limit to 8 hours in case some crazy time leap
-    interval = math.min(interval, 8.0)
+    interval = math.clamp(interval, 0.0, 8.0)
     return interval
 end
 
-local function doCallbackIfTimePassed(callback, targetInterval)
-    local hoursPassed = getHoursPassed()
-    local interval = getInterval(hoursPassed)
-    if (not targetInterval) or (interval >= targetInterval) then
-        callback(interval)
-    end
-end
 
 local function callUpdates()
     if not tes3.player then return end

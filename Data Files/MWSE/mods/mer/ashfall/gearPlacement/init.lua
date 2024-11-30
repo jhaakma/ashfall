@@ -30,6 +30,6 @@ local function onDropGear(e)
         event.trigger("Ashfall:GearDropped", e)
     end
 end
-event.register("itemDropped", onDropGear, { priority = 100})
+--event.register("itemDropped", onDropGear, { priority = 100})
 
 

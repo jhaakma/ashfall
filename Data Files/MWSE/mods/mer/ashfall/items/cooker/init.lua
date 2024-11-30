@@ -31,4 +31,4 @@ local function onGearDropped(e)
         event.trigger("Ashfall:UpdateAttachNodes", { reference = ref})
     end
 end
-event.register("Ashfall:GearDropped", onGearDropped)
+event.register(tes3.event.itemDropped, onGearDropped)
