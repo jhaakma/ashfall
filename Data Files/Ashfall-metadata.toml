@@ -28,7 +28,7 @@ mwse-module = "CraftingFramework"
 version = "^1.24.1"
 url = "https://www.nexusmods.com/morrowind/mods/51009?tab=files"
 
-[dependencies.mods."Just Drop It"]
-mwse-module = "JustDropIt"
+[dependencies.mods."JustDropIt"]
+mwse-module = "mer.justDropit"
 version = "^1.2.0"
 url = "https://www.nexusmods.com/morrowind/mods/4955"
