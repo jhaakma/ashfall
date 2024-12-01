@@ -1107,5 +1107,15 @@ function this.getUpdateIntervalInSeconds()
     return millis / 1000
 end
 
+---Check if an object id is registered as a sunshade
+---@param id string
+function this.isSunshade(id)
+    return staticConfigs.shadeEquipment[id:lower()]
+end
+
+---Register an object id as a sunshade
+function this.registerSunshade(id)
+    staticConfigs.shadeEquipment[id:lower()] = true
+end
 
 return this

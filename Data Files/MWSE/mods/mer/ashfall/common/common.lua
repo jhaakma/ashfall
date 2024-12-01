@@ -90,6 +90,7 @@ end
 ---@field valuesInitialised boolean Set to true when ScriptTimer updates have run at least once on this save
 ---@field inventorySelectTeaBrew boolean Set to true when the player is currently selecting a tea to brew
 ---@field backpacks table<string, boolean> a map of backpack objects which are to be registered on load
+---@field sunshades table<string, boolean> a map of sunshade objects which are to be registered on load
 ---@field sacks table<string, boolean> a map of sack objects which are to be registered as materials on load
 ---@field woodAxesForHarvesting table<string, boolean> a map of woodaxe objects which are to be registered for harvesting on load
 ---@field woodAxesForBackpack table<string, boolean> a map of woodaxe objects which are to be registered for backpack display on load

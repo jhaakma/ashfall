@@ -198,8 +198,32 @@ event.register("unequipped", function(e)
     container:updateStats()
 end)
 
+--[[
+    TODO:
+        Instead of reregistering on load, change isBackpack and isSunshade to check both
+        object ID and map to copiedID already stored in Crafting Framework
+]]
 event.register("loaded", function()
     for backpack in pairs(common.data.backpacks) do
         Backpack.registerBackpack(backpack)
+    end
+    for sunshade in pairs(common.data.sunshades) do
+        common.helper.registerSunshade(sunshade)
+    end
+end)
+
+---@param e objectCreatedEventData
+event.register("objectCreated", function(e)
+    if not e.copiedFrom then return end
+    logger:debug("created from %s", e.copiedFrom.id)
+    if Backpack.isBackpack(e.copiedFrom) then
+        logger:debug("objectCreated: registering backpack %s", e.object.id)
+        Backpack.registerBackpack(e.object.id)
+        common.data.backpacks[e.object.id:lower()] = true
+    end
+    if common.helper.isSunshade(e.copiedFrom.id) then
+        logger:debug("objectCreated: registering sun shade %s", e.object.id)
+        common.helper.registerSunshade(e.object.id)
+        common.data.sunshades[e.object.id:lower()] = true
     end
 end)
