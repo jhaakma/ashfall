@@ -42,6 +42,7 @@ local function initData()
     data.woodAxesForHarvesting = data.woodAxesForHarvesting or {}
     data.woodAxesForBackpack = data.woodAxesForBackpack or {}
     data.sacks = data.sacks or {}
+    data.sunshades = data.sunshades or {}
 end
 
 ---@class Ashfall.playerData
