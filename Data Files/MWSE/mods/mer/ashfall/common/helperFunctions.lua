@@ -624,7 +624,16 @@ function this.rotationDifference(vec1, vec2)
     return m:toEulerXYZ()
 end
 
+---@class Ashfall.getGroundBelowRef.params
+---@field ref tes3reference
+---@field ignoreList tes3reference[]
+---@field rootHeight number
+---@field terrainOnly boolean
+---@field maxDistance? number
+---@field doLog? boolean
+---@field recreateBoundingBox boolean This will remove lights/collision from the sceneNode, only use if the ref can be discarded
 
+---@param e Ashfall.getGroundBelowRef.params
 ---@return niPickRecord|nil
 function this.getGroundBelowRef(e)
     e.doLog = e.doLog or false
@@ -635,12 +644,19 @@ function this.getGroundBelowRef(e)
     if not ref then
         return
     end
-    if not ref.object.boundingBox then
+    local boundingBox = ref.object.boundingBox
+    if e.recreateBoundingBox then
+        this.removeCollision(ref.sceneNode)
+        this.removeLight(ref.sceneNode)
+        ref.sceneNode:update()
+        boundingBox = ref.sceneNode:createBoundingBox()
+    end
+    if not boundingBox then
         return
     end
-    local height = -ref.object.boundingBox.min.z + (e.rootHeight or 5)
+    local height = (boundingBox.max.z - boundingBox.min.z)
     local pos = ref.position:copy()
-    pos.z = pos.z + height
+    pos.z = pos.z + (e.rootHeight or (boundingBox.max.z - (height/2))) * ref.scale
     local result = tes3.rayTest{
         position = pos,
         direction = tes3vector3.new(0, 0, -1),
@@ -648,7 +664,8 @@ function this.getGroundBelowRef(e)
         returnNormal = true,
         useBackTriangles = false,
         root = e.terrainOnly and tes3.game.worldLandscapeRoot or nil,
-        maxDistance = e.maxDistance or 500
+        maxDistance = e.maxDistance or 500,
+        accurateSkinned = true,
     }
     if result then
         this.logger:trace("Found ground below %s at %s", ref, result.intersection)
@@ -691,8 +708,17 @@ function this.compareReferenceSize(ref1, ref2)
     end
 end
 
+---@class Ashfall.orientRefToGround.params
+---@field ref tes3reference
+---@field maxSteepness? number
+---@field ignoreList? tes3reference[]
+---@field rootHeight? number
+---@field terrainOnly? boolean
+---@field ignoreNonStatics? boolean
+---@field maxDistance? number
+---@field recreateBoundingBox? boolean
 
-
+---@param params Ashfall.orientRefToGround.params
 function this.orientRefToGround(params)
     local function orientRef(ref, rayResult, maxSteepness)
         local UP = tes3vector3.new(0, 0, 1)
@@ -714,7 +740,6 @@ function this.orientRefToGround(params)
     local ref = params.ref
     local maxSteepness = params.maxSteepness or 0.4
     local ignoreList = params.ignoreList or {ref, tes3.player}
-    local rootHeight = params.rootHeight or 0
     local terrainOnly = params.terrainOnly or false --only look at terrain
     local ignoreNonStatics = params.ignoreNonStatics or false
 
@@ -729,9 +754,10 @@ function this.orientRefToGround(params)
     local result = this.getGroundBelowRef{
         ref = ref,
         ignoreList = ignoreList,
-        rootHeight = rootHeight,
+        rootHeight = params.rootHeight,
         terrainOnly = terrainOnly,
-        maxDistance = params.maxDistance
+        maxDistance = params.maxDistance,
+        recreateBoundingBox = params.recreateBoundingBox
     }
     if not result then return false end
     if not params.skipOrient then

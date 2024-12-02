@@ -4,6 +4,7 @@ local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 local HeatUtil = require("mer.ashfall.heat.HeatUtil")
 local foodConfig = common.staticConfigs.foodConfig
 local campfireConfig = common.staticConfigs.campfireConfig
+local CraftingFramework = require("CraftingFramework")
 local randomStuffChances = {
     utensil = 0.4,
     water = 0.6,
@@ -11,6 +12,12 @@ local randomStuffChances = {
     stew = 0.7
 }
 local SCALE_MAX = 1.3
+
+
+local meshOffsets = {
+    ["furn_de_firepit_f.nif"] = -68,
+    ["furn_de_firepit_f_01.nif"] = -68
+}
 
 local vanillaCampfires = {
     mr_light_pitfire = { replacement = "ashfall_campfire", supports = true, rootHeight = 5, squareSupports = true, infinite = true},
@@ -480,8 +487,10 @@ local function moveFood(campfire, foodList)
             end
         end
     end
-
 end
+
+
+
 
 local function replaceCampfire(e)
     local vanillaConfig = vanillaCampfires[e.reference.object.id:lower()]
@@ -557,15 +566,16 @@ local function replaceCampfire(e)
 
                 table.insert(data.ignoreList, campfire)
                 local rootHeight = 0 -- vanillaConfig.rootHeight * campfire.scale
+
                 local orientedCorrectly = common.helper.orientRefToGround{
                     ref = campfire,
                     maxSteepness = (data.hasPlatform and 0.0 or 0.2),
                     ignoreList = data.ignoreList,
-                    rootHeight = rootHeight+5,
                     ignoreNonStatics = true,
                     ignoreBB = true,
-                    --skipPosition = true
-                    maxZ = 10
+                    rootHeight = meshOffsets[e.reference.object.mesh:lower()] or -rootHeight,
+                    maxZ = 10,
+                    recreateBoundingBox = true
                 }
                 if not orientedCorrectly then
                     common.helper.removeCollision(e.reference.sceneNode)
