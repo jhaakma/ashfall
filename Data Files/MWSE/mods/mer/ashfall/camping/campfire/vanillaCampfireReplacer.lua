@@ -575,7 +575,6 @@ local function replaceCampfire(e)
                     ignoreBB = true,
                     rootHeight = meshOffsets[e.reference.object.mesh:lower()] or -rootHeight,
                     maxZ = 10,
-                    recreateBoundingBox = true
                 }
                 if not orientedCorrectly then
                     common.helper.removeCollision(e.reference.sceneNode)
