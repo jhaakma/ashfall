@@ -97,6 +97,6 @@ local function onRefSceneNodeCreatedAddCovers(e)
     end
 end
 event.register("referenceActivated", onRefSceneNodeCreatedAddCovers)
-
+event.register("Ashfall:coverCreated", onRefSceneNodeCreatedAddCovers)
 
 return this

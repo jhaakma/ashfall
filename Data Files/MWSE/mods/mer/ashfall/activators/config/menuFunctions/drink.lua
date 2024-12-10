@@ -5,8 +5,12 @@ local LiquidContainer = require("mer.ashfall.liquid.LiquidContainer")
 local thirstController = require("mer.ashfall.needs.thirstController")
 local teaConfig = common.staticConfigs.teaConfig
 
+---@param liquidContainer Ashfall.LiquidContainer
 local function canDrink(liquidContainer)
     if not liquidContainer then return false end
+    if not liquidContainer:hasWater() then
+        return false
+    end
     if liquidContainer:isWater() then
         return true
     end

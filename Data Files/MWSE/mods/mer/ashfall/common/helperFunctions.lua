@@ -717,6 +717,10 @@ end
 ---@field ignoreNonStatics? boolean
 ---@field maxDistance? number
 ---@field recreateBoundingBox? boolean
+---@field skipOrient? boolean
+---@field skipPosition? boolean
+---@field maxZ? number
+---@field ignoreBB? boolean
 
 ---@param params Ashfall.orientRefToGround.params
 function this.orientRefToGround(params)

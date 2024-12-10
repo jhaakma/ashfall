@@ -30,7 +30,7 @@ local vanillaCampfires = {
     --unlit supports
     furn_de_firepit =  { replacement = "ashfall_campfire", supports = true, rootHeight = 68, infinite = true},
     --unlit
-    furn_de_firepit_01 =  { replacement = "ashfall_campfire", supports = false, rootHeight = 0, infinite = true},
+    furn_de_firepit_01 =  { replacement = "ashfall_campfire", supports = false, rootHeight = 10, infinite = true},
 
     --Supports
     furn_de_firepit_f =  { replacement = "ashfall_campfire", supports = true, rootHeight = 68, infinite = true},
@@ -574,7 +574,7 @@ local function replaceCampfire(e)
                     ignoreNonStatics = true,
                     ignoreBB = true,
                     rootHeight = meshOffsets[e.reference.object.mesh:lower()] or -rootHeight,
-                    maxZ = 10,
+                    maxZ = 100,
                 }
                 if not orientedCorrectly then
                     common.helper.removeCollision(e.reference.sceneNode)
@@ -583,7 +583,7 @@ local function replaceCampfire(e)
                     local vanillaHeight = vanillaBB.min.z
                     local campfireHeight = campfire.position.z - rootHeight
                     local heightDiff = campfireHeight - vanillaHeight
-                    logger:debug("Failed to orient, setting height based on bounding box")
+                    logger:error("Failed to orient, setting height based on bounding box")
                     campfire.position = tes3vector3.new(
                         campfire.position.x,
                         campfire.position.y,

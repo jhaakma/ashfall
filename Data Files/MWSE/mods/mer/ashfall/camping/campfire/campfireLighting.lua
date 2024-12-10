@@ -18,35 +18,38 @@ local function initialiseCampfireSoundAndFlame()
             campfire:deleteDynamicLightAttachment()
         end
 
-        if campfire.data.isLit then
-            tes3.removeSound{
-                sound = "Fire",
-                reference = campfire,
-            }
-        end
-        if campfire.data.waterHeat and campfire.data.waterHeat >= common.staticConfigs.hotWaterHeatValue then
-            tes3.removeSound{
-                sound = "ashfall_boil",
-                reference = campfire
-            }
-        end
+        tes3.removeSound{
+            sound = "Fire",
+            reference = campfire,
+        }
+        tes3.removeSound{
+            sound = "ashfall_boil",
+            reference = campfire
+        }
 
-        --Add spells a frame after they have been removed
+        --Add a frame after they have been removed
         timer.delayOneFrame(function()
             local isCampfire = ReferenceController.controllers.campfire:isReference(campfire)
             if isCampfire and campfire.data.isLit then
-                logger:debug("initilaliseCampfire: playing sound on %s", campfire.object.id)
-                tes3.playSound{
-                    sound = "Fire",
-                    reference = campfire,
-                }
+                if not tes3.getSoundPlaying{ reference = campfire, sound = "Fire" } then
+                    logger:debug("initilaliseCampfire: playing sound on %s", campfire.object.id)
+                    tes3.playSound{
+                        sound = "Fire",
+                        reference = campfire,
+                    }
+                end
             end
-            if campfire.data.waterHeat and campfire.data.waterHeat >= common.staticConfigs.hotWaterHeatValue then
-                tes3.playSound{
-                    sound = "ashfall_boil",
-                    reference = campfire
-                }
-            end
+            -- local waterAmount = campfire.data.waterAmount or 0
+            -- local waterHeat = campfire.data.waterHeat or 0
+            -- if waterAmount > 0 and waterHeat >= common.staticConfigs.hotWaterHeatValue then
+            --     if not tes3.getSoundPlaying{ reference = campfire, sound = "ashfall_boil" } then
+            --         logger:debug("initilaliseCampfire: playing boil sound on %s", campfire.object.id)
+            --         tes3.playSound{
+            --             sound = "ashfall_boil",
+            --             reference = campfire
+            --         }
+            --     end
+            -- end
         end)
     end
 
