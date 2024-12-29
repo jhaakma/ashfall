@@ -52,6 +52,7 @@ local function initialized()
         require('mer.ashfall.harvest')
         require('mer.ashfall.skinning')
         require("mer.ashfall.cooking")
+        require("mer.ashfall.liquid")
 
         require("mer.ashfall.effects.shader")
         --Enable Verticalisation
@@ -75,6 +76,7 @@ end)
 require("mer.ashfall.effects.faderController")
 
 event.register(tes3.event.dialogueEnvironmentCreated, function(e)
+    ---@class mwseDialogueEnvironment
     local env = e.environment
     env.Ashfall = Interop
 end)
