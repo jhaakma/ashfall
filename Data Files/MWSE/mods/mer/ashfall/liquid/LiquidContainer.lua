@@ -444,6 +444,8 @@ function LiquidContainer:doGraphicalUpdates()
     end
     --Update inventory
     tes3ui.updateInventoryTiles()
+    tes3ui.updateContentsMenuTiles()
+    tes3ui.updateBarterMenuTiles()
 end
 
 ---@param self Ashfall.LiquidContainer

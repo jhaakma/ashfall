@@ -19,8 +19,8 @@ if CraftingFramework then
                 return LiquidContainer.canTransfer(held, target)
             end,
             onDrop = function(e)
-                local held = LiquidContainer.createFromInventoryWithItemData{ item = e.held.item, itemData = e.held.itemData }
-                local target = LiquidContainer.createFromInventoryWithItemData{ item = e.target.item, itemData = e.target.itemData }
+                local held = LiquidContainer.createFromInventoryWithItemData{ item = e.held.item, itemData = e.held.itemData, reference = e.reference }
+                local target = LiquidContainer.createFromInventoryWithItemData{ item = e.target.item, itemData = e.target.itemData, reference = e.reference }
                 LiquidContainer.transferLiquid(held, target)
             end
         }
