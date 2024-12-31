@@ -45,7 +45,8 @@ this.crateIds = {
 this.innkeeperClasses = {
     publican = true,
     t_sky_publican = true,
-    t_cyr_publican = true
+    t_cyr_publican = true,
+    t_glb_publican = true,
 }
 this.maxSunTemp = 15
 this.DEFAULT_EAT_AMOUNT = 20
