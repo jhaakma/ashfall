@@ -456,6 +456,7 @@ end
 
 function LiquidContainer:playSound()
     if self.doPlaySound then
+        logger:debug("Playing water sound")
         tes3.playSound({reference = tes3.player, sound = "ashfall_water"})
     end
 end

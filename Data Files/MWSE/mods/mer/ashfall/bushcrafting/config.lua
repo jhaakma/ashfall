@@ -312,7 +312,7 @@ this.materials = {
             "ashfall_cush_crft_01",
             "ab_misc_depillowl_02",
             "misc_uni_pillow_02",
-            "This_Object_Doesn't_Exist"
+            "ab_misc_depillowl_02",
         }
     },
     {
@@ -833,6 +833,25 @@ local bushCraftingRecipes = {
                 capacity = 100,
                 weightModifier = 0.8,
                 filter = "ingredients"
+            },
+        },
+        {
+            id = "bushcraft:ashfall_scrollbag_01",
+            craftableId = "ashfall_scrollbag_01",
+            description = itemDescriptions.ashfall_scrollbag_01,
+            materials = {
+                { material = "leather", count = 1 },
+                { material = "fabric", count = 2 },
+            },
+            category = this.categories.containers,
+            soundType = "fabric",
+            additionalMenuOptions = {
+                this.menuOptions.rename
+            },
+            containerConfig = {
+                capacity = 100,
+                weightModifier = 0.6,
+                filter = "magicScrolls"
             },
         },
         {
