@@ -7,6 +7,7 @@ if CraftingFramework then
         TileDropper.register{
             name = "AshfallLiquidContainer",
             highlightColor = { 0.5, 0.8, 1 },
+            keepHeldInCursor = true,
             isValidTarget = function(target)
                 local liquidContainer = LiquidContainer.createFromInventory(target.item, target.itemData)
                 return liquidContainer ~= nil
