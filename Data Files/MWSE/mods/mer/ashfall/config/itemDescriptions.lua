@@ -59,5 +59,8 @@ local itemDescriptions = {
     ashfall_workbench_01 = "A workbench that allows you to craft more complex and permanent structures.",
     ashfall_satchel_01 = "A small satchel for storing ingredients.",
     ashfall_scrollbag_01 = "A bag for storing magical scrolls.",
+    ashfall_gem_pouch_01 = "A pouch for storing soul gems.",
+    ashfall_notebook_01  = "A notebook for storing documents (and other non-magic texts).",
+    ashfall_potion_box_01 = "A box for storing potions.",
 }
 return itemDescriptions

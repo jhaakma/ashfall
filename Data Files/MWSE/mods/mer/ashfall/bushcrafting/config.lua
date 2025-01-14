@@ -849,10 +849,68 @@ local bushCraftingRecipes = {
                 this.menuOptions.rename
             },
             containerConfig = {
-                capacity = 100,
+                capacity = 50,
                 weightModifier = 0.6,
                 filter = "magicScrolls"
             },
+        },
+        {
+            id = "bushcraft:ashfall_gem_pouch_01",
+            craftableId = "ashfall_gem_pouch_01",
+            description = itemDescriptions.ashfall_gem_pouch_01,
+            materials = {
+                { material = "rope", count = 1 },
+                { material = "fabric", count = 2 },
+            },
+            category = this.categories.containers,
+            soundType = "fabric",
+            additionalMenuOptions = {
+                this.menuOptions.rename
+            },
+            containerConfig = {
+                capacity = 60,
+                weightModifier = 0.8,
+                filter = "soulGems"
+            },
+        },
+        {
+            --documents case
+            id = "bushcraft:ashfall_notebook_01",
+            craftableId = "ashfall_notebook_01",
+            description = itemDescriptions.ashfall_notebook_01,
+            materials = {
+                { material = "leather", count = 2 },
+                { material = "resin", count = 2 },
+            },
+            category = this.categories.containers,
+            soundType = "leather",
+            additionalMenuOptions = {
+                this.menuOptions.rename
+            },
+            containerConfig = {
+                capacity = 25,
+                weightModifier = 0.5,
+                filter = "nonMagicScrolls"
+            },
+        },
+        {
+            id = "bushcraft:ashfall_potion_box_01",
+            craftableId = "ashfall_potion_box_01",
+            description = itemDescriptions.ashfall_potion_box_01,
+            materials = {
+                { material = "wood", count = 4 },
+            },
+            category = this.categories.containers,
+            soundType = "wood",
+            additionalMenuOptions = {
+                this.menuOptions.rename
+            },
+            containerConfig = {
+                capacity = 50,
+                weightModifier = 0.7,
+                filter = "potions"
+            },
+            hasCollision = true,
         },
         {
             --workbench
