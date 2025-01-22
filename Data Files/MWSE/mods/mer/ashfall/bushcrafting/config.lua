@@ -874,6 +874,26 @@ local bushCraftingRecipes = {
             },
         },
         {
+            id = "bushcraft:ashfall_trinket_box_01",
+            craftableId = "ashfall_trinket_box_01",
+            description = itemDescriptions.ashfall_trinket_box_01,
+            materials = {
+                { material = "straw", count = 5 },
+                { material = "rope", count = 2 },
+            },
+            category = this.categories.containers,
+            soundType = "straw",
+            additionalMenuOptions = {
+                this.menuOptions.rename
+            },
+            scale = 0.4,
+            containerConfig = {
+                capacity = 50,
+                weightModifier = 0.6,
+                filter = "jewelry",
+            },
+        },
+        {
             --documents case
             id = "bushcraft:ashfall_notebook_01",
             craftableId = "ashfall_notebook_01",
