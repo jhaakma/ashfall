@@ -26,9 +26,18 @@ local needs = {
 local function getHoursPassed()
     return ( tes3.worldController.daysPassed.value * 24 ) + tes3.worldController.hour.value
 end
+
 local function getInterval(hoursPassed)
     common.data.lastTimeScriptsUpdated = common.data.lastTimeScriptsUpdated or hoursPassed
     local interval = math.abs(hoursPassed - common.data.lastTimeScriptsUpdated)
+    --limit to 8 hours in case some crazy time leap
+    interval = math.clamp(interval, 0.0, 8.0)
+    return interval
+end
+
+local function getTimerInterval(hoursPassed)
+    common.data.lastTimeTimerScriptsUpdated = common.data.lastTimeTimerScriptsUpdated or hoursPassed
+    local interval = math.abs(hoursPassed - common.data.lastTimeTimerScriptsUpdated)
     --limit to 8 hours in case some crazy time leap
     interval = math.clamp(interval, 0.0, 8.0)
     return interval
@@ -50,20 +59,32 @@ local function callUpdates()
     local hoursPassed = getHoursPassed()
     local interval = getInterval(hoursPassed)
     common.data.lastTimeScriptsUpdated = hoursPassed
-
-    magicEffects.calculateMagicEffects(interval)
-    weather.calculateWeatherEffect(interval)
-    sunEffect.calculate(interval)
-    wetness.calculateWetTemp(interval)
-    needs.hunger.processMealBuffs(interval)
-
     --Needs:
     for _, script in pairs(needs) do
         script.calculate(interval)
     end
-
-    tes3.player.data.Ashfall.valuesInitialised = true
-    temperatureController.calculate(interval)
     event.trigger("Ashfall:updateNeedsUI")
+    temperatureController.calculate(interval)
 end
 event.register("enterFrame", callUpdates)
+
+event.register("loaded", function()
+    timer.start{
+        type = timer.real,
+        duration = 0.2,
+        iterations = -1,
+        callback = function()
+            local hoursPassed = getHoursPassed()
+            local interval = getTimerInterval(hoursPassed)
+            common.data.lastTimeTimerScriptsUpdated = hoursPassed
+
+            magicEffects.calculateMagicEffects(interval)
+            weather.calculateWeatherEffect(interval)
+            sunEffect.calculate(interval)
+            wetness.calculateWetTemp(interval)
+            needs.hunger.processMealBuffs(interval)
+            tes3.player.data.Ashfall.valuesInitialised = true
+
+        end
+    }
+end)

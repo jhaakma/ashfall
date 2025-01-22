@@ -87,6 +87,7 @@ end
 ---@field nearCampfire boolean
 ---@field survivalEffect number
 ---@field lastTimeScriptsUpdated number The time in game hours at which the last update was run
+---@field lastTimeTimerScriptsUpdated number The time in game hours at which the last timed update was run
 ---@field diedOfHunger boolean Set to true when the player is killed by hunger, to prevent the death message from showing multiple times
 ---@field valuesInitialised boolean Set to true when ScriptTimer updates have run at least once on this save
 ---@field inventorySelectTeaBrew boolean Set to true when the player is currently selecting a tea to brew

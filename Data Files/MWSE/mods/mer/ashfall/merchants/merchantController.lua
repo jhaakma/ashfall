@@ -11,6 +11,7 @@ end
 local common = require("mer.ashfall.common.common")
 local logger = common.createLogger("merchantController")
 local config = require("mer.ashfall.config").config
+local TagManager = include("CraftingFramework.components.TagManager")
 --Place an invisible, appCulled container at the feet of a merchant and assign ownership
 --This is how we add stock to merchants without editing the cell in the CS
 
@@ -27,9 +28,8 @@ local function removeOldContainers(ref)
     }
     for container in ref.cell:iterateReferences(tes3.objectType.container) do
         if oldContainers[container.baseObject.id:lower()] then
-
             local owner = tes3.getOwner(container)
-            if owner.id:lower() == ref.baseObject.id:lower() then
+            if owner and owner.id:lower() == ref.baseObject.id:lower() then
                 logger:debug("Found old container %s, removing", container.object.id)
                 common.helper.yeet(container)
             else
@@ -81,11 +81,15 @@ end
 
 
 local function onMobileActivated(e)
-    local config = config
     local obj = e.reference.baseObject or e.reference.object
+    local id = obj.id:lower()
+    --Check MCM-added merchants
+    local isMerchant = config.campingMerchants[ id ] == true
+    --Check for tags
+    if TagManager and not isMerchant then
+        isMerchant = TagManager.hasId{tag = "generalTrader", id = id}
+    end
 
-    --Selected outfitters and traders get camping gear
-    local isMerchant = config.campingMerchants[ obj.id:lower() ] == true
     if isMerchant then
         if not hasGearAdded(e.reference) then
             setGearAdedd(e.reference)
@@ -96,6 +100,7 @@ local function onMobileActivated(e)
             end
         end
     end
+
     --Publicans get food
     if common.helper.isInnkeeper(e.reference) then
         local hasFoodAlready = e.reference.data.ashfallFoodAdded == true

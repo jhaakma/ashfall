@@ -107,9 +107,9 @@ event.register("loaded", function()
         service.enableHarvestable(reference)
     end)
     timer.start{
-        type = timer.real,
+        type = timer.simulate,
         iterations = -1,
-        duration = 0.1,
+        duration = 1,
         callback = service.updateDisabledHarvestables
     }
 end)

@@ -411,8 +411,10 @@ end
 
 function HarvestService.updateDisabledHarvestables()
     HarvestService.destroyedHarvestables:iterate(function(reference)
-        if reference.position:distance(tes3.player.position) > (8192/2) then
-            HarvestService.enableHarvestable(reference)
+        if reference.cell == tes3.player.cell then
+            if reference.position:distance(tes3.player.position) > (8192/2) then
+                HarvestService.enableHarvestable(reference)
+            end
         end
     end)
 end

@@ -17,6 +17,7 @@ this.logger = require("logging.logger").new{ name = "Ashfall.Helper" }
 
 this.getItemCount = CarryableContainer.getItemCount
 this.removeItem = CarryableContainer.removeItem
+---@diagnostic disable-next-line: deprecated
 this.getInventory = CarryableContainer.getFullInventory
 this.showInventorySelectMenu = CraftingFramework.InventorySelectMenu.open
 
@@ -412,6 +413,7 @@ function this.isInnkeeper(reference)
     local classId = obj.class and reference.object.class.id:lower()
     return ( classId and staticConfigs.innkeeperClasses[classId])
         or config.foodWaterMerchants[objId]
+        or CraftingFramework.TagManager.hasId{tag = "innkeeper", id = objId}
 end
 
 --Returns if an object is blocked by the MCM
@@ -626,12 +628,12 @@ end
 
 ---@class Ashfall.getGroundBelowRef.params
 ---@field ref tes3reference
----@field ignoreList tes3reference[]
----@field rootHeight number
----@field terrainOnly boolean
+---@field ignoreList? tes3reference[]
+---@field rootHeight? number
+---@field terrainOnly? boolean
 ---@field maxDistance? number
 ---@field doLog? boolean
----@field recreateBoundingBox boolean This will remove lights/collision from the sceneNode, only use if the ref can be discarded
+---@field recreateBoundingBox? boolean This will remove lights/collision from the sceneNode, only use if the ref can be discarded
 
 ---@param e Ashfall.getGroundBelowRef.params
 ---@return niPickRecord|nil

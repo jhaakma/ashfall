@@ -25,14 +25,14 @@ version = "^2.0.0"
 
 [dependencies.mods."The Crafting Framework"]
 mwse-module = "CraftingFramework"
-version = "^1.29.0"
+version = "^1.30.0"
 url = "https://www.nexusmods.com/morrowind/mods/51009?tab=files"
 
 [dependencies.mods.JustDropIt]
 mwse-module = "mer.justDropit"
 version = "^1.2.0"
-url = "https://www.nexusmods.com/morrowind/mods/49557"
+url = "https://www.nexusmods.com/morrowind/mods/49557?tab=files"
 
 [dependencies.mods.OAAB_Data]
 version = ">=2.4.1"
-url = "https://www.nexusmods.com/morrowind/mods/49042"
+url = "https://www.nexusmods.com/morrowind/mods/49042?tab=files"

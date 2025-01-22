@@ -62,5 +62,6 @@ local itemDescriptions = {
     ashfall_gem_pouch_01 = "A pouch for storing soul gems.",
     ashfall_notebook_01  = "A notebook for storing documents (and other non-magic texts).",
     ashfall_potion_box_01 = "A box for storing potions.",
+    ashfall_trinket_box_01 = "A box for storing jewelry.",
 }
 return itemDescriptions

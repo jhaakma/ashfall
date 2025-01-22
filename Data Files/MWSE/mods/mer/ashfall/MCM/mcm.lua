@@ -712,8 +712,12 @@ local function registerModConfig()
             buttonText = "Print data to log",
             description = "Print all Ashfall data to Morrowind/MWSE.log. If you are having issues with Ashfall, recreate the issue in-game, press this button, then send the MWSE.log file to Merlord at the Morrowind Modding Discord channel.",
             callback = function()
+                if not tes3.player then
+                    mwse.log("Must be in-game to print data")
+                    return
+                end
                 mwse.log("Ashfall Data:")
-                mwse.log(json.encode(common.data, { indent = true }))
+                mwse.log(json.encode(tes3.player.data.Ashfall, { indent = true }))
             end,
             inGameOnly = true
         }
