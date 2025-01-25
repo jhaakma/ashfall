@@ -225,6 +225,7 @@ Interop.registerWaterSource = function(data)
         idList[id] = true
     end
     activatorConfig.list[data.name] = ActivatorController.registerActivator{
+        id = data.name,
         name = data.name,
         type = waterType,
         ids = idList

@@ -145,17 +145,19 @@ event.register("attackHit", function(e)
             fallSpeed = 1,
             callback = function(reference)
                 logger:debug("Deleting ref")
-                --Grab everything in its inventory
+                --Grab everything in its inventory. Ignore invisible lights
                 ---@param stack tes3itemStack
                 for _, stack in pairs(reference.object.inventory) do
-                    --Add it to the player's inventory
-                    tes3.addItem{
-                        reference = tes3.player,
-                        item = stack.object,
-                        itemData = stack.variables,
-                        count = stack.count,
-                        showMessage = true
-                    }
+                    if stack.object.canCarry ~= false then
+                        --Add it to the player's inventory
+                        tes3.addItem{
+                            reference = tes3.player,
+                            item = stack.object,
+                            itemData = stack.variables,
+                            count = stack.count,
+                            showMessage = true
+                        }
+                    end
                 end
                 reference:delete()
             end
