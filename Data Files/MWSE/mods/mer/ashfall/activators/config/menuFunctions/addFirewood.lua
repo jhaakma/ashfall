@@ -1,4 +1,5 @@
 local common = require ("mer.ashfall.common.common")
+local Material = require("CraftingFramework").Material
 --Calculate how much fuel is added per piece of firewood based on Survival skill
 
 local function getWoodFuel()
@@ -7,8 +8,10 @@ local function getWoodFuel()
 end
 
 local function getFirewoodCount()
-    local firewood = tes3.getObject(common.staticConfigs.objectIds.firewood)
-    return common.helper.getItemCount{ reference = tes3.player, item = firewood }
+    -- local firewood = tes3.getObject(common.staticConfigs.objectIds.firewood)
+    -- return common.helper.getItemCount{ reference = tes3.player, item = firewood }
+    local firewoodMaterial = Material.getMaterial("wood")
+    return firewoodMaterial:getCount()
 end
 
 local function canAddFireWoodToCampfire(reference)
@@ -46,7 +49,10 @@ return {
         }
         reference.data.fuelLevel = (reference.data.fuelLevel or 0) + getWoodFuel()
         reference.data.burned = reference.data.isLit == true
-        common.helper.removeItem{ reference = tes3.player, item = common.staticConfigs.objectIds.firewood, playSound = false }
+        --common.helper.removeItem{ reference = tes3.player, item = common.staticConfigs.objectIds.firewood, playSound = false }
+        local firewoodMaterial = Material.getMaterial("wood")
+        firewoodMaterial:use(1)
+
         event.trigger("Ashfall:UpdateAttachNodes", { reference = reference})
     end,
 }
