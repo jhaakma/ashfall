@@ -48,8 +48,10 @@ local function doPosition(tentRef)
     }
 end
 
-local function setTentSwitchNodes(tent)
-    if tent then
+---@param tent tes3reference
+---@param isInTent boolean
+local function setTentSwitchNodes(tent, isInTent)
+    if tent and tent.supportsLuaData then
         --switch base tent
         local tentNode = tent.sceneNode:getObjectByName("TENT")
         if tentNode then
@@ -59,7 +61,7 @@ local function setTentSwitchNodes(tent)
                 logger:debug("Found SWITCH_CANVAS node")
                 local onIndex = getChildIndexByName(canvasNode.children, "ON")
                 local offIndex = getChildIndexByName(canvasNode.children, "OFF")
-                local newIndex = common.data.insideTent and offIndex or onIndex
+                local newIndex = isInTent and offIndex or onIndex
                 canvasNode.switchIndex = newIndex
                 logger:debug("Set tent switch index to %s", newIndex)
             end
@@ -73,7 +75,7 @@ local function setTentSwitchNodes(tent)
                 logger:debug("Found SWITCH_CANVAS node")
                 local onIndex = getChildIndexByName(canvasNode.children, "ON")
                 local offIndex = getChildIndexByName(canvasNode.children, "OFF")
-                local newIndex = common.data.insideTent and offIndex or onIndex
+                local newIndex = isInTent and offIndex or onIndex
                 canvasNode.switchIndex = newIndex
                 logger:debug("Set cover switch index to %s", newIndex)
             end
@@ -81,9 +83,6 @@ local function setTentSwitchNodes(tent)
     end
 end
 
-local function getTentCoverage(ref)
-    --if coverController.tentHasCover()
-end
 
 local function canUnpack()
     if  common.helper.getInside() then
@@ -292,9 +291,9 @@ event.register("activate", activateTent)
 
 ---@param e referenceActivatedEventData
 event.register("referenceActivated", function(e)
-    if getMiscFromActive(e.reference) then
+    if e.reference.supportsLuaData and getMiscFromActive(e.reference) then
         logger:debug("Tent activated, setting switch nodes")
-        setTentSwitchNodes(e.reference)
+        setTentSwitchNodes(e.reference, e.reference.data.ashfall_playerInTent)
     end
 end)
 
@@ -354,7 +353,10 @@ local function setTent(e)
     common.data.insideTent = insideTent
     common.data.hasTentCover = coverController.tentHasCover(currentTent)
     setTentTempMulti()
-    setTentSwitchNodes(currentTent)
+    if currentTent then
+        currentTent.data.ashfall_playerInTent = insideTent
+        setTentSwitchNodes(currentTent, insideTent)
+    end
 end
 
 event.register(tes3.event.loaded, function()

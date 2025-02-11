@@ -90,6 +90,7 @@ function this.checkRefSheltered(reference)
         end
     end
     local safeTent = tes3.makeSafeObjectHandle(tent)
+    this.logger:debug("Tent: %s", tent)
     return sheltered, safeTent
 end
 
@@ -1112,14 +1113,16 @@ function this.isUnlit(ref)
     return false
 end
 
+---@return boolean, number
 function this.getPlayerNearLitCampfire(e)
+    local distance
     local maxDistance = e.maxDistance or 340
     local function checkCampfire(ref)
-        local distance = tes3.player.position:distance(ref.position)
-        return distance < maxDistance
+        distance = tes3.player.position:distance(ref.position)
+        return( distance < maxDistance
             and (not ref.disabled)
             and ref.data.isLit
-            and (not this.isUnlit(ref))
+            and (not this.isUnlit(ref))), distance
     end
     if e.reference then
         return checkCampfire(e.reference)
@@ -1130,7 +1133,7 @@ function this.getPlayerNearLitCampfire(e)
                 nearFire = true
             end
         end)
-        return nearFire
+        return nearFire, distance
     end
 end
 
