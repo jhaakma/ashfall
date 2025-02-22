@@ -1189,6 +1189,7 @@ local bushCraftingRecipes = {
                 { material = "wood", count = 1 },
                 { material = "rope", count = 1 },
             },
+            category = this.categories.tools,
             recoverEquipmentMaterials = true,
         },
         {
@@ -1199,6 +1200,7 @@ local bushCraftingRecipes = {
                 { material = "wood", count = 1 },
                 { material = "rope", count = 1 },
             },
+            category = this.categories.tools,
             recoverEquipmentMaterials = true,
         },
         {
@@ -1209,6 +1211,7 @@ local bushCraftingRecipes = {
                 { material = "wood", count = 2 },
                 { material = "rope", count = 1 },
             },
+            category = this.categories.weapons,
             recoverEquipmentMaterials = true,
         },
         {
@@ -1219,6 +1222,7 @@ local bushCraftingRecipes = {
                 { material = "wood", count = 1 },
                 { material = "rope", count = 2 },
             },
+            category = this.categories.tools,
             recoverEquipmentMaterials = true,
         },
         {
@@ -1229,6 +1233,7 @@ local bushCraftingRecipes = {
                 { material = "wood", count = 1 },
                 { material = "rope", count = 1 },
             },
+            category = this.categories.weapons,
             recoverEquipmentMaterials = true,
         },
     },

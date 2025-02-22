@@ -300,4 +300,6 @@ event.register("menuExit", updatePlayer)
 event.register("weaponReadied", updatePlayer)
 event.register("Ashfall:triggerPackUpdate", updatePlayer)
 
+
+
 return Backpack

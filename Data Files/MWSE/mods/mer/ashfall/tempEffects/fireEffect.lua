@@ -116,13 +116,11 @@ function this.calculateFireEffect()
     common.data.nearCampfire = false
 
     local function doCampfireHeat(ref)
-        local distance = getDistance(ref)
 
-        local isValid = common.helper.getPlayerNearLitCampfire{
+        local isValid, distance = common.helper.getPlayerNearLitCampfire{
             reference = ref,
             maxDistance = maxDistance
         }
-
         if isValid then
             --For survival skill
             common.data.nearCampfire = true

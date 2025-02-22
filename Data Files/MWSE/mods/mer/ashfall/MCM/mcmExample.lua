@@ -46,7 +46,7 @@ local function registerModConfig()
     category:createSlider{
         label = "Time Scale",
         description = "Changes the speed of the day/night cycle.",
-        variable = EasyMCM:createGlobal{ id = "timeScale" }
+        variable = mwse.mcm.createGlobal{ id = "timeScale" }
     }
 
     --Make an exclusions page
@@ -55,7 +55,7 @@ local function registerModConfig()
         description = (
             "Use an exclusions page to add items to a blacklist"
         ),
-        variable = EasyMCM:createTableVariable{
+        variable = mwse.mcm.createTableVariable{
             id = "blocked",
             table = config,
         },
