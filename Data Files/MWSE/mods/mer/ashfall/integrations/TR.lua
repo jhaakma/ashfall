@@ -3513,7 +3513,6 @@ ashfall.registerWaterContainers{
     t_nor_woodenpot_02b = {  holdsStew = true, capacity = 100 },
     t_nor_woodenpot_03a = {  holdsStew = true, capacity = 100 },
     t_nor_woodenpot_03b = {  holdsStew = true, capacity = 100 },
-
     t_qy_bottle_01a = { capacity = 90 },
     t_qy_bottle_01b = { capacity = 90 },
     t_qy_bottle_01c = { capacity = 90 },
@@ -3714,9 +3713,6 @@ local utensils = {
 for _, data in ipairs(utensils) do
     ashfall.registerUtensil(data)
 end
--- for _, data in ipairs(utensils) do
-    -- ashfall.registerWaterContainers(data)
--- end
 
 ashfall.registerTeas{
 
@@ -3736,7 +3732,7 @@ ashfall.registerClimates{
     ["telvanni isles region"]    = types.cold,
     ["velothi mountains region"] = types.cold,
     ["shipal-shin region"]       = types.dry,
-    ["al                                    t orethan region"]       = types.mild,
+    ["alt orethan region"]       = types.mild,
     ["boethiah's spine region"]  = types.mild,
     ["clambering moor region"]   = types.mild,
     ["grey meadows region"]      = types.mild,
@@ -3802,3 +3798,4 @@ ashfall.registerClimates{
     -- High Rock
     ["dragonfields region"] = types.cold,
 }
+
