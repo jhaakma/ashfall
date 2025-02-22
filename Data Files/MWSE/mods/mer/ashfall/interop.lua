@@ -415,6 +415,7 @@ end
 Interop.registerUtensil = function(data)
     local id = data.id
     local utensilData = data.data
+    logger:debug("Registering utensil %s", id)
     if utensilData.type == "kettle" or utensilData.type == "cookingPot" then
         staticConfigs.utensils[id:lower()] = utensilData
         staticConfigs.bottleList[id:lower()] = utensilData
