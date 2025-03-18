@@ -1,13 +1,17 @@
 local common = require ("mer.ashfall.common.common")
 local foodConfig = common.staticConfigs.foodConfig
-local nearbyCompanions
+
+---@return tes3reference[]
 local function getNearbyCompanions()
-    nearbyCompanions = {}
+    ---@type tes3reference[]
+    local nearbyCompanions = {}
+    ---@param companion tes3mobileActor
     for companion in tes3.iterate(tes3.mobilePlayer.friendlyActors) do
-        if tes3.getCurrentAIPackageId(companion) == tes3.aiPackage.follow then
-            table.insert(nearbyCompanions, companion)
+        if tes3.getCurrentAIPackageId{reference = companion} == tes3.aiPackage.follow then
+            table.insert(nearbyCompanions, companion.reference)
         end
     end
+    return nearbyCompanions
 end
 
 
@@ -16,7 +20,7 @@ return {
     showRequirements = function(reference)
 
         if not reference.supportsLuaData then return false end
-        getNearbyCompanions()
+        local nearbyCompanions = getNearbyCompanions()
         return (
             reference.data.stewLevels and
             reference.data.stewProgress and
@@ -25,6 +29,8 @@ return {
         )
     end,
     callback = function(reference)
+        local nearbyCompanions = getNearbyCompanions()
+        if #nearbyCompanions == 0 then return end
         local maxAvailable = math.min(reference.data.waterAmount, 25 * #nearbyCompanions)
         local stewPerCompanion = maxAvailable / #nearbyCompanions
 
@@ -42,18 +48,21 @@ return {
                 --add spell
                 local stewBuff = stewBuffs[foodType]
                 local effectStrength = common.helper.calculateStewBuffStrength(math.min(ingredLevel, 100), stewBuff.min, stewBuff.max)
+
+                local safeRef = tes3.makeSafeObjectHandle(companion)
                 timer.delayOneFrame(function()
+                    if not (safeRef and safeRef:valid()) then return end
                     local spell = tes3.getObject(stewBuff.id)
                     local effect = spell.effects[1]
                     effect.min = effectStrength
                     effect.max = effectStrength
                     tes3.addSpell{ reference = companion, spell = spell }
-                    companion.reference.data.stewBuffTimeLeft = common.helper.calculateStewBuffDuration(reference.data.waterHeat)
+                    companion.data.stewBuffTimeLeft = common.helper.calculateStewBuffDuration(reference.data.waterHeat)
                     event.trigger("Ashfall:registerReference", { reference = companion})
                 end)
             end
             tes3.playSound{ reference = companion, sound = "Swallow" }
-            event.trigger("Ashfall:Eat", { reference = companion.reference, amount = stewPerCompanion})
+            event.trigger("Ashfall:Eat", { reference = companion, amount = stewPerCompanion})
         end
         local stewName = foodConfig.isStewNotSoup(reference.data.stewLevels) and "stew" or "soup"
         tes3.messageBox("Your companions eat the %s.", stewName)
