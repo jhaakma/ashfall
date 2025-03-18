@@ -151,11 +151,11 @@ interop.registerFoods{
     ["ab01ingred_alga01"] = "herb",
 
 
-    --danae's cliff racers
+    --danae mods
     ["mc_racer_raw"] = "meat",
-
+    ["aa_cr_ing_wolf_meat"] = "meat",
+    ["aa_cr_ing_wolf_ribs"] = "meat",
     --my custom
-
     ["mer_ingfood_fish"] = "meat",
 
     --tr

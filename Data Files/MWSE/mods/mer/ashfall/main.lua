@@ -81,7 +81,7 @@ event.register(tes3.event.dialogueEnvironmentCreated, function(e)
     env.Ashfall = Interop
 end)
 
-event.register("initialized", initialized)
+event.register("initialized", initialized, { priority = -50})
 
 require("mer.ashfall.MCM.mcm")
 

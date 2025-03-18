@@ -1,5 +1,6 @@
 -- Interop file for Ashfall made as per https://github.com/jhaakma/ashfall/wiki/Interoperability
 local ashfall = include("mer.ashfall.interop")
+local CraftingFramework = require("CraftingFramework")
 if not ashfall then return end
 
 local types = {
@@ -3179,7 +3180,7 @@ ashfall.registerFoods{
     t_ingfood_poppadgourd_01 = types.vegetable,
     t_ingfood_potato_01 = types.vegetable,
     t_ingfood_radish_01 = types.vegetable,
-    t_ingfood_rice_01 = types.vegetable,
+    t_ingfood_rice_01 = types.food,
     t_ingfood_scribpie_01 = types.food,
     t_ingfood_silverpalmfruit_01 = types.vegetable,
     t_ingfood_snowberry_01 = types.vegetable,
@@ -3799,3 +3800,68 @@ ashfall.registerClimates{
     ["dragonfields region"] = types.cold,
 }
 
+CraftingFramework.Material:registerMaterials{
+    {
+        id = "fur",
+        name = "Fur",
+        ids = {
+            "t_ingcrea_muskratfur_01",
+            "t_ingcrea_goatpelt_01",
+        }
+    },
+    {
+        id = "hide",
+        name = "Hide",
+        ids = {
+            "t_ingcrea_armunhide_01",
+            "t_ingcrea_donkeyhide_01",
+            "t_ingcrea_frosttrollpelt_01",
+            "t_ingcrea_hirvhide_01",
+            "t_ingcrea_irontoadhide",
+            "t_ingcrea_wormmouthhide_01",
+            "t_ingfood_tguarhide",
+            "t_ingcrea_bearpeltblack_01",
+            "t_ingcrea_horkerpuppelt_01",
+            "t_ingcrea_horkerpuppelt_02",
+            "t_ingcrea_horkerpuppelt_03",
+        }
+    },
+    {
+        id = "coal",
+        name = "Coal",
+        ids = {
+            "T_IngMine_Charcoal_01",
+            "T_IngMine_Coal_01"
+        }
+    }
+}
+
+CraftingFramework.TagManager.addIds{
+    tag = "generalTrader",
+    ids = {
+        "tr_m4_felanius_civeran",
+        "tr_m3_anmoleth",
+        "tr_m4_irva_sedrethi",
+        "tr_m4_rivyn_dalvani",
+        "tr_m1_kobin_delas",
+        "pc_m1_lihienmandilaron",
+    }
+}
+
+CraftingFramework.TagManager.addIds{
+    tag = "bard",
+    ids = {
+        "t_sky_bard",
+        "t_cyr_bard",
+        "t_glb_bard",
+    }
+}
+
+CraftingFramework.TagManager.addIds{
+    tag = "publican",
+    ids = {
+        "t_sky_publican",
+        "t_cyr_publican",
+        "t_glb_publican",
+    }
+}

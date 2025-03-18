@@ -258,6 +258,7 @@ this.materials = {
         ids = {
             "ashfall_rope",
             "t_de_coiledrope_01",
+            "t_com_rope_01",
         }
     },
     {
