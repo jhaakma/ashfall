@@ -24,6 +24,15 @@ this.survivalTiers = {
     grandmaster = { skill = "Bushcrafting", requirement = 100 },
 }
 
+---@class Ashfall.Bushcrafting.CraftTimes
+local CRAFT_TIMES = {
+    tiny = 10 / 60, --10 minutes
+    small = 20 / 60, --10 minutes
+    medium = 30 / 60, --30 minutes
+    large = 1.0, -- 1 hour
+    veryLarge = 2.0, --2 hours
+}
+
 ---@class Ashfall.Bushcrafting.customrequirements
 ---@field outdoorsOnly CraftingFramework.CustomRequirement.data
 ---@field wildernessOnly CraftingFramework.CustomRequirement.data
@@ -382,6 +391,7 @@ local materialRecipes = {
             },
             category = this.categories.materials,
             soundType = "rope",
+            timeTaken = CRAFT_TIMES.tiny,
         },
 
         {
@@ -394,6 +404,7 @@ local materialRecipes = {
             },
             category = this.categories.materials,
             soundType = "straw",
+            timeTaken = CRAFT_TIMES.tiny,
         },
     },
     novice = {
@@ -407,6 +418,7 @@ local materialRecipes = {
             category = this.categories.materials,
             soundType = "fabric",
             rotationAxis = 'y',
+            timeTaken = CRAFT_TIMES.tiny,
         },
     },
     apprentice = {},
@@ -421,11 +433,14 @@ local materialRecipes = {
             rotationAxis = 'y',
             category = this.categories.materials,
             soundType = "rope",
+            timeTaken = CRAFT_TIMES.tiny,
         },
     },
     expert = {},
     master = {}
 }
+
+
 
 ---@type Ashfall.bushcrafting.recipeConfiguration
 local bushCraftingRecipes = {
@@ -440,6 +455,7 @@ local bushCraftingRecipes = {
             },
             category = this.categories.other,
             soundType = "wood",
+            timeTaken = CRAFT_TIMES.small,
         },
         {
             id = "bushcraft:ashfall_torch_lrg",
@@ -454,7 +470,8 @@ local bushCraftingRecipes = {
             soundType = "wood",
             customRequirements = {
                 this.customRequirements.wildernessOnly
-            }
+            },
+            timeTaken = CRAFT_TIMES.small,
         },
         {
             id = "bushcraft:ashfall_strawbed_s",
@@ -477,6 +494,7 @@ local bushCraftingRecipes = {
             customRequirements = {
                 this.customRequirements.wildernessOnly
             },
+            timeTaken = CRAFT_TIMES.medium,
         },
         {
             id = "bushcraft:ashfall_wood_stack",
@@ -495,6 +513,7 @@ local bushCraftingRecipes = {
                 WoodStack.buttons.takeWood,
             },
             destroyCallback = WoodStack.destroyCallback,
+            timeTaken = CRAFT_TIMES.medium,
         },
         {
             --Lean To
@@ -510,7 +529,8 @@ local bushCraftingRecipes = {
             soundType = "wood",
             customRequirements = {
                 this.customRequirements.wildernessOnly
-            }
+            },
+            timeTaken = CRAFT_TIMES.large,
         },
         {
             id = "bushcraft:ashfall_knife_flint",
@@ -523,6 +543,7 @@ local bushCraftingRecipes = {
             category = this.categories.tools,
             soundType = "wood",
             recoverEquipmentMaterials = true,
+            timeTaken = CRAFT_TIMES.tiny,
         },
         {
             id = "bushcraft:ashfall_chisel_flint",
@@ -535,6 +556,7 @@ local bushCraftingRecipes = {
             category = this.categories.tools,
             soundType = "wood",
             recoverEquipmentMaterials = true,
+            timeTaken = CRAFT_TIMES.tiny,
         },
         {
             id = "bushcraft:ashfall_hammer_stone",
@@ -548,7 +570,8 @@ local bushCraftingRecipes = {
             category = this.categories.tools,
             soundType = "wood",
             recoverEquipmentMaterials = true,
-            rotationAxis = 'y'
+            rotationAxis = 'y',
+            timeTaken = CRAFT_TIMES.tiny,
         },
         {
             id = "bushcraft:ashfall_pickaxe_flint",
@@ -562,6 +585,7 @@ local bushCraftingRecipes = {
             category = this.categories.tools,
             soundType = "wood",
             recoverEquipmentMaterials = true,
+            timeTaken = CRAFT_TIMES.tiny,
         },
         {
             id = "bushcraft:ashfall_woodaxe_flint",
@@ -575,6 +599,7 @@ local bushCraftingRecipes = {
             category = this.categories.tools,
             soundType = "wood",
             recoverEquipmentMaterials = true,
+            timeTaken = CRAFT_TIMES.tiny,
         },
     },
     novice = {
@@ -588,6 +613,7 @@ local bushCraftingRecipes = {
             },
             category = this.categories.survival,
             soundType = "fabric",
+            timeTaken = CRAFT_TIMES.tiny,
         },
         {
             id = "bushcraft:ashfall_planter_01",
@@ -612,6 +638,7 @@ local bushCraftingRecipes = {
             positionCallback = Planter.placeCallback,
             destroyCallback = Planter.destroyCallback,
             maxSteepness = 15,
+            timeTaken = CRAFT_TIMES.small,
         },
         {
             id = "bushcraft:ashfall_planter_02",
@@ -636,6 +663,7 @@ local bushCraftingRecipes = {
             positionCallback = Planter.placeCallback,
             destroyCallback = Planter.destroyCallback,
             maxSteepness = 15,
+            timeTaken = CRAFT_TIMES.small,
         },
         {
             id = "bushcraft:ashfall_water_filter",
@@ -657,7 +685,8 @@ local bushCraftingRecipes = {
             additionalMenuOptions = {
                 WaterFilter.buttons.filterWater,
                 WaterFilter.buttons.collectWater,
-            }
+            },
+            timeTaken = CRAFT_TIMES.medium,
         },
         {
             id = "bushcraft:ashfall_fab_cloak",
@@ -670,6 +699,7 @@ local bushCraftingRecipes = {
             category = this.categories.equipment,
             soundType = "fabric",
             recoverEquipmentMaterials = true,
+            timeTaken = CRAFT_TIMES.small,
         },
         {
             id = "bushcraft:ashfall_strawhat",
@@ -682,6 +712,7 @@ local bushCraftingRecipes = {
             soundType = "straw",
             recoverEquipmentMaterials = true,
             previewMesh = "ashfall\\craft\\strawhat.nif",
+            timeTaken = CRAFT_TIMES.small,
         },
         {
             --ashfall_cush_crft_01 cushion
@@ -694,6 +725,7 @@ local bushCraftingRecipes = {
             },
             category = this.categories.other,
             soundType = "fabric",
+            timeTaken = CRAFT_TIMES.small,
         },
         {
             id = "bushcraft:ashfall_sack_01",
@@ -722,6 +754,7 @@ local bushCraftingRecipes = {
                     common.data.sacks[data.copy.id:lower()] = true
                 end
             },
+            timeTaken = CRAFT_TIMES.small,
         },
         {
             id = "bushcraft:ashfall_rug_crft_01",
@@ -733,6 +766,7 @@ local bushCraftingRecipes = {
             category = this.categories.other,
             soundType = "fabric",
             rotationAxis = 'y',
+            timeTaken = CRAFT_TIMES.small,
         },
         {
             id = "bushcraft:ashfall_spear_flint",
@@ -746,6 +780,7 @@ local bushCraftingRecipes = {
             category = this.categories.weapons,
             soundType = "wood",
             recoverEquipmentMaterials = true,
+            timeTaken = CRAFT_TIMES.tiny,
         },
         {
             id = "bushcraft:ashfall_walking_stick",
@@ -759,6 +794,7 @@ local bushCraftingRecipes = {
             soundType = "wood",
             recoverEquipmentMaterials = true,
             rotationAxis = 'y',
+            timeTaken = CRAFT_TIMES.tiny,
         },
         {
             id = "bushcraft:ashfall_bow_wood",
@@ -772,6 +808,7 @@ local bushCraftingRecipes = {
             soundType = "wood",
             recoverEquipmentMaterials = true,
             previewScale = 1.2,
+            timeTaken = CRAFT_TIMES.tiny,
         },
         {
             id = "bushcraft:ashfall_arrow_flint",
@@ -784,6 +821,7 @@ local bushCraftingRecipes = {
             category = this.categories.weapons,
             soundType = "wood",
             resultAmount = 10,
+            timeTaken = CRAFT_TIMES.tiny,
         },
         {
             id = "bushcraft:ashfall_table_sml_s",
@@ -799,6 +837,7 @@ local bushCraftingRecipes = {
                 this.customRequirements.wildernessOnly
             },
             scale = 1.1,
+            timeTaken = CRAFT_TIMES.medium,
         },
         {
             id = "bushcraft:ashfall_table_sml_2_s",
@@ -814,6 +853,7 @@ local bushCraftingRecipes = {
                 this.customRequirements.wildernessOnly
             },
             scale = 1.3,
+            timeTaken = CRAFT_TIMES.medium,
         },
     },
     apprentice = {
@@ -835,6 +875,7 @@ local bushCraftingRecipes = {
                 weightModifier = 0.8,
                 filter = "ingredients"
             },
+            timeTaken = CRAFT_TIMES.small,
         },
         {
             id = "bushcraft:ashfall_scrollbag_01",
@@ -854,6 +895,7 @@ local bushCraftingRecipes = {
                 weightModifier = 0.6,
                 filter = "magicScrolls"
             },
+            timeTaken = CRAFT_TIMES.small,
         },
         {
             id = "bushcraft:ashfall_gem_pouch_01",
@@ -873,6 +915,7 @@ local bushCraftingRecipes = {
                 weightModifier = 0.8,
                 filter = "soulGems"
             },
+            timeTaken = CRAFT_TIMES.small,
         },
         {
             id = "bushcraft:ashfall_trinket_box_01",
@@ -893,6 +936,7 @@ local bushCraftingRecipes = {
                 weightModifier = 0.6,
                 filter = "jewelry",
             },
+            timeTaken = CRAFT_TIMES.small,
         },
         {
             --documents case
@@ -913,6 +957,7 @@ local bushCraftingRecipes = {
                 weightModifier = 0.5,
                 filter = "nonMagicScrolls"
             },
+            timeTaken = CRAFT_TIMES.small,
         },
         {
             id = "bushcraft:ashfall_potion_box_01",
@@ -932,6 +977,7 @@ local bushCraftingRecipes = {
                 filter = "potions"
             },
             hasCollision = true,
+            timeTaken = CRAFT_TIMES.small,
         },
         {
             --workbench
@@ -947,7 +993,8 @@ local bushCraftingRecipes = {
             additionalMenuOptions = {
                 this.menuOptions.workbenchMenu,
                 --this.menuOptions.realisticRepair,
-            }
+            },
+            timeTaken = CRAFT_TIMES.large,
         },
         {
             --bedroll
@@ -960,6 +1007,7 @@ local bushCraftingRecipes = {
             },
             category = this.categories.beds,
             soundType = "fabric",
+            timeTaken = CRAFT_TIMES.medium,
         },
         {
             --tanning rack
@@ -980,6 +1028,7 @@ local bushCraftingRecipes = {
                 this.customRequirements.wildernessOnly
             },
             craftedOnly = false,
+            timeTaken = CRAFT_TIMES.medium,
         },
         {
             id = "bushcraft:ashfall_waterskin",
@@ -992,6 +1041,7 @@ local bushCraftingRecipes = {
             category = this.categories.other,
             soundType = "leather",
             rotationAxis = 'y',
+            timeTaken = CRAFT_TIMES.small,
         },
         {
             id = "bushcraft:ashfall_tent_leather_m",
@@ -1004,7 +1054,8 @@ local bushCraftingRecipes = {
             },
             category = this.categories.survival,
             soundType = "leather",
-            previewMesh = "ashfall\\tent\\tent_leather.nif"
+            previewMesh = "ashfall\\tent\\tent_leather.nif",
+            timeTaken = CRAFT_TIMES.veryLarge,
         },
         {
             --Wicker backpack
@@ -1019,6 +1070,7 @@ local bushCraftingRecipes = {
             category = this.categories.equipment,
             soundType = "straw",
             rotationAxis = 'x',
+            timeTaken = CRAFT_TIMES.medium,
         },
         {
             id = "bushcraft:ashfall_chest_01_c",
@@ -1036,6 +1088,7 @@ local bushCraftingRecipes = {
             additionalMenuOptions = {
                 this.menuOptions.rename
             },
+            timeTaken = CRAFT_TIMES.medium,
         },
         {
             id = "bushcraft:ashfall_shoji_lamp_01",
@@ -1048,6 +1101,7 @@ local bushCraftingRecipes = {
             },
             category = this.categories.survival,
             soundType = "wood",
+            timeTaken = CRAFT_TIMES.small,
         }
     },
     journeyman = {
@@ -1064,6 +1118,7 @@ local bushCraftingRecipes = {
             additionalMenuOptions = {
                 this.menuOptions.rename
             },
+            timeTaken = CRAFT_TIMES.small,
         },
         {
             id = "bushcraft:ashfall_tent_base_m",
@@ -1076,7 +1131,8 @@ local bushCraftingRecipes = {
             },
             category = this.categories.survival,
             soundType = "fabric",
-            previewMesh = "ashfall\\tent\\tent_base.nif"
+            previewMesh = "ashfall\\tent\\tent_base.nif",
+            timeTaken = CRAFT_TIMES.veryLarge,
         },
         {
             id = "bushcraft:ashfall_cov_thatch",
@@ -1091,6 +1147,7 @@ local bushCraftingRecipes = {
             },
             category = this.categories.survival,
             soundType = "straw",
+            timeTaken = CRAFT_TIMES.large,
         },
 
         {
@@ -1106,6 +1163,7 @@ local bushCraftingRecipes = {
             },
             category = this.categories.equipment,
             soundType = "wood",
+            timeTaken = CRAFT_TIMES.medium,
         },
         {
             id = "bushcraft:ashfall_crabpot_02_a",
@@ -1123,7 +1181,8 @@ local bushCraftingRecipes = {
                 CrabPot.buttons.collect,
             },
             previewScale = 4,
-            previewHeight = -80
+            previewHeight = -80,
+            timeTaken = CRAFT_TIMES.medium,
         },
     },
     expert = {
@@ -1139,6 +1198,7 @@ local bushCraftingRecipes = {
             },
             category = this.categories.survival,
             soundType = "leather",
+            timeTaken = CRAFT_TIMES.large,
         },
         {
             --Travellers pack
@@ -1153,6 +1213,7 @@ local bushCraftingRecipes = {
             },
             category = this.categories.equipment,
             soundType = "wood",
+            timeTaken = CRAFT_TIMES.medium,
         },
     },
     master = {
@@ -1170,6 +1231,7 @@ local bushCraftingRecipes = {
             },
             category = this.categories.equipment,
             soundType = "wood",
+            timeTaken = CRAFT_TIMES.medium,
         },
         {
             id = "bushcraft:ashfall_fur_cloak",
@@ -1181,7 +1243,9 @@ local bushCraftingRecipes = {
             },
             category = this.categories.equipment,
             soundType = "fabric",
+            timeTaken = CRAFT_TIMES.small,
         },
+
         {
             id = "ashfall_knife_glass",
             description = "A simple dagger made of raw glass. Useful for skinning animals and harvesting plant fibres.\n\nNote: Broken bushcrafted tools and weapons can be dismantled for parts by equipping them.",
@@ -1192,6 +1256,7 @@ local bushCraftingRecipes = {
             },
             category = this.categories.tools,
             recoverEquipmentMaterials = true,
+            timeTaken = CRAFT_TIMES.tiny,
         },
         {
             id = "ashfall_woodaxe_glass",
@@ -1203,6 +1268,7 @@ local bushCraftingRecipes = {
             },
             category = this.categories.tools,
             recoverEquipmentMaterials = true,
+            timeTaken = CRAFT_TIMES.tiny,
         },
         {
             id = "ashfall_spear_glass",
@@ -1214,6 +1280,7 @@ local bushCraftingRecipes = {
             },
             category = this.categories.weapons,
             recoverEquipmentMaterials = true,
+            timeTaken = CRAFT_TIMES.tiny,
         },
         {
             id = "ashfall_pickaxe_glass",
@@ -1225,6 +1292,7 @@ local bushCraftingRecipes = {
             },
             category = this.categories.tools,
             recoverEquipmentMaterials = true,
+            timeTaken = CRAFT_TIMES.tiny,
         },
         {
             id = "ashfall_sword_glass",
@@ -1236,6 +1304,7 @@ local bushCraftingRecipes = {
             },
             category = this.categories.weapons,
             recoverEquipmentMaterials = true,
+            timeTaken = CRAFT_TIMES.tiny,
         },
     },
 }
@@ -1259,6 +1328,7 @@ local carvingRecipes = {
             category = this.categories.cutlery,
             previewScale = 4,
             soundType = "carve",
+            timeTaken = CRAFT_TIMES.small,
         },
         {
             id = "bushcraft:ashfall_cup_01",
@@ -1276,6 +1346,7 @@ local carvingRecipes = {
             category = this.categories.cutlery,
             previewScale = 4,
             soundType = "carve",
+            timeTaken = CRAFT_TIMES.small,
         },
         {
             id = "bushcraft:ashfall_wood_knife",
@@ -1293,6 +1364,7 @@ local carvingRecipes = {
             category = this.categories.cutlery,
             rotationAxis = 'y',
             soundType = "carve",
+            timeTaken = CRAFT_TIMES.small,
         },
         {
             id = "bushcraft:ashfall_wood_fork",
@@ -1310,7 +1382,9 @@ local carvingRecipes = {
             category = this.categories.cutlery,
             rotationAxis = 'y',
             soundType = "carve",
+            timeTaken = CRAFT_TIMES.small,
         },
+
         {
             id = "bushcraft:ashfall_wood_spoon",
             craftableId = "ashfall_wood_spoon",
@@ -1327,6 +1401,7 @@ local carvingRecipes = {
             category = this.categories.cutlery,
             rotationAxis = 'y',
             soundType = "carve",
+            timeTaken = CRAFT_TIMES.small,
         },
         {
             id = "bushcraft:ashfall_wood_plate",
@@ -1343,6 +1418,7 @@ local carvingRecipes = {
             },
             category = this.categories.cutlery,
             soundType = "carve",
+            timeTaken = CRAFT_TIMES.small,
         },
         {
             id = "bushcraft:ashfall_wood_ladle",
@@ -1360,6 +1436,7 @@ local carvingRecipes = {
             category = this.categories.utensils,
             previewMesh = "ashfall\\craft\\wood_ladle_attach.nif",
             soundType = "carve",
+            timeTaken = CRAFT_TIMES.small,
         },
     },
     novice = {
@@ -1383,6 +1460,7 @@ local carvingRecipes = {
             category = this.categories.cutlery,
             previewScale = 4,
             soundType = "carve",
+            timeTaken = CRAFT_TIMES.small,
         },
         {
             id = "bushcraft:ashfall_bowl_02",
@@ -1404,6 +1482,7 @@ local carvingRecipes = {
             category = this.categories.utensils,
             previewScale = 4,
             soundType = "carve",
+            timeTaken = CRAFT_TIMES.small,
         },
     },
     apprentice = {
@@ -1426,6 +1505,7 @@ local carvingRecipes = {
             },
             category = this.categories.equipment,
             soundType = "carve",
+            timeTaken = CRAFT_TIMES.medium,
         },
 
         --Stone amulet
@@ -1446,6 +1526,7 @@ local carvingRecipes = {
             },
             category = this.categories.equipment,
             soundType = "carve",
+            timeTaken = CRAFT_TIMES.small,
         },
         {
             id = "bushcraft:ashfall_wood_ring_01",
@@ -1462,6 +1543,7 @@ local carvingRecipes = {
             },
             category = this.categories.equipment,
             soundType = "carve",
+            timeTaken = CRAFT_TIMES.small,
         },
     },
     journeyman = {
@@ -1482,6 +1564,7 @@ local carvingRecipes = {
                     conditionPerUse = 20
                 }
             },
+            timeTaken = CRAFT_TIMES.medium,
         },
     },
     expert = {
@@ -1500,7 +1583,8 @@ local carvingRecipes = {
             },
             category = this.categories.equipment,
             soundType = "carve",
-            progress = 10
+            progress = 10,
+            timeTaken = CRAFT_TIMES.small,
         },
 
         --Engraved amulet
@@ -1520,7 +1604,8 @@ local carvingRecipes = {
             },
             category = this.categories.equipment,
             soundType = "carve",
-            progress = 15
+            progress = 15,
+            timeTaken = CRAFT_TIMES.small,
         },
     },
     master = {},
@@ -1538,6 +1623,7 @@ local tanningRackRecipes = {
                 { material = "hide", count = 1 }
             },
             soundType = "leather",
+            timeTaken = CRAFT_TIMES.small,
         },
         {
             id = "bushcraft:ashfall_leather_pelt",
@@ -1548,6 +1634,7 @@ local tanningRackRecipes = {
                 { material = "fur", count = 1 }
             },
             soundType = "leather",
+            timeTaken = CRAFT_TIMES.small,
         },
     },
     novice = {},
@@ -1581,6 +1668,7 @@ local workbenchRecipes = {
             category = this.categories.structures,
             soundType = "wood",
             maxSteepness = 0,
+            timeTaken = CRAFT_TIMES.medium,
         },
         {  --steps small
             id = "bushcraft:ashfall_steps_sm_01",
@@ -1593,6 +1681,7 @@ local workbenchRecipes = {
             category = this.categories.structures,
             soundType = "wood",
             maxSteepness = 0,
+            timeTaken = CRAFT_TIMES.medium,
         },
         {  --steps large
             id = "bushcraft:ashfall_steps_lrg_01",
@@ -1605,6 +1694,7 @@ local workbenchRecipes = {
             category = this.categories.structures,
             soundType = "wood",
             maxSteepness = 0,
+            timeTaken = CRAFT_TIMES.medium,
         },
         {  --steps large
             id = "bushcraft:ashfall_overhang_01",
@@ -1619,6 +1709,7 @@ local workbenchRecipes = {
             category = this.categories.structures,
             soundType = "wood",
             maxSteepness = 0,
+            timeTaken = CRAFT_TIMES.large,
         },
         {  --steps large
             id = "bushcraft:ashfall_screen_fabric",
@@ -1631,6 +1722,7 @@ local workbenchRecipes = {
             },
             category = this.categories.structures,
             soundType = "fabric",
+            timeTaken = CRAFT_TIMES.medium,
         },
         {  --fence
             id = "bushcraft:ashfall_fence_01",
@@ -1642,7 +1734,8 @@ local workbenchRecipes = {
             },
             category = this.categories.structures,
             soundType = "wood",
-            maxSteepness = 0.1
+            maxSteepness = 0.1,
+            timeTaken = CRAFT_TIMES.medium,
         },
     },
     journeyman = {
@@ -1801,12 +1894,17 @@ this.menuActivators = {
             type = "event",
             id = this.menuEvent,
             defaultFilter = "skill",
+            doesTimePass = function(self)
+                return config.craftingTakesTime
+            end,
+            defaultCraftTime = CRAFT_TIMES.small
         },
         recipeLists = {
             bushCraftingRecipes,
             materialRecipes,
             workbenchRecipes
-        }
+        },
+
     },
     tanningRack = {
         menuActivator = {
@@ -1814,6 +1912,10 @@ this.menuActivators = {
             type = "event",
             id = this.tanningEvent,
             defaultFilter = "skill",
+            doesTimePass = function(self)
+                return config.craftingTakesTime
+            end,
+            defaultCraftTime = CRAFT_TIMES.small
         },
         recipeLists = {
             tanningRackRecipes
@@ -1825,6 +1927,10 @@ this.menuActivators = {
             type = "event",
             id = this.carvingEvent,
             defaultFilter = "skill",
+            doesTimePass = function(self)
+                return config.craftingTakesTime
+            end,
+            defaultCraftTime = CRAFT_TIMES.small
         },
         recipeLists = {
             carvingRecipes,
@@ -1836,6 +1942,10 @@ this.menuActivators = {
             type = "event",
             id = this.workbenchEvent,
             defaultFilter = "skill",
+            doesTimePass = function(self)
+                return config.craftingTakesTime
+            end,
+            defaultCraftTime = CRAFT_TIMES.small
         },
         recipeLists = {
             workbenchRecipes,

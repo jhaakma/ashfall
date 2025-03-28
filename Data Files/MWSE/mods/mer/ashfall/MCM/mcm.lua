@@ -234,6 +234,12 @@ local function registerModConfig()
             }
 
             categoryFeatures:createYesNoButton{
+                label = "Crafting Takes Time",
+                description = "When enabled, bushcrafting items will take time. Disable this to craft instantly.",
+                variable = mwse.mcm.createTableVariable{ id = "craftingTakesTime", table = config }
+            }
+
+            categoryFeatures:createYesNoButton{
                 label = "Enable Skinning",
                 description = "Enable the skinning mechanic. To skin a creature, hack at its corpse with a knife to collect its hide, meat and fur.",
                 variable = mwse.mcm.createTableVariable{ id = "enableSkinning", table = config }

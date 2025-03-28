@@ -20,7 +20,6 @@ local mcmConfig = {
     campingMerchants = {},
     foodWaterMerchants = {},
 
-
     waterBaseCost = 1,
     stewBaseCost = 8,
     enableTemperatureEffects = true,
@@ -77,5 +76,7 @@ local mcmConfig = {
         armor = {},
         clothing = {}
     },
+
+    craftingTakesTime = true,
 }
 return mcmConfig
