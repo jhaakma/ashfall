@@ -1327,7 +1327,6 @@ local carvingRecipes = {
             },
             category = this.categories.cutlery,
             previewScale = 4,
-            soundType = "carve",
             timeTaken = CRAFT_TIMES.small,
         },
         {
@@ -1345,7 +1344,6 @@ local carvingRecipes = {
             },
             category = this.categories.cutlery,
             previewScale = 4,
-            soundType = "carve",
             timeTaken = CRAFT_TIMES.small,
         },
         {
@@ -1363,7 +1361,6 @@ local carvingRecipes = {
             },
             category = this.categories.cutlery,
             rotationAxis = 'y',
-            soundType = "carve",
             timeTaken = CRAFT_TIMES.small,
         },
         {
@@ -1381,7 +1378,6 @@ local carvingRecipes = {
             },
             category = this.categories.cutlery,
             rotationAxis = 'y',
-            soundType = "carve",
             timeTaken = CRAFT_TIMES.small,
         },
 
@@ -1400,7 +1396,6 @@ local carvingRecipes = {
             },
             category = this.categories.cutlery,
             rotationAxis = 'y',
-            soundType = "carve",
             timeTaken = CRAFT_TIMES.small,
         },
         {
@@ -1417,7 +1412,6 @@ local carvingRecipes = {
                 }
             },
             category = this.categories.cutlery,
-            soundType = "carve",
             timeTaken = CRAFT_TIMES.small,
         },
         {
@@ -1435,7 +1429,6 @@ local carvingRecipes = {
             },
             category = this.categories.utensils,
             previewMesh = "ashfall\\craft\\wood_ladle_attach.nif",
-            soundType = "carve",
             timeTaken = CRAFT_TIMES.small,
         },
     },
@@ -1459,7 +1452,6 @@ local carvingRecipes = {
             },
             category = this.categories.cutlery,
             previewScale = 4,
-            soundType = "carve",
             timeTaken = CRAFT_TIMES.small,
         },
         {
@@ -1481,7 +1473,6 @@ local carvingRecipes = {
             },
             category = this.categories.utensils,
             previewScale = 4,
-            soundType = "carve",
             timeTaken = CRAFT_TIMES.small,
         },
     },
@@ -1504,7 +1495,6 @@ local carvingRecipes = {
                 }
             },
             category = this.categories.equipment,
-            soundType = "carve",
             timeTaken = CRAFT_TIMES.medium,
         },
 
@@ -1525,7 +1515,6 @@ local carvingRecipes = {
                 },
             },
             category = this.categories.equipment,
-            soundType = "carve",
             timeTaken = CRAFT_TIMES.small,
         },
         {
@@ -1542,7 +1531,6 @@ local carvingRecipes = {
                 },
             },
             category = this.categories.equipment,
-            soundType = "carve",
             timeTaken = CRAFT_TIMES.small,
         },
     },
@@ -1557,7 +1545,6 @@ local carvingRecipes = {
                 { material = "resin", count = 1 }
             },
             category = this.categories.furniture,
-            soundType = "carve",
             toolRequirements = {
                 {
                     tool = "chisel",
@@ -1582,7 +1569,6 @@ local carvingRecipes = {
                 },
             },
             category = this.categories.equipment,
-            soundType = "carve",
             progress = 10,
             timeTaken = CRAFT_TIMES.small,
         },
@@ -1603,7 +1589,6 @@ local carvingRecipes = {
                 },
             },
             category = this.categories.equipment,
-            soundType = "carve",
             progress = 15,
             timeTaken = CRAFT_TIMES.small,
         },
@@ -1622,7 +1607,6 @@ local tanningRackRecipes = {
             materials = {
                 { material = "hide", count = 1 }
             },
-            soundType = "leather",
             timeTaken = CRAFT_TIMES.small,
         },
         {
@@ -1633,7 +1617,6 @@ local tanningRackRecipes = {
             materials = {
                 { material = "fur", count = 1 }
             },
-            soundType = "leather",
             timeTaken = CRAFT_TIMES.small,
         },
     },
@@ -1904,7 +1887,6 @@ this.menuActivators = {
             materialRecipes,
             workbenchRecipes
         },
-
     },
     tanningRack = {
         menuActivator = {
@@ -1915,11 +1897,12 @@ this.menuActivators = {
             doesTimePass = function(self)
                 return config.craftingTakesTime
             end,
-            defaultCraftTime = CRAFT_TIMES.small
+            defaultCraftTime = CRAFT_TIMES.small,
+            defaultCraftSoundType = "leather",
         },
         recipeLists = {
             tanningRackRecipes
-        }
+        },
     },
     carving = {
         menuActivator = {
@@ -1930,11 +1913,12 @@ this.menuActivators = {
             doesTimePass = function(self)
                 return config.craftingTakesTime
             end,
-            defaultCraftTime = CRAFT_TIMES.small
+            defaultCraftTime = CRAFT_TIMES.small,
+            defaultCraftSoundType = "carve",
         },
         recipeLists = {
             carvingRecipes,
-        }
+        },
     },
     workbench = {
         menuActivator = {
@@ -1945,12 +1929,13 @@ this.menuActivators = {
             doesTimePass = function(self)
                 return config.craftingTakesTime
             end,
-            defaultCraftTime = CRAFT_TIMES.small
+            defaultCraftTime = CRAFT_TIMES.small,
+            defaultCraftSoundType = "wood",
         },
         recipeLists = {
             workbenchRecipes,
             materialRecipes
-        }
+        },
     }
 }
 
