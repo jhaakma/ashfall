@@ -124,7 +124,7 @@ this.categories = {
     utensils = "Utensils",
     tools = "Tools",
     weapons = "Weapons",
-    planters = "Planters"
+    planters = "Planters",
 }
 
 this.tanningRacks = {
@@ -1306,6 +1306,19 @@ local bushCraftingRecipes = {
             recoverEquipmentMaterials = true,
             timeTaken = CRAFT_TIMES.tiny,
         },
+        {
+            id = "ab_mus_delutethin",
+            description = "A small lute made of wood and leather.",
+            materials = {
+                { material = "wood", count = 2 },
+                { material = "leather", count = 1 },
+                { material = "fibre", count = 4 },
+                { material = "resin", count = 1 },
+            },
+            category = this.categories.equipment,
+            soundType = "wood",
+            timeTaken = CRAFT_TIMES.large,
+        }
     },
 }
 
@@ -1645,7 +1658,7 @@ local workbenchRecipes = {
             name = "Wooden Platform",
             description = "A wooden platform that can be placed on the ground.",
             materials = {
-                { material = "wood", count = 8 },
+                { material = "wood", count = 5 },
                 { material = "rope", count = 2 },
             },
             category = this.categories.structures,
@@ -1659,7 +1672,7 @@ local workbenchRecipes = {
             name = "Wooden Steps: Short",
             description = "A short set of wooden steps.",
             materials = {
-                { material = "wood", count = 3 },
+                { material = "wood", count = 2 },
             },
             category = this.categories.structures,
             soundType = "wood",
@@ -1672,7 +1685,7 @@ local workbenchRecipes = {
             name = "Wooden Steps: Tall",
             description = "A tall set of wooden steps.",
             materials = {
-                { material = "wood", count = 6 },
+                { material = "wood", count = 3 },
             },
             category = this.categories.structures,
             soundType = "wood",
@@ -1686,7 +1699,7 @@ local workbenchRecipes = {
             description = "A leather overhang that provides shelter from the rain.",
             materials = {
                 { material = "leather", count = 3 },
-                { material = "wood", count = 5 },
+                { material = "wood", count = 4 },
                 { material = "rope", count = 4 },
             },
             category = this.categories.structures,
@@ -1713,12 +1726,127 @@ local workbenchRecipes = {
             name = "Wooden Fence",
             description = "A sturdy wooden fence.",
             materials = {
-                { material = "wood", count = 6 },
+                { material = "wood", count = 4 },
             },
             category = this.categories.structures,
             soundType = "wood",
             maxSteepness = 0.1,
             timeTaken = CRAFT_TIMES.medium,
+        },
+
+        --Small Awning
+        {
+            id = "bushcraft:ashfall_awning_sm_01",
+            craftableId = "ashfall_awning_sm_01",
+            name = "Awning (Small)",
+            description = "A leather awning that can be placed on the ground.",
+            materials = {
+                { material = "leather", count = 2 },
+                { material = "wood", count = 2 },
+                { material = "rope", count = 2 },
+            },
+            category = this.categories.structures,
+            soundType = "wood",
+            maxSteepness = 0,
+            timeTaken = CRAFT_TIMES.medium,
+            scale = 0.95,
+        },
+        --OAAB Awning
+        {
+            id = "bushcraft:ab_ex_ashlawning_03",
+            craftableId = "ab_ex_ashlawning_03",
+            name = "Awning (Large)",
+            description = "A leather awning that can be placed on the ground.",
+            materials = {
+                { material = "leather", count = 3 },
+                { material = "wood", count = 4 },
+                { material = "rope", count = 4 },
+            },
+            category = this.categories.structures,
+            soundType = "wood",
+            maxSteepness = 0,
+            timeTaken = CRAFT_TIMES.medium,
+            placementSetting = "free",
+            scale = 0.9
+        },
+        --OAAB Barricade
+        {
+            id = "bushcraft:ab_ex_barricade01",
+            craftableId = "ab_ex_barricade01",
+            name = "Barricade",
+            description = "A wooden barricade that can be placed on the ground.",
+            materials = {
+                { material = "wood", count = 4 },
+                { material = "rope", count = 2 },
+            },
+            category = this.categories.structures,
+            soundType = "wood",
+            maxSteepness = 0,
+            timeTaken = CRAFT_TIMES.medium,
+        },
+        --OAAB wALL
+        {
+            id = "bushcraft:ab_ex_descaffold01",
+            craftableId = "ab_ex_descaffold01",
+            name = "Wooden Wall",
+            description = "A large wooden WALL.",
+            materials = {
+                { material = "wood", count = 5 },
+            },
+            category = this.categories.structures,
+            soundType = "wood",
+            maxSteepness = 0,
+            timeTaken = CRAFT_TIMES.small,
+            scale = 0.75,
+        },
+        --Roof Small
+        {
+            id = "ashfall_roof_01",
+            craftableId = "ashfall_roof_01",
+            name = "Thatch Roof (Small)",
+            description = "A small thatch roof for a wooden structure.",
+            materials = {
+                { material = "straw", count = 8 },
+                { material = "wood", count = 2 },
+                { material = "rope", count = 2 },
+            },
+            category = this.categories.structures,
+            soundType = "wood",
+            timeTaken = CRAFT_TIMES.medium,
+            placementSetting = "free",
+            scale = 1.2
+        },
+        --Roof Larger
+        {
+            id = "bushcraft:ashfall_roof_02",
+            craftableId = "ashfall_roof_02",
+            name = "Thatch Roof (Large)",
+            description = "A large thatch roof for a wooden structure.",
+            materials = {
+                { material = "straw", count = 16 },
+                { material = "wood", count = 4 },
+                { material = "rope", count = 4 },
+            },
+            category = this.categories.structures,
+            soundType = "wood",
+            timeTaken = CRAFT_TIMES.large,
+            placementSetting = "free",
+        },
+        --OAAB Market Stand
+        {
+            id = "bushcraft:ab_furn_demarketstanda01",
+            craftableId = "ab_furn_demarketstanda01",
+            name = "Market Stand",
+            description = "A large market stand.",
+            materials = {
+                { material = "wood", count = 5 },
+                { material = "rope", count = 2 },
+                { material = "fabric", count = 4 },
+            },
+            category = this.categories.structures,
+            soundType = "wood",
+            maxSteepness = 0,
+            timeTaken = CRAFT_TIMES.large,
         },
     },
     journeyman = {
