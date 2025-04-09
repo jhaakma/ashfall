@@ -249,7 +249,6 @@ local function grillFoodItem(ingredReference)
                 doBurn(ingredReference, showMessage)
             end
             tes3ui.refreshTooltip()
-
         else
             --reset grill time if campfire is unlit
             resetCookingTime(ingredReference)
@@ -260,28 +259,58 @@ local function grillFoodItem(ingredReference)
     end
 end
 
-event.register("loaded", function()
-    timer.start{
-        duration = common.helper.getUpdateIntervalInSeconds(),
-        iterations = -1,
-        callback = function()
-            ReferenceController.iterateReferences("grillableFood", function(ref)
-                updateGrillFoodHeatSource(ref)
-            end)
-        end
-    }
-    ReferenceController.iterateReferences("grillableFood", function(ref)
-        updateGrillFoodHeatSource(ref)
-    end)
+---@type table<tes3reference, boolean>
+local processingQueue = {}
+local refsPerFrame = 5  -- Adjust as needed for performance
+local processingInterval = 0.02
 
+local function refillQueue()
+    processingQueue = {}
+    ReferenceController.iterateReferences("grillableFood", function(ref)
+        processingQueue[ref] = true
+    end)
+    logger:trace("Refilling processing queue with %s references", table.size(processingQueue))
+end
+
+event.register("objectInvalidated", function(e)
+    if processingQueue[e.object] then
+        logger:trace("Removing %s from processing queue", e.object)
+        processingQueue[e.object] = nil
+    end
+end)
+
+local function processQueue()
+    local timeBefore = os.clock()
+    local processed = {}
+    for ref in pairs (processingQueue) do
+        if table.size(processed) >= refsPerFrame then break end
+        updateGrillFoodHeatSource(ref)
+        grillFoodItem(ref)
+        processed[ref] = true
+    end
+    --clear processed references from the queue
+    for ref in pairs(processed) do
+        processingQueue[ref] = nil
+    end
+
+    logger:trace("Processed %s grillable food references in %s seconds", table.size(processed), os.clock() - timeBefore)
+
+    -- Refill queue once it's empty
+    if table.size(processingQueue) == 0 then
+        refillQueue()
+    end
+end
+
+event.register("load", function()
+    processingQueue = {}
+end)
+
+event.register("loaded", function()
+    refillQueue()
     timer.start{
-        duration = 0.05,
+        duration = processingInterval,
         iterations = -1,
-        callback = function()
-            ReferenceController.iterateReferences("grillableFood", function(ref)
-                grillFoodItem(ref)
-            end)
-        end
+        callback = processQueue
     }
 end)
 
