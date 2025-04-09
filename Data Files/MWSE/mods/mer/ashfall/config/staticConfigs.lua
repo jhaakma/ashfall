@@ -690,6 +690,8 @@ this.shadeEquipment = {
     gondolier_helm = true,
     ashfall_strawhat = true,
     t_de_caravaner_helm_01 = true,
+    ab_a_wickerhelm = true,
+    ab_a_wickerhelm_02 = true,
 }
 
 return this
