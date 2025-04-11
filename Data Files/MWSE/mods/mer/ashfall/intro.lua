@@ -16,7 +16,8 @@ function this.doNeeds(needs)
         logger:debug("Setting %s to %s", setting, value)
         config[setting] = value
     end
-    event.trigger("Ashfall:UpdateHud")
+    event.trigger("Ashfall:UpdateHUD")
+    event.trigger("Ashfall:UpdateNeedsUI")
 end
 
 function this.doTimeScale()

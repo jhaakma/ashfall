@@ -8,6 +8,7 @@ local foodConfig = common.staticConfigs.foodConfig
 local hungerController = require("mer.ashfall.needs.hungerController")
 local patinaController = require("mer.ashfall.camping.patinaController")
 local ReferenceController = require("mer.ashfall.referenceController")
+local StaggeredRefProcessor = require("mer.ashfall.common.StaggeredRefProcessor")
 ----------------------------
 --Grilling
 -----------------------------
@@ -212,7 +213,7 @@ local function grillFoodItem(ingredReference)
 
             local difference = timestamp - ingredReference.data.lastCookUpdated
 
-            addGrillPatina(campfire, difference)
+            --addGrillPatina(campfire, difference)
             ingredReference.data.lastCookUpdated = timestamp
 
             local heat = math.max(0, HeatUtil.getHeat(campfire))
@@ -248,7 +249,9 @@ local function grillFoodItem(ingredReference)
             elseif justBurnt then
                 doBurn(ingredReference, showMessage)
             end
-            tes3ui.refreshTooltip()
+            if tes3.getPlayerTarget() == ingredReference then
+                tes3ui.refreshTooltip()
+            end
         else
             --reset grill time if campfire is unlit
             resetCookingTime(ingredReference)
@@ -259,59 +262,49 @@ local function grillFoodItem(ingredReference)
     end
 end
 
----@type table<tes3reference, boolean>
-local processingQueue = {}
-local refsPerFrame = 5  -- Adjust as needed for performance
-local processingInterval = 0.02
-
-local function refillQueue()
-    processingQueue = {}
+---@param processor StaggeredRefProcessor
+local function fillProcessor(processor)
+    logger:debug("Filling processor")
     ReferenceController.iterateReferences("grillableFood", function(ref)
-        processingQueue[ref] = true
+        processor:add(ref)
     end)
-    logger:trace("Refilling processing queue with %s references", table.size(processingQueue))
+    logger:debug("Processor filled with %s references",  table.size(processor.refs))
 end
 
-event.register("objectInvalidated", function(e)
-    if processingQueue[e.object] then
-        logger:trace("Removing %s from processing queue", e.object)
-        processingQueue[e.object] = nil
-    end
-end)
-
-local function processQueue()
-    local timeBefore = os.clock()
-    local processed = {}
-    for ref in pairs (processingQueue) do
-        if table.size(processed) >= refsPerFrame then break end
+local heatSourceProcessor = StaggeredRefProcessor.new{
+    callback = function(ref)
         updateGrillFoodHeatSource(ref)
+    end,
+    interval = 0.1,
+    refsPerFrame = 1,
+    onEmpty = fillProcessor,
+    logger = logger
+}
+
+local grillFoodProcessor = StaggeredRefProcessor.new{
+    callback = function(ref)
         grillFoodItem(ref)
-        processed[ref] = true
-    end
-    --clear processed references from the queue
-    for ref in pairs(processed) do
-        processingQueue[ref] = nil
-    end
-
-    logger:trace("Processed %s grillable food references in %s seconds", table.size(processed), os.clock() - timeBefore)
-
-    -- Refill queue once it's empty
-    if table.size(processingQueue) == 0 then
-        refillQueue()
-    end
-end
-
-event.register("load", function()
-    processingQueue = {}
-end)
+    end,
+    interval = 0.01,
+    refsPerFrame = 5,
+    onEmpty = fillProcessor,
+    logger = logger
+}
 
 event.register("loaded", function()
-    refillQueue()
-    timer.start{
-        duration = processingInterval,
-        iterations = -1,
-        callback = processQueue
-    }
+    ReferenceController.iterateReferences("grillableFood", function(ref)
+        updateGrillFoodHeatSource(ref)
+    end)
+
+    heatSourceProcessor:stop()
+    heatSourceProcessor:clear()
+    fillProcessor(heatSourceProcessor)
+    heatSourceProcessor:start()
+
+    grillFoodProcessor:stop()
+    grillFoodProcessor:clear()
+    fillProcessor(grillFoodProcessor)
+    grillFoodProcessor:start()
 end)
 
 

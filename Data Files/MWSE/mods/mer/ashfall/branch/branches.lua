@@ -3,7 +3,9 @@ local logger = common.createLogger("branches")
 local config = require("mer.ashfall.config").config
 local ActivatorController = require("mer.ashfall.activators.activatorController")
 local branchConfig = require("mer.ashfall.branch.branchConfig")
+local StaggeredRefProcessor = require("mer.ashfall.common.StaggeredRefProcessor")
 --Branch placement configs
+
 
 --[[
     Dynamically adds wooden branches around the base of trees.
@@ -227,22 +229,30 @@ local function checkAndRestoreBranch(branch)
     end
 end
 
+local treeProcessor = StaggeredRefProcessor.new{
+    callback = function(reference)
+        logger:debug("Adding branches to %s in cell %s", reference.object.id, reference.cell.editorName)
+        addBranchesToTree(reference, reference.cell)
+    end,
+    interval = 0.05,
+    refsPerFrame = 1,
+    logger = logger,
+}
+
+
 local function addBranchesToCell(cell)
-    if cell.isInterior then
-        logger:debug("Skipping interior cell %s", cell.editorName)
-        return
-    end
     logger:debug("Adding branches to %s", cell.editorName)
     --only add branches to cells we haven't added them to before
     if not common.data.cellBranchList[formatCellId(cell)] then
         --Find trees and add branches
         for reference in cell:iterateReferences(tes3.objectType.static) do
             if isSource(reference) then
-                logger:debug("Adding branches to %s in cell %s", reference.object.id, cell.editorName)
-                addBranchesToTree(reference, cell)
+                logger:debug("Registering Branch source to %s in cell %s", reference.object.id, cell.editorName)
+                treeProcessor:add(reference)
             end
         end
     end
+
     --Find previously placed branches and reactivate them if necessary
     for reference in cell:iterateReferences(tes3.objectType.miscItem) do
         if isBranch(reference) then
@@ -252,21 +262,53 @@ local function addBranchesToCell(cell)
     common.data.cellBranchList[formatCellId(cell)] = true
 end
 
-local function updateCells()
+local function doBranches()
     if common.data and config.enableBranchPlacement then
-        logger:debug("Debris placement enabled")
+        logger:debug("Adding branches to active cells")
         for _, cell in ipairs(tes3.getActiveCells()) do
             addBranchesToCell(cell)
         end
     end
 end
-event.register("cellChanged", updateCells)
+
+local function doTrees()
+    for _, cell in ipairs(tes3.getActiveCells()) do
+        for reference in cell:iterateReferences(tes3.objectType.static) do
+            if isSource(reference) then
+                addBranchesToTree(reference, reference.cell)
+            end
+        end
+    end
+end
+
+
+event.register("cellChanged", function(e)
+    if e.cell.isInterior then
+        logger:debug("Skipping interior cell %s", e.cell.editorName)
+        return
+    end
+
+    doBranches()
+    if e.previousCell and e.previousCell.isInterior then
+        --We came from an interior, do the branches immediately
+        doTrees()
+    else
+        --We came from an exterior, stagger the branch placement
+        treeProcessor:start()
+    end
+end)
 
 local function onLoad()
     logger:debug("data loaded branch placement commencing")
     common.data.cellBranchList = common.data.cellBranchList or {}
 
-    updateCells()
+    if tes3.player.cell.isInterior then
+        logger:debug("Skipping interior cell %s", tes3.player.cell.editorName)
+        return
+    end
+
+    doBranches()
+    doTrees()
 end
 event.register("Ashfall:dataLoaded", onLoad)
 

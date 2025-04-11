@@ -138,8 +138,7 @@ function this.drinkAmount(e)
     conditionsCommon.updateCondition("thirst")
     this.update()
     event.trigger("Ashfall:updateTemperature", { source = "drinkAmount" } )
-    event.trigger("Ashfall:updateNeedsUI")
-    event.trigger("Ashfall:UpdateHud")
+    event.trigger("Ashfall:UpdateNeedsUI")
 
     tes3.playSound({reference = tes3.player, sound = "Drink"})
 

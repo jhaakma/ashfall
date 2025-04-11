@@ -38,41 +38,42 @@ local function findElementInMultiMenu(id, menu)
     end
 end
 
-function this.updateHUD()
-    local function updateNeed(needData, menu)
-        local id = needData.needId
-        local blockerBar = findElementInMultiMenu(string.format(blockerIdPattern, id), menu)
-        if blockerBar then
-            local limit = statsEffect.getMaxStat(needData.stat) / tes3.mobilePlayer[needData.stat].base
 
-            local ratio = math.min(1, limit)
-            local parentWidth = blockerBar.parent.width
-            local newWidth =  parentWidth - parentWidth * ratio
-            if newWidth > 0 then
-                newWidth = math.remap( newWidth, 0, parentWidth, 2, parentWidth - 2)
-            end
-            blockerBar.width = newWidth
-        end
-    end
+local function updateNeed(needData, menu)
+    local id = needData.needId
+    local blockerBar = findElementInMultiMenu(string.format(blockerIdPattern, id), menu)
+    if blockerBar then
+        local limit = statsEffect.getMaxStat(needData.stat) / tes3.mobilePlayer[needData.stat].base
 
-    --HUD
-    local menu = tes3ui.findMenu(tes3ui.registerID("MenuMulti"))
-    if menu then
-        for _, needData in pairs(needsData) do
-            updateNeed(needData, menu)
+        local ratio = math.min(1, limit)
+        local parentWidth = blockerBar.parent.width
+        local newWidth =  parentWidth - parentWidth * ratio
+        if newWidth > 0 then
+            newWidth = math.remap( newWidth, 0, parentWidth, 2, parentWidth - 2)
         end
-        menu:updateLayout()
-    end
-    --Stats menu
-    menu = tes3ui.findMenu(tes3ui.registerID("MenuStat"))
-    if menu then
-        for _, needData in pairs(needsData) do
-            updateNeed(needData, menu)
-        end
-        menu:updateLayout()
+        blockerBar.width = newWidth
     end
 end
-event.register("Ashfall:UpdateHud", this.updateHUD)
+
+function this.updateHUD(eventData)
+    --HUD
+    local menuMulti = tes3ui.findMenu(tes3ui.registerID("MenuMulti"))
+    if menuMulti then
+        for _, needData in pairs(needsData) do
+            updateNeed(needData, menuMulti)
+        end
+        menuMulti:updateLayout()
+    end
+    --Stats menu
+    local statsMenu = tes3ui.findMenu(tes3ui.registerID("MenuStat"))
+    if statsMenu then
+        for _, needData in pairs(needsData) do
+            updateNeed(needData, statsMenu)
+        end
+        statsMenu:updateLayout()
+    end
+end
+event.register("Ashfall:UpdateNeedsUI", this.updateHUD)
 
 local function addBlockerBar(parent, needData)
     local blockBar = parent:createThinBorder{ id  = tes3ui.registerID(string.format(blockerIdPattern, needData.needId)) }

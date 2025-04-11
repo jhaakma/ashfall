@@ -190,7 +190,7 @@ local function createNeedsUI(e)
             common.helper.createTooltip({ header = data.name, text = data.getTooltip() })
         end)
     end
-    event.trigger("Ashfall:updateNeedsUI")
+    event.trigger("Ashfall:UpdateNeedsUI")
 end
 event.register("uiCreated", createNeedsUI, { filter = "MenuInventory" } )
 
@@ -215,7 +215,7 @@ local function updateNeedsUI(e)
         inventoryMenu:updateLayout()
     end
 end
-event.register("Ashfall:updateNeedsUI", updateNeedsUI)
+event.register("Ashfall:UpdateNeedsUI", updateNeedsUI)
 
 function this.addNeedsBlockToMenu(e, needId)
     local need = conditionConfig[needId]

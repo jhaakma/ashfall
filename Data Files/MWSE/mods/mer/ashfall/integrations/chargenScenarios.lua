@@ -15,6 +15,7 @@ local loadouts = {
                 data = { waterAmount = 50 },
             },
             { id = "ashfall_tent_base_m", noDuplicates = true },
+            { id = "misc_com_iron_ladle", noDuplicates = true },
         }
     },
     {

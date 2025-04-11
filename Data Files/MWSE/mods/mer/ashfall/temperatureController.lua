@@ -265,7 +265,7 @@ function this.calculate(interval, forceUpdate)
         common.data.tempLimit = 0
         common.data.baseTemp = 0
         common.data.temp = 0
-        event.trigger("Ashfall:UpdateHud")
+        event.trigger("Ashfall:UpdateHUD")
         return
     end
     common.data.tempLimit = common.data.tempLimit or 0
@@ -293,7 +293,7 @@ function this.calculate(interval, forceUpdate)
         ( common.data.tempLimit - common.data.temp ) * getInternalChangeMultiplier(interval) * differenceMulti
     )
 
-    event.trigger("Ashfall:UpdateHud")
+    event.trigger("Ashfall:UpdateHUD")
 end
 
 event.register("Ashfall:updateTemperature", function(e)

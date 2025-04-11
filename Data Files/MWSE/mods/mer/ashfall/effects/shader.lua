@@ -13,7 +13,7 @@ event.register("load", function()
     shader.enabled = true
 end)
 
-event.register("Ashfall:UpdateHud", function()
+event.register("Ashfall:UpdateHUD", function()
     local shader = getShader()
     shader.temperature = common.data.temp
 end)

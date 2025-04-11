@@ -88,7 +88,8 @@ local function setRestValues(e)
 
     interruptText = string.format("It is too %s to %s, you must find shelter!", tempText, restText)
     event.trigger("Ashfall:CheckForShelter")
-    event.trigger("Ashfall:UpdateHud")
+    event.trigger("Ashfall:UpdateHUD")
+    event.trigger("Ashfall:UpdateNeedsUI")
 end
 event.register("uiShowRestMenu", setRestValues )
 

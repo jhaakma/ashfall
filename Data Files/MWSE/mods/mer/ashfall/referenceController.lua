@@ -42,6 +42,7 @@ local ReferenceController = {
     requirements = nil
 }
 
+---@type table<string, Ashfall.ReferenceController>
 this.controllers = {
     campfire = ReferenceController:new{
         requirements = function(_, ref)
@@ -102,8 +103,20 @@ this.controllers = {
         end
     },
     grillableFood = ReferenceController:new{
+        ---@param ref tes3reference
         requirements = function(_, ref)
-            return staticConfigs.foodConfig.getGrillValues(ref.object)
+            local validCell = true
+            if ref.cell then
+                local interiorCell = ref.cell.isInterior == true
+                if interiorCell then
+                    --interior: same as player
+                    validCell = ref.cell == tes3.player.cell
+                else
+                    --exterior: player also in exterior
+                    validCell = tes3.player.cell.isInterior ~= true
+                end
+            end
+            return validCell and staticConfigs.foodConfig.getGrillValues(ref.object)
         end
     },
     waterFilter = ReferenceController:new{

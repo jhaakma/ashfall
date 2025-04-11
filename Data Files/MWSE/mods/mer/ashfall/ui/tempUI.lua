@@ -189,7 +189,7 @@ function this.updateHUD()
         end
     end
 end
-event.register("Ashfall:UpdateHud", this.updateHUD)
+event.register("Ashfall:UpdateHUD", this.updateHUD)
 
 local function quickFormat(element, padding)
     element.paddingAllSides = padding

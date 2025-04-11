@@ -63,7 +63,8 @@ local function callUpdates()
     for _, script in pairs(needs) do
         script.calculate(interval)
     end
-    event.trigger("Ashfall:updateNeedsUI")
+    event.trigger("Ashfall:UpdateNeedsUI")
+    event.trigger("Ashfall:UpdateHUD")
     temperatureController.calculate(interval)
 end
 event.register("enterFrame", callUpdates)

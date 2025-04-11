@@ -92,8 +92,7 @@ function this.eatAmount( amount )
     conditionsCommon.updateCondition("hunger")
     this.update()
     event.trigger("Ashfall:updateTemperature", { source = "eatAmount" })
-    event.trigger("Ashfall:updateNeedsUI")
-    event.trigger("Ashfall:UpdateHud")
+    event.trigger("Ashfall:UpdateNeedsUI")
     return amountAte
 end
 
