@@ -106,7 +106,7 @@ this.controllers = {
         ---@param ref tes3reference
         requirements = function(_, ref)
             local validCell = true
-            if ref.cell then
+            if tes3.player and ref.cell then
                 local interiorCell = ref.cell.isInterior == true
                 if interiorCell then
                     --interior: same as player

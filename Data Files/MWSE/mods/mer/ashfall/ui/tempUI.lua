@@ -108,7 +108,7 @@ function this.updateHUD()
                 end
 
                 --Update Temp Limit bars
-                local tempLimit = math.clamp((common.data.tempLimit), -100, 100) or 0
+                local tempLimit = math.clamp((common.data.tempLimit or 0), -100, 100) or 0
                 local leftTempLimitBar = findHUDElement(IDs.leftTempLimitBar)
                 local rightTempLimitBar = findHUDElement(IDs.rightTempLimitBar)
                 if leftTempLimitBar and rightTempLimitBar then
