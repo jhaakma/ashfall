@@ -45,7 +45,7 @@ local function initialized()
         require("mer.ashfall.merchants.priceController")
         require("mer.ashfall.merchants.waterMerchant")
         require("mer.ashfall.merchants.stewMerchant")
-        require("mer.ashfall.branch.branches")
+        require("mer.ashfall.branch.debrisController")
 
         require("mer.ashfall.bushcrafting")
         require("mer.ashfall.gearPlacement")

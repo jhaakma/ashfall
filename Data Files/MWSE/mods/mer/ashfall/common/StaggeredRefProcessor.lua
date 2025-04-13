@@ -36,6 +36,10 @@ function StaggeredRefProcessor.new(config)
         self.refs[e.object] = nil
     end)
 
+    event.register("load", function()
+        self.timeHandle = nil
+    end)
+
     return self
 end
 
@@ -61,17 +65,24 @@ end
 
 ---Start processing loop
 function StaggeredRefProcessor:start()
-    if self.timerHandle then
-        self.timerHandle:cancel()
-        self.timerHandle = nil
+
+    if not self.timerHandle then
+        self.logger:debug("Starting processor")
+        self.timerHandle = timer.start{
+            duration = self.interval,
+            iterations = -1,
+            callback = function()
+                self:_process()
+            end
+        }
+    else
+        self.logger:debug("Processor already started")
     end
-    self.timerHandle = timer.start{
-        duration = self.interval,
-        iterations = -1,
-        callback = function()
-            self:_process()
-        end
-    }
+end
+
+---Process all references immediately
+function StaggeredRefProcessor:processAll()
+    self:_process{ doAll = true }
 end
 
 ---Stop processing
@@ -83,7 +94,8 @@ function StaggeredRefProcessor:stop()
 end
 
 ---Internal function to process some references
-function StaggeredRefProcessor:_process()
+function StaggeredRefProcessor:_process(e)
+    e = e or {}
     local processed = 0
     for ref in pairs(self.refs) do
         if not ref.sceneNode then
@@ -93,7 +105,7 @@ function StaggeredRefProcessor:_process()
             self.refs[ref] = nil
             processed = processed + 1
         end
-        if processed >= self.refsPerFrame then
+        if processed >= self.refsPerFrame and not e.doAll then
             break
         end
     end
