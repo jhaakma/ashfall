@@ -17,12 +17,16 @@ local function doEquip(self)
 end
 
 local function replaceAndEquip(self)
+    logger:debug("replaceAndEquip backpack `%s`", self.item.id)
     if not self:isCopy() then
+        logger:debug("Not a copy, replacing")
         self:replaceInInventory()
         timer.frame.delayOneFrame(function()
+            logger:debug("Replacing backpack `%s` after a frame", self.item.id)
             doEquip(self)
         end)
     else
+        logger:debug("Is a copy, equipping")
         doEquip(self)
     end
 end

@@ -1,0 +1,18 @@
+mod_name: Ashfall
+data_files:
+  - Ashfall.esp
+  - Icons/ashfall
+  - Meshes/ashfall
+  - MWSE/mods/mer/ashfall
+  - Sound/ashfall
+  - Textures/Ashfall
+  - Ashfall-metadata.toml
+  - shaders/XEshaders/ashfall.fx
+metadata_path: Data Files/Ashfall-metadata.toml
+repo_path: F:/Games/_RELEASES/Ashfall/master
+archive_path: F:/Games/_RELEASES/Ashfall/Ashfall.7z
+morrowind_path: C:/games/Morrowind installs/Vanilla+/Morrowind
+timestamps:
+  -
+    path: Ashfall.esp
+    timestamp: 1116895462

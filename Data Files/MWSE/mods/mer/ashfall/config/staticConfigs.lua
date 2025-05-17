@@ -691,7 +691,7 @@ this.shadeEquipment = {
     ashfall_strawhat = true,
     t_de_caravaner_helm_01 = true,
     ab_a_wickerhelm = true,
-    ab_a_wickerhelm_02 = true,
+    ab_a_wickerhelm02 = true,
 }
 
 return this
