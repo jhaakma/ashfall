@@ -807,7 +807,7 @@ local bushCraftingRecipes = {
             category = this.categories.weapons,
             soundType = "wood",
             recoverEquipmentMaterials = true,
-            previewScale = 1.2,
+            -- previewScale = 1.2,
             timeTaken = CRAFT_TIMES.tiny,
         },
         {
@@ -1180,8 +1180,8 @@ local bushCraftingRecipes = {
             additionalMenuOptions = {
                 CrabPot.buttons.collect,
             },
-            previewScale = 4,
-            previewHeight = -80,
+            -- previewScale = 4,
+            -- previewHeight = -80,
             timeTaken = CRAFT_TIMES.medium,
         },
     },
@@ -1339,7 +1339,7 @@ local carvingRecipes = {
                 }
             },
             category = this.categories.cutlery,
-            previewScale = 4,
+            -- previewScale = 4,
             timeTaken = CRAFT_TIMES.small,
         },
         {
@@ -1356,7 +1356,7 @@ local carvingRecipes = {
                 }
             },
             category = this.categories.cutlery,
-            previewScale = 4,
+            -- previewScale = 4,
             timeTaken = CRAFT_TIMES.small,
         },
         {
@@ -1464,7 +1464,7 @@ local carvingRecipes = {
                 }
             },
             category = this.categories.cutlery,
-            previewScale = 4,
+            -- previewScale = 4,
             timeTaken = CRAFT_TIMES.small,
         },
         {
@@ -1485,7 +1485,7 @@ local carvingRecipes = {
                 }
             },
             category = this.categories.utensils,
-            previewScale = 4,
+            -- previewScale = 4,
             timeTaken = CRAFT_TIMES.small,
         },
     },
@@ -1987,7 +1987,7 @@ local workbenchRecipes = {
             },
             category = this.categories.beds,
             soundType = "leather",
-            previewScale = 1.25,
+            -- previewScale = 1.25,
         },
     },
 }
