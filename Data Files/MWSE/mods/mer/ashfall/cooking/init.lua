@@ -3,6 +3,7 @@ local skillsConfig = require("mer.ashfall.config.skillConfigs")
 local logger = common.createLogger("cooking")
 local LiquidContainer = require("mer.ashfall.liquid.LiquidContainer")
 local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
+local Campfire = require("mer.ashfall.camping.campfire.Campfire")
 local HeatUtil = require("mer.ashfall.heat.HeatUtil")
 local foodConfig = common.staticConfigs.foodConfig
 local hungerController = require("mer.ashfall.needs.hungerController")
@@ -120,6 +121,9 @@ end
 ---@param ingredReference tes3reference # The ingredient reference to burn
 ---@param showMessage boolean #Whether to show the "has become burnt" message
 local function doBurn(ingredReference, showMessage)
+    if ingredReference.data.grillState == "burnt" then
+        return
+    end
     ingredReference.data.grillState = "burnt"
     ingredReference.data.cookedAmount = 100
     tes3.playSound{ sound = "potion fail", pitch = 0.9, reference = ingredReference }
@@ -168,7 +172,8 @@ end
 ---@param ingredReference tes3reference
 local function updateGrillFoodHeatSource(ingredReference)
     local campfire = common.helper.getHeatFromBelow(ingredReference, "strong")
-    if campfire and campfire.data.isLit then
+    local heat = campfire and HeatUtil.getHeat(campfire)
+    if campfire and Campfire.isHeatAtOrAboveStage(heat, Campfire.STAGES.cooking) then
         --If you placed a stack, return all but one to the player
         if common.helper.isStack(ingredReference) then
             logger:debug("Returning grill food stack to player")
@@ -201,8 +206,9 @@ local function grillFoodItem(ingredReference)
     ---@type tes3reference|nil|false
     local campfire = ingredReference.supportsLuaData
         and ingredReference.tempData.ashfallHeatSource
+    local heat = campfire and math.max(0, HeatUtil.getHeat(campfire))
     if campfire then
-        if campfire.data.isLit then
+        if Campfire.isHeatAtOrAboveStage(heat, Campfire.STAGES.cooking) then
             if ingredReference.data.lastCookUpdated == nil then
                 startCookingIngredient(ingredReference)
                 return
@@ -212,12 +218,29 @@ local function grillFoodItem(ingredReference)
             ingredReference.data.cookedAmount = ingredReference.data.cookedAmount or 0
 
             local difference = timestamp - ingredReference.data.lastCookUpdated
+            local justChangedCell = difference > 0.01
 
             --addGrillPatina(campfire, difference)
             ingredReference.data.lastCookUpdated = timestamp
 
-            local heat = math.max(0, HeatUtil.getHeat(campfire))
+            local heatStage = Campfire.getStageForHeat(heat)
+
             logger:trace("Cooking heat: %s", heat)
+
+            -- Check if heat meets cooking stage requirements
+            if Campfire.isHeatBelowStage(heat, Campfire.STAGES.cooking) then
+                -- Too cold to cook
+                logger:trace("Heat too low to cook")
+                return
+            end
+
+            if heatStage and Campfire.isStageHigherThan(heatStage, Campfire.STAGES.cooking) then
+                -- Heat is higher than cooking stage - instant burn
+                logger:debug("Heat stage too high for cooking - instant burn")
+                doBurn(ingredReference, not justChangedCell)
+                return
+            end
+
             local thisCookMulti = calculateCookMultiplier(heat)
             logger:trace("Cooking multiplier: %s", thisCookMulti)
             local weightMulti = calculateCookWeightModifier(ingredReference.object)
@@ -236,7 +259,7 @@ local function grillFoodItem(ingredReference)
             local justBurnt = cookedAmount >= burnLimit
                 and ingredReference.data.grillState ~= "burnt"
 
-            local justChangedCell = difference > 0.01
+
             local showMessage = not justChangedCell
             if justCooked then
                 local burnChanceMulti = getGrillBurnChanceMultiplier(campfire)
@@ -264,11 +287,11 @@ end
 
 ---@param processor StaggeredRefProcessor
 local function fillProcessor(processor)
-    logger:debug("Filling processor")
+    logger:trace("Filling processor: %s", processor)
     ReferenceController.iterateReferences("grillableFood", function(ref)
+        logger:trace("Adding grillable food to processor: %s", ref)
         processor:add(ref)
     end)
-    logger:debug("Processor filled with %s references",  table.size(processor.refs))
 end
 
 local heatSourceProcessor = StaggeredRefProcessor.new{
@@ -277,8 +300,8 @@ local heatSourceProcessor = StaggeredRefProcessor.new{
     end,
     interval = 0.1,
     refsPerFrame = 1,
+    removeAfterProcessing = false,
     onEmpty = fillProcessor,
-    logger = logger
 }
 
 local grillFoodProcessor = StaggeredRefProcessor.new{
@@ -287,8 +310,8 @@ local grillFoodProcessor = StaggeredRefProcessor.new{
     end,
     interval = 0.01,
     refsPerFrame = 5,
+    removeAfterProcessing = false,
     onEmpty = fillProcessor,
-    logger = logger
 }
 
 event.register("loaded", function()
@@ -307,56 +330,9 @@ event.register("loaded", function()
     grillFoodProcessor:start()
 end)
 
-
-local function doAddingredToStew(campfire, reference)
-    if not foodConfig.getStewBuffForId(reference.object) then
-        tes3.messageBox("%s can not be added to a stew.", reference.object.name)
-        common.helper.pickUp(reference)
-        return
-    end
-
-    local amount = common.helper.getStackCount(reference)
-    local amountAdded = CampfireUtil.addIngredToStew{
-        campfire = campfire,
-        count = amount,
-        item = reference.object
-    }
-
-    logger:debug("amountAdded: %s", amountAdded)
-    if amountAdded < amount then
-        reference.attachments.variables.count = reference.attachments.variables.count - amountAdded
-
-        if amountAdded >= 1 then
-            tes3.messageBox("Added %s %s to stew.", amountAdded, reference.object.name)
-        else
-            tes3.messageBox("You cannot add any more %s.", foodConfig.getFoodTypeResolveMeat(reference.object):lower())
-        end
-        common.helper.pickUp(reference)
-    else
-        tes3.messageBox("Added %s %s to stew.", amountAdded, reference.object.name)
-        reference:delete()
-    end
-end
-
 local function doPlaced(ingredReference)
-    --place in pot
     local campfire = CampfireUtil.getPlacedOnContainer()
-    if campfire then
-        -- local utensilData = CampfireUtil.getDataFromUtensilOrCampfire{
-        --     dataHolder = campfire,
-        --     object = campfire.object
-        -- }
-        -- local hasWater = campfire.data.waterAmount and campfire.data.waterAmount > 0
-        -- local hasLadle = not not campfire.data.ladle
-        -- --ingredient placed on a cooking pot with water in it
-        -- if hasWater and utensilData and utensilData.holdsStew then
-        --     if not hasLadle then
-        --         tes3.messageBox("Requires ladle.")
-        --     else
-        --         doAddingredToStew(campfire, ingredReference)
-        --     end
-        -- end
-    elseif foodConfig.getGrillValues(ingredReference.object) then
+    if foodConfig.getGrillValues(ingredReference.object) then
         if ingredReference.supportsLuaData then
             --Reset grill time for meat and veges
             ingredReference.data.preventBurning = nil

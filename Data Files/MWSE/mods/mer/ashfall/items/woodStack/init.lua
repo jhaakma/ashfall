@@ -18,6 +18,7 @@ refController.registerReferenceController{
 }
 
 MaterialStorage:new{
+    id = "Woodstack",
     isStorage = function(self, reference)
         return isWoodStack(reference)
     end,

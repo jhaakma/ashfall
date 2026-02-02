@@ -129,8 +129,10 @@ this.controllers = {
 }
 
 local function onRefPlaced(e)
-    for _, controller in pairs(this.controllers) do
+    for controllerId, controller in pairs(this.controllers) do
         if controller:requirements(e.reference) then
+            mwse.log("Ashfall ReferenceController: Adding reference %s to controller %s",
+                e.reference.object.id,controllerId)
             controller:addReference(e.reference)
         end
     end

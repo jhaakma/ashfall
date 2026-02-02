@@ -16,7 +16,11 @@ local function addAdditionalTooltip(e)
             logger:trace("Found attachment config: %s", activatorMenuConfig.name)
             if activatorMenuConfig.tooltipExtra then
                 local tooltipContents = uiCommon.getTooltipContentsBlock()
-                activatorMenuConfig.tooltipExtra(reference, tooltipContents)
+                if tooltipContents then
+                    activatorMenuConfig.tooltipExtra(reference, tooltipContents)
+                else
+                    logger:warn("No tooltip contents block found")
+                end
             end
 
             local newText = ActivatorController.getAttachmentName(reference, activatorMenuConfig)

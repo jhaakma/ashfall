@@ -5,7 +5,7 @@ local CampfireUtil = require("mer.ashfall.camping.campfire.CampfireUtil")
 local HeatUtil = require("mer.ashfall.heat.HeatUtil")
 local ReferenceController = require("mer.ashfall.referenceController")
 local WoodStack = require("mer.ashfall.items.woodStack")
-
+local Bellows = require("mer.ashfall.camping.Bellows")
 --[[
     Mapping of campfire states to switch node states.
 ]]
@@ -200,6 +200,7 @@ local function updateLightingRadius(reference)
             reference.light:setAttenuationForRadius(0)
         else
             local heatLevel = math.abs(HeatUtil.getHeat(reference))
+            heatLevel = math.clamp(heatLevel, 0, 10)
             local newRadius = math.clamp( ( heatLevel / 10 ), 0.1, 1) * radius
             reference.light:setAttenuationForRadius(newRadius)
         end
@@ -207,16 +208,28 @@ local function updateLightingRadius(reference)
 end
 
 --As fuel levels change, update the size of the flame
+---@param reference tes3reference
 local function updateFireScale(reference)
-    local fireNodes = {
-        reference.sceneNode:getObjectByName("FIRE_PARTICLE_NODE"),
-        reference.sceneNode:getObjectByName("COLD_PARTICLE_NODE"),
+    local fireNodeIDs = {
+        "FIRE_PARTICLE_NODE",
+        "COLD_PARTICLE_NODE",
+        "FIRE_SMOKE_PARTICLE_NODE",
+        "COLD_SMOKE_PARTICLE_NODE"
     }
+    local fireNodes = {}
+    for _, id in ipairs(fireNodeIDs) do
+        local node = reference.sceneNode:getObjectByName(id)
+        if node then
+            table.insert(fireNodes, node)
+        end
+    end
+
+    local bellowsScaleEffect = Bellows.getFireScaleEffect(reference)
     for _, fireNode in ipairs(fireNodes) do
         local fuelLevel = math.abs(HeatUtil.getHeat(reference))
         local newScale = math.remap(fuelLevel, 0, 15, 1, 2)
         newScale = math.clamp(newScale, 1, 2)
-        fireNode.scale = newScale
+        fireNode.scale = newScale * bellowsScaleEffect
     end
 end
 
@@ -327,7 +340,34 @@ local function updateSounds(campfire)
     end
 end
 
+local function syncControllers(campfire)
+    logger:debug("Syncing morph controllers for campfire: %s", campfire.id)
+    local syncTime
+    local now = tes3.getSimulationTimestamp(false)
+    ---@param child niNode
+    for child in table.traverse{ campfire.sceneNode } do
+        if child.controller and child.controller:isInstanceOfType(ni.type.NiGeomMorpherController) then
+            logger:trace("Found morph controller on child node (%s) with lastTime %s",
+                child.name, child.controller.lastTime)
+            syncTime = syncTime or child.controller.lastTime
+            if not math.isclose(syncTime, child.controller.lastTime) then
+                logger:trace("Ref: %s. Morph controller time (%s) out of sync with (%s). Syncing to %s",
+                    campfire.id, child.controller.lastTime, syncTime, syncTime)
+                child.controller:start(now - syncTime)
+            end
+        end
+    end
+end
+
+local function attachLights(reference)
+    if reference.data.fuelLevel and reference.data.isLit then
+        event.trigger("Ashfall:Campfire_Enablelight", { campfire = reference})
+    end
+end
+
+---@param campfire tes3reference
 local function updateCampfireVisuals(campfire)
+    attachLights(campfire)
     updateSwitchNodes(campfire)
     updateLightingRadius(campfire)
     updateFireScale(campfire)
@@ -335,16 +375,29 @@ local function updateCampfireVisuals(campfire)
     updateSteamScale(campfire)
     updateCollision(campfire)
     campfire:updateSceneGraph()
-    campfire.sceneNode:update()
-    campfire.sceneNode:updateNodeEffects()
+    campfire.sceneNode:update{ controllers = true}
+    campfire.sceneNode:updateEffects()
 end
+
 local function updateVisuals(e)
+    timer.start{
+        duration = 0.1,
+        callback = function()
+            ReferenceController.iterateReferences("fuelConsumer", function(campfire)
+                updateLightingRadius(campfire)
+                syncControllers(campfire)
+            end)
+        end,
+        iterations = -1
+    }
+end
+event.register("loaded", updateVisuals)
+
+event.register("simulate", function(e)
     ReferenceController.iterateReferences("fuelConsumer", function(campfire)
-        updateLightingRadius(campfire)
         updateFireScale(campfire)
     end)
-end
-event.register("simulate", updateVisuals)
+end)
 
 ---@param node niNode
 local function moveOriginToAttachPoint(node)
@@ -385,6 +438,16 @@ local attachNodes = {
             else
                 firewoodMesh = "ashfall\\cf\\Firewood_01.nif"
             end
+            return common.helper.loadMesh(firewoodMesh)
+        end
+    },
+    {
+        attachNodeName = "ATTACH_FIREWOOD_02",
+        getDoAttach = function(campfire)
+            return not not campfire.data.fuelLevel
+        end,
+        getAttachMesh = function(campfire)
+            local firewoodMesh = "ashfall\\cf\\Firewood_02.nif"
             return common.helper.loadMesh(firewoodMesh)
         end
     },
@@ -485,12 +548,21 @@ local attachNodes = {
         getAttachMesh = function(campfire)
             local bellowsId = campfire.data.bellowsId
             if bellowsId then
-                local bellowsMesh = tes3.getObject(bellowsId)
-                if bellowsMesh then
-                    return common.helper.loadMesh(bellowsMesh.mesh)
+                local bellowsObject = tes3.getObject(bellowsId)
+                if bellowsObject then
+                    local meshId = bellowsObject.mesh
+                    local data = common.staticConfigs.bellows[bellowsObject.id:lower()]
+                    if data and data.meshOverride then
+                        meshId = data.meshOverride
+                    end
+                    return common.helper.loadMesh(meshId)
                 end
             end
         end,
+        postAttach = function(campfire, attachNode)
+            attachNode.scale = 1 / campfire.sceneNode.scale
+            Bellows.attach(campfire, attachNode)
+        end
     },
     {
         attachNodeName = "ATTACH_LADLE",
@@ -517,6 +589,7 @@ local attachNodes = {
     },
 }
 
+---@param e { reference: tes3reference }
 local function updateAttachNodes(e)
     logger:trace("Ashfall:UpdateAttachNodes: %s", e.reference.object.id)
     local reference = e.reference
@@ -524,6 +597,8 @@ local function updateAttachNodes(e)
 
     if not reference.data then return end
     if not sceneNode then return end
+
+
     for _, attachData in ipairs(attachNodes) do
         logger:trace("++++ATTACH NODE: %s+++++++", attachData.attachNodeName)
         local attachNode = sceneNode:getObjectByName(attachData.attachNodeName)
@@ -550,7 +625,6 @@ local function updateAttachNodes(e)
                 logger:trace("Do attach: false, removing mesh")
             end
             if attachData.postAttach then
-                local attachNode = sceneNode:getObjectByName(attachData.attachNodeName)
                 if attachNode then
                     logger:trace("Running Post attach for %s", attachData.attachNodeName)
                     attachData.postAttach(reference, attachNode)

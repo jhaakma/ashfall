@@ -102,13 +102,11 @@ function this.getWeatherTemperature(weatherId)
     if not cell.isInterior then
         local region = tes3.player and tes3.player.cell.region
         local regionId = region and region.id:lower()
-        mwse.log("region: %s", regionId)
         for customWeatherId, customWeatherData in pairs(this.customWeathers) do
             local weatherMatch = customWeatherData.originalWeatherIndex == weatherId
             local regionData = customWeatherData.regions[regionId]
             if weatherMatch and regionData then
                 if playerWithinGridConditions(regionData) then
-                    mwse.log("Custom weather match: %s", customWeatherId)
                     return customWeatherData.temp
                 end
             end

@@ -1,5 +1,5 @@
 local common = require ("mer.ashfall.common.common")
-
+local Bellows = require("mer.ashfall.camping.Bellows")
 return  {
     text = "Remove Bellows",
     showRequirements = function(reference)
@@ -15,7 +15,8 @@ return  {
     end,
     callback = function(reference)
         tes3.addItem{ reference = tes3.player, item = reference.data.bellowsId, playSound = false}
-        reference.data.bellowsId = nil
+        Bellows.remove(reference)
+
         tes3.playSound{ reference = tes3.player, sound = "Item Misc Up"  }
         event.trigger("Ashfall:UpdateAttachNodes", { reference = reference})
     end

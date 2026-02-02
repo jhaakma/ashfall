@@ -1,11 +1,15 @@
 local common = require ("mer.ashfall.common.common")
 local logger = common.createLogger("activatorMenuConfig")
 local itemTooltips = require("mer.ashfall.ui.itemTooltips")
+local Campfire = require("mer.ashfall.camping.campfire.Campfire")
+local CampfireUI = require("mer.ashfall.camping.campfire.CampfireUI")
+local Bellows = require("mer.ashfall.camping.Bellows")
+
 local function centerText(element)
     element.autoHeight = true
     element.autoWidth = true
-    element.wrapText = true
-    element.justifyText = "center"
+    -- element.wrapText = true
+    -- element.justifyText = "center"
 end
 
 ---@class Ashfall.Activator.ActivatorMenuConfig
@@ -17,6 +21,7 @@ end
 
 ---@type table<string, Ashfall.Activator.ActivatorMenuConfig>
 local ActivatorMenuConfig = {}
+
 
 
 ActivatorMenuConfig.nodeMapping = {
@@ -87,15 +92,20 @@ ActivatorMenuConfig.nodeMapping = {
             "destroy",
 
         },
-        tooltipExtra = function(reference, tooltip)
-                local fuelLevel = reference.data.fuelLevel or 0
-                if fuelLevel > 0 then
-                    local fuelLabel = tooltip:createLabel{
-                        text = string.format("Fuel: %.1f hours", fuelLevel )
-                    }
-                    centerText(fuelLabel)
-                end
-        end,
+        tooltipExtra = CampfireUI.createTooltip,
+    },
+    ASHFALL_KILN =  {
+        menuCommands = {
+            -- --actions
+            "lightFire",
+            -- --attach
+            "addFirewood",
+            "placeUtensil",
+            -- --destroy
+            "extinguish",
+            "disassemble",
+        },
+        tooltipExtra = CampfireUI.createTooltip,
     },
     ASHFALL_GRILLER = {
         name = "Grill",
@@ -116,15 +126,7 @@ ActivatorMenuConfig.nodeMapping = {
             "destroy",
 
         },
-        tooltipExtra = function(reference, tooltip)
-            local fuelLevel = reference.data.fuelLevel or 0
-            if fuelLevel > 0 then
-                local fuelLabel = tooltip:createLabel{
-                    text = string.format("Fuel: %.1f hours", fuelLevel )
-                }
-                centerText(fuelLabel)
-            end
-        end,
+        tooltipExtra = CampfireUI.createTooltip,
     },
 
     COOKING_POT = {
@@ -202,14 +204,11 @@ ActivatorMenuConfig.nodeMapping = {
         menuCommands = {
             "removeBellows",
         },
-        shiftCommand = "removeBellows",
+        shiftCommand = "useBellows",
         tooltipExtra = function(reference, tooltip)
-            if reference.data.bellowsId then
-                local bellowsId = reference.data.bellowsId
-                local bellowsData = common.staticConfigs.bellows[bellowsId:lower()]
-
-                local text = string.format("%sx Heat | %sx Fuel burn",
-                    bellowsData.heatEffect, bellowsData.burnRateEffect)
+            if Bellows.hasBellows(reference) then
+                local modifierString = common.helper.getModifierKeyString()
+                local text = string.format("Press %s+Activate to use", modifierString)
                 local bellowsLabel = tooltip:createLabel({ text = text })
                 centerText(bellowsLabel)
             end

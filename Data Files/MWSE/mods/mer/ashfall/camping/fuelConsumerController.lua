@@ -5,9 +5,11 @@
 local common = require ("mer.ashfall.common.common")
 local logger = common.createLogger("fuelConsumerController")
 local ReferenceController = require("mer.ashfall.referenceController")
-local fuelDecay = 1.0
-local fuelDecayRainEffect = 1.4
-local fuelDecayThunderEffect = 1.6
+local Bellows = require("mer.ashfall.camping.Bellows")
+local Campfire = require("mer.ashfall.camping.campfire.Campfire")
+local FUEL_DECAY_RATE = 1.0
+local FUEL_DECAY_RAIN_MULTIPLIER = 1.4
+local FUEL_DECAY_THUNDER_MULTIPLIER = 1.6
 local FUEL_UPDATE_INTERVAL = 0.001
 
 ReferenceController.registerReferenceController{
@@ -18,6 +20,20 @@ ReferenceController.registerReferenceController{
         and ref.data.fuelLevel
     end
 }
+
+local function getRainEffect(fuelConsumer)
+    local rainEffect = 1.0
+    if not fuelConsumer.tempData.ashfallIsSheltered then
+        --raining and fuelConsumer exposed
+        if tes3.getCurrentWeather().index == tes3.weather.rain then
+            rainEffect = FUEL_DECAY_RAIN_MULTIPLIER
+        --thunder and fuelConsumer exposed
+        elseif tes3.getCurrentWeather().index == tes3.weather.thunder then
+            rainEffect = FUEL_DECAY_THUNDER_MULTIPLIER
+        end
+    end
+    return rainEffect
+end
 
 local function updateFuelConsumer(fuelConsumer)
     local timestamp = tes3.getSimulationTimestamp()
@@ -33,25 +49,11 @@ local function updateFuelConsumer(fuelConsumer)
 
     fuelConsumer.data.lastFuelUpdated = timestamp
     if fuelConsumer.data.isLit then
-        local bellowsEffect = 1.0
-        local bellowsId = fuelConsumer.data.bellowsId and fuelConsumer.data.bellowsId:lower()
-        local bellowsData = common.staticConfigs.bellows[bellowsId]
-        if bellowsData then
-            bellowsEffect = bellowsData.burnRateEffect
-        end
-
-        local rainEffect = 1.0
-        if not fuelConsumer.tempData.ashfallIsSheltered then
-            --raining and fuelConsumer exposed
-            if tes3.getCurrentWeather().index == tes3.weather.rain then
-                rainEffect = fuelDecayRainEffect
-            --thunder and fuelConsumer exposed
-            elseif tes3.getCurrentWeather().index == tes3.weather.thunder then
-                rainEffect = fuelDecayThunderEffect
-            end
-        end
-
-        local fuelDifference =  ( difference * fuelDecay * rainEffect * bellowsEffect )
+        local bellowsEffect = Bellows.getScaledFuelDrainEffect(fuelConsumer)
+        local rainEffect = getRainEffect(fuelConsumer)
+        local campfireData = Campfire.getCampfire(fuelConsumer.object.id)
+        local fuelBurnMultiplier = campfireData and campfireData.fuelBurnMultiplier or 1.0
+        local fuelDifference =  ( difference * FUEL_DECAY_RATE * rainEffect * bellowsEffect * fuelBurnMultiplier )
         fuelConsumer.data.fuelLevel = fuelConsumer.data.fuelLevel - fuelDifference
         fuelConsumer.data.charcoalLevel = fuelConsumer.data.charcoalLevel or 0
         fuelConsumer.data.charcoalLevel = fuelConsumer.data.charcoalLevel + fuelDifference

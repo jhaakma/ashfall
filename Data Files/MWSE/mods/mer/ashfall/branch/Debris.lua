@@ -3,22 +3,19 @@ local logger = common.createLogger("Debris")
 local config = require("mer.ashfall.config").config
 local branchConfig = require("mer.ashfall.branch.branchConfig")
 local StaggeredRefProcessor = require("mer.ashfall.common.StaggeredRefProcessor")
-local ActivatorController = require("mer.ashfall.activators.activatorController")
+local Activator = require("mer.ashfall.activators.Activator")
 
 ---@class Ashfall.Debris
 ---@field enterCell fun(self: Ashfall.Debris, params: Ashfall.Debris.enterCellParams)
 ---@field private processor StaggeredRefProcessor
-local Debris = {
-
-}
+local Debris = {}
 
 Debris.processor = StaggeredRefProcessor.new{
     callback = function(reference)
         Debris:processSource(reference)
     end,
-    interval = 0.05,
+    interval = 0.005,
     refsPerFrame = 1,
-    logger = logger,
 }
 
 ---@class Ashfall.Debris.enterCellParams
@@ -28,7 +25,6 @@ Debris.processor = StaggeredRefProcessor.new{
 ---@param params Ashfall.Debris.enterCellParams
 function Debris:enterCell(params)
     logger:debug("Entered Cell")
-    Debris.processor:start()
     common.data.cellBranchList = common.data.cellBranchList or {}
     for _, cell in ipairs(tes3.getActiveCells()) do
         self:restoreDebrisInCell(cell)
@@ -36,6 +32,8 @@ function Debris:enterCell(params)
     end
     if params.immediate then
         self.processor:processAll()
+    else
+        self.processor:start()
     end
 end
 
@@ -69,7 +67,7 @@ end
 ---Register derbis sources for processing in this cell
 function Debris:registerDebrisSources(cell)
     if Debris.checkCellProcessed(cell) then
-        logger:debug("Cell %s has already been processed, skipping", cell.id)
+        logger:debug("Cell %s has already been processed, skipping", cell.editorName)
         return
     end
 
@@ -122,7 +120,8 @@ function Debris:processSource(debrisSourceRef)
                 position = position,
                 orientation = tes3vector3.new(0, 0, 0),
                 cell = cell,
-                scale = scale
+                scale = scale,
+                updateCollisionGroups = false,
             }
             --Drop and orient the branch on the ground
             local didOrient = common.helper.orientRefToGround{
@@ -159,6 +158,7 @@ function Debris:processSource(debrisSourceRef)
 end
 
 ---Check if a cell has already been processed for debris registration
+---@param cell tes3cell
 function Debris.checkCellProcessed(cell)
     local cellId = cell.editorName:lower()
     return common.data.cellBranchList[cellId] == true
@@ -196,9 +196,9 @@ function Debris.isDebrisSource(reference)
         in_cave_plant00 = true,
         in_cave_plant01 = true
     }
-    return common.staticConfigs.activatorConfig.list.tree:isActivator(reference)
-        or common.staticConfigs.activatorConfig.list.deadTree:isActivator(reference)
-        or common.staticConfigs.activatorConfig.list.stoneSource:isActivator(reference)
+    return Activator.registeredActivators.tree:isActivator(reference)
+        or Activator.registeredActivators.deadTree:isActivator(reference)
+        or Activator.registeredActivators.stoneSource:isActivator(reference)
         or waterPlants[reference.object.id:lower()]
 end
 
@@ -276,7 +276,7 @@ end
 
 ---@param debrisRef tes3reference
 function Debris._getBranchGroupByActivatorType(debrisRef)
-    local activator = ActivatorController.getRefActivator(debrisRef)
+    local activator = Activator.getForReference(debrisRef)
     if activator then
         local group =  branchConfig.activatorTypeGroups[activator.type]
         if group then

@@ -10,7 +10,7 @@ local hungerController = require("mer.ashfall.needs.hungerController")
 local thirstController = require("mer.ashfall.needs.thirstController")
 local ReferenceController = require("mer.ashfall.referenceController")
 local stewCookRate = 40
-local STEWER_UPDATE_INTERVAL = 0.001
+local STEWER_UPDATE_INTERVAL_GAMEHOURS = 0.001
 
 local staticConfigs = require('mer.ashfall.config.staticConfigs')
 
@@ -66,7 +66,7 @@ local function updateBuffs(e)
 end
 
 
-
+---@param e simulateEventData
 local function updateStewers(e)
 
     local function doUpdate(stewerRef)
@@ -84,7 +84,7 @@ local function updateStewers(e)
             liquidContainer.lastStewUpdated = e.timestamp
         end
 
-        if difference > STEWER_UPDATE_INTERVAL then
+        if difference > STEWER_UPDATE_INTERVAL_GAMEHOURS then
             liquidContainer.lastStewUpdated = e.timestamp
             local hasWater = liquidContainer.waterAmount and liquidContainer.waterAmount > 0
             if hasWater then

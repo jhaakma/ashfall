@@ -110,7 +110,7 @@ event.register("activate", activateCushion)
 event.register(
     "Ashfall:ActivatorActivated",
     cushionMenu,
-    { filter = common.staticConfigs.activatorConfig.types.cushion }
+    { filter = "cushion" }
 )
 
 

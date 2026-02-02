@@ -1,27 +1,14 @@
 local common = require ("mer.ashfall.common.common")
+local logger = common.createLogger("AddFirewoodMenu")
 local Material = require("CraftingFramework").Material
+local Firewood = require("mer.ashfall.camping.Firewood")
 --Calculate how much fuel is added per piece of firewood based on Survival skill
 
-local function getWoodFuel()
-    local survivalEffect = common.helper.clampmap(common.skills.survival.current, 0, 100, 1, 1.5)
-    return common.staticConfigs.firewoodFuelMulti * survivalEffect
-end
 
-local function getFirewoodCount()
-    -- local firewood = tes3.getObject(common.staticConfigs.objectIds.firewood)
-    -- return common.helper.getItemCount{ reference = tes3.player, item = firewood }
-    local firewoodMaterial = Material.getMaterial("wood")
-    return firewoodMaterial:getCount()
-end
-
-local function canAddFireWoodToCampfire(reference)
-    local fuelLevel = reference.data.fuelLevel or 0
-    return fuelLevel < common.staticConfigs.maxWoodInFire
-end
 
 local function getDisabledText(reference)
     return {
-        text = canAddFireWoodToCampfire(reference) and "You have no Firewood." or "Max fuel level reached."
+        text = Firewood.canAddFireWoodToCampfire(reference) and "You have no Firewood." or "Max fuel level reached."
     }
 end
 
@@ -32,8 +19,8 @@ return {
     end,
     enableRequirements = function(reference)
         return reference.supportsLuaData
-        and getFirewoodCount() > 0
-        and canAddFireWoodToCampfire(reference)
+        and Firewood.getFirewoodCount() > 0
+        and Firewood.canAddFireWoodToCampfire(reference)
     end,
     tooltip = function()
         return common.helper.showHint(
@@ -42,17 +29,36 @@ return {
     end,
     tooltipDisabled = getDisabledText,
     callback = function(reference)
-        tes3.playSound{
-            reference = tes3.player,
-            sound = "ashfall_add_wood",
-            loop = false
-        }
-        reference.data.fuelLevel = (reference.data.fuelLevel or 0) + getWoodFuel()
-        reference.data.burned = reference.data.isLit == true
-        --common.helper.removeItem{ reference = tes3.player, item = common.staticConfigs.objectIds.firewood, playSound = false }
-        local firewoodMaterial = Material.getMaterial("wood")
-        firewoodMaterial:use(1)
 
-        event.trigger("Ashfall:UpdateAttachNodes", { reference = reference})
+        local capacity = Firewood.getFirewoodCapacity(reference)
+
+        local safeRef = tes3.makeSafeObjectHandle(reference)
+        local eventData = {count = 1}
+        common.helper.createSliderPopup{
+            label = "How many?",
+            min = 1,
+            max = capacity,
+            jump = 1,
+            table = eventData,
+            varId = "count",
+            okayCallback = function()
+                if not safeRef:valid() then
+                    logger:warn("Add Firewood menu callback called but reference is no longer valid")
+                    return
+                end
+                logger:info("Adding %s firewood to campfire", eventData.count)
+                reference = safeRef:getObject()
+                tes3.playSound{
+                    reference = tes3.player,
+                    sound = "ashfall_add_wood",
+                    loop = false
+                }
+                reference.data.fuelLevel = (reference.data.fuelLevel or 0) + Firewood.getWoodFuel() * eventData.count
+                reference.data.burned = reference.data.isLit == true
+                local firewoodMaterial = Material.getMaterial("wood")
+                firewoodMaterial:use(eventData.count)
+                event.trigger("Ashfall:UpdateAttachNodes", { reference = reference})
+            end
+        }
     end,
 }

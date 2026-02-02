@@ -33,7 +33,8 @@ end
 preloadTextures()
 
 
-
+---@param property niTexturingProperty
+---@param decalState string?
 local function addDecal(property, decalState)
     local decal
     if decalState then

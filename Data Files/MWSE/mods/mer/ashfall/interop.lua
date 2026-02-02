@@ -8,12 +8,12 @@ local branchInterop = require "mer.ashfall.branch.branchInterop"
 local common = require("mer.ashfall.common.common")
 local logger = common.createLogger("interop")
 local staticConfigs = common.staticConfigs
-local activatorConfig = staticConfigs.activatorConfig
 local foodConfig = staticConfigs.foodConfig
 local ratingsConfig = require('mer.ashfall.tempEffects.ratings.ratingsConfig')
 local climateConfig = require('mer.ashfall.config.weatherRegionConfig')
 local teaConfig = require('mer.ashfall.config.teaConfig')
 local ActivatorController = require("mer.ashfall.activators.activatorController")
+local Activator = require("mer.ashfall.activators.Activator")
 local WoodAxe = require("mer.ashfall.items.woodaxe")
 local backpackConfig = require("mer.ashfall.items.backpack.config")
 local overrides = require("mer.ashfall.config.overrides")
@@ -21,8 +21,13 @@ local LiquidContainer = require("mer.ashfall.liquid.LiquidContainer")
 
 local function listValidActivatorTypes()
     local message = '\n'
-    for typeString, _ in pairs(activatorConfig.types) do
-        message = message .. '\n' .. typeString
+    local seen = {}
+    -- Collect unique types from all registered activators
+    for _, activator in pairs(Activator.registeredActivators) do
+        if activator.type and not seen[activator.type] then
+            seen[activator.type] = true
+            message = message .. '\n' .. activator.type
+        end
     end
     return message
 end
@@ -159,10 +164,6 @@ Interop.registerActivatorType = function(e)
     end
     logger:debug("Registering '%s' as a new Activator Type", e.type)
 
-    if not activatorConfig.types[e.type] then
-        logger:debug('Type "%s" does not exist, creating', e.type)
-        activatorConfig.types[e.type] = e.type
-    end
     local idList = {}
     if e.ids then
         for _, id in ipairs(e.ids) do
@@ -176,17 +177,17 @@ Interop.registerActivatorType = function(e)
         end
     end
 
-    if not activatorConfig.list[e.id] then
-        ActivatorController.registerActivator{
-            id = e.id,
-            name = e.name,
-            type = e.type,
-            ids = idList,
-            patterns = patternList
-        }
-    else
+    if Activator.registeredActivators[e.id] then
         error(string.format("registerActivatorType: %s already exists as an activator type", e.id))
     end
+
+    Activator:new{
+        id = e.id,
+        name = e.name,
+        type = e.type,
+        ids = idList,
+        patterns = patternList
+    }
 
     return true
 end
@@ -195,7 +196,7 @@ end
 local function registerActivator(id, activatorType, usePatterns)
     assert(type(id) == 'string', "registerActivator(): Invalid id. Must be a string.")
 
-    local activator = activatorConfig.list[activatorType]
+    local activator = Activator.registeredActivators[activatorType]
     assert(activator, string.format("registerActivator(): %s is an invalid activator type. Valid types include: %s",
             activatorType, listValidActivatorTypes()))
 
@@ -218,19 +219,18 @@ end
 Interop.registerWaterSource = function(data)
     assert(type(data.name) == "string", "registerWaterSource(): No name string provided")
     assert(type(data.ids) == "table", "registerWaterSource(): No table of ids provided")
-    local waterType = data.isDirty and activatorConfig.types.dirtyWaterSource or activatorConfig.types.waterSource
+    local waterType = data.isDirty and "dirtyWaterSource" or "waterSource"
 
     local idList = {}
     for _, id in ipairs(data.ids) do
         idList[id] = true
     end
-    activatorConfig.list[data.name] = ActivatorController.registerActivator{
+    Activator:new{
         id = data.name,
         name = data.name,
         type = waterType,
         ids = idList
     }
-    activatorConfig.subTypes[data.name] = data.name
     return true
 end
 
@@ -293,7 +293,7 @@ Interop.registerWaterContainers = function(e, includeOverrides)
                 finalConfig.holdsStew and string.format(", holdsStew: %s", finalConfig.holdsStew) or ""
             )
         end
-        staticConfigs.activatorConfig.list.waterContainer:addId(id)
+        Activator.registeredActivators.waterContainer:addId(id)
     end
     return true
 end
@@ -420,7 +420,7 @@ Interop.registerUtensil = function(data)
         staticConfigs.utensils[id:lower()] = utensilData
         staticConfigs.bottleList[id:lower()] = utensilData
         staticConfigs[utensilData.type .. "s"][id] = utensilData
-        staticConfigs.activatorConfig.list[utensilData.type]:addId(id)
+        Activator.registeredActivators[utensilData.type]:addId(id)
     elseif utensilData.type == "grill" then
         staticConfigs.grills[data.id:lower()] = utensilData
         staticConfigs.groundUtensils[data.id:lower()] = utensilData
@@ -496,6 +496,12 @@ end
 ---@param data { id: string }
 function Interop.registerSunshade(data)
     staticConfigs.shadeEquipment[data.id:lower()] = true
+end
+
+local Campfire = require("mer.ashfall.camping.campfire.Campfire")
+---@param data Ashfall.Campfire.CampfireData
+function Interop.registerCampfire(data)
+    Campfire.registerCampfire(data)
 end
 
 

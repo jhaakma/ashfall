@@ -7,19 +7,20 @@ this.defaultValues = require ("mer.ashfall.MCM.defaultConfig")
 this.messages = require("mer.ashfall.messages.messages")
 local config = require("mer.ashfall.config").config
 --set up logger
-local logger = require("logging.logger")
+local logger = require("mer.ashfall.common.logger")
 ---@type mwseLogger
 this.log = logger.new{
     name = "Ashfall",
+    modName = "Ashfall",
+    moduleName = "Common",
     --outputFile = "Ashfall.log",
     logLevel = config.logLevel,
 }
 this.loggers = {this.log}
 this.createLogger = function(serviceName)
     local logger = logger.new{
-        name = string.format("Ashfall - %s", serviceName),
+        name = "Ashfall:" .. serviceName,
         logLevel = config.logLevel,
-        includeTimestamp = true,
     }
     table.insert(this.loggers, logger)
     return logger
@@ -29,7 +30,10 @@ this.helper.logger = this.createLogger("Helper")
 --[[
     Skills
 ]]
----@type table<string, SkillsModule.Skill>
+---@class Ashfall.config.skills
+---@field survival SkillsModule.Skill
+---@field bushcrafting SkillsModule.Skill
+---@field pottery SkillsModule.Skill
 this.skills = {}
 
 local function initData()
@@ -43,6 +47,7 @@ local function initData()
     data.woodAxesForBackpack = data.woodAxesForBackpack or {}
     data.sacks = data.sacks or {}
     data.sunshades = data.sunshades or {}
+    data.clayDepositProcessedCells = data.clayDepositProcessedCells or {}
 end
 
 ---@class Ashfall.playerData
@@ -98,6 +103,7 @@ end
 ---@field woodAxesForBackpack table<string, boolean> a map of woodaxe objects which are to be registered for backpack display on load
 ---@field inventorySelectStew boolean True while in the inventory select menu for adding ingredients to stew
 ---@field inventorySelectTrinket boolean True while in the inventory select menu for adding trinkets to the trinket bag
+---@field clayDepositProcessedCells table<string, boolean> A mapping of terrain data to clay deposit activators
 this.data = setmetatable({}, {
     __index = function(t, key)
         if not ( tes3.player and tes3.player.data) then

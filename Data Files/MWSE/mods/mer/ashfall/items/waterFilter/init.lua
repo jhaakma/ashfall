@@ -2,7 +2,7 @@ local common = require("mer.ashfall.common.common")
 local logger = common.createLogger("WaterFilter")
 local LiquidContainer   = require("mer.ashfall.liquid.LiquidContainer")
 local ReferenceController = require("mer.ashfall.referenceController")
-
+local Activator = require("mer.ashfall.activators.Activator")
 local WaterFilter = {}
 WaterFilter.filterIDs = {
     --ashfall_water_filter = true
@@ -20,7 +20,7 @@ function WaterFilter.registerWaterFilter(e)
         waterMaxHeight = e.waterMaxHeight,
         waterMaxScale = e.waterMaxScale,
     }
-    common.staticConfigs.activatorConfig.list.waterContainer:addId(e.id)
+    Activator.registeredActivators.waterContainer:addId(e.id)
     WaterFilter.filterIDs[e.id:lower()] = true
 end
 

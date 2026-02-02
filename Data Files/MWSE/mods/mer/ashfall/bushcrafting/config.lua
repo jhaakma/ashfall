@@ -9,6 +9,7 @@ local WoodStack = require("mer.ashfall.items.woodStack")
 local Workbench = require("mer.ashfall.items.workbench")
 local Planter = require("mer.ashfall.items.planter.Planter")
 local Material = require("CraftingFramework").Material
+local PotteryWheel = require("mer.ashfall.clay.PotteryWheel")
 local config = require("mer.ashfall.config").config
 local common = require("mer.ashfall.common.common")
 local logger = common.createLogger("bushcraftingconfig")
@@ -601,6 +602,18 @@ local bushCraftingRecipes = {
             recoverEquipmentMaterials = true,
             timeTaken = CRAFT_TIMES.tiny,
         },
+        {
+            id = "bushcraft:ashfall_mallet",
+            craftableId = "ashfall_mallet",
+            description = "A simple wooden mallet.",
+            materials = {
+                { material = "wood", count = 2 },
+            },
+            category = this.categories.tools,
+            soundType = "wood",
+            recoverEquipmentMaterials = true,
+            timeTaken = CRAFT_TIMES.tiny,
+        }
     },
     novice = {
         {
@@ -855,6 +868,38 @@ local bushCraftingRecipes = {
             scale = 1.3,
             timeTaken = CRAFT_TIMES.medium,
         },
+        {
+            id = "bushcraft:ashfall_spin_wheel_01",
+            craftableId = "ashfall_spin_wheel_01",
+            description = "A spinning wheel for molding clay.",
+            materials = {
+                { material = "wood", count = 8 },
+                { material = "rope", count = 4 },
+                { material = "stone", count = 1 },
+            },
+            category = this.categories.structures,
+            soundType = "wood",
+            customRequirements = {
+                this.customRequirements.wildernessOnly
+            },
+            timeTaken = CRAFT_TIMES.medium,
+            additionalMenuOptions = PotteryWheel.buttons,
+            previewHeight = 10,
+        },
+        {
+            id = "bushcraft:ashfall_bellows_01",
+            craftableId = "ashfall_bellows_01",
+            description = "Attach to a campfire to allow it to reach temperatures suitable for firing pottery.",
+            materials = {
+                { material = "wood", count = 3 },
+                { material = "leather", count = 1 },
+                { material = "resin", count = 1 },
+            },
+            category = this.categories.survival,
+            soundType = "wood",
+            timeTaken = CRAFT_TIMES.medium,
+        },
+
     },
     apprentice = {
         {

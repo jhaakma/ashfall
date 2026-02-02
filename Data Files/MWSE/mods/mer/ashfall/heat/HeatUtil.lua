@@ -1,28 +1,36 @@
 local common = require ("mer.ashfall.common.common")
 local logger = common.createLogger("HeatUtil")
+local Bellows = require("mer.ashfall.camping.Bellows")
+local Campfire = require("mer.ashfall.camping.campfire.Campfire")
+local Activator = require("mer.ashfall.activators.Activator")
+---@class Ashfall.HeatUtil
 local HeatUtil = {}
 
 --[[
     Get heat based on fuel level and modifiers
 ]]
 function HeatUtil.getHeat(reference)
+    if not reference then return 0 end
+
     local data = reference.data
-    local bellowsEffect = 1.0
-    local bellowsId = data.bellowsId and data.bellowsId:lower()
-    local bellowsData = common.staticConfigs.bellows[bellowsId]
-    if bellowsData then
-        bellowsEffect = bellowsData.heatEffect
-    end
+    local bellowsEffect = Bellows.getScaledHeatEffect(reference) or 1.0
     local isLit = data.isLit
     local fuelLevel = data.fuelLevel or 0
-    local isWeak = common.staticConfigs.activatorConfig.list.teaWarmer:isActivator(reference)
+    local isWeak = Activator.registeredActivators.teaWarmer:isActivator(reference)
     local weakEffect = isWeak and 0.1 or 1.0
+
+    local campfireData = Campfire.getCampfire(reference.object.id)
+    if campfireData then
+        logger:trace("Getting heat multiplier from campfire data for %s: %s", reference.object.id, campfireData.heatMultiplier )
+    end
+    local heatMultiplier = campfireData and campfireData.heatMultiplier or 1.0
+
 
     if (not isLit) or (fuelLevel <= 0) then
         return 0
     else
         local isColdEffect = data.hasColdFlame and -1 or 1
-        local finalHeat = (fuelLevel * bellowsEffect * weakEffect * isColdEffect)
+        local finalHeat = (fuelLevel * bellowsEffect * weakEffect * isColdEffect * heatMultiplier)
         return finalHeat
     end
 end
@@ -72,7 +80,7 @@ local function calculateHeatEffect(liquidContainer)
             local heat = HeatUtil.getHeat(liquidContainer.reference)
             isNegativeHeat = heat < 0
             heat = math.abs(heat)
-            heatEffect = math.remap(heat, 0, common.staticConfigs.maxWoodInFire, minFuelWaterHeat, maxFuelWaterHeat)
+            heatEffect = math.remap(heat, 0, Campfire.getMaxFuel(liquidContainer.itemId), minFuelWaterHeat, maxFuelWaterHeat)
 
             logger:trace("BOILER heatEffect: %s", heatEffect)
         else
@@ -88,7 +96,7 @@ local function calculateHeatEffect(liquidContainer)
                     local heat = HeatUtil.getHeat(heater)
                     isNegativeHeat = heat < 0
                     heat = math.abs(heat)
-                    heatEffect = math.remap(heat, 0, common.staticConfigs.maxWoodInFire, minFuelWaterHeat, maxFuelWaterHeat)
+                    heatEffect = math.remap(heat, 0, Campfire.defaults.maxFuel, minFuelWaterHeat, maxFuelWaterHeat)
                 elseif doWeakHeat then
                     --Weak flames greatly reduce the rate of heat loss
                     --but not for cooking pots

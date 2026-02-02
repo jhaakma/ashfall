@@ -8,8 +8,8 @@ local this = {}
 local common = require("mer.ashfall.common.common")
 local HeatUtil = require("mer.ashfall.heat.HeatUtil")
 local staticConfigs = common.staticConfigs
-local activatorConfig = common.staticConfigs.activatorConfig
 local ReferenceController = require("mer.ashfall.referenceController")
+local Activator = require("mer.ashfall.activators.Activator")
 ---CONFIGS----------------------------------------
 --max distance where fire has an effect
 
@@ -55,8 +55,8 @@ ReferenceController.registerReferenceController{
         if ref.disabled then return false end
         if isLight(ref) then
             return getHeatSourceValue(ref) ~= nil
-                and not activatorConfig.list.fire:isActivator(ref)
-                and not activatorConfig.list.campfire:isActivator(ref)
+                and not Activator.registeredActivators.fire:isActivator(ref)
+                and not Activator.registeredActivators.campfire:isActivator(ref)
         end
         return false
     end
@@ -66,8 +66,8 @@ ReferenceController.registerReferenceController{
     id = "flame",
     requirements = function(_, ref)
         if ref.disabled then return false end
-        return activatorConfig.list.fire:isActivator(ref) == true
-            and not activatorConfig.list.campfire:isActivator(ref)
+        return Activator.registeredActivators.fire:isActivator(ref) == true
+            and not Activator.registeredActivators.campfire:isActivator(ref)
     end
 }
 

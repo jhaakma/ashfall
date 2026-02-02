@@ -1,3 +1,4 @@
+---@class Ashfall.HelperFunctions
 local this = {}
 local staticConfigs = require("mer.ashfall.config.staticConfigs")
 local config = require("mer.ashfall.config").config
@@ -12,16 +13,27 @@ local CarryableContainer = CraftingFramework.CarryableContainer
 this.createTooltip = require("mer.ashfall.common.tooltip").create
 
 --overriden in common
-this.logger = require("logging.logger").new{ name = "Ashfall.Helper" }
+this.logger = require("logging.logger").new{ moduleName = "Ashfall.Helper" }
 
 
 this.getItemCount = CarryableContainer.getItemCount
 this.removeItem = CarryableContainer.removeItem
 ---@diagnostic disable-next-line: deprecated
 this.getInventory = CarryableContainer.getFullInventory
-this.showInventorySelectMenu = CraftingFramework.InventorySelectMenu.open
 
+---@class Ashfall.showInventorySelectMenu.params : CraftingFramework.showInventorySelectMenu.params
+---@field delayFrame boolean If true, delays opening the menu by one frame
 
+this.showInventorySelectMenu = function(e)
+    if e.delayFrame then
+        timer.delayOneFrame(function()
+            CraftingFramework.InventorySelectMenu.open(e)
+        end)
+        return
+    else
+        CraftingFramework.InventorySelectMenu.open(e)
+    end
+end
 
 function this.getHoursPassed()
     return ( tes3.worldController.daysPassed.value * 24 ) + tes3.worldController.hour.value
@@ -90,7 +102,7 @@ function this.checkRefSheltered(reference)
         end
     end
     local safeTent = tes3.makeSafeObjectHandle(tent)
-    this.logger:debug("Tent: %s", tent)
+    this.logger:trace("Tent: %s", tent)
     return sheltered, safeTent
 end
 
@@ -392,6 +404,7 @@ function this.enableControls()
     tes3.runLegacyScript{command = "EnableInventoryMenu"} ---@diagnostic disable-line
 end
 
+
 function this.getUniqueCellId(cell)
     if cell.isInterior then
         return cell.id:lower()
@@ -446,7 +459,7 @@ function this.fadeTimeOut( hoursPassed, secondsTaken, callback )
         duration = ( secondsTaken / iterations ),
         callback = (
             function()
-                local gameHour = tes3.findGlobal("gameHour")
+                local gameHour = tes3.findGlobal("gameHour") --[[@as tes3globalVariable]]
                 gameHour.value = gameHour.value + (hoursPassed/iterations)
             end
         )
@@ -949,10 +962,21 @@ function this.getLetter(keyCode)
     for letter, code in pairs(tes3.scanCode) do
         if code == keyCode then
             local returnString = tes3.scanCodeToNumber[code] or letter
-            return string.upper(returnString)
+            return this.toCamelCase(returnString)
         end
     end
     return nil
+end
+
+function this.toCamelCase(str)
+    local function capFirst(s)
+        return s:sub(1,1):upper() .. s:sub(2):lower()
+    end
+    local words = {}
+    for word in str:gmatch("%S+") do
+        table.insert(words, capFirst(word))
+    end
+    return table.concat(words)
 end
 
 function this.getComboString(keyCombo)
@@ -1027,17 +1051,31 @@ end
 ---@field blend number The amount of blending between the ground and decal texture
 ---@field texturingProperty niTexturingProperty
 ---@field object any
+---@field intersection tes3vector3
+---@field normal tes3vector3|nil
 
+---@class Ashfall.getGroundTextureInfo.params
+---@field position tes3vector3?
+---@field direction tes3vector3?
+---@field maxDistance number?
+
+---@param e Ashfall.getGroundTextureInfo.params
 ---@return Ashfall.GroundTextureInfo|nil
 function this.getGroundTextureInfo(e)
     local rayhit = tes3.rayTest({
         position = e.position or tes3.getPlayerEyePosition(),
         direction = e.direction or tes3.getPlayerEyeVector(),
         returnColor = true,
-        root = tes3.game.worldLandscapeRoot
+        returnNormal = true,
+        maxDistance = e.maxDistance or 1000,
+        accurateSkinned = true
     })
     -- ignore misses
     if not rayhit then
+        return
+    end
+    -- Anything with a reference is not terrain
+    if rayhit.reference then
         return
     end
     -- ignore untextured things
@@ -1046,9 +1084,11 @@ function this.getGroundTextureInfo(e)
         return
     end
     return {
-        blend = rayhit.color,
+        blend = rayhit.color.a / 255,
         object = rayhit.object,
-        texturingProperty = texProp
+        texturingProperty = texProp,
+        intersection = rayhit.intersection,
+        normal = rayhit.normal
     }
 end
 

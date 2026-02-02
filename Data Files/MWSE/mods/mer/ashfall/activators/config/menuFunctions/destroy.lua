@@ -1,5 +1,5 @@
 local common = require ("mer.ashfall.common.common")
-
+local Campfire = require("mer.ashfall.camping.campfire.Campfire")
 return {
     text = "Destroy Campfire",
     showRequirements = function(reference)
@@ -31,7 +31,8 @@ return {
 
             local charcoal = campfire.data.charcoalLevel or 0
             local recoveredCoal = math.floor(charcoal * 0.75)
-            recoveredCoal = math.clamp(recoveredCoal, 0, common.staticConfigs.maxWoodInFire)
+            local maxFuel = Campfire.getMaxFuel(campfire.object.id)
+            recoveredCoal = math.clamp(recoveredCoal, 0, maxFuel)
             if recoveredCoal > 1 then
                 local coalId = "ashfall_ingred_coal_01"
                 tes3.addItem{

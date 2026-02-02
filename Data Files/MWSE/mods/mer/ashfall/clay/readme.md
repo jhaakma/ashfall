@@ -1,0 +1,111 @@
+# Ashfall Pottery Mechanics
+
+## Planned:
+- New flow:
+
+    Temper:
+    - Temper clay by activating placed raw clay
+    - Sound effect + fade-out
+    - Remove "tempered clay" id, add temper data and dynamically add decal
+    Shape:
+    - Shape by activating placed clay
+    - Animate hand worked clay same as wheel throwing
+
+
+- Fired clay has heat
+    - Heatable component, raw and fired items registered
+    - Heatable applies glow material
+    - Heatables block picking up if too hot
+- Flatten UVs on bricks
+- Glazing
+    - Recipes:
+        - Charcoal Slip
+        - Ash Wash
+        - Fire/Frost/Void Salt Glaze
+    - Glazing process:
+        - Equip raw clay item
+        - Crafting Menu:
+            - Select glaze
+            - Preview window shows glaze texture
+            - Water requirement?
+    - Dynamic icon generation
+- Pottery Recipes
+    - Finalise workflow for creating assets
+    - Assets:
+        - Throwing animation
+        - Raw clay mesh
+        - Shatter animation
+            - Remove
+        - Fired mesh
+            - Ashfall nodes - water/tea/stew etc
+            - UV mapped to fit all glazes
+    - CS Objects
+        - Raw item
+        - Shattering activator
+        - Fired item
+    - Recipes:
+        - Cup (done)
+        - Brick (done)
+        - Flask
+        - Goblet
+        - Bowl
+        - Plate
+        - Cooking pot
+        - Teapot
+        - Oil lamp
+        - Amphora (storage container)
+        - Plant pot
+
+- Campfire registration
+
+
+## Completed:
+- Wheel throwing selection menu
+- Dynamic material for red glow effect
+- Mallet bushcrafting recipe
+- Kiln drop config - attach bellows
+- Smash pottery to get broken clay
+- Bellows animation bugs -fixed with hacks
+- Pottery Skill
+- "Flaring" campfire flames synced to bellows
+- Bellows sound effects
+- Firing in a kiln
+    - Kilns can be crafted using clay bricks, and provide a more stable firing environment
+- Temper menu replaced with raw clay menu
+    - Categories
+        - Tempering
+        - Handmolding
+            - Clay brick
+- Raw clay tooltip
+    - "Equip: Clay Working Menu"
+- "Crack" sound effect
+- Add anim nodes to all campfire meshes (for bellows animation)
+- Cracked pottery
+- Clay Deposits
+    - Spawn on terrain tiles under the following conditions:
+        - Terrain has dirt, sand or mud texture
+        - Terrain vertices are all just above the water level
+        - Each cell can only spawn a limited number of deposits
+- Spinning Wheel
+    - Bushcraftable
+    - Animated wheel throwing
+    - Recipes for crafting cup, goblet, plate, and flask from raw clay
+- Firing Clay Items
+    - 'Pit firing' using campfire
+        - Campfires are difficult to regular temperature, making this a convenient but risky method
+    - Firing over heat sources:
+        - Raw clay items must be placed on a heat source
+        - Heat source must maintain a suitable temperature range for a set duration
+        - If the heat source cools before the duration is complete, the firing process fails
+        - Failed items become "cracked" and shatters
+- Tempering Clay
+    - Mix raw clay with:
+        - Charcoal from campfire
+        - Grog
+    - Tempered clay is more likely to survive firing without cracking
+- Broken clay
+    - Failed firing results in broken clay
+    - Broken clay can be recycled into grog using a mortar and pestle
+- Bellows
+    - Bushcraftable
+    - Animated

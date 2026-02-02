@@ -38,6 +38,12 @@ interop.registerWaterContainers({
         waterMaxHeight = 4.0,
     },
 
+    ashfall_clay_cup_01 = {
+        capacity = 25,
+        waterMaxScale = 1.3,
+        waterMaxHeight = 2.2,
+    },
+
     t_nor_drinkinghorn_01 = { capacity = 30 },
     t_nor_drinkinghorn_02 = { capacity = 30 },
     t_nor_drinkinghorn_03 = { capacity = 30 },
