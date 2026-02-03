@@ -6,22 +6,8 @@ local CraftingFramework = require("CraftingFramework")
 ---@class Ashfall.Clay.RawClay
 local RawClay = {
     rawClayId = "ashfall_raw_clay_01",
-    temperedClayId = "ashfall_clay_tempered",
     brokenClayId = "ashfall_clay_broken_01",
 }
-
-function RawClay.initialise()
-    ---Show "Tempered" in tooltip
-    CraftingFramework.Indicator.register{
-        objectId = RawClay.temperedClayId,
-        additionalUI = function(_, parent)
-            local text = "Tempered"
-            local label = parent:createLabel{ text = text }
-            label.color = tes3ui.getPalette(tes3.palette.bigNormalColor)
-        end
-    }
-    logger:debug("RawClay indicator initialised")
-end
 
 --Returns the number of clay in the player's inventory
 ---@return number
@@ -30,11 +16,7 @@ function RawClay.getPlayerClayInInventory()
         reference = tes3.player,
         item = RawClay.rawClayId
     }
-    local temperedCount = CraftingFramework.CarryableContainer.getItemCount{
-        reference = tes3.player,
-        item = RawClay.temperedClayId
-    }
-    return rawCount + temperedCount
+    return rawCount
 end
 
 
@@ -46,18 +28,12 @@ function RawClay.openSelectMenu(callback)
             title = "Select Raw Clay",
             filter = function(e)
                 local id = e.item.id:lower()
-                return id == RawClay.rawClayId or id == RawClay.temperedClayId
+                return id == RawClay.rawClayId
             end,
             callback = callback,
             noResultsText = "No raw clay found in inventory."
         }
     end)
-end
-
----@param id string|nil
-function RawClay.isTempered(id)
-    if not id then return false end
-    return id:lower() == RawClay.temperedClayId
 end
 
 return RawClay

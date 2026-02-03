@@ -6,7 +6,11 @@ local CraftingFramework = require("CraftingFramework")
 ---@class Ashfall.Clay.Tempered : ItemInstance
 local Temper = {
     ---@type table<string, boolean> The list of registered temper compatible item IDs
-    registeredTemperCompatibleItems = {}
+    registeredTemperCompatibleItems = {},
+
+    temperIds = {
+        ashfall_clay_broken_01 = true,
+    }
 }
 
 ---Registers an item as compatible with tempering
@@ -61,6 +65,19 @@ function Temper.removeTemper(reference)
     Decals.get("temper"):removeDecal(reference)
 end
 
+
+---Return how much temper player has in inventory
+---@return number
+function Temper.getPlayerTemperCount()
+    local count = 0
+    for temperId in pairs(Temper.temperIds) do
+        count = count + CraftingFramework.CarryableContainer.getItemCount{
+            reference = tes3.player,
+            item = temperId
+        }
+    end
+    return count
+end
 
 function Temper.onReferenceActivated(reference)
     local isCompatible = reference and Temper.isCompatible(reference.object.id)
