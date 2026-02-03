@@ -12,14 +12,15 @@ local ClayWorking = require("mer.ashfall.clay.ClayWorking")
 local Campfire = require("mer.ashfall.camping.campfire.Campfire")
 local PotteryBreaking = require("mer.ashfall.clay.PotteryBreaking")
 local Temper = require("mer.ashfall.clay.Temper")
+local HeatedItem = require("mer.ashfall.clay.HeatedItem")
 --Event registrations
 event.register("cellChanged", ClayDeposit.addClayToLoadedTerrain)
 event.register("activate", DepositActivator.onActivate)
 event.register("loaded", FiringController.onLoaded)
 event.register("uiObjectTooltip", UnfiredPottery.onUiObjectTooltip)
-event.register("activate", UnfiredPottery.onActivate)
+event.register("activate", HeatedItem.onActivate)
 event.register("uiObjectTooltip", FiredPottery.onUiObjectTooltip)
-event.register("activate", FiredPottery.onActivate)
+event.register("activate", PotteryBreaking.onActivateBroken)
 
 
 Temper.registerTemperCompatibleItem(RawClay.rawClayId)

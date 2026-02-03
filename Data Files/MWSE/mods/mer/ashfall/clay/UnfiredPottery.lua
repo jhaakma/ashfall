@@ -12,6 +12,7 @@ local HeatedItem = require("mer.ashfall.clay.HeatedItem")
 local PotteryDamage = require("mer.ashfall.clay.PotteryDamage")
 local Temper = require("mer.ashfall.clay.Temper")
 local HeatCurve = require("mer.ashfall.heat.HeatCurve")
+local PotteryTooltips = require("mer.ashfall.clay.PotteryTooltips")
 
 ---Class for managing instances of unfired pottery items
 ---@class Ashfall.UnfiredPottery : ItemInstance
@@ -37,26 +38,6 @@ local UnfiredPottery = {
     },
 }
 
-
----Pottery-specific stages (different names from general campfire stages)
----@type { minTemp: number, name: string, color: number[] }[]
-UnfiredPottery.COLOR_STAGES = {
-    {
-        minTemp = Campfire.STAGES.glazing.minTemp,
-        name = "Glazing",
-        color = Campfire.STAGES.glazing.color
-    },
-    {
-        minTemp = Campfire.STAGES.firing.minTemp,
-        name = "Firing",
-        color = {1.0, 0.3, 0.3}
-    },
-    {
-        minTemp = 0,
-        name = "Heating Up",
-        color = {1.0, 0.8, 0.4}
-    },
-}
 
 
 ---@class Ashfall.UnfiredPotteryData
@@ -637,39 +618,12 @@ function UnfiredPottery:getFiringProgress()
     return clampedProgress
 end
 
----Get the temperature state and color based on current temperature
+---Get the temperature state and color based on current temperature.
+---(Delegates to shared pottery tooltip helpers.)
 ---@return string|nil stateName The state description, or nil if no heat
 ---@return number[]|nil color The RGB color
 function UnfiredPottery:getTemperatureState()
-    local heated = self:getHeatedItem()
-    local currentTemp = heated and (heated.data.currentTemperature or 0) or 0
-    local targetHeat = heated and (heated.data.targetHeat or 0) or 0
-    local isWarming = currentTemp < targetHeat
-
-    -- No tooltip if completely cold
-    if currentTemp <= 0 then
-        return nil, nil
-    end
-
-    -- Find matching stage from config table
-    local stageName = "Heating Up"
-    local color = {1.0, 0.8, 0.4}
-
-    for _, stage in ipairs(self.COLOR_STAGES) do
-        if currentTemp >= stage.minTemp then
-            stageName = stage.name
-            color = stage.color
-            break
-        end
-    end
-
-    -- Override with "Cooling Down" if below firing temp and cooling
-    if currentTemp < Campfire.STAGES.firing.minTemp and not isWarming and currentTemp > 0 then
-        stageName = "Cooling Down"
-        color = {0.5, 0.7, 1.0}
-    end
-
-    return stageName, color
+    return PotteryTooltips.getTemperatureState(self:getHeatedItem(), { kind = "unfired" })
 end
 
 ---Get the break risk level for display
@@ -706,8 +660,9 @@ function UnfiredPottery:getTooltips()
         end
 
         -- Cracked status
-        if self.data.cracked then
-            table.insert(labels, {text = "Cracked!", color = {1.0, 0.5, 0.0}})
+        local crackedLabel = PotteryTooltips.getCrackedLabel(self.data.cracked, "Cracked!")
+        if crackedLabel then
+            table.insert(labels, crackedLabel)
         end
 
         -- Crack/Break risk (if any)
@@ -719,15 +674,17 @@ function UnfiredPottery:getTooltips()
 
         if self.reference then
             -- Temperature state (only if has temperature)
-            local stateName, stateColor = self:getTemperatureState()
-            if stateName then
-                table.insert(labels, {text = stateName, color = stateColor})
+            local tempLabel = PotteryTooltips.getTemperatureLabel(self:getHeatedItem(), { kind = "unfired" })
+            if tempLabel then
+                table.insert(labels, tempLabel)
             end
         end
 
         -- Quality
-        local qualityPercent = (self.data.quality or 0.0) * 100
-        table.insert(labels, string.format("Quality: %d", qualityPercent))
+        local qualityLabel = PotteryTooltips.getQualityLabel(self.data.quality, { includeWhenNil = true })
+        if qualityLabel then
+            table.insert(labels, qualityLabel)
+        end
 
 
         -- --Temperature TODO: remove
@@ -799,29 +756,6 @@ function UnfiredPottery.onUiObjectTooltip(e)
                 common.helper.addLabelToTooltip(e.tooltip, label.text, label.color)
             else
                 common.helper.addLabelToTooltip(e.tooltip, label)
-            end
-        end
-    end
-end
-
----Handle activation of unfired or broken pottery
----@param e activateEventData
-function UnfiredPottery.onActivate(e)
-    --If broken, add "broken clay" item to inventory and delete
-    local result = PotteryBreaking.onActivateBroken(e)
-    if result == false then
-        return false
-    end
-
-    if UnfiredPottery.isUnfiredItem(e.target.baseObject) then
-        local pottery = UnfiredPottery:new{ reference = e.target }
-        if pottery then
-            local heated = pottery:getHeatedItem()
-            local currentTemp = heated and (heated.data.currentTemperature or 0) or 0
-            local safeTemp = PotteryDamage.getSafePickupTemperature(Campfire.STAGES.firing.minTemp)
-            if currentTemp > safeTemp then
-                tes3.messageBox("It is too hot to pick up.")
-                return false
             end
         end
     end

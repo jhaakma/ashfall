@@ -3,6 +3,7 @@ local logger = common.createLogger("Temper")
 local Decals = require("mer.ashfall.clay.PotteryDecals")
 local CraftingFramework = require("CraftingFramework")
 local ItemInstance = require("CraftingFramework.carryableContainers.components.ItemInstance")
+local PotteryTooltips = require("mer.ashfall.clay.PotteryTooltips")
 
 ---Handles temper data and decals
 ---@class Ashfall.Clay.Tempered : ItemInstance
@@ -60,7 +61,8 @@ function Temper.registerTemperCompatibleItem(itemId)
 
             local text = "Tempered"
             local label = parent:createLabel{ text = text }
-            label.color = tes3ui.getPalette(tes3.palette.bigNormalColor)
+            local temperedLabel = PotteryTooltips.getTemperedLabel(true)
+            label.color = temperedLabel and temperedLabel.color or tes3ui.getPalette(tes3.palette.bigNormalColor)
         end
     }
 end

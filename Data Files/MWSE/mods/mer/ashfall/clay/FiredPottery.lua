@@ -8,6 +8,7 @@ local HeatedItem = require("mer.ashfall.clay.HeatedItem")
 local PotteryDamage = require("mer.ashfall.clay.PotteryDamage")
 local HeatUtil = require("mer.ashfall.heat.HeatUtil")
 local HeatCurve = require("mer.ashfall.heat.HeatCurve")
+local PotteryTooltips = require("mer.ashfall.clay.PotteryTooltips")
 
 -- While a heat source is present, do not apply thermal shock for gradual
 -- cooldown (fuel consumption). Only consider thermal shock if the heat source
@@ -113,6 +114,35 @@ function FiredPottery:setTemperature(newTemperature)
     if heated then
         heated:setTemperature(newTemperature)
     end
+end
+
+---Return tooltip labels for this fired pottery item.
+---@return (string|{text: string, color: number[]?})[]
+function FiredPottery:getTooltips()
+    local labels = {}
+
+    local crackedLabel = PotteryTooltips.getCrackedLabel(self.data.cracked, "Cracked")
+    if crackedLabel then
+        table.insert(labels, crackedLabel)
+    end
+
+    local temperedLabel = PotteryTooltips.getTemperedLabel(self.data.tempered)
+    if temperedLabel then
+        table.insert(labels, temperedLabel)
+    end
+
+    local heated = self:getHeatedItem()
+    local tempLabel = PotteryTooltips.getTemperatureLabel(heated, { kind = "fired" })
+    if tempLabel then
+        table.insert(labels, tempLabel)
+    end
+
+    local qualityLabel = PotteryTooltips.getQualityLabel(self.data.quality, { includeWhenNil = false })
+    if qualityLabel then
+        table.insert(labels, qualityLabel)
+    end
+
+    return labels
 end
 
 ---Update temperature (and glow) based on an optional nearby heat source
@@ -254,45 +284,8 @@ function FiredPottery.onUiObjectTooltip(e)
         return
     end
     local pottery = FiredPottery:new{ item = e.object, itemData = e.itemData, reference = e.reference }
-    if pottery and pottery.data.cracked then
-        common.helper.addLabelToTooltip(e.tooltip, "Cracked", {1.0, 0.5, 0.0})
-    end
-end
-
----Handle activation of fired pottery.
----Picking up is either blocked (too hot) or safe.
----@param e activateEventData
----@return boolean|nil False to block activation
-function FiredPottery.onActivate(e)
-    if not e.target or not e.target.baseObject then
-        return
-    end
-
-    if not FiredPottery.isFiredItem(e.target.baseObject) then
-        return
-    end
-
-    local pottery = FiredPottery:new{ reference = e.target }
-    if not pottery then
-        return
-    end
-
-    -- Always catch up heat state before deciding if it's safe to pick up.
-    -- Time can jump massively (wait/rest) and the periodic controller may not
-    -- have ticked yet on the same frame as activation.
-    local heatSource = common.helper.getHeatFromBelow(e.target, "strong")
-    pottery:updateHeat(heatSource)
-
-    local heated = pottery:getHeatedItem()
-    if not heated then
-        return
-    end
-
-    local currentTemp = heated.data.currentTemperature or 0
-    local safeTemp = PotteryDamage.getSafePickupTemperature(Campfire.STAGES.firing.minTemp)
-    if currentTemp > safeTemp then
-        tes3.messageBox("It is too hot to pick up.")
-        return false
+    if pottery then
+        PotteryTooltips.addLabelsToTooltip(e.tooltip, pottery:getTooltips())
     end
 end
 

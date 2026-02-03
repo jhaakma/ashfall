@@ -1,10 +1,7 @@
 # Ashfall Pottery Mechanics
 
 ## Planned:
-- Fix thermal shock issues
-    - Long time between updates
-    - Breaking as a result of heat source cooling down
-
+- Remove temperature on pickup
 - Drying mechanic
     - Items gain a dampness level once shaped
     - Dampness massively increases risk of cracking
@@ -59,6 +56,9 @@
 
 
 ## Completed:
+- Fix thermal shock issues
+    - Long time between updates
+    - Breaking as a result of heat source cooling down
 - New flow:
     Temper:
     - Temper clay by activating placed raw clay

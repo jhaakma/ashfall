@@ -5,6 +5,11 @@ local Campfire = require("mer.ashfall.camping.campfire.Campfire")
 local HeatUtil = require("mer.ashfall.heat.HeatUtil")
 local Glow = require("mer.ashfall.clay.Glow")
 
+-- Pickup safety constant, fraction of firing min temp.
+-- Duplicated from pottery-damage tuning to keep HeatedItem independent
+-- (avoids circular dependencies via PotteryBreaking/FiredPottery).
+local SAFE_PICKUP_TEMP_FACTOR = 0.35
+
 ---Shared class for heat + glow mechanics (used by unfired and fired pottery).
 ---This is an ItemInstance with its own dataKey so heat persists independently.
 ---@class Ashfall.Clay.HeatedItem : ItemInstance
@@ -83,9 +88,42 @@ function HeatedItem:updateGlow()
     end
 end
 
+---@return number
+function HeatedItem:getCurrentTemperature()
+    return self.data.currentTemperature or 0
+end
+
+---@class Ashfall.Clay.HeatedItem.PickupGuardOptions
+---@field firingMinTemp number
+---@field message string?
+
+---Returns false to block activation if this item is too hot to pick up.
+---@param opts Ashfall.Clay.HeatedItem.PickupGuardOptions
+---@return boolean|nil False to block activation
+function HeatedItem:blockPickupIfTooHot(opts)
+    local firingMinTemp = opts and opts.firingMinTemp or 0
+    local safeTemp = firingMinTemp * SAFE_PICKUP_TEMP_FACTOR
+    if self:getCurrentTemperature() > safeTemp then
+        tes3.messageBox((opts and opts.message) or "It is too hot to pick up.")
+        return false
+    end
+
+    --Otherwise, if allowing to pick up, remove heat data
+    self:clearData()
+end
+
 ---Reset the last temperature update to nil.
 function HeatedItem:resetLastTemperatureUpdate()
     self.data.lastTemperatureUpdate = nil
+end
+
+function HeatedItem:clearData()
+    self.data.currentTemperature = nil
+    self.data.highestTemperature = nil
+    self.data.lastTemperatureUpdate = nil
+    self.data.targetHeat = nil
+    self.data.lastHadHeatSource = nil
+    self.data.lastHeatSourceSnapshot = nil
 end
 
 ---Calculate what the new temperature would be given a target temperature.
@@ -323,6 +361,30 @@ function HeatedItem:advance(hoursElapsed, opts)
         remaining = remaining - dt
         t = t + dt
     end
+end
+
+---Check if a reference is a heated item
+---@param ref tes3reference
+---@return boolean
+function HeatedItem.isHeatedItem(ref)
+    if not ref or not ref.supportsLuaData then
+        return false
+    end
+    local itemData = ref.data
+    if not itemData then
+        return false
+    end
+    return itemData[HeatedItem.DATA_KEY] ~= nil
+end
+
+---@param e activateEventData
+function HeatedItem.onActivate(e)
+    local isHeatedItem = HeatedItem.isHeatedItem(e.target)
+    if not isHeatedItem then
+        return
+    end
+    local heated = HeatedItem:new{ reference = e.target }
+    if heated then return heated:blockPickupIfTooHot{ firingMinTemp = Campfire.STAGES.firing.minTemp } end
 end
 
 return HeatedItem
