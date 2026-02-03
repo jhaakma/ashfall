@@ -1,17 +1,16 @@
 # Ashfall Pottery Mechanics
 
 ## Planned:
-- New flow:
+- Fix thermal shock issues
+    - Long time between updates
+    - Breaking as a result of heat source cooling down
 
-    Temper:
-    - Temper clay by activating placed raw clay
-    - Sound effect + fade-out
-    - Remove "tempered clay" id, add temper data and dynamically add decal
-    Shape:
-    - Shape by activating placed clay
-    - Animate hand worked clay same as wheel throwing
-
-
+- Drying mechanic
+    - Items gain a dampness level once shaped
+    - Dampness massively increases risk of cracking
+    - Dries over time, can be sped up by placing on weak fire
+    - Consider "near fire" check
+- Bushcraftable shelves (for drying and anything else)
 - Fired clay has heat
     - Heatable component, raw and fired items registered
     - Heatable applies glow material
@@ -32,7 +31,7 @@
 - Pottery Recipes
     - Finalise workflow for creating assets
     - Assets:
-        - Throwing animation
+        - Shaping animation ( now required for throwing and handmolding)
         - Raw clay mesh
         - Shatter animation
             - Remove
@@ -60,6 +59,18 @@
 
 
 ## Completed:
+- New flow:
+    Temper:
+    - Temper clay by activating placed raw clay
+    - Sound effect + fade-out
+    - Remove "tempered clay" id, add temper data and dynamically add decal
+    Shape:
+    - Shape by activating placed clay
+    - Animate hand worked clay same as wheel throwing
+- New Components
+    - Temper Component
+        - Handles temper data and decal application
+        - Applies to raw clay and unfired pottery
 - Wheel throwing selection menu
 - Dynamic material for red glow effect
 - Mallet bushcrafting recipe

@@ -7,6 +7,7 @@ local logger = common.createLogger("fuelConsumerController")
 local ReferenceController = require("mer.ashfall.referenceController")
 local Bellows = require("mer.ashfall.camping.Bellows")
 local Campfire = require("mer.ashfall.camping.campfire.Campfire")
+local FuelModel = require("mer.ashfall.camping.FuelModel")
 local FUEL_DECAY_RATE = 1.0
 local FUEL_DECAY_RAIN_MULTIPLIER = 1.4
 local FUEL_DECAY_THUNDER_MULTIPLIER = 1.6
@@ -22,17 +23,9 @@ ReferenceController.registerReferenceController{
 }
 
 local function getRainEffect(fuelConsumer)
-    local rainEffect = 1.0
-    if not fuelConsumer.tempData.ashfallIsSheltered then
-        --raining and fuelConsumer exposed
-        if tes3.getCurrentWeather().index == tes3.weather.rain then
-            rainEffect = FUEL_DECAY_RAIN_MULTIPLIER
-        --thunder and fuelConsumer exposed
-        elseif tes3.getCurrentWeather().index == tes3.weather.thunder then
-            rainEffect = FUEL_DECAY_THUNDER_MULTIPLIER
-        end
-    end
-    return rainEffect
+    -- Prefer the shared model so other systems can reproduce the same behavior.
+    -- Keep the local constants above for backwards-compatibility/logging if needed.
+    return FuelModel.getRainEffect(fuelConsumer)
 end
 
 local function updateFuelConsumer(fuelConsumer)

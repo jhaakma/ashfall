@@ -4,6 +4,9 @@ local DropConfig = {
         "tea"
     },
     node = {
+        WHEEL = {
+            "attachClay"
+        },
         ASHFALL_KILN = {
             "firewood",
             "douse",

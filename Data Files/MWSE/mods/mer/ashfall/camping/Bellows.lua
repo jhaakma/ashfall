@@ -210,7 +210,7 @@ function Bellows.getAnimationTime(reference)
     for node in table.traverse{ attachNode } do
         if node.controller and node.controller:isInstanceOfType(ni.type.NiGeomMorpherController) then
             local lastScaledTime = node.controller.lastScaledTime or 0
-            return math.remap(lastScaledTime, 0, Bellows.ANIMATION_DURATION, 0, 1)
+            return math.remap(lastScaledTime, 0, Bellows.ANIMATION_DURATION, 0, 1.1)
 
         end
     end

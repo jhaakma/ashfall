@@ -19,9 +19,14 @@ event.register("loaded", FiringController.onLoaded)
 event.register("uiObjectTooltip", UnfiredPottery.onUiObjectTooltip)
 event.register("activate", UnfiredPottery.onActivate)
 event.register("uiObjectTooltip", FiredPottery.onUiObjectTooltip)
+event.register("activate", FiredPottery.onActivate)
+
+
+Temper.registerTemperCompatibleItem(RawClay.rawClayId)
 
 for _, recipeData in ipairs(clayConfig.potteryRecipes) do
     PotteryRecipe.registerRecipe(recipeData)
+    Temper.registerTemperCompatibleItem(recipeData.id)
 end
 
 for _, decalData in ipairs(clayConfig.potteryDecals) do
@@ -30,10 +35,6 @@ end
 
 for _, potteryWheel in ipairs(clayConfig.spinningWheels) do
     PotteryWheel.registerSpinningWheel(potteryWheel)
-end
-
-for _, temperData in ipairs(clayConfig.tempers) do
-    ClayWorking.registerTemper(temperData)
 end
 
 for _, kilnData in ipairs(clayConfig.kilnDatas) do
@@ -45,8 +46,5 @@ for _, activatorId in ipairs(clayConfig.clayWorkingActivatorIds) do
 end
 
 PotteryBreaking.initialise()
-RawClay.initialise()
 ClayWorking.initialise() --must run after recipes registered
 Temper.initialise()
-
-ClayWorking.menuActivator:registerRecipes(clayConfig.otherClayWorkingRecipes)

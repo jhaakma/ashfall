@@ -25,8 +25,8 @@ end
 ---@param potteryNode niNode
 function Glow.attachToNode(potteryNode)
     logger:debug("Attaching glow material to pottery node")
-    local glowController = Glow.getGlowController()
-    if not glowController then
+    local baseGlowController = Glow.getGlowController()
+    if not baseGlowController then
         logger:error("Could not get glow material controller")
         return
     end
@@ -35,17 +35,28 @@ function Glow.attachToNode(potteryNode)
     for node in table.traverse{ potteryNode } do
         if node:isInstanceOfType(tes3.niType.NiTriShape) then
             ---@cast node niTriShape
-            node.materialProperty:prependController(glowController)
-            glowController:setTarget(node.materialProperty)
-            logger:debug("Attached glow material to node")
-            node:update{ controllers = true, time = 0 }
+
+            local parentIsAnimNode = node.parent and node.parent:isInstanceOfType(tes3.niType.NiBSAnimationNode)
+            if parentIsAnimNode == false and node.alphaProperty == nil then
+
+                -- Controllers can only target one property; clone per-trishape.
+                local glowController = baseGlowController:clone()
+                node.materialProperty:prependController(glowController)
+                glowController:setTarget(node.materialProperty)
+                logger:debug("Attached glow material to node")
+                node:update{ controllers = true, time = 0 }
+            end
         end
     end
 end
 
 ---Set the glow strength on the given pottery sceneNode
+---@param sceneNode niNode
+---@param strength number
+---@return boolean anyUpdated
 function Glow.setStrength(sceneNode, strength)
     logger:debug("Setting glow strength to %.2f", strength)
+    local anyUpdated = false
     ---@param child niNode
     for child in table.traverse{ sceneNode } do
         if child:isInstanceOfType(tes3.niType.NiTriShape) then
@@ -54,9 +65,15 @@ function Glow.setStrength(sceneNode, strength)
             if controller then
                 local time = math.remap(strength, 0, 1, 0, Glow.MAX_STRENGTH)
                 child:update{ controllers = true, time = time}
+                anyUpdated = true
             end
         end
     end
+
+    if not anyUpdated then
+        logger:trace("No material controllers found to update glow")
+    end
+    return anyUpdated
 end
 
 return Glow

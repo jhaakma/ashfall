@@ -1,7 +1,5 @@
 local common = require("mer.ashfall.common.common")
 local logger = common.createLogger("Pottery")
-
-
 local defaultPotteryRecipeValues = {
     clayAmount = 1,
     craftingMethod = "wheel",

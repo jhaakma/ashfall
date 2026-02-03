@@ -5,9 +5,13 @@ local PotteryRecipe = require("mer.ashfall.clay.PotteryRecipe")
 local PotteryDecals = require("mer.ashfall.clay.PotteryDecals")
 local PotteryBreaking = require("mer.ashfall.clay.PotteryBreaking")
 local RawClay = require("mer.ashfall.clay.RawClay")
+local FiredPottery = require("mer.ashfall.clay.FiredPottery")
 local Campfire = require("mer.ashfall.camping.campfire.Campfire")
 local HeatUtil = require("mer.ashfall.heat.HeatUtil")
-local Glow = require("mer.ashfall.clay.Glow")
+local HeatedItem = require("mer.ashfall.clay.HeatedItem")
+local PotteryDamage = require("mer.ashfall.clay.PotteryDamage")
+local Temper = require("mer.ashfall.clay.Temper")
+local HeatCurve = require("mer.ashfall.heat.HeatCurve")
 
 ---Class for managing instances of unfired pottery items
 ---@class Ashfall.UnfiredPottery : ItemInstance
@@ -31,7 +35,6 @@ local UnfiredPottery = {
         {threshold = 0.01, name = "Low",       color = {1.0, 1.0, 0.4}},
         {threshold = 0.001, name = "Minimal",  color = {0.8, 0.8, 0.6}},
     },
-
 }
 
 
@@ -59,15 +62,35 @@ UnfiredPottery.COLOR_STAGES = {
 ---@class Ashfall.UnfiredPotteryData
 ---@field firingHoursRemaining number? The number of in-game hours remaining to complete firing
 ---@field lastFiredTimestamp number? The simulation timestamp when the item was last processed for firing
----@field currentTemperature number? The current temperature of the item
----@field highestTemperature number? The highest temperature reached by the item while firing.
----@field lastTemperatureUpdate number? The simulation timestamp when the temperature was last updated
----@field targetHeat number? The target heat from the last fire source
 ---@field cracked boolean? Whether the pottery is cracked
 ---@field broken boolean? Whether the pottery is broken. This should only be true during breaking animation, as it gets deleted right after
 ---@field quality number? A value from 0.0 (terrible) to 1.0 (perfect) representing the quality of the pottery item
----@field tempered boolean? Whether the pottery was tempered during crafting
 
+---Get the shared heated-item state for this pottery.
+---@return Ashfall.Clay.HeatedItem?
+function UnfiredPottery:getHeatedItem()
+    local heated = HeatedItem:new{
+        item = self.item,
+        itemData = self.dataHolder,
+        reference = self.reference,
+        tempChangeRate = self.TEMP_CHANGE_RATE,
+    }
+    if not heated then
+        return nil
+    end
+    return heated
+end
+
+---@param heated Ashfall.Clay.HeatedItem
+---@return Ashfall.Clay.HeatedItem.UpdateOptions
+function UnfiredPottery:getHeatUpdateOptions(heated)
+    return {
+        onHeatUpdated = function(h)
+            -- Unfired pottery controls visuals when heat changes.
+            h:updateGlow()
+        end
+    }
+end
 
 ---Construct from reference
 ---@param e ItemInstance.new.params
@@ -100,12 +123,10 @@ function UnfiredPottery:updateGlow()
         logger:warn("UnfiredPottery:updateGlow() called but no reference present")
         return
     end
-    local temperatureRatio = math.remap(
-        self.data.currentTemperature or 0,
-        0, Campfire.STAGES.firing.minTemp,
-        0, 1.0)
-
-    Glow.setStrength(self.reference.sceneNode, temperatureRatio)
+    local heated = self:getHeatedItem()
+    if heated then
+        heated:updateGlow()
+    end
 end
 
 ---Runs on timer to update firing progress
@@ -115,47 +136,86 @@ function UnfiredPottery:updateFiring(heatSource)
         return
     end
     logger:trace("UnfiredPottery:updateFiring() called with heat: %s", heatSource)
-    -- Store previous heat before updating
-    local previousHeat = self.data.targetHeat or 0
-
-    local heat = HeatUtil.getHeat(heatSource)
-
-    -- Store target heat for warming/cooling determination
-    self.data.targetHeat = heat or 0
-
-    local hoursElapsed = self:getHoursSinceLastUpdate()
-
-    -- For large time gaps, simulate hour-by-hour
-    if hoursElapsed >= 1 then
-        self:simulateTimeGap(previousHeat, heat, heatSource)
+    local heated = self:getHeatedItem()
+    if not heated then
         return
     end
 
-    local newTemperature = self:calculateNewTemperature(heat or 0)
+    local now = tes3.getSimulationTimestamp()
+    local startTimestamp = self.data.lastFiredTimestamp or (heated.data.lastTemperatureUpdate or now)
+    local hoursElapsed = now - startTimestamp
+    if hoursElapsed < 0 then
+        hoursElapsed = 0
+    end
 
-    self:setTemperature(newTemperature)
+    local updateOptions = self:getHeatUpdateOptions(heated)
 
-    self:updateGlow()
+    -- Ensure we have an initial snapshot to simulate fuel burn during long waits.
+    if heatSource and not heated.data.lastHeatSourceSnapshot then
+        heated.data.lastHeatSourceSnapshot = HeatCurve.snapshotFuelConsumer(heatSource)
+    end
 
-    -- Check for cracking/breaking based on probability
-    if self:rollForDamage(hoursElapsed, heatSource) then
-        if self.data.cracked then
-            self:breakPottery()
-            return
+    -- Build a target-heat function for this time gap.
+    -- Prefer the previous snapshot so fuel burn is simulated across long waits.
+    local targetHeatAt
+    if not heatSource then
+        targetHeatAt = HeatCurve.makeConstantTargetHeatFn(0)
+    else
+        local snap = heated.data.lastHeatSourceSnapshot
+        local sameSource = snap and snap.id and heatSource.object and (snap.id:lower() == heatSource.object.id:lower())
+        if snap and sameSource then
+            targetHeatAt = HeatCurve.makeTargetHeatFn(snap)
         else
-            self:crackPottery()
+            targetHeatAt = HeatCurve.makeConstantTargetHeatFn(HeatUtil.getHeat(heatSource) or 0)
         end
     end
 
-    if self:canFire() then
-        local hoursRemaining = self:calculateRemainingFiringTime()
-        if hoursRemaining <= 0 then
-            self:completeFiring()
-        else
-            self.data.firingHoursRemaining = hoursRemaining
-        end
+    heated:advance(hoursElapsed, {
+        stepHours = 0.25,
+        targetHeatAt = targetHeatAt,
+        updateOptions = updateOptions,
+        startTimestamp = startTimestamp,
+        onStep = function(_, e)
+            if self.data.broken or not self.reference then
+                return false
+            end
+
+            -- Roll for cracking/breaking over this slice.
+            if self:rollForDamage(e.dtHours, heatSource) then
+                if self.data.cracked then
+                    self:breakPottery()
+                    return false
+                else
+                    self:crackPottery()
+                end
+            end
+
+            -- Progress firing while hot enough.
+            if self:canFire() then
+                local remaining = self.data.firingHoursRemaining or self:getFiringTimeHours()
+                remaining = remaining - e.dtHours
+                if remaining <= 0 then
+                    -- Completion time within the catch-up gap (approx to the end of this step).
+                    self:completeFiring(heatSource, e.tHours + e.dtHours)
+                    return false
+                end
+                self.data.firingHoursRemaining = remaining
+            end
+
+            return true
+        end,
+    })
+
+    -- If the item was replaced/deleted during firing, stop.
+    if self.data.broken or not self.reference then
+        return
     end
+
     self:setLastFiredTimestamp()
+
+    -- Persist a new heat-source snapshot for the next update gap.
+    heated.data.lastHadHeatSource = heatSource ~= nil
+    heated.data.lastHeatSourceSnapshot = heatSource and HeatCurve.snapshotFuelConsumer(heatSource) or nil
 end
 
 --Check if player notifications (sounds and messageBoxes) should be played,
@@ -193,7 +253,8 @@ end
 
 function UnfiredPottery:canFire()
     logger:trace("UnfiredPottery:canFire() called")
-    local currentTemp = self.data.currentTemperature or 0
+    local heated = self:getHeatedItem()
+    local currentTemp = heated and (heated.data.currentTemperature or 0) or 0
     local canFire = currentTemp >= Campfire.STAGES.firing.minTemp
     logger:trace("canFire result: %s (currentTemp: %s, minTemp: %s)", canFire, currentTemp, Campfire.STAGES.firing.minTemp)
     return canFire
@@ -215,7 +276,10 @@ end
 --Reset the last tempaerature update to nil
 function UnfiredPottery:resetLastTemperatureUpdate()
     logger:trace("UnfiredPottery:resetLastTemperatureUpdate() called")
-    self.data.lastTemperatureUpdate = nil
+    local heated = self:getHeatedItem()
+    if heated then
+        heated:resetLastTemperatureUpdate()
+    end
 end
 
 ---Calculate what the new temperature would be given a target temperature
@@ -223,25 +287,11 @@ end
 ---@param targetTemperature number The target temperature (from fire heat)
 ---@return number newTemperature The calculated new temperature
 function UnfiredPottery:calculateNewTemperature(targetTemperature)
-    local now = tes3.getSimulationTimestamp()
-    local lastUpdate = self.data.lastTemperatureUpdate or now
-    local hoursElapsed = now - lastUpdate
-
-    local currentTemp = self.data.currentTemperature or 0
-    local tempDifference = targetTemperature - currentTemp
-
-    local differenceEffect = math.remap(tempDifference, 0, Campfire.STAGES.firing.minTemp, 1.0, 10.0)
-
-    -- Calculate maximum temperature change based on elapsed time and rate
-    local maxTempChange = self.TEMP_CHANGE_RATE * hoursElapsed * differenceEffect
-
-    -- Apply temperature change, but don't exceed the maximum rate
-    local tempChange = math.clamp(tempDifference, -maxTempChange, maxTempChange)
-    local newTemp = currentTemp + tempChange
-
-    logger:trace("Temperature calculation: current=%s, target=%s, elapsed=%.2fh, change=%s, new=%s",
-        currentTemp, targetTemperature, hoursElapsed, tempChange, newTemp)
-    return newTemp
+    local heated = self:getHeatedItem()
+    if not heated then
+        return 0
+    end
+    return heated:calculateNewTemperature(targetTemperature)
 end
 
 ---Set the temperature of the pottery item, updating highestTemperature if necessary
@@ -249,20 +299,23 @@ end
 function UnfiredPottery:setTemperature(newTemperature)
     logger:trace("UnfiredPottery:setTemperature() called with new temperature: %s", newTemperature)
 
-    self.data.currentTemperature = newTemperature
-    self.data.lastTemperatureUpdate = tes3.getSimulationTimestamp()
-
-    if newTemperature > (self.data.highestTemperature or 0) then
+    local heated = self:getHeatedItem()
+    if not heated then
+        return
+    end
+    local previousHighest = heated.data.highestTemperature or 0
+    heated:setTemperature(newTemperature)
+    if newTemperature > previousHighest then
         logger:trace("New highest temperature reached: %s", newTemperature)
-        self.data.highestTemperature = newTemperature
     end
 end
 ---Simulate firing over a large time gap by processing hour-by-hour
 ---This handles cases where the player was in another cell and time passed without updates
+---@param heated Ashfall.Clay.HeatedItem
 ---@param previousHeat number|nil The heat level from the previous update
 ---@param currentHeat number|nil The current heat level from fire source
 ---@param heatSource tes3reference|nil The heat source reference
-function UnfiredPottery:simulateTimeGap(previousHeat, currentHeat, heatSource)
+function UnfiredPottery:simulateTimeGap(heated, previousHeat, currentHeat, heatSource)
 
     local startHeat = previousHeat or 0
     local endHeat = currentHeat or 0
@@ -279,17 +332,7 @@ function UnfiredPottery:simulateTimeGap(previousHeat, currentHeat, heatSource)
         local heatProgress = (hour - 1) / math.max(simulatedHours - 1, 1)
         local targetHeat = startHeat + (endHeat - startHeat) * heatProgress
 
-        -- Calculate temperature for this hour
-        -- Temperature changes gradually toward target
-        local currentTemp = self.data.currentTemperature or 0
-        local tempDiff = targetHeat - currentTemp
-        local tempChange = math.clamp(tempDiff, -self.TEMP_CHANGE_RATE, self.TEMP_CHANGE_RATE)
-        local newTemp = currentTemp + tempChange
-
-        logger:trace("Hour %s: current=%s, target=%s (interpolated), new=%s", hour, currentTemp, targetHeat, newTemp)
-
-        -- Update temperature
-        self:setTemperature(newTemp)
+        heated:stepTowardTargetHeatOneHour(targetHeat, self:getHeatUpdateOptions(heated))
 
         -- Roll for cracking/breaking this hour
         if self:rollForDamage(1, heatSource) then
@@ -330,23 +373,10 @@ end
 ---@param heatSource tes3reference|nil The heat source reference
 ---@return number chancePerHour The probability (0-1) that pottery breaks each hour
 function UnfiredPottery:calculateDamageChance(heatSource)
-    local hasStartedFiring = (self.data.highestTemperature or 0) >= Campfire.STAGES.firing.minTemp
-
+    local heated = self:getHeatedItem()
+    local currentTemp = heated and (heated.data.currentTemperature or 0) or 0
+    local highestTemp = heated and (heated.data.highestTemperature or 0) or 0
     local progress = self:getFiringProgress()
-    if not hasStartedFiring or progress == 0 then
-        return 0 -- Can't break if not fired yet
-    end
-
-    local tempRisk = self:getTemperatureRisk()
-    logger:trace("Temperature risk: %.4f", tempRisk)
-    local qualityModifier = self:getQualityRisk()
-    logger:trace("Quality modifier: %.4f", qualityModifier)
-    local temperModifier = self:getTemperDamageModifier()
-    logger:trace("Temper modifier: %.4f", temperModifier)
-    local combinedRisk = tempRisk * qualityModifier * temperModifier
-    logger:trace("Combined risk: %.4f", combinedRisk)
-    local progressModifier = self:getProgressRiskModifier(progress)
-    local perHourModifier = self.PER_HOUR_BREAK_MODIFIER
 
     local kilnModifier = 1.0
     if heatSource then
@@ -360,22 +390,43 @@ function UnfiredPottery:calculateDamageChance(heatSource)
     end
     logger:trace("Kiln modifier: %.4f", kilnModifier)
 
+    local tempered = Temper:new{
+        item = self.item,
+        itemData = self.dataHolder,
+        reference = self.reference,
+    }
+    local isTempered = tempered and tempered:hasTemper() or false
+
     local resistance = self:getRecipe().breakResistance or 0.0
     logger:trace("Break resistance: %.4f", resistance)
-    local finalChance = math.clamp(combinedRisk * progressModifier * perHourModifier * kilnModifier * (1 - resistance), 0, 1)
-    -- If not cracked yet, increase chance so cracking happens earlier
-    if not self.data.cracked then
-        finalChance = finalChance * self.CRACK_CHANCE_MULTIPLIER
-    end
 
-    logger:trace("Final break chance per hour (before crack adjustment): %.4f", finalChance)
-    return math.clamp(finalChance, 0, 1)
+    local chance = PotteryDamage.calculateUnderfireChance{
+        currentTemperature = currentTemp,
+        highestTemperature = highestTemp,
+        firingMinTemp = Campfire.STAGES.firing.minTemp,
+        firingProgress = progress,
+        quality = self.data.quality or 0.0,
+        tempered = isTempered,
+        kilnMultiplier = kilnModifier,
+        breakResistance = resistance,
+        cracked = self.data.cracked == true,
+        crackChanceMultiplier = self.CRACK_CHANCE_MULTIPLIER,
+        perHourBreakModifier = self.PER_HOUR_BREAK_MODIFIER,
+    }
+
+    logger:trace("Final break chance per hour: %.4f", chance)
+    return chance
 end
 
 ---Get damage modifier based on if the item is tempered
 ---@return number damageModifier
 function UnfiredPottery:getTemperDamageModifier()
-    local isTempered = self.data.tempered or false
+    local tempered = Temper:new{
+        item = self.item,
+        itemData = self.dataHolder,
+        reference = self.reference
+    }
+    local isTempered = tempered and tempered:hasTemper() or false
     return isTempered and 0.5 or 1.0
 end
 
@@ -389,7 +440,8 @@ end
 ---Get temperature modifier for break calculations
 ---@return integer
 function UnfiredPottery:getTemperatureRisk()
-    local currentTemp = self.data.currentTemperature or 0
+    local heated = self:getHeatedItem()
+    local currentTemp = heated and (heated.data.currentTemperature or 0) or 0
     if currentTemp >= Campfire.STAGES.firing.minTemp then
         return 1
     end
@@ -418,14 +470,7 @@ function UnfiredPottery:rollForDamage(hours, heatSource)
         return false
     end
 
-    -- Calculate cumulative probability for the time period
-    -- P(break in n hours) = 1 - (1 - p)^n    -- Clamp to avoid invalid values
-    chancePerHour = math.clamp(chancePerHour, 0, 0.99)
-    logger:trace("Chance per hour: %.4f", chancePerHour)
-    local totalChance = 1 - math.pow(1 - chancePerHour, hours)
-    logger:trace("Rolling for break/crack: %.1f%% chance over %.8f hours", totalChance * 100, hours)
-
-    return math.random() < totalChance
+    return PotteryDamage.rollChanceOverHours(hours, chancePerHour)
 end
 
 ---Crack the pottery item, setting cracked status and applying visual effects
@@ -471,7 +516,9 @@ end
 
 
 ---Complete the firing process, replacing unfired item with fired item
-function UnfiredPottery:completeFiring()
+---@param heatSource tes3reference|nil
+---@param completionOffsetHours number|nil -- hours since start of current catch-up gap (used to advance heat-source snapshot)
+function UnfiredPottery:completeFiring(heatSource, completionOffsetHours)
     if not self.reference then
         logger:warn("UnfiredPottery:completeFiring() called but no reference present")
         return
@@ -482,6 +529,20 @@ function UnfiredPottery:completeFiring()
     logger:debug("Creating fired item: %s", firedItem)
 
     local wasCracked = self.data.cracked
+    local wasTempered
+    do
+        local tempered = Temper:new{
+            item = self.item,
+            itemData = self.dataHolder,
+            reference = self.reference,
+        }
+        wasTempered = tempered and tempered:hasTemper() or false
+    end
+    local heatData
+    do
+        local heated = self:getHeatedItem()
+        heatData = heated and heated:getHeatData() or nil
+    end
     local position = self.reference.position:copy()
     local orientation = self.reference.orientation:copy()
     local cell = self.reference.cell
@@ -495,14 +556,44 @@ function UnfiredPottery:completeFiring()
         cell = cell,
     }
 
-    -- Set cracked flag on fired pottery if unfired pottery was cracked
-    if wasCracked and newRef then
-        local FiredPottery = require("mer.ashfall.clay.FiredPottery")
+    if newRef then
         local firedPottery = FiredPottery:new{ reference = newRef }
         if firedPottery then
-            firedPottery.data.cracked = true
+            -- Carry over craftsmanship inputs for later break calculations.
+            firedPottery.data.quality = self.data.quality
+            firedPottery.data.tempered = wasTempered
+
+            -- Transfer heat state so fired items retain temperature + glow.
+            if heatData then
+                local firedHeated = firedPottery:getHeatedItem()
+                if firedHeated then
+                    -- If we completed mid-gap, advance the heat-source snapshot so the fired pot
+                    -- continues from the correct in-gap kiln fuel state.
+                    if completionOffsetHours and heatData.lastHeatSourceSnapshot then
+                        heatData.lastHeatSourceSnapshot = HeatCurve.advanceSnapshot(
+                            heatData.lastHeatSourceSnapshot,
+                            completionOffsetHours
+                        )
+                    end
+
+                    firedHeated:setHeatData(heatData)
+                    firedHeated:attachGlow()
+                    firedPottery:updateGlow()
+                end
+            end
+
+            if wasCracked then
+                firedPottery.data.cracked = true
+                logger:debug("Set cracked flag on fired pottery")
+            end
+
             firedPottery:setDecals()
-            logger:debug("Set cracked flag on fired pottery")
+
+            -- Catch up remaining heat/cooldown for the rest of the time gap.
+            -- This is important when the player waited a long time and the pot finished firing
+            -- during that wait; otherwise the fired pot could remain "hot" indefinitely.
+            firedPottery:updateHeat(heatSource)
+
         end
     end
 
@@ -550,8 +641,9 @@ end
 ---@return string|nil stateName The state description, or nil if no heat
 ---@return number[]|nil color The RGB color
 function UnfiredPottery:getTemperatureState()
-    local currentTemp = self.data.currentTemperature or 0
-    local targetHeat = self.data.targetHeat or 0
+    local heated = self:getHeatedItem()
+    local currentTemp = heated and (heated.data.currentTemperature or 0) or 0
+    local targetHeat = heated and (heated.data.targetHeat or 0) or 0
     local isWarming = currentTemp < targetHeat
 
     -- No tooltip if completely cold
@@ -618,11 +710,6 @@ function UnfiredPottery:getTooltips()
             table.insert(labels, {text = "Cracked!", color = {1.0, 0.5, 0.0}})
         end
 
-        -- Tempered status
-        if self.data.tempered then
-            table.insert(labels, {text = "Tempered"})
-        end
-
         -- Crack/Break risk (if any)
         local riskName, riskColor = self:getRiskLabelAndColor()
         if riskName then
@@ -677,7 +764,14 @@ function UnfiredPottery.createPotteryRef(e)
     end
 
     pottery.data.quality = pottery:calculateQuality()
-    pottery.data.tempered = e.tempered
+
+    -- Apply temper if provided
+    if e.tempered then
+        local tempered = Temper:new{ reference = pottery.reference }
+        if tempered then
+            tempered:addTemper()
+        end
+    end
 
     return pottery
 end
@@ -719,12 +813,16 @@ function UnfiredPottery.onActivate(e)
         return false
     end
 
-    --If pottery is disturbed during firing, it breaks
     if UnfiredPottery.isUnfiredItem(e.target.baseObject) then
         local pottery = UnfiredPottery:new{ reference = e.target }
-        if pottery and pottery:getFiringProgress() > 0 then
-            pottery:breakPottery()
-            return false
+        if pottery then
+            local heated = pottery:getHeatedItem()
+            local currentTemp = heated and (heated.data.currentTemperature or 0) or 0
+            local safeTemp = PotteryDamage.getSafePickupTemperature(Campfire.STAGES.firing.minTemp)
+            if currentTemp > safeTemp then
+                tes3.messageBox("It is too hot to pick up.")
+                return false
+            end
         end
     end
 end

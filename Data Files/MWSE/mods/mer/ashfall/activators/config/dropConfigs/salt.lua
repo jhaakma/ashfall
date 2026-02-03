@@ -21,6 +21,7 @@ local salts = {
     ingred_frost_salts_01 = {
         text = "Create Cold Flame",
         callback = function(target)
+            ---@diagnostic disable-next-line
             mwscript.explodeSpell{
                 reference = target,
                 spell = "ashfall_coldflame"
@@ -42,6 +43,7 @@ local salts = {
     ingred_fire_salts_01 = {
         text = "Reverse Cold Flame",
         callback = function(target)
+            ---@diagnostic disable-next-line
             mwscript.explodeSpell{
                 reference = target,
                 spell = "ashfall_hotflame"

@@ -61,14 +61,9 @@ end
 
 
 ---Apply this decal to pottery
----@param pottery tes3reference The pottery reference to apply the decal to
-function PotteryDecals:applyDecal(pottery)
-    if not pottery then return end
-    local mesh = pottery.object.mesh
-    if not mesh then return end
-    local sceneNode = pottery.sceneNode
+---@param sceneNode niNode The scene node to apply the decal to
+function PotteryDecals:applyDecal(sceneNode)
     if not sceneNode then return end
-
     ---@param node niNode
     for node in table.traverse{sceneNode} do
         local texturingProperty = node.texturingProperty
@@ -85,15 +80,9 @@ function PotteryDecals:applyDecal(pottery)
 end
 
 ---Remove this decal from pottery
----@param pottery tes3reference The pottery reference to remove the decal from
-function PotteryDecals:removeDecal(pottery)
-    logger:debug("Removing decal %s from pottery %s", self.id, pottery and pottery.object.id or "nil")
-    if not pottery then return end
-    local mesh = pottery.object.mesh
-    if not mesh then return end
-    local sceneNode = pottery.sceneNode
+---@param sceneNode niNode The scene node to remove the decal from
+function PotteryDecals:removeDecal(sceneNode)
     if not sceneNode then return end
-
     local didUpdate = false
     ---@param node niNode
     for node in table.traverse{sceneNode} do
@@ -118,7 +107,7 @@ end
 function PotteryDecals.applyCrackedDecal(pottery)
     local cracks = PotteryDecals.get("cracks")
     if cracks then
-        cracks:applyDecal(pottery)
+        cracks:applyDecal(pottery.sceneNode)
     end
 end
 
@@ -127,7 +116,7 @@ end
 function PotteryDecals.removeCrackedDecal(pottery)
     local cracks = PotteryDecals.get("cracks")
     if cracks then
-        cracks:removeDecal(pottery)
+        cracks:removeDecal(pottery.sceneNode)
     end
 end
 

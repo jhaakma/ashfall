@@ -95,33 +95,6 @@ clayConfig.kilnDatas = {
 }
 
 
----@type CraftingFramework.Recipe.data[]
-clayConfig.otherClayWorkingRecipes = {
-    {
-        name = "Brick Kiln",
-        id = "bushcraft:ashfall_kiln_01",
-        craftableId = "ashfall_kiln_01",
-        description = "A simple kiln for firing pottery. Unlike a campfire, it can maintain high temperatures for longer, and pottery is less likely to crack or shatter while being fired.",
-        materials = {
-            { material = "ashfall_brick_raw_01", count = 40 }
-        },
-        category = "Kilns",
-        soundId = "corpDRAG",
-        timeTaken = 1,
-        craftCallback = function(_, e)
-            e.reference.data.fuelLevel = 0
-            event.trigger("Ashfall:registerReference", { reference = e.reference})
-            logger:info("Crafted Brick Kiln: %s", e.reference.id)
-        end,
-        noMenu = true,
-        skillRequirements = {
-            {
-                skill = "Bushcrafting",
-                requirement = 30
-            }
-        }
-    }
-}
 
 clayConfig.spinningWheels = {
     "ashfall_spin_wheel_01"
@@ -145,20 +118,6 @@ clayConfig.potteryDecals = {
         id = "cracks",
         texturePath = "textures\\Ashfall\\clay\\cracks.dds",
         uvIndex = 1,
-    },
-}
-
----@type Ashfall.Clay.TemperData[]
-clayConfig.tempers = {
-    {
-        id = "ashfall_clay_broken_01",
-        name = "Crushed Grog",
-        description = "Crushed bits of fired clay used as a temper to improve the quality of raw clay when making pottery.",
-    },
-    {
-        id = "ashfall_ingred_coal_01",
-        name = "Crushed Charcoal",
-        description = "Crushed charcoal used as a temper to improve the quality of raw clay when making pottery.",
     },
 }
 

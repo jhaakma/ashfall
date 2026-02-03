@@ -890,7 +890,8 @@ function this.calculateTeaBuffDuration(maxDuration, waterHeat)
     local coldEffect = isCold and 0.5 or 1.0
     return maxDuration * skillMulti * coldEffect
 end
-
+---@param reference tes3reference
+---@param playSound boolean|nil
 function this.pickUp(reference, playSound)
     local function stealActivateEvent(e)
         event.unregister("activate", stealActivateEvent)

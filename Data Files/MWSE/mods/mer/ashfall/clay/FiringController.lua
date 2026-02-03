@@ -2,7 +2,6 @@ local common = require("mer.ashfall.common.common")
 local ReferenceManager = require("CraftingFramework").ReferenceManager
 local UnfiredPottery = require("mer.ashfall.clay.UnfiredPottery")
 local FiredPottery = require("mer.ashfall.clay.FiredPottery")
-local Glow = require("mer.ashfall.clay.Glow")
 ---This class manages firing clay by placing it over a fire
 ---@class Ashfall.FiringController
 local FiringController = {}
@@ -11,7 +10,10 @@ local potteryRefManager = ReferenceManager:new{
     onActivated = function(_, reference)
         local unfiredPot = UnfiredPottery:new{ reference = reference }
         if unfiredPot then
-            Glow.attachToNode(reference.sceneNode)
+            local heated = unfiredPot:getHeatedItem()
+            if heated then
+                heated:attachGlow()
+            end
             unfiredPot:resetLastTemperatureUpdate()
             unfiredPot:resetLastFiredTimestamp()
             unfiredPot:setDecals()
@@ -26,6 +28,11 @@ local firedPotteryRefManager = ReferenceManager:new{
     onActivated = function(_, reference)
         local firedPot = FiredPottery:new{ reference = reference }
         if firedPot then
+            local heated = firedPot:getHeatedItem()
+            if heated then
+                heated:attachGlow()
+            end
+            firedPot:updateGlow()
             firedPot:setDecals()
         end
     end,
@@ -47,6 +54,16 @@ function FiringController.processActivePottery()
     potteryRefManager:iterateReferences(function(reference)
         local heatSource = common.helper.getHeatFromBelow(reference, "strong")
         FiringController.processItem(reference, heatSource)
+    end)
+
+    -- Fired pottery should retain heat and visuals after firing, but still cool down.
+    firedPotteryRefManager:iterateReferences(function(reference)
+        local firedPot = FiredPottery:new{ reference = reference }
+        if not firedPot then
+            return
+        end
+        local heatSource = common.helper.getHeatFromBelow(reference, "strong")
+        firedPot:updateHeat(heatSource)
     end)
 end
 

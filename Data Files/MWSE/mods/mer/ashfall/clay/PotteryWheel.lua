@@ -8,8 +8,9 @@ local CraftingFramework = require("CraftingFramework")
 local ReferenceManager = CraftingFramework.ReferenceManager
 local CarryableContainer = CraftingFramework.CarryableContainer
 local RawClay = require("mer.ashfall.clay.RawClay")
-local ThrowingMenu = require("mer.ashfall.clay.ThrowingMenu")
-
+local ShapingMenu = require("mer.ashfall.clay.ShapingMenu")
+local Temper = require("mer.ashfall.clay.Temper")
+local Decals = require("mer.ashfall.clay.PotteryDecals")
 ---@class Ashfall.PotteryWheel: ItemInstance
 ---@field data Ashfall.SpinningWheelData
 ---@field registeredSpinningWheels table<string, boolean>
@@ -70,6 +71,7 @@ end
 function PotteryWheel:addClay(amount)
     local currentAmount = self:getClayAmount()
     self:setClayAmount(currentAmount + amount)
+    self:updateVisuals()
 end
 
 ---Get the item being processed on the spinning wheel
@@ -83,7 +85,11 @@ function PotteryWheel:addClayFromPlayer()
     logger:debug("Adding clay from player to spinning wheel: %s", self.reference.id)
     RawClay.openSelectMenu(function(e)
         if not e.item then return end
-        self.data.isClayTempered = RawClay.isTempered(e.item.id)
+        local tempered = Temper:new{
+            item = e.item,
+            itemData = e.itemData,
+        }
+        self.data.isClayTempered = tempered and tempered:hasTemper() or false
         self:addClay(1)
         CarryableContainer.removeItem{
             reference = tes3.player,
@@ -93,11 +99,7 @@ function PotteryWheel:addClayFromPlayer()
             playSound = false,
         }
         logger:debug("Added clay to spinning wheel. Current clay amount: %d", self:getClayAmount())
-        self:updateVisuals()
-        -- Immediately open the molding menu after adding clay
-        timer.delayOneFrame(function()
-            self:openMoldingMenu()
-        end)
+
     end)
 end
 
@@ -125,6 +127,13 @@ function PotteryWheel:updateVisuals()
             local clayMesh = tes3.loadMesh(PotteryWheel.CLAY_BASE_MESH):clone()
             clayMesh.name = "Ashfall_ClayMesh"
             attachNode:attachChild(clayMesh)
+
+            local decals = Decals.get("temper") --[[@as Ashfall.Clay.PotteryDecals]]
+            if self.data.isClayTempered then
+                decals:applyDecal(attachNode)
+            else
+                decals:removeDecal(attachNode)
+            end
             visualsChanged = true
         else
             logger:debug("Spinning wheel already has clay mesh: %s", self.reference.id)
@@ -155,6 +164,14 @@ function PotteryWheel:attachAnimNode(recipe)
         attachNode:attachChild(animMesh)
         attachNode:update()
         attachNode:updateEffects()
+        if self.data.isClayTempered then
+                       local decals = Decals.get("temper") --[[@as Ashfall.Clay.PotteryDecals]]
+            if self.data.isClayTempered then
+                decals:applyDecal(attachNode)
+            else
+                decals:removeDecal(attachNode)
+            end
+        end
     end
 end
 
@@ -254,7 +271,6 @@ function PotteryWheel:replaceAnimMeshWithItem()
         return
     end
     local position = self:getAttachNodeGlobalPosition()
-    self.data.itemBeingProcessed = nil
 
     UnfiredPottery.createPotteryRef{
         objectId = itemBeingProcessed,
@@ -263,6 +279,10 @@ function PotteryWheel:replaceAnimMeshWithItem()
         orientation = self.reference.orientation,
         tempered = self.data.isClayTempered == true,
     }
+
+    self.data.itemBeingProcessed = nil
+    self.data.isClayTempered = nil
+
     self:removeAnimNode()
     self:updateVisuals()
 end
@@ -277,12 +297,10 @@ end
 
 ---Open the clay molding menu for this spinning wheel
 function PotteryWheel:openMoldingMenu()
-    ThrowingMenu:new{
+    ShapingMenu:new{
         title = "Pottery Wheel",
-        clayTypes = {
-            RawClay.rawClayId,
-            RawClay.temperedClayId,
-        },
+        clayId = RawClay.rawClayId,
+        isTempered = self.data.isClayTempered,
         recipes = PotteryRecipe.getAllRecipesByMethod("wheel"),
         okayCallback = function(results)
             timer.delayOneFrame(function()
@@ -291,42 +309,14 @@ function PotteryWheel:openMoldingMenu()
                     logger:error("No recipe found for selected shape id: %s", results.selectedShapeId)
                     return
                 end
-                local clayId = results.selectedClayId
-                local isTempered = RawClay.isTempered(clayId)
                 local clayAmount = recipe.clayAmount
                 self:addClay(-clayAmount)
-                self.data.isClayTempered = isTempered
                 self:startSpinning(recipe)
             end)
-        end
+        end,
+        hasTemper = self.data.isClayTempered,
     }:show()
 
-end
-
----Take the processed item from the spinning wheel
-function PotteryWheel:takeProcessedItem()
-    local processedItemId = self:getItemBeingProcessed()
-    if not processedItemId then
-        logger:error("No item being processed on spinning wheel: %s", self.reference.id)
-        return
-    end
-    self.data.itemBeingProcessed = nil
-    tes3.addItem{
-        reference = tes3.player,
-        item = processedItemId,
-        count = 1,
-        playSound = true,
-    }
-    self:removeAnimNode()
-    self:updateVisuals()
-end
-
----Get the clay item id based on whether the clay is tempered
-function PotteryWheel:getClayItemId()
-    if self.data.isClayTempered then
-        return RawClay.temperedClayId
-    end
-    return RawClay.rawClayId
 end
 
 function PotteryWheel:takeClay()
@@ -334,10 +324,29 @@ function PotteryWheel:takeClay()
     self:setClayAmount(0)
     tes3.addItem{
         reference = tes3.player,
-        item = self:getClayItemId(),
+        item = RawClay.rawClayId,
         count = clayAmount,
         playSound = true,
     }
+    if self.data.isClayTempered then
+        local itemData = tes3.addItemData{
+            to = tes3.player,
+            item = RawClay.rawClayId,
+        }
+        if itemData then
+            local tempered = Temper:new{
+                item = tes3.getObject(RawClay.rawClayId),
+                itemData = itemData,
+            }
+            if tempered then
+                tempered:addTemper()
+                logger:debug("Added temper to clay taken from spinning wheel")
+            end
+        else
+            logger:error("Failed to add temper to clay taken from spinning wheel")
+        end
+    end
+
     self:updateVisuals()
     logger:debug("Removed clay from spinning wheel")
 end
@@ -374,62 +383,67 @@ ReferenceManager:new{
     end,
 }
 
-
+function PotteryWheel:canAddClay()
+    return self:getClayAmount() < 1
+        and self:getItemBeingProcessed() == nil
+end
 
 
 ---@type craftingFrameworkMenuButtonData[]
 PotteryWheel.buttons = {
     {
         text = "Use",
-        -- showRequirements = function(e)
-        --     local potteryWheel = PotteryWheel:new(e.reference)
-        --     if not potteryWheel then
-        --         logger:error("Failed to create spinning wheel instance for reference: %s", e.reference.id)
-        --         return false
-        --     end
-        --     return potteryWheel:getItemBeingProcessed() == nil
-        -- end,
+        showRequirements = function(e)
+            local potteryWheel = PotteryWheel:new(e.reference)
+            if not potteryWheel then
+                logger:error("Failed to create spinning wheel instance for reference: %s", e.reference.id)
+                return false
+            end
+            return potteryWheel:getItemBeingProcessed() == nil
+                and potteryWheel:getClayAmount() > 0
+        end,
         callback = function(e)
             local potteryWheel = PotteryWheel:new(e.reference)
             if not potteryWheel then return end
             potteryWheel:openMoldingMenu()
         end
     },
-    -- {
-    --     text = "Add Clay",
-    --     showRequirements = function(e)
-    --         local potteryWheel = PotteryWheel:new(e.reference)
-    --         if not potteryWheel then return false end
-    --         return potteryWheel:getClayAmount() < 1
-    --             and potteryWheel:getItemBeingProcessed() == nil
-    --     end,
-    --     enableRequirements = function(e)
-    --         local clayInInventory = RawClay.getPlayerClayInInventory()
-    --         return clayInInventory > 0
-    --     end,
-    --     tooltipDisabled = function()
-    --         return { text = "You have no raw clay in your inventory." }
-    --     end,
-    --     callback = function(e)
-    --         local potteryWheel = PotteryWheel:new(e.reference)
-    --         if not potteryWheel then return end
-    --         potteryWheel:addClayFromPlayer()
-    --     end
-    -- },
-    -- {
-    --     text = "Remove Clay",
-    --     -- showRequirements = function(e)
-    --     --     local potteryWheel = PotteryWheel:new(e.reference)
-    --     --     if not potteryWheel then return false end
-    --     --     return potteryWheel:getClayAmount() > 0
-    --     --         and potteryWheel:getItemBeingProcessed() == nil
-    --     -- end,
-    --     callback = function(e)
-    --         local potteryWheel = PotteryWheel:new(e.reference)
-    --         if not potteryWheel then return end
-    --         potteryWheel:takeClay()
-    --     end
-    -- },
+    {
+        text = "Add Clay",
+        showRequirements = function(e)
+            local potteryWheel = PotteryWheel:new(e.reference)
+            if not potteryWheel then return false end
+            local clayInInventory = RawClay.getPlayerClayInInventory()
+            return clayInInventory > 0
+                and potteryWheel:canAddClay()
+        end,
+        enableRequirements = function(e)
+            local clayInInventory = RawClay.getPlayerClayInInventory()
+            return clayInInventory > 0
+        end,
+        tooltipDisabled = function()
+            return { text = "You have no raw clay in your inventory." }
+        end,
+        callback = function(e)
+            local potteryWheel = PotteryWheel:new(e.reference)
+            if not potteryWheel then return end
+            potteryWheel:addClayFromPlayer()
+        end
+    },
+    {
+        text = "Remove Clay",
+        showRequirements = function(e)
+            local potteryWheel = PotteryWheel:new(e.reference)
+            if not potteryWheel then return false end
+            return potteryWheel:getClayAmount() > 0
+                and potteryWheel:getItemBeingProcessed() == nil
+        end,
+        callback = function(e)
+            local potteryWheel = PotteryWheel:new(e.reference)
+            if not potteryWheel then return end
+            potteryWheel:takeClay()
+        end
+    },
 }
 
 

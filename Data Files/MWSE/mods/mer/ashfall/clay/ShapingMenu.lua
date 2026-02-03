@@ -15,50 +15,45 @@ Layout:
 │ Requirements  │                            │
 │ Info Panel    │                            │
 ├───────────────┴────────────────────────────┤
-│ Clay: ○ Raw Clay  ● Tempered Clay          │
-│                       [Confirm]   [Cancel] │
-└────────────────────────────────────────────┘
+
 ]]
----@class Ashfall.Clay.ThrowingMenu : Ashfall.Clay.ThrowingMenu.newParams
+---@class Ashfall.Clay.ShapingMenu : Ashfall.Clay.ShapingMenu.newParams
 ---@field recipeDict table<string, Ashfall.PotteryRecipe>
----@field results Ashfall.Clay.ThrowingMenu.results
----@field elements Ashfall.Clay.ThrowingMenu.elements
+---@field results Ashfall.Clay.ShapingMenu.results
+---@field elements Ashfall.Clay.ShapingMenu.elements
 ---@field previewPane CraftingFramework.PreviewPane?
-local ThrowingMenu = {}
+local ShapingMenu = {}
 
 local common = require("mer.ashfall.common.common")
-local logger = common.createLogger("ThrowingMenu")
+local logger = common.createLogger("ShapingMenu")
+local Decals = require("mer.ashfall.clay.PotteryDecals")
 logger.logLevel = "TRACE"
 
 local PreviewPane = require("CraftingFramework.components.PreviewPane")
-local CarriableContainer = require("CraftingFramework.carryableContainers.components.CarryableContainer")
-
 ---List of UI elements in the menu
----@class Ashfall.Clay.ThrowingMenu.elements
+---@class Ashfall.Clay.ShapingMenu.elements
 ---@field menu tes3uiElement
 ---@field shapeList tes3uiElement
 ---@field preview tes3uiElement
----@field clayTypeSelector tes3uiElement
 ---@field requirementsStats tes3uiElement
 ---@field confirmButton tes3uiElement
 ---@field cancelButton tes3uiElement
 
-
----@class Ashfall.Clay.ThrowingMenu.results
+---@class Ashfall.Clay.ShapingMenu.results
 ---@field selectedShapeId string
----@field selectedClayId string
 
----@class Ashfall.Clay.ThrowingMenu.newParams
+---@class Ashfall.Clay.ShapingMenu.newParams
 ---@field title string
+---@field clayId string
 ---@field recipes Ashfall.PotteryRecipe[]
----@field clayTypes string[]
----@field okayCallback fun(e: Ashfall.Clay.ThrowingMenu.results)
+---@field okayCallback fun(e: Ashfall.Clay.ShapingMenu.results)
+---@field hasTemper boolean
 
 ---Constructor
----@param e Ashfall.Clay.ThrowingMenu.newParams
----@return Ashfall.Clay.ThrowingMenu
-function ThrowingMenu:new(e)
-    logger:debug("ThrowingMenu:new() called")
+---@param e Ashfall.Clay.ShapingMenu.newParams
+---@return Ashfall.Clay.ShapingMenu
+function ShapingMenu:new(e)
+    logger:debug("ShapingMenu:new() called")
 
     local recipeDict = {}
     for _, recipe in ipairs(e.recipes) do
@@ -73,10 +68,11 @@ function ThrowingMenu:new(e)
         title = e.title,
         recipes = e.recipes,
         recipeDict = recipeDict,
-        clayTypes = e.clayTypes,
         okayCallback = e.okayCallback,
         results = {},
         elements = {},
+        clayId = e.clayId,
+        hasTemper = e.hasTemper,
     }
     setmetatable(obj, self)
     self.__index = self
@@ -85,7 +81,7 @@ function ThrowingMenu:new(e)
 end
 
 
-function ThrowingMenu:show()
+function ShapingMenu:show()
 
         --select first shape by default
     if #self.recipes > 0 then
@@ -106,7 +102,6 @@ function ThrowingMenu:show()
     leftColumn.minWidth = 250
     leftColumn.heightProportional = 1.0
     self:createShapeList(leftColumn)
-    self:createClayTypeSelector(leftColumn)
     self:createRequirementsStats(leftColumn)
 
     -- Right column contains preview
@@ -133,8 +128,8 @@ function ThrowingMenu:show()
     self:update()
 end
 
-function ThrowingMenu:createCancelButton(row)
-    logger:debug("ThrowingMenu:createCancelButton() called")
+function ShapingMenu:createCancelButton(row)
+    logger:debug("ShapingMenu:createCancelButton() called")
     local cancelButton = row:createButton{ id = "Ashfall:PotteryWheelCancelButton", text = "Cancel" }
     cancelButton:register("mouseClick", function()
         logger:debug("Cancel button clicked, closing menu")
@@ -155,14 +150,14 @@ end
 
 
 
-function ThrowingMenu:createConfirmButton(row)
-    logger:debug("ThrowingMenu:createConfirmButton() called")
+function ShapingMenu:createConfirmButton(row)
+    logger:debug("ShapingMenu:createConfirmButton() called")
     local confirmButton = row:createButton{ id = "Ashfall:PotteryWheelConfirmButton", text = "Confirm" }
     confirmButton:register("mouseClick", function()
         logger:debug("Confirm button clicked")
 
         --Confirm both shape and clay type are selected
-        if not (self.results.selectedShapeId and self.results.selectedClayId) then
+        if not (self:checkRequirements()) then
             logger:warn("Confirm button clicked but shape or clay type not selected, ignoring")
             return
         end
@@ -181,7 +176,6 @@ function ThrowingMenu:createConfirmButton(row)
             if self.okayCallback then
                 local results = {
                     selectedShapeId = self.results.selectedShapeId,
-                    selectedClayId = self.results.selectedClayId,
                 }
                 self.okayCallback(results)
             end
@@ -192,8 +186,8 @@ function ThrowingMenu:createConfirmButton(row)
 end
 
 
-function ThrowingMenu:createRequirementsStats(column)
-    logger:debug("ThrowingMenu:createRequirementsStats() called")
+function ShapingMenu:createRequirementsStats(column)
+    logger:debug("ShapingMenu:createRequirementsStats() called")
 
     local statsPane = column:createBlock{ id = "Ashfall:PotteryRequirementsStatsPane" }
     statsPane.widthProportional = 1.0
@@ -208,8 +202,8 @@ function ThrowingMenu:createRequirementsStats(column)
     return statsPane
 end
 
-function ThrowingMenu:createPreview(previewContainer)
-    logger:debug("ThrowingMenu:createPreview() called")
+function ShapingMenu:createPreview(previewContainer)
+    logger:debug("ShapingMenu:createPreview() called")
 
 
     local title = self:createTitle(previewContainer, "Preview")
@@ -233,58 +227,11 @@ function ThrowingMenu:createPreview(previewContainer)
     return previewContainer
 end
 
----@param row tes3uiElement
-function ThrowingMenu:createClayTypeSelector(row)
-    logger:debug("ThrowingMenu:createClayTypeSelector() called")
-
-    -- Create a container for the clay type selector
-    local clayContainer = row:createBlock{ id = "Ashfall:PotteryClayTypeContainer" }
-    clayContainer.widthProportional = 1.0
-    clayContainer.autoHeight = true
-    clayContainer.autoWidth = true
-    clayContainer.flowDirection = "top_to_bottom"
-    clayContainer.paddingLeft = 8
-    clayContainer.paddingRight = 8
-
-    self:createTitle(clayContainer, "Clay Type")
-
-    local clayList = clayContainer:createVerticalScrollPane{ id = "Ashfall:PotteryClayTypeList" }
-    clayList.widthProportional = 1.0
-    clayList.autoHeight = true
-    clayList.autoWidth = true
-    clayList.minHeight = 50
-
-
-    for i, clayTypeId in ipairs(self.clayTypes) do
-        local clayObject = tes3.getObject(clayTypeId)
-        if clayObject then
-            local clayButton = clayList:createTextSelect{
-                 id = "Ashfall:PotteryClayTypeButton_" .. clayTypeId,
-                 text = clayObject.name
-            }
-            clayButton:register("mouseClick", function(e)
-                logger:debug("Selected clay type: %s", clayTypeId)
-                self.results.selectedClayId = clayTypeId
-                self:update()
-            end)
-            if clayTypeId == self.results.selectedClayId then
-                clayButton.widget.state = tes3.uiState.selected
-            else
-                clayButton.widget.state = tes3.uiState.normal
-            end
-        end
-    end
-
-    self.elements.clayTypeSelector = clayContainer
-    return clayContainer
-end
-
-
 
 
 ---@param column tes3uiElement
-function ThrowingMenu:createShapeList(column)
-    logger:debug("ThrowingMenu:createShapeList() called")
+function ShapingMenu:createShapeList(column)
+    logger:debug("ShapingMenu:createShapeList() called")
 
     local shapeListBlock = column:createBlock{ id = "Ashfall:PotteryShapeListBlock" }
     shapeListBlock.widthProportional = 1.0
@@ -324,8 +271,8 @@ end
 ---@param row tes3uiElement
 ---@param text string
 ---@return tes3uiElement
-function ThrowingMenu:createTitle(row, text)
-    logger:debug("ThrowingMenu:createTitle() called")
+function ShapingMenu:createTitle(row, text)
+    logger:debug("ShapingMenu:createTitle() called")
     local title = row:createLabel{ text = text }
     title.autoHeight = true
     title.widthProportional = 1.0
@@ -337,8 +284,8 @@ function ThrowingMenu:createTitle(row, text)
 end
 
 
-function ThrowingMenu:createRow(menu)
-    logger:debug("ThrowingMenu:createRow() called")
+function ShapingMenu:createRow(menu)
+    logger:debug("ShapingMenu:createRow() called")
     local row = menu:createBlock{ id = "Ashfall:PotteryWheelRow" }
     row.flowDirection = "left_to_right"
     row.widthProportional = 1.0
@@ -348,8 +295,8 @@ function ThrowingMenu:createRow(menu)
 end
 
 
-function ThrowingMenu:createColumn(row)
-    logger:debug("ThrowingMenu:createColumn() called")
+function ShapingMenu:createColumn(row)
+    logger:debug("ShapingMenu:createColumn() called")
     local column = row:createThinBorder{ id = "Ashfall:PotteryWheelColumn" }
     column.flowDirection = "top_to_bottom"
     column.autoWidth = true
@@ -359,8 +306,8 @@ function ThrowingMenu:createColumn(row)
 end
 
 
-function ThrowingMenu:createMenu()
-    logger:debug("ThrowingMenu:createMenu() called")
+function ShapingMenu:createMenu()
+    logger:debug("ShapingMenu:createMenu() called")
     local menu = tes3ui.createMenu{ id = "Ashfall:PotteryWheelMenu", fixedFrame = true }
     tes3ui.enterMenuMode(menu.id)
 
@@ -376,8 +323,8 @@ end
 -------------------
 
 
-function ThrowingMenu:update()
-    logger:debug("ThrowingMenu:update() called")
+function ShapingMenu:update()
+    logger:debug("ShapingMenu:update() called")
 
     self:updateConfirmButton()
     self:updateRequirementsStats()
@@ -386,7 +333,7 @@ function ThrowingMenu:update()
 end
 
 
-function ThrowingMenu:updatePreview()
+function ShapingMenu:updatePreview()
     if not self.previewPane then
         logger:warn("PreviewPane not found, cannot update")
         return
@@ -423,28 +370,23 @@ function ThrowingMenu:updatePreview()
 
     logger:debug("Updating preview with item: %s", item.id)
     self.previewPane:updatePreview(previewData)
+
+    local nifBlock = self.previewPane:getNifElement()
+    if self.hasTemper then
+        local decals = Decals.get("temper") --[[@as Ashfall.Clay.PotteryDecals]]
+        decals:applyDecal(nifBlock.sceneNode)
+    end
 end
 
-function ThrowingMenu:checkRequirements()
+function ShapingMenu:checkRequirements()
     --Check if both shape and clay type are selected
     if not self.results.selectedShapeId then
-        return false
-    end
-    if not self.results.selectedClayId then
         return false
     end
 
     local recipe = self:getRecipe(self.results.selectedShapeId)
     if not recipe then
         logger:warn("Recipe not found for selected shape: %s", self.results.selectedShapeId)
-        return false
-    end
-
-    --Check clay requirement
-    local clayInInventory = tes3.getItemCount({ reference = tes3.player, item = self.results.selectedClayId })
-    local clayRequired = recipe.clayAmount
-
-    if clayInInventory < clayRequired then
         return false
     end
 
@@ -457,12 +399,12 @@ function ThrowingMenu:checkRequirements()
     return true
 end
 
-function ThrowingMenu:getRecipe(id)
+function ShapingMenu:getRecipe(id)
     return self.recipeDict[id]
 end
 
-function ThrowingMenu:updateRequirementsStats()
-    logger:debug("ThrowingMenu:updateRequirementsStats() called")
+function ShapingMenu:updateRequirementsStats()
+    logger:debug("ShapingMenu:updateRequirementsStats() called")
     local stats = self.elements.requirementsStats
     if not stats then
         logger:warn("Requirements stats element not found, cannot update")
@@ -474,25 +416,19 @@ function ThrowingMenu:updateRequirementsStats()
     --Shape selected
     if self.results.selectedShapeId then
         local recipe = self:getRecipe(self.results.selectedShapeId)
-        if recipe and self.results.selectedClayId then
+        if recipe then
             ---@cast recipe Ashfall.PotteryRecipe
 
-            local clayObject = tes3.getObject(self.results.selectedClayId)
+            local clayObject = tes3.getObject(self.clayId)
             if not clayObject then
-                logger:warn("Clay object not found: %s", self.results.selectedClayId)
+                logger:warn("Clay object not found: %s", self.clayId)
                 return
             end
 
             local shapeLabel = stats:createLabel{ text = "Requirements:" }
             shapeLabel.color = tes3ui.getPalette(tes3.palette.headerColor)
 
-            local playerHas = CarriableContainer.getItemCount({ reference = tes3.player, item = self.results.selectedClayId })
-            local clayNeeded = recipe.clayAmount
-            local hasEnough = playerHas >= recipe.clayAmount
-            local clayLabel = stats:createLabel{ text = string.format("%s: %s/%s", clayObject.name, playerHas, clayNeeded) }
-            if not hasEnough then
-                clayLabel.color = tes3ui.getPalette(tes3.palette.disabledColor)
-            end
+            local clayLabel = stats:createLabel{ text = self.hasTemper and "Tempered Clay" or "Raw Clay" }
 
             local difficulty = recipe.difficulty or 0
             local currentSkill = common.skills.pottery.current
@@ -516,8 +452,8 @@ function ThrowingMenu:updateRequirementsStats()
 end
 
 
-function ThrowingMenu:updateConfirmButton()
-    logger:debug("ThrowingMenu:updateConfirmButton() called")
+function ShapingMenu:updateConfirmButton()
+    logger:debug("ShapingMenu:updateConfirmButton() called")
     local confirmButton = self.elements.confirmButton
     if not confirmButton then
         logger:warn("Confirm button not found, cannot update")
@@ -530,4 +466,4 @@ function ThrowingMenu:updateConfirmButton()
 end
 
 
-return ThrowingMenu
+return ShapingMenu

@@ -4,8 +4,11 @@ local logger = common.createLogger("ClayTemper")
 local RawClay = require("mer.ashfall.clay.RawClay")
 local PotteryRecipe = require("mer.ashfall.clay.PotteryRecipe")
 local CraftingFramework = require("CraftingFramework")
+local CarryableContainer = CraftingFramework.CarryableContainer
 local UnfiredPottery = require("mer.ashfall.clay.UnfiredPottery")
 local Temper = require("mer.ashfall.clay.Temper")
+local MortarAndPestle = require("mer.ashfall.clay.MortarAndPestle")
+local ShapingMenu = require("mer.ashfall.clay.ShapingMenu")
 
 ---@class Ashfall.Clay.TemperData
 ---@field id string The object ID of the ingredient used as temper
@@ -18,9 +21,12 @@ local Temper = require("mer.ashfall.clay.Temper")
 ---@class Ashfall.Clay.ClayWorking
 local ClayWorking    = {
     ---@type table<string, boolean>
-    animationActivatorIds = {}
+    animationActivatorIds = {},
+    TEMPER_HOURS_PASSED = 0.1,
+    TEMPER_SECONDS_TAKEN = 3,
 
-
+    SHAPING_HOURS_PASSED = 0.1,
+    SHAPING_SECONDS_TAKEN = 3,
 }
 
 
@@ -35,8 +41,79 @@ function ClayWorking.registerActivatorId(id)
     logger:debug("Registered clay working activator id: %s", id)
 end
 
+---Add temper to clay
+---@param reference tes3reference
+function ClayWorking.addTemper(reference)
+    CarryableContainer.removeItem{
+        reference = tes3.player,
+        item = Temper.temperId,
+        count = 1,
+        playSound = false,
+    }
+    tes3.playSound{
+        reference = reference,
+        sound = "corpDRAG"
+    }
 
+    timer.start{
+        type = timer.real,
+        duration = ClayWorking.TEMPER_SECONDS_TAKEN * 0.5,
+        callback = function()
+            local tempered = Temper:new{ reference = reference }
+            if tempered then
+                tempered:addTemper()
+                tes3.playSound{
+                    reference = reference,
+                    sound = "corpDRAG"
+                }
+            end
+        end
+    }
+    common.helper.fadeTimeOut(ClayWorking.TEMPER_HOURS_PASSED,
+        ClayWorking.TEMPER_SECONDS_TAKEN, function() end)
+end
 
+--Open the clay working menu
+function ClayWorking.openCraftMenu(reference)
+    local tempered = Temper:new{ reference = reference }
+    local isTempered = tempered and tempered:hasTemper() or false
+
+    ShapingMenu:new{
+        title = "Clay Working",
+        clayId = RawClay.rawClayId,
+        recipes = PotteryRecipe.getAllRecipesByMethod("hand"),
+        okayCallback = function(results)
+            tes3.playSound{
+                reference = reference,
+                sound = "corpDRAG"
+            }
+
+            timer.start{
+                type = timer.real,
+                duration = ClayWorking.SHAPING_SECONDS_TAKEN * 0.5,
+                callback = function()
+                    local itemId = results.selectedShapeId
+                    UnfiredPottery.createPotteryRef{
+                        objectId = itemId,
+                        cell = reference.cell,
+                        position = reference.position,
+                        tempered = isTempered,
+                    }
+                    reference:delete()
+                end
+            }
+            common.helper.fadeTimeOut(ClayWorking.SHAPING_HOURS_PASSED,
+                ClayWorking.SHAPING_SECONDS_TAKEN, function()
+                end)
+        end,
+        hasTemper = isTempered,
+    }:show()
+end
+
+function ClayWorking.isClay(reference)
+    if not reference then return false end
+    return reference.object.id:lower() == RawClay.rawClayId:lower()
+end
 
 ---On activate: Show message box with:
 --- - Temper clay
@@ -45,8 +122,17 @@ end
 --- - Cancel
 ---@param e activateEventData
 function ClayWorking.onActivate(e)
+    if tes3ui.menuMode() then return end
+
+    if common.helper.isModifierKeyPressed() then
+        return
+    end
+
     local clayRef = e.target
-    if not ClayWorking.animationActivatorIds[clayRef.baseObject.id:lower()] then
+    if not ClayWorking.isClay(clayRef) then
+        return
+    end
+    if not clayRef.supportsLuaData then
         return
     end
 
@@ -57,53 +143,55 @@ function ClayWorking.onActivate(e)
                 text = "Temper Clay",
                 callback = function()
                     ClayWorking.addTemper(clayRef)
-                end
+                end,
+                showRequirements = function()
+                    local tempered = Temper:new{ reference = clayRef }
+                    return not (tempered and tempered:hasTemper())
+                end,
+                enableRequirements = function()
+                    local hasTemper = Temper.getPlayerTemperCount() > 0
+                    local hasMortarAndPestle = MortarAndPestle.playerHasMortarAndPestle()
+                    return hasTemper
+                        and hasMortarAndPestle
+                end,
+                tooltip = function()
+                    return {
+                        header = "Requirements:",
+                        text = "- 1x Broken Pottery\n- Mortar and Pestle",
+                    }
+                end,
+                tooltipDisabled = function()
+                    return {
+                        header = "Requirements:",
+                        text = "- 1x Broken Pottery\n- Mortar and Pestle",
+                    }
+                end,
             },
             {
                 text = "Work Clay",
                 callback = function()
-                    ClayWorking.openCraftMenu(clayRef)
-                end
+                    timer.delayOneFrame(function()
+                        ClayWorking.openCraftMenu(clayRef)
+                    end)
+                end,
             },
             {
                 text = "Pick Up",
                 callback = function()
-                    common.helper.pickUp(clayRef, true)
+                    timer.delayOneFrame(function()
+                        common.helper.pickUp(clayRef, true)
+                    end)
                 end
             }
         },
         cancels = true
     }
+    return false
 end
 
+
 function ClayWorking.initialise()
-    logger:debug("Initialising ClayWorking menu activator")
-    ---@type CraftingFramework.Recipe.data[]
-    local recipes = {}
-
-    ClayWorking.menuActivator = CraftingFramework.MenuActivator:new{
-        id = "ashfall_clay_working_menu",
-        type = "event",
-        name = "Clay Working",
-        recipes = recipes,
-        doesTimePass = function()
-            return config.craftingTakesTime
-        end,
-    }
-
-    local craftingAnimationActivatorIds = ClayWorking.getCraftMenuAnimationActivatorIds()
-    for id in pairs(craftinganimationActivatorIds) do
-        CraftingFramework.Indicator.register{
-            objectId = id,
-            additionalUI = function(_, parent)
-                parent:createLabel{ text = "Activate: Clay Working" }
-            end
-        }
-    end
-
     event.register("activate", ClayWorking.onActivate)
-
-    logger:debug("ClayWorking initialised with %d recipes", #recipes)
 end
 
 return ClayWorking

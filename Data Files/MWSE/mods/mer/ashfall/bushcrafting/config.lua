@@ -1147,6 +1147,30 @@ local bushCraftingRecipes = {
             category = this.categories.survival,
             soundType = "wood",
             timeTaken = CRAFT_TIMES.small,
+        },
+        {
+            name = "Brick Kiln",
+            id = "bushcraft:ashfall_kiln_01",
+            craftableId = "ashfall_kiln_01",
+            description = "A simple kiln for firing pottery. Unlike a campfire, it can maintain high temperatures for longer, and pottery is less likely to crack or shatter while being fired.",
+            materials = {
+                { material = "ashfall_brick_raw_01", count = 40 }
+            },
+            category = "Structures",
+            soundId = "corpDRAG",
+            timeTaken = CRAFT_TIMES.large,
+            craftCallback = function(_, e)
+                e.reference.data.fuelLevel = 0
+                event.trigger("Ashfall:registerReference", { reference = e.reference})
+                logger:info("Crafted Brick Kiln: %s", e.reference.id)
+            end,
+            noMenu = true,
+            skillRequirements = {
+                {
+                    skill = "Bushcrafting",
+                    requirement = 30
+                }
+            }
         }
     },
     journeyman = {

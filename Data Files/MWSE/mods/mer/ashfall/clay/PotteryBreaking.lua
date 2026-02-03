@@ -6,7 +6,9 @@ local PotteryDecals = require("mer.ashfall.clay.PotteryDecals")
 
 ---Module for handling pottery breaking mechanics shared between unfired and fired pottery
 ---@class Ashfall.PotteryBreaking
-local PotteryBreaking = {}
+local PotteryBreaking = {
+    POTTERY_COLLECTED = 5,
+}
 
 ---Crack a pottery item, setting cracked status and applying visual effects
 ---@param reference tes3reference The pottery reference to crack
@@ -46,7 +48,7 @@ function PotteryBreaking.setDecals(reference, data)
         logger:debug("Applying cracked decal to pottery: %s", reference.id)
         local cracks = PotteryDecals.get("cracks")
         if cracks then
-            cracks:applyDecal(reference)
+            cracks:applyDecal(reference.sceneNode)
         end
     end
 end
@@ -109,7 +111,7 @@ function PotteryBreaking.onActivateBroken(e)
     tes3.addItem{
         reference = tes3.player,
         item = RawClay.brokenClayId,
-        count = 1,
+        count = PotteryBreaking.POTTERY_COLLECTED,
         showMessage = true
     }
     timer.delayOneFrame(function()
