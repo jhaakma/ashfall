@@ -172,6 +172,39 @@ function this.update()
     this.calculate(0, true)
 end
 
+--[[
+    The survival stack no longer ticks during a menu-mode vanilla rest/wait, so the
+    hunger that would have accumulated over those hours is applied once here from the
+    measured delta. Mirrors calculate()'s sleeping/normal branches: resting uses the
+    restingNeedsMultiplier, waiting uses the base rate. The value is capped at
+    "starving" so a long rest can't push the player past it (replacing the old
+    per-frame mid-rest wake-and-cap in sleepController).
+]]
+local function applyRestHunger(hours, isResting)
+    if hours <= 0 then return end
+    if not hunger:isActive() then return end
+    if common.data.blockNeeds or common.data.blockHunger then return end
+
+    local hungerRate = config.hungerRate / 10
+    local temp = common.staticConfigs.conditionConfig.temp
+    local coldEffect = math.clamp(temp:getValue(), temp.states.freezing.min, temp.states.chilly.max)
+    coldEffect = math.remap(coldEffect, temp.states.freezing.min, temp.states.chilly.max, coldMulti, 1.0)
+    local foodPoisonEffect = common.staticConfigs.conditionConfig.foodPoison:isAffected() and foodPoisonMulti or 1.0
+    local restMulti = isResting and config.restingNeedsMultiplier or 1.0
+
+    local newHunger = hunger:getValue() + ( hours * hungerRate * coldEffect * foodPoisonEffect * restMulti )
+    local capped = newHunger >= hunger.states.starving.min
+    newHunger = math.min(newHunger, hunger.states.starving.min)
+    hunger:setValue(newHunger)
+    common.data.hungerEffect = math.remap(newHunger, 0, 100, HUNGER_EFFECT_HIGH, HUNGER_EFFECT_LOW)
+    if capped then
+        tes3.messageBox({ message = "You are starving.", buttons = { "Okay" } })
+    end
+end
+event.register("Ashfall:RestFinished", function(e)
+    applyRestHunger(e.hours, e.isResting)
+end)
+
 local function addFoodPoisoning(e)
     --Check for food poisoning
     if foodConfig.getFoodType(e.item) == foodConfig.type.meat then

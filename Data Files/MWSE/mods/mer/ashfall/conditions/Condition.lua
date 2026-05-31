@@ -128,15 +128,29 @@ end
     Returns the current state ID the player is in for this condition
 ]]
 function Condition:getCurrentState()
-    local currentState = self.default
     local currentValue = self:getValue()
     currentValue = math.clamp(currentValue, self.min, self.max)
 
+    --Fast path: this runs once per condition per ~10Hz tick, and the value usually
+    --drifts within the same state band between ticks. If it's still STRICTLY inside the
+    --previously resolved state's range, no other (boundary-sharing) state can match, so
+    --return the cached id and skip re-scanning self.states. Exact boundary values fall
+    --through to the full scan, preserving its order-dependent overlap tie-break exactly.
+    local cachedId = self._stateCache
+    if cachedId then
+        local cached = self.states[cachedId]
+        if cached and cached.min < currentValue and currentValue < cached.max then
+            return cachedId
+        end
+    end
+
+    local currentState = self.default
     for id, values in pairs (self.states) do
         if values.min <= currentValue and currentValue <= values.max then
             currentState = id
         end
     end
+    self._stateCache = currentState
     return currentState
 end
 

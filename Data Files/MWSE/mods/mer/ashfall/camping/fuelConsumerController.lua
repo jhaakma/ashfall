@@ -8,7 +8,12 @@ local ReferenceController = require("mer.ashfall.referenceController")
 local fuelDecay = 1.0
 local fuelDecayRainEffect = 1.4
 local fuelDecayThunderEffect = 1.6
-local FUEL_UPDATE_INTERVAL = 0.001
+-- Fuel decay is delta-integrated (fuelLevel -= (timestamp - lastFuelUpdated) * rate),
+-- so the decay outcome is independent of how often this runs. At 0.001s the simulate
+-- timer fired ~16x/frame (~990 calls/sec) and the game-hour delta rounded to 0 most
+-- of those times anyway — pure waste (top GC/CPU cost in profiling). 0.25s matches the
+-- sibling sheltered-campfire timer and is well within extinguish-latency tolerance.
+local FUEL_UPDATE_INTERVAL = 0.25
 
 ReferenceController.registerReferenceController{
     id = "fuelConsumer",

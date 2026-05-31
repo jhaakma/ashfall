@@ -45,6 +45,25 @@ local function initData()
     data.sunshades = data.sunshades or {}
 end
 
+-- common.data is read/written many times per frame. Running initData() (which does a
+-- userdata write plus 8 sub-table checks) on every access was pure overhead. The
+-- Ashfall data table is only ever created (never replaced or cleared) within a
+-- session, so cache its reference and only re-run initData() when the reference
+-- actually changes. The identity check against the live tes3.player.data.Ashfall is
+-- self-correcting across loads / new games (the player, and thus its data table, is a
+-- different reference each save) without depending on load-event ordering.
+local cachedData
+local function getData()
+    if not (tes3.player and tes3.player.data) then return nil end
+    local data = tes3.player.data.Ashfall
+    if data ~= nil and data == cachedData then
+        return data
+    end
+    initData()
+    cachedData = tes3.player.data.Ashfall
+    return cachedData
+end
+
 ---@class Ashfall.playerData
 ---@field temp number
 ---@field baseTemp number
@@ -100,19 +119,19 @@ end
 ---@field inventorySelectTrinket boolean True while in the inventory select menu for adding trinkets to the trinket bag
 this.data = setmetatable({}, {
     __index = function(t, key)
-        if not ( tes3.player and tes3.player.data) then
+        local data = getData()
+        if not data then
             return nil
         end
-        initData()
-        return tes3.player.data.Ashfall[key]
+        return data[key]
     end,
     __newindex = function(t, key, value)
-        if not ( tes3.player and tes3.player.data) then
+        local data = getData()
+        if not data then
             logger:error("Could not save data to player, tes3.player not available")
             return
         end
-        initData()
-        tes3.player.data.Ashfall[key] = value
+        data[key] = value
     end
 })
 
