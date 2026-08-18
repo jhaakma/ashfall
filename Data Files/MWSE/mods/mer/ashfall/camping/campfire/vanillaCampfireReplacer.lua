@@ -66,6 +66,25 @@ local vanillaCampfires = {
     t_imp_setstr_i_fireplace_01 = { replacement = "ashfall_pc_fp_01", supports = false, rootHeight = 0, exactPosition = true, unremovable = true },
     t_imp_setgcpoor_i_fireplace_01 = { replacement = "ashfall_pc_fp_02", supports = false, rootHeight = 0, exactPosition = true, unremovable = true },
     t_imp_setgc_i_fireplace_01 = { replacement = "ashfall_pc_fp_03", supports = false, rootHeight = 0, exactPosition = true, unremovable = true },
+	t_bre_dngruin_f_fireplace_01 = { replacement = "ashfall_t_bre_dngruin_frplc_01", supports = false, rootheight = 0, exactposition = true, unremovable = true }, -- hr_rn_panbre_frplc_01.nif
+	t_bre_setostr_i_fireplace_01 = { replacement = "ashfall_t_bre_setostr_frplc_01", supports = false, rootheight = 0, exactposition = true, unremovable = true }, -- hr_ostr_frplc_01.nif
+	t_de_sethla_i_fireplace_01 = { replacement = "ashfall_t_de_sethla_frplc_01", supports = false, rootheight = 0, exactposition = true, unremovable = true }, -- tr_in_hla_fireplace_01.nif
+	t_de_sethla_i_fireplace_02 = { replacement = "ashfall_t_de_sethla_frplc_02", supports = false, rootheight = 0, exactposition = true, unremovable = true }, -- tr_in_hla_fireplace_02.nif
+	t_imp_setgc_i_fireplace_01 = { replacement = "ashfall_t_imp_setgc_frplc_01", supports = false, rootheight = 0, exactposition = true, unremovable = true }, -- pc_in_gc_cm_fireplc.nif
+	t_imp_setgc_i_fireplace_02 = { replacement = "ashfall_t_imp_setgc_frplc_02", supports = false, rootheight = 0, exactposition = true, unremovable = true }, -- pc_in_gc_cm_fireplc3.nif
+	t_imp_setgc_x_fireplace_01  = { replacement = "ashfall_campfire", supports = true, rootHeight = 68, infinite = true}, -- pc_furn_ex_firepit.nif
+	t_imp_setgcpoor_i_fireplace_01 = { replacement = "ashfall_t_imp_setgcpoor_frplc_1", supports = false, rootheight = 0, exactposition = true, unremovable = true }, -- pc_in_gc_fireplace1.nif
+	t_imp_setkvarur_i_fireplace_01 = { replacement = "ashfall_t_imp_setkvarur_frplc_1", supports = false, rootheight = 0, exactposition = true, unremovable = true }, -- pc_in_kvr_fireplace01.nif
+	t_imp_setstr_i_fireplace_01 = { replacement = "ashfall_t_imp_setstr_frplc_01", supports = false, rootheight = 0, exactposition = true, unremovable = true }, -- pc_in_str_fireplace.nif
+	-- t_com_var_stove_01 = { replacement = "ashfall_pc_fp_03", supports = false, rootheight = 0, exactposition = true, unremovable = true }, -- sky_furn_potbstove01.nif
+	t_de_setdres_i_stove_01 = { replacement = "ashfall_t_de_setdres_stove_01", supports = false, rootheight = 0, exactposition = true, hasGrill = true, unremovable = true }, -- tr_in_dres_stove01.nif
+	t_de_setind_i_room_stove_01 = { replacement = "ashfall_t_de_setind_r_stove_01", supports = false, rootheight = 0, exactposition = true, hasGrill = true, unremovable = true }, -- tr_in_ind_r_stove_01.nif
+	t_de_setind_f_stove_01 = { replacement = "ashfall_t_de_setind_stove_01", supports = false, rootheight = 0, exactposition = true, hasGrill = true, unremovable = true }, -- tr_f_de_ind_stove_01.nif
+	t_de_setind_f_stove_02 = { replacement = "ashfall_t_de_setind_stove_02", supports = false, rootheight = 0, exactposition = true, hasGrill = true, unremovable = true }, -- tr_f_de_ind_stove_02.nif
+	t_de_setind_i_s_stove = { replacement = "ashfall_t_de_setind_s_stove", supports = false, rootheight = 0, exactposition = true, unremovable = true }, -- tr_f_de_ind_stove_03.nif
+	t_dwe_dngruin_f_stove01 = { replacement = "ashfall_t_dwe_dngruin_stove_01", supports = false, rootheight = 0, exactposition = true, hasGrill = true, unremovable = true }, -- tr_furn_dwrv_stove01.nif
+	t_de_setveloth_i_hearth_01 = { replacement = "ashfall_t_de_setveloth_hearth_1", supports = false, rootheight = 0, exactposition = true, hasGrill = true, unremovable = true }, -- tr_in_v_hearth_01.nif
+	T_De_SetVeloth_I_Hearth_02 = { replacement = "ashfall_ab_hearth_sml", supports = false, rootHeight = 0, exactPosition = true, hasGrill = true, unremovable = true },
 
     --OAAB
     ab_in_velhearthsmall = { replacement = "ashfall_ab_hearth_sml", supports = false, rootHeight = 0, exactPosition = true, hasGrill = true, unremovable = true },

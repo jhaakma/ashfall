@@ -368,6 +368,7 @@ interop.registerActivators{
     ashfall_ab_hearth_sml = "hearth",
     ashfall_ab_hearth_lh = "hearth",
     ashfall_ab_hearth_rh = "hearth",
+	ashfall_t_de_setind_s_stove = "hearth",
     --fireplace
     ashfall_fireplace10 = "fireplace",
     ashfall_nordfireplace_01 = "fireplace",
@@ -381,8 +382,23 @@ interop.registerActivators{
     ashfall_pc_fp_01 = "fireplace",
     ashfall_pc_fp_02 = "fireplace",
     ashfall_pc_fp_03 = "fireplace",
+	ashfall_t_bre_dngruin_frplc_01 = "fireplace",
+	ashfall_t_bre_setostr_frplc_01 = "fireplace",
+	ashfall_t_de_sethla_frplc_01 = "fireplace",
+	ashfall_t_de_sethla_frplc_02 = "fireplace",
+	ashfall_t_imp_setgc_frplc_01 = "fireplace",
+	ashfall_t_imp_setgc_frplc_02 = "fireplace",
+	ashfall_t_imp_setgcpoor_frplc_1 = "fireplace",
+	ashfall_t_imp_setkvarur_frplc_1 = "fireplace",
+	ashfall_t_imp_setstr_frplc_01 = "fireplace",
     --stove
     ashfall_stove_01 = "stove",
+	ashfall_t_de_setdres_stove_01 = "stove",
+	ashfall_t_de_setind_r_stove_01 = "stove",
+	ashfall_t_de_setind_stove_01 = "stove",
+	ashfall_t_de_setind_stove_02 = "stove",
+	ashfall_t_dwe_dngruin_stove_01 = "stove",
+	ashfall_t_de_setveloth_hearth_1 = "stove",
     --cauldron
     furn_com_cauldron_02 = "cauldron",
     --teaWarmer
