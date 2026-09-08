@@ -2,6 +2,7 @@ local common = require("mer.ashfall.common.common")
 local skillConfigs = require("mer.ashfall.config.skillConfigs")
 local logger = common.createLogger("SkinningService")
 local HarvestService = require("mer.ashfall.harvest.service")
+local DestructionManager = require("mer.ashfall.harvest.destructionManager")
 local skinningConfig = require("mer.ashfall.skinning.config")
 local CraftingFramework = include("CraftingFramework")
 
@@ -164,7 +165,7 @@ function SkinningService.calculateDestructionLimit(reference)
     destructionLimit = destructionLimit + math.random(0, skinningConfig.HARVEST_VARIANCE)
     logger:debug("DestructionLimit after random: %s", destructionLimit)
     --Height influence
-    local height = HarvestService.getRefHeight(reference)
+    local height = DestructionManager.getRefHeight(reference)
     local heightEffect = math.remap(height,
         skinningConfig.MIN_HEIGHT,
         skinningConfig.MAX_HEIGHT,
@@ -187,7 +188,7 @@ function SkinningService.calculateDestructionLimit(reference)
 end
 
 function SkinningService.harvest(reference, ingredients)
-    HarvestService.resetSwings(reference)
+    HarvestService.resetAccumulatedStrength(reference)
     common.skills.survival:exercise(skinningConfig.SWINGS_NEEDED * skillConfigs.survival.harvest.gainPerSwing)
     local pickId = table.choice(table.keys(ingredients))
     local pick = tes3.getObject(pickId)
@@ -202,7 +203,7 @@ function SkinningService.harvest(reference, ingredients)
         item = pick.id,
         count = 1
     }
-    HarvestService.updateTotalHarvested(reference, 1)
+    DestructionManager.updateTotalHarvested(reference, 1)
 end
 
 return SkinningService

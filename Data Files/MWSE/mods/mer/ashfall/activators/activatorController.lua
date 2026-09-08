@@ -1,97 +1,88 @@
-local ActivatorController = {}
-
 --[[
-    This script determines what static activator is being looked at, and
-    creates the tooltip for it.
-    Other scripts can see what the player is looking at by checking
-    ActivatorController.getCurrentActivator()
+    DEPRECATED: This file is a compatibility wrapper.
+    All functionality has been moved to Activator.lua
+    New code should use Activator directly instead of ActivatorController
 ]]--
+
 local Activator = require("mer.ashfall.activators.Activator")
-local activatorConfig = require("mer.Ashfall.activators.config.activatorConfig")
+local activatorConfig = require("mer.ashfall.activators.config.activatorConfig")
 local config = require("mer.ashfall.config").config
 local common = require("mer.ashfall.common.common")
 local logger = common.createLogger("activatorController")
 local uiCommon = require("mer.ashfall.ui.uiCommon")
 local ActivatorMenuConfig = require "mer.ashfall.activators.config.ActivatorMenuConfig"
 local DropConfig = require "mer.ashfall.activators.config.DropConfig"
-ActivatorController.list = activatorConfig.list
-ActivatorController.current = nil
 
-ActivatorController.currentRef = nil
-ActivatorController.parentNode = nil
-ActivatorController.subTypes = {}
-
----@type mwseSafeObjectHandle|nil
-local safeCurrentRef
-setmetatable(ActivatorController, {
-    ---when setting currentRef, create a safeObjectHandle
-    __setindex = function(self, key, val)
-        if key == "currentRef" then
-            if val then
-                safeCurrentRef = tes3.makeSafeObjectHandle(val)
-            else
-                safeCurrentRef = nil
-            end
-        else
-            rawset(self, key, val)
-        end
-    end,
-    ---when getting currentRef, validate and return the safeObjectHandle
+-- Compatibility wrapper - redirects to Activator
+local ActivatorController = setmetatable({}, {
     __index = function(self, key)
-        if key == "currentRef" then
-            if safeCurrentRef and safeCurrentRef:valid() then
-                local ref = safeCurrentRef:getObject()
-                if ref then
-                    return ref
-                else
-                    safeCurrentRef = nil
-                end
-            else
-                safeCurrentRef = nil
-            end
+        -- Redirect property access to Activator
+        if key == "list" then
+            return Activator.registeredActivators
+        elseif key == "current" then
+            return Activator.current
+        elseif key == "currentRef" then
+            return Activator.currentRef
+        elseif key == "parentNode" then
+            return Activator.parentNode
+        end
+        return rawget(self, key)
+    end,
+    __newindex = function(self, key, value)
+        -- Redirect property writes to Activator
+        if key == "current" then
+            Activator.current = value
+        elseif key == "currentRef" then
+            Activator.currentRef = value
+        elseif key == "parentNode" then
+            Activator.parentNode = value
         else
-            return rawget(self, key)
+            rawset(self, key, value)
         end
     end
 })
 
-function ActivatorController.registerActivator(activator)
-    assert(activator.type ~= nil)
-    activatorConfig.types[activator.type] = activator.type
-    ActivatorController.list[activator.id] = Activator:new(activator)
-    ActivatorController.subTypes[activator.id] = activator.id
+--- @deprecated Use Activator.get() instead
+function ActivatorController.getActivator(id)
+    return Activator.get(id)
 end
 
----comment
+--- @deprecated Use Activator:new() instead
+function ActivatorController.registerActivator(activator)
+    assert(activator.id, "Activator must have an id")
+    assert(activator.type, "Activator must have a type")
+    return Activator:new(activator)
+end
+
 ---@param nodeName string
 ---@param activatorMenuConfig Ashfall.Activator.ActivatorMenuConfig
 function ActivatorController.registerActivationNode(nodeName, activatorMenuConfig)
     ActivatorMenuConfig.nodeMapping[nodeName] = activatorMenuConfig
 end
 
+--- @deprecated Use Activator.getCurrent() instead
 function ActivatorController.getCurrentActivator()
-    return ActivatorController.list[ActivatorController.current]
+    return Activator.getCurrent()
 end
 
+--- @deprecated Use Activator.getCurrentReference() instead
 ---@return tes3reference | nil
 function ActivatorController.getCurrentActivatorReference()
-    return ActivatorController.currentRef
+    return Activator.getCurrentReference()
 end
 
+--- @deprecated Use Activator.getCurrentType() instead
 function ActivatorController.getCurrentType()
-    local currentActivator = ActivatorController.getCurrentActivator()
-    if currentActivator then
-        return currentActivator.type
-    end
+    return Activator.getCurrentType()
 end
 
+--- @deprecated Use Activator.getForReference() instead
 function ActivatorController.getRefActivator(reference)
-    for _, activator in pairs(ActivatorController.list) do
-        if activator:isActivator(reference) then
-            logger:trace("Activator: %s", activator.type)
-            return activator
-        end
+    local activator = Activator.getForReference(reference)
+    if activator then
+        logger:trace("Activator: %s", activator.type)
     end
+    return activator
 end
 
 function ActivatorController.getActivatorMenuConfig(reference, node)
@@ -108,7 +99,7 @@ function ActivatorController.getActivatorMenuConfig(reference, node)
     end
     --Check Activator
     if not activatorMenuConfig then
-        local activator = ActivatorController.getRefActivator(reference)
+        local activator = Activator.getForReference(reference)
         if activator then
             activatorMenuConfig = activator.menuConfig
         end
@@ -159,30 +150,32 @@ function ActivatorController.getAttachmentName(reference, activatorMenuConfig)
         end
     elseif reference.object.name and reference.object.name ~= "" then
         return reference.object.name
-    elseif ActivatorController.getRefActivator(reference) then
-        return ActivatorController.getRefActivator(reference).name
+    else
+        local activator = Activator.getForReference(reference)
+        if activator then
+            return activator.name
+        end
     end
     --fallback
     return nil
 end
 
-
-
 local function doActivate()
+    local currentActivator = Activator.getCurrent()
     return (not tes3.mobilePlayer.werewolf)
-        and ActivatorController.current
-        and config[ActivatorController.getCurrentActivator().mcmSetting] ~= false
+        and currentActivator
+        and config[currentActivator.mcmSetting] ~= false
 end
 
 local function getActivatorName()
-    local activator = ActivatorController.list[ActivatorController.current]
+    local activator = Activator.getCurrent()
     if activator then
         if activator.name and activator.name ~= "" then
             logger:trace("returning activator name: %s", activator.name)
             return activator.name
-        elseif ActivatorController.currentRef then
-            logger:trace("returning activator ref name: %s", ActivatorController.currentRef.object.name)
-            return ActivatorController.currentRef.object.name
+        elseif Activator.currentRef then
+            logger:trace("returning activator ref name: %s", Activator.currentRef.object.name)
+            return Activator.currentRef.object.name
         else
             logger:trace("No ref found for activator")
         end
@@ -198,22 +191,21 @@ local function createActivatorIndicator()
     if doShowActivator() then
         local headerText = getActivatorName()
         local tooltipMenu = uiCommon.createOrUpdateTooltipMenu(headerText)
-        local hasIcon = ActivatorController.currentRef
-            and ActivatorController.currentRef.object.icon
-            and ActivatorController.currentRef.object.icon ~= ""
+        local hasIcon = Activator.currentRef
+            and Activator.currentRef.object.icon
+            and Activator.currentRef.object.icon ~= ""
         if hasIcon then
-            uiCommon.addIconToHeader(ActivatorController.currentRef.object.icon)
+            uiCommon.addIconToHeader(Activator.currentRef.object.icon)
         end
         local eventData = {
-            parentNode = ActivatorController.parentNode,
-            reference = ActivatorController.currentRef
+            parentNode = Activator.parentNode,
+            reference = Activator.currentRef
         }
-        event.trigger("Ashfall:Activator_tooltip", eventData, {filter = ActivatorController.current })
+        event.trigger("Ashfall:Activator_tooltip", eventData, {filter = Activator.current })
     else
         uiCommon.disableTooltipMenu()
     end
 end
-
 
 --[[
     Every frame, check whether the player is looking at
@@ -225,17 +217,17 @@ local function onIndicator(e)
     local eyeVec  = tes3.getPlayerEyeVector()
     local activationDistance = tes3.getPlayerActivationDistance()
     local result = e.rayResult
-    ActivatorController.current = nil
-    ActivatorController.currentRef = nil
-    ActivatorController.parentNode = nil
+    Activator.current = nil
+    Activator.currentRef = nil
+    Activator.parentNode = nil
     if result and result.reference then
         --Look for activators from list
         local targetRef = result.reference
-        ActivatorController.currentRef = targetRef
-        ActivatorController.parentNode = result.object.parent
-        for activatorId, activator in pairs(ActivatorController.list) do
+        Activator.currentRef = targetRef
+        Activator.parentNode = result.object.parent
+        for activatorId, activator in pairs(Activator.registeredActivators) do
             if activator:isActivator(targetRef) then
-                ActivatorController.current = activatorId
+                Activator.current = activatorId
                 break
             end
         end
@@ -246,7 +238,7 @@ local function onIndicator(e)
         if waterLevel and eyePos.z > waterLevel then
             local intersection = (result and result.intersection) or (eyePos + eyeVec * activationDistance)
             if waterLevel >= intersection.z then
-                ActivatorController.current = "water"
+                Activator.current = "water" -- alias for waterDirty
             end
         end
     end
@@ -265,13 +257,13 @@ function ActivatorController.doTriggerActivate()
     logger:debug("ActivatorController.doTriggerActivate")
     if (not tes3ui.menuMode()) and doActivate() then
         logger:debug("Do activate")
-        local currentActivator = ActivatorController.list[ActivatorController.current]
+        local currentActivator = Activator.getCurrent()
         if currentActivator then
             logger:debug("Current activator: %s", currentActivator.type)
             local eventData = {
                 activator = currentActivator,
-                ref = ActivatorController.currentRef,
-                node = ActivatorController.parentNode
+                ref = Activator.currentRef,
+                node = Activator.parentNode
             }
             logger:debug("triggering activator filtering on %s", eventData.activator.type)
             event.trigger("Ashfall:ActivatorActivated", eventData, { filter = eventData.activator.type })

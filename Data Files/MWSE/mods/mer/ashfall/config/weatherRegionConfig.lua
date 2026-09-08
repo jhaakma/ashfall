@@ -25,13 +25,100 @@ this.weathers = {
 }
 local defaultWeatherTemp = 0
 
+---@class Ashfall.CustomWeather.RegionConditions
+---@field minGridX integer?
+---@field maxGridX integer?
+---@field minGridY integer?
+---@field maxGridY integer?
+
+
+this.customWeathers = {
+    sporefall = {
+        temp = 0,
+        originalWeatherIndex = tes3.weather.snow,
+        regions = {
+            ["othreleth woods region"] = {},
+            ["thirr valley region"] = {},
+            ["aanthirin region"] = {},
+            ["shipal-shin region"] = {},
+            ["armun ashlands region"] = {
+                minGridX = -11
+            }
+        }
+    },
+    sandstorm = {
+        temp = 25,
+        originalWeatherIndex = tes3.weather.ash,
+        regions = {
+            ["shipal-shin region"] = {},
+            [ "othreleth woods region" ] = {
+                maxGridY = -39
+            },
+            ["thirr valley region" ] = {
+                maxGridY = -39
+            },
+        }
+    },
+    tropicalStorm = {
+        temp = -40,
+        originalWeatherIndex = tes3.weather.ash,
+        regions = {
+            ["abecean sea region" ] = {},
+            ["stirk isle region" ] = {},
+            ["gold coast region" ] = {},
+            ["gilded hills region" ] = {},
+            ["dasek marsh region" ] = {},
+            ["kvetchi pass region" ] = {},
+            ["colovian highlands region"] = {},
+        }
+    },
+}
+
+---Check if player cell is within grid conditions
+---@param gridConditions Ashfall.CustomWeather.RegionConditions
+---@return boolean
+local function playerWithinGridConditions(gridConditions)
+    local cell = tes3.player.cell
+    if cell.isInterior then return true end
+    local gridX = cell.gridX
+    local gridY = cell.gridY
+    if gridConditions.minGridX and gridX < gridConditions.minGridX then
+        return false
+    end
+    if gridConditions.maxGridX and gridX > gridConditions.maxGridX then
+        return false
+    end
+    if gridConditions.minGridY and gridY < gridConditions.minGridY then
+        return false
+    end
+    if gridConditions.maxGridY and gridY > gridConditions.maxGridY then
+        return false
+    end
+    return true
+end
+
 function this.getWeatherTemperature(weatherId)
+    local cell = tes3.player.cell
+    if not cell.isInterior then
+        local region = tes3.player and tes3.player.cell.region
+        local regionId = region and region.id:lower()
+        for customWeatherId, customWeatherData in pairs(this.customWeathers) do
+            local weatherMatch = customWeatherData.originalWeatherIndex == weatherId
+            local regionData = customWeatherData.regions[regionId]
+            if weatherMatch and regionData then
+                if playerWithinGridConditions(regionData) then
+                    return customWeatherData.temp
+                end
+            end
+        end
+    end
     return this.weathers[weatherId] or defaultWeatherTemp
 end
 
 function this.getRegionData(regionId)
     return this.regions[regionId:lower()] or defaultClimate
 end
+
 --Alter min/max weather values
 this.regions = {
     --Solstheim

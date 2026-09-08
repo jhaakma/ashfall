@@ -154,11 +154,12 @@ local function addFoodTooltips(e)
             end
         end
 
-        if common.helper.isModifierKeyPressed() then
-            local actionLabel  = e.tooltip:createLabel({ text = "Eat" })
-            actionLabel.color = tes3ui.getPalette("active_color")
-            centerText(actionLabel)
-        end
+        --TODO: restore shift-activate to eat
+        -- if common.helper.isModifierKeyPressed() then
+        --     local actionLabel  = e.tooltip:createLabel({ text = "Eat" })
+        --     actionLabel.color = tes3ui.getPalette("active_color")
+        --     centerText(actionLabel)
+        -- end
     end
 end
 

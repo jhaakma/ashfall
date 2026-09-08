@@ -5,15 +5,14 @@
 local common = require ("mer.ashfall.common.common")
 local logger = common.createLogger("fuelConsumerController")
 local ReferenceController = require("mer.ashfall.referenceController")
-local fuelDecay = 1.0
-local fuelDecayRainEffect = 1.4
-local fuelDecayThunderEffect = 1.6
--- Fuel decay is delta-integrated (fuelLevel -= (timestamp - lastFuelUpdated) * rate),
--- so the decay outcome is independent of how often this runs. At 0.001s the simulate
--- timer fired ~16x/frame (~990 calls/sec) and the game-hour delta rounded to 0 most
--- of those times anyway — pure waste (top GC/CPU cost in profiling). 0.25s matches the
--- sibling sheltered-campfire timer and is well within extinguish-latency tolerance.
-local FUEL_UPDATE_INTERVAL = 0.25
+
+local Bellows = require("mer.ashfall.camping.Bellows")
+local Campfire = require("mer.ashfall.camping.campfire.Campfire")
+local FuelModel = require("mer.ashfall.camping.FuelModel")
+local FUEL_DECAY_RATE = 1.0
+local FUEL_DECAY_RAIN_MULTIPLIER = 1.4
+local FUEL_DECAY_THUNDER_MULTIPLIER = 1.6
+local FUEL_UPDATE_INTERVAL = 0.001
 
 ReferenceController.registerReferenceController{
     id = "fuelConsumer",
@@ -23,6 +22,12 @@ ReferenceController.registerReferenceController{
         and ref.data.fuelLevel
     end
 }
+
+local function getRainEffect(fuelConsumer)
+    -- Prefer the shared model so other systems can reproduce the same behavior.
+    -- Keep the local constants above for backwards-compatibility/logging if needed.
+    return FuelModel.getRainEffect(fuelConsumer)
+end
 
 local function updateFuelConsumer(fuelConsumer)
     local timestamp = tes3.getSimulationTimestamp()
@@ -38,25 +43,11 @@ local function updateFuelConsumer(fuelConsumer)
 
     fuelConsumer.data.lastFuelUpdated = timestamp
     if fuelConsumer.data.isLit then
-        local bellowsEffect = 1.0
-        local bellowsId = fuelConsumer.data.bellowsId and fuelConsumer.data.bellowsId:lower()
-        local bellowsData = common.staticConfigs.bellows[bellowsId]
-        if bellowsData then
-            bellowsEffect = bellowsData.burnRateEffect
-        end
-
-        local rainEffect = 1.0
-        if not fuelConsumer.tempData.ashfallIsSheltered then
-            --raining and fuelConsumer exposed
-            if tes3.getCurrentWeather().index == tes3.weather.rain then
-                rainEffect = fuelDecayRainEffect
-            --thunder and fuelConsumer exposed
-            elseif tes3.getCurrentWeather().index == tes3.weather.thunder then
-                rainEffect = fuelDecayThunderEffect
-            end
-        end
-
-        local fuelDifference =  ( difference * fuelDecay * rainEffect * bellowsEffect )
+        local bellowsEffect = Bellows.getScaledFuelDrainEffect(fuelConsumer)
+        local rainEffect = getRainEffect(fuelConsumer)
+        local campfireData = Campfire.getCampfire(fuelConsumer.object.id)
+        local fuelBurnMultiplier = campfireData and campfireData.fuelBurnMultiplier or 1.0
+        local fuelDifference =  ( difference * FUEL_DECAY_RATE * rainEffect * bellowsEffect * fuelBurnMultiplier )
         fuelConsumer.data.fuelLevel = fuelConsumer.data.fuelLevel - fuelDifference
         fuelConsumer.data.charcoalLevel = fuelConsumer.data.charcoalLevel or 0
         fuelConsumer.data.charcoalLevel = fuelConsumer.data.charcoalLevel + fuelDifference

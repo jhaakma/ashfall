@@ -89,5 +89,7 @@ return {
 
     ashfall_wood_stack = { maxSteepness = 0.1 },
 
+    ashfall_kiln_01 = { maxSteepness = 0.1 },
+    ashfall_brick_shed = { maxSteepness = 0.1 },
 
 }

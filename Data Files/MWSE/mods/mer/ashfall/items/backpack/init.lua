@@ -97,7 +97,7 @@ local function attachItem(item, parent)
 end
 
 local function setSwitchNodes(e)
-    logger:debug("backpack setting switch nodes")
+    logger:trace("backpack setting switch nodes")
     local ref = e.reference
     for switch, data in pairs(switchNodes) do
         local switchNode = ref.sceneNode:getObjectByName(switch)

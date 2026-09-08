@@ -1,0 +1,154 @@
+# Perfefecter Placement
+- Decal color for snap mode - DONE
+- Remove pinToWall setting, change to wall placement setting - DONE
+- Update UI immediately when changing placement mode - DONE
+- Add axis rotation
+
+# Ashfall Pottery Mechanics
+## Planned:
+- Allow stacking fire items (getHeat should check fire items below it)
+- brick clamp (mass brick firing)
+
+- Simplified firing
+    - For things like bricks, have a firing method that
+        clears all data once fired, to allow stacking
+- Fired Brick Crafting
+    - Walls
+    - Kiln (also available in raw brick menu)
+- Check all places pottery skill should increase
+- Crack before firing stage if damp
+- Fix decal order (MWSE setDecalMap fix)
+- Dynamic Glaze Icons
+- Fired clay value
+- Flatten UVs on bricks
+- Decorations
+    - Recipes:
+        - Paints:
+            Slip (base texture replacement)
+        - Charcoal Slip - done
+        - Ash Wash - done
+        - Fire/Frost/Void Salt Glaze
+    - Dynamic icon generation
+- Pottery Recipes
+    - Cup (done)
+    - Brick (done)
+    - Flask
+    - Goblet
+    - Bowl
+    - Plate
+    - Cooking pot
+    - Teapot
+    - Oil lamp
+    - Amphora (storage container)
+    - Plant pot
+    - Water container
+- Campfire registration
+    - Rewrite reference managers to use registered refs instead of node searching
+- Bushcraftable shelves (for drying and anything else)
+
+## Future
+Baking:
+    - Clay Oven
+    - Quern (hand mill)
+    - Grind wickwheat into flour
+    - Flour storage
+    - Dough: flour + water
+    - Dough placed on heat source turns into bread
+        - Shapekeys, set phase according to bake time, animates dough into bread
+        - Animate decal texture change setting alpha controller on decal without alpha properties (verified this works!)
+- Update cooking decals to use alpha controller for cook decal
+
+## Completed:
+- Wiki:
+    - Harvesting Clay
+    - Tempering
+    - Shaping
+    - Drying
+    - Glazing
+    - Firing
+    - Pottery Skill
+- Kiln starts off raw
+    - Once fired, change texture and on deconstruct return fired bricks instead
+- Tempering while attached to pottery wheel
+- Decorations
+    - Equip raw clay item
+    - Crafting Menu:
+        - Select decoration(engraving, glaze etc)
+        - Preview window shows glazed fired item
+- Fixed small table meshes
+- Drying mechanic
+    - Speed up by placing on fire
+    - If reaches firing temp, risks cracking
+- Boil liquids away in hot pottery
+- Fired clay has heat
+    - Heatable component, raw and fired items registered
+    - Heatable applies glow material
+    - Heatables block picking up if too hot
+- Drying mechanic
+    - Items gain a dampness level once shaped
+    - Dampness increases risk of cracking
+    - Dries over time
+- Fix thermal shock issues
+    - Long time between updates
+    - Breaking as a result of heat source cooling down
+- New flow:
+    Temper:
+    - Temper clay by activating placed raw clay
+    - Sound effect + fade-out
+    - Remove "tempered clay" id, add temper data and dynamically add decal
+    Shape:
+    - Shape by activating placed clay
+    - Animate hand worked clay same as wheel throwing
+- New Components
+    - Temper Component
+        - Handles temper data and decal application
+        - Applies to raw clay and unfired pottery
+- Wheel throwing selection menu
+- Dynamic material for red glow effect
+- Mallet bushcrafting recipe
+- Kiln drop config - attach bellows
+- Smash pottery to get broken clay
+- Bellows animation bugs -fixed with hacks
+- Pottery Skill
+- "Flaring" campfire flames synced to bellows
+- Bellows sound effects
+- Firing in a kiln
+    - Kilns can be crafted using clay bricks, and provide a more stable firing environment
+- Temper menu replaced with raw clay menu
+    - Categories
+        - Tempering
+        - Handmolding
+            - Clay brick
+- Raw clay tooltip
+    - "Equip: Clay Working Menu"
+- "Crack" sound effect
+- Add anim nodes to all campfire meshes (for bellows animation)
+- Cracked pottery
+- Clay Deposits
+    - Spawn on terrain tiles under the following conditions:
+        - Terrain has dirt, sand or mud texture
+        - Terrain vertices are all just above the water level
+        - Each cell can only spawn a limited number of deposits
+- Spinning Wheel
+    - Bushcraftable
+    - Animated wheel throwing
+    - Recipes for crafting cup, goblet, plate, and flask from raw clay
+- Firing Clay Items
+    - 'Pit firing' using campfire
+        - Campfires are difficult to regular temperature, making this a convenient but risky method
+    - Firing over heat sources:
+        - Raw clay items must be placed on a heat source
+        - Heat source must maintain a suitable temperature range for a set duration
+        - If the heat source cools before the duration is complete, the firing process fails
+        - Failed items become "cracked" and shatters
+- Tempering Clay
+    - Mix raw clay with:
+        - Charcoal from campfire
+        - Grog
+    - Tempered clay is more likely to survive firing without cracking
+- Broken clay
+    - Failed firing results in broken clay
+    - Broken clay can be recycled into grog using a mortar and pestle
+- Bellows
+    - Bushcraftable
+    - Animated

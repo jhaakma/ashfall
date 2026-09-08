@@ -21,7 +21,11 @@ function Workbench.isNearby()
             return false
         end
     end)
-    return isNearby
+    if isNearby then
+        return true
+    else
+        return false, "No workbench nearby"
+    end
 end
 
 return Workbench

@@ -6,6 +6,7 @@ local ActivatorController = require "mer.ashfall.activators.activatorController"
 --[[
     Adds additional tooltips based on what node the player is looking at
 ]]
+---@param e { reference: tes3reference?, parentNode: tes3uiElement?, tooltip: tes3uiElement}
 local function addAdditionalTooltip(e)
     logger:trace("Activator tooltip")
     local reference = e.reference
@@ -16,7 +17,11 @@ local function addAdditionalTooltip(e)
             logger:trace("Found attachment config: %s", activatorMenuConfig.name)
             if activatorMenuConfig.tooltipExtra then
                 local tooltipContents = uiCommon.getTooltipContentsBlock()
-                activatorMenuConfig.tooltipExtra(reference, tooltipContents)
+                if tooltipContents then
+                    activatorMenuConfig.tooltipExtra(reference, tooltipContents)
+                else
+                    logger:warn("No tooltip contents block found")
+                end
             end
 
             local newText = ActivatorController.getAttachmentName(reference, activatorMenuConfig)

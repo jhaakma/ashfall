@@ -2,6 +2,7 @@ local common = require("mer.ashfall.common.common")
 local logger = common.createLogger("harvestController")
 local config = require("mer.ashfall.config").config
 local service = require("mer.ashfall.harvest.service")
+local DestructionManager = require("mer.ashfall.harvest.destructionManager")
 
 --- Attempt a harvest on attack swing
 ---@param e attackEventData
@@ -28,16 +29,16 @@ local function harvestOnAttack(e)
         logger:debug("Weapon broke")
         return
     end
-    --Accumulate swings and check if it's enough to harvest
-    local didHarvest = service.attemptSwing(swingStrength, data.reference, data.harvestConfig.swingsNeeded)
+    --Accumulate strength and check if it's enough to harvest
+    local didHarvest = service.accumulateStrength(swingStrength, data.reference, data.harvestConfig.swingsNeeded)
     if not didHarvest then return end
-    logger:debug("Enough swings, harvesting")
+    logger:debug("Accumulated enough strength, harvesting")
     --Harvest the resources
     service.harvest(data.reference, data.harvestConfig)
     --Disable if  exhausted
     if data.harvestConfig.destructionLimitConfig and config.disableHarvested then
         logger:debug("Disabling exhausted harvestable")
-        service.disableExhaustedHarvestable(data.reference, data.harvestConfig)
+        DestructionManager.disableExhaustedHarvestable(data.reference, data.harvestConfig)
     end
     logger:debug("harvestOnAttack() EXIT")
 end
@@ -104,13 +105,13 @@ end, { priority = 500})
 --- Reset harvestables on load.
 event.register("loaded", function()
     service.destroyedHarvestables:iterate(function(reference)
-        service.enableHarvestable(reference)
+        DestructionManager.enableHarvestable(reference)
     end)
     timer.start{
         type = timer.simulate,
         iterations = -1,
         duration = 1,
-        callback = service.updateDisabledHarvestables
+        callback = DestructionManager.updateDisabledHarvestables
     }
 end)
 

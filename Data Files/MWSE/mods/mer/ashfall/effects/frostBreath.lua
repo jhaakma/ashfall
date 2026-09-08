@@ -70,14 +70,12 @@ function this.doFrostBreath()
     local temp = common.data.weatherTemp
     local isCold = temp < coldLevelNeeded
 
-    for _,cell in pairs(tes3.getActiveCells()) do
-        for ref in cell:iterateReferences(tes3.objectType.npc) do
-            addRemoveBreath(ref, isCold)
-        end
-        for ref in cell:iterateReferences(tes3.objectType.creature) do
-            if ref.supportsLuaData and ref.data.tgw then
-                addRemoveBreath(ref, isCold, true)
-            end
+    local actors = tes3.findActorsInProximity{ reference = tes3.player, range = 8192 }
+    for _, actor in ipairs(actors) do
+        if actor.actorType == tes3.actorType.npc then
+            addRemoveBreath(actor.reference, isCold)
+        elseif actor.actorType == tes3.actorType.creature  and actor.reference.supportsLuaData and actor.reference.data.tgw then
+            addRemoveBreath(actor.reference, isCold, true)
         end
     end
 
@@ -89,6 +87,7 @@ function this.doFrostBreath()
             removeBreath(node)
         end
     end
+
     node = tes3.worldController.worldCamera.cameraRoot
     if node then
         local isAboveWater = ( tes3.mobilePlayer.underwater == false )

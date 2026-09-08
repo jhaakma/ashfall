@@ -51,6 +51,7 @@ local function initialized()
         require("mer.ashfall.gearPlacement")
         require('mer.ashfall.harvest')
         require('mer.ashfall.skinning')
+        require('mer.ashfall.clay')
         require("mer.ashfall.cooking")
         require("mer.ashfall.liquid")
 

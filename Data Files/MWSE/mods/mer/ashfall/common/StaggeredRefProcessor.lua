@@ -1,4 +1,6 @@
 
+local common = require("mer.ashfall.common.common")
+local logger = common.createLogger("StaggeredRefProcessor")
 
 ---@class StaggeredRefProcessor
 ---@field refs table<tes3reference, boolean>
@@ -6,8 +8,7 @@
 ---@field private onEmpty fun(self: StaggeredRefProcessor)?
 ---@field private interval number
 ---@field private refsPerFrame integer
----@field private timerHandle mwseTimer|nil
----@field private logger mwseLogger
+---@field timerHandle mwseTimer|nil
 local StaggeredRefProcessor = {}
 StaggeredRefProcessor.__index = StaggeredRefProcessor
 
@@ -15,7 +16,6 @@ StaggeredRefProcessor.__index = StaggeredRefProcessor
 ---@field callback fun(ref: tes3reference) Callback function to be called for each reference
 ---@field interval number Time interval between processing batches of references (in seconds)
 ---@field refsPerFrame integer Number of references to process per frame
----@field logger mwseLogger Logger instance for logging messages
 ---@field onEmpty fun(self: StaggeredRefProcessor)? Callback function to be called when all references are processed
 
 ---Create a new StaggeredRefProcessor
@@ -27,7 +27,6 @@ function StaggeredRefProcessor.new(config)
     self.callback = config.callback
     self.interval = config.interval or 1.0
     self.refsPerFrame = config.refsPerFrame or 1
-    self.logger = config.logger
     self.onEmpty = config.onEmpty
     self.timerHandle = nil
 
@@ -37,7 +36,7 @@ function StaggeredRefProcessor.new(config)
     end)
 
     event.register("load", function()
-        self.timeHandle = nil
+        self.timerHandle = nil
     end)
 
     return self
@@ -67,7 +66,12 @@ end
 function StaggeredRefProcessor:start()
 
     if not self.timerHandle then
-        self.logger:debug("Starting processor")
+        logger:debug("Starting processor")
+        if self.timerHandle then
+            logger:debug("Cancelling existing timer handle")
+            self.timerHandle:cancel()
+        end
+
         self.timerHandle = timer.start{
             duration = self.interval,
             iterations = -1,
@@ -76,7 +80,7 @@ function StaggeredRefProcessor:start()
             end
         }
     else
-        self.logger:debug("Processor already started")
+        logger:debug("Processor already started")
     end
 end
 

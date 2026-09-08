@@ -8,6 +8,7 @@ if not SkillsModule then
     return
 end
 
+---@type table<string, SkillsModule.Skill.constructorParams>
 local skills = {
     survival = {
         id = "Ashfall:Survival",
@@ -26,6 +27,15 @@ local skills = {
         attribute = tes3.attribute.intelligence,
         description = "The Bushcrafting skill determines your ability to craft items from materials gathered in the wilderness. A higher bushcrafting skill unlocks more crafting recipes.",
         specialization = tes3.specialization.combat
+    },
+    pottery = {
+        id = "pottery",
+        name = "Pottery",
+        icon = "Icons/ashfall/potteryskill.dds",
+        value = 10,
+        attribute = tes3.attribute.intelligence,
+        description = "The Pottery skill determines your ability to craft items from clay. A higher pottery skill unlocks more crafting recipes and improves the quality of the items you create.",
+        specialization = tes3.specialization.magic
     }
 }
 for skill, data in pairs(skills) do

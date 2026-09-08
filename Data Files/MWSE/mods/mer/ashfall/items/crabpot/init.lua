@@ -206,8 +206,14 @@ local function updatePots(e)
         if interval < crabpotConfig.interval then return end
 
         local underwater = common.helper.getRefUnderwater(crabPotRef)
+        if not underwater then
+            -- Reset timer when out of water to prevent time accumulation on land
+            crabPotRef.data.lastCrabUpdated = e.timestamp
+            return
+        end
+
         local previousCrabCount = math.floor(crabPotRef.data.crabCount)
-        if underwater and crabPotRef.data.crabCount < crabpotConfig.maxCrabs then
+        if crabPotRef.data.crabCount < crabpotConfig.maxCrabs then
 
             --catch more crabs in deeper water
             local waterDepth = math.min(common.helper.getDepthUnderwater(crabPotRef), crabpotConfig.maxWaterDepth)

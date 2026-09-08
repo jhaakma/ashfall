@@ -69,7 +69,12 @@ end
 
 
 local function registerModConfig()
-    local template = mwse.mcm.createTemplate{ name = "Ashfall", headerImagePath = "textures/ashfall/MCMHeader.tga" }
+    local template = mwse.mcm.createTemplate{
+        name = "Ashfall",
+        headerImagePath = "textures/ashfall/MCMHeader.tga",
+        config = config,
+        defaultConfig = common.defaultValues
+    }
     template.onClose = function()
         config.save()
     end

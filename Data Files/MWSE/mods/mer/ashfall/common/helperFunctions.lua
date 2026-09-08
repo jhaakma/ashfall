@@ -1,3 +1,4 @@
+---@class Ashfall.HelperFunctions
 local this = {}
 local staticConfigs = require("mer.ashfall.config.staticConfigs")
 local config = require("mer.ashfall.config").config
@@ -7,21 +8,40 @@ local tentConfig = require("mer.ashfall.items.tents.tentConfig")
 local ReferenceController = require("mer.ashfall.referenceController")
 local CraftingFramework = require("CraftingFramework")
 local CarryableContainer = CraftingFramework.CarryableContainer
+local ReferenceManager = CraftingFramework.ReferenceManager
+local heatCacheManager = ReferenceManager:new{
+    id = "Ashfall:HeatCache",
+    requirements = function()
+        return false
+    end
+}
 --Generic Tooltip with header and description
 
 this.createTooltip = require("mer.ashfall.common.tooltip").create
 
 --overriden in common
-this.logger = require("logging.logger").new{ name = "Ashfall.Helper" }
+this.logger = require("logging.logger").new{ moduleName = "Ashfall.Helper" }
 
 
 this.getItemCount = CarryableContainer.getItemCount
 this.removeItem = CarryableContainer.removeItem
 ---@diagnostic disable-next-line: deprecated
 this.getInventory = CarryableContainer.getFullInventory
-this.showInventorySelectMenu = CraftingFramework.InventorySelectMenu.open
 
+---@class Ashfall.showInventorySelectMenu.params : CraftingFramework.showInventorySelectMenu.params
+---@field delayFrame boolean|nil If true, delays opening the menu by one frame
 
+---@param e Ashfall.showInventorySelectMenu.params
+this.showInventorySelectMenu = function(e)
+    if e.delayFrame then
+        timer.delayOneFrame(function()
+            CraftingFramework.InventorySelectMenu.open(e)
+        end)
+        return
+    else
+        CraftingFramework.InventorySelectMenu.open(e)
+    end
+end
 
 function this.getHoursPassed()
     return ( tes3.worldController.daysPassed.value * 24 ) + tes3.worldController.hour.value
@@ -90,7 +110,7 @@ function this.checkRefSheltered(reference)
         end
     end
     local safeTent = tes3.makeSafeObjectHandle(tent)
-    this.logger:debug("Tent: %s", tent)
+    this.logger:trace("Tent: %s", tent)
     return sheltered, safeTent
 end
 
@@ -392,6 +412,7 @@ function this.enableControls()
     tes3.runLegacyScript{command = "EnableInventoryMenu"} ---@diagnostic disable-line
 end
 
+
 function this.getUniqueCellId(cell)
     if cell.isInterior then
         return cell.id:lower()
@@ -446,7 +467,7 @@ function this.fadeTimeOut( hoursPassed, secondsTaken, callback )
         duration = ( secondsTaken / iterations ),
         callback = (
             function()
-                local gameHour = tes3.findGlobal("gameHour")
+                local gameHour = tes3.findGlobal("gameHour") --[[@as tes3globalVariable]]
                 gameHour.value = gameHour.value + (hoursPassed/iterations)
             end
         )
@@ -635,18 +656,19 @@ end
 ---@field maxDistance? number
 ---@field doLog? boolean
 ---@field recreateBoundingBox? boolean This will remove lights/collision from the sceneNode, only use if the ref can be discarded
+---@field accurateSkinned? boolean
 
 ---@param e Ashfall.getGroundBelowRef.params
 ---@return niPickRecord|nil
 function this.getGroundBelowRef(e)
     e.doLog = e.doLog or false
     local ref = e.ref
+    if not ref or ref.disabled or not ref.sceneNode then
+        return
+    end
     local ignoreList = e.ignoreList and table.copy(e.ignoreList, {}) or {}
     table.insert(ignoreList, ref)
     table.insert(ignoreList, tes3.player)
-    if not ref then
-        return
-    end
     local boundingBox = ref.object.boundingBox
     if e.recreateBoundingBox then
         this.removeCollision(ref.sceneNode)
@@ -663,12 +685,12 @@ function this.getGroundBelowRef(e)
     local result = tes3.rayTest{
         position = pos,
         direction = tes3vector3.new(0, 0, -1),
-        ignore = ignoreList or {ref, tes3.player},
+        ignore = ignoreList,
         returnNormal = true,
         useBackTriangles = false,
         root = e.terrainOnly and tes3.game.worldLandscapeRoot or nil,
         maxDistance = e.maxDistance or 500,
-        accurateSkinned = true,
+        accurateSkinned = e.accurateSkinned ~= false,
     }
     if result then
         this.logger:trace("Found ground below %s at %s", ref, result.intersection)
@@ -803,25 +825,23 @@ function this.removeLight(lightNode)
         end
 
         -- Kill materialProperty
-        local materialProperty = node:getProperty(0x2)
-        if materialProperty then
-            if (materialProperty.emissive.r > 1e-5 or materialProperty.emissive.g > 1e-5 or materialProperty.emissive.b > 1e-5 or materialProperty.controller) then
-                materialProperty = node:detachProperty(0x2):clone()
-                node:attachProperty(materialProperty)
+        if node.materialProperty then
+            if (node.materialProperty.emissive.r > 1e-5 or node.materialProperty.emissive.g > 1e-5 or node.materialProperty.emissive.b > 1e-5 or node.materialProperty.controller) then
+                node.materialProperty = node.materialProperty:clone()
 
                 -- Kill controllers
-                materialProperty:removeAllControllers()
+                node.materialProperty:removeAllControllers()
 
                 -- Kill emissives
-                local emissive = materialProperty.emissive
+                local emissive = node.materialProperty.emissive
                 emissive.r, emissive.g, emissive.b = 0,0,0
-                materialProperty.emissive = emissive
+                node.materialProperty.emissive = emissive
 
                 node:updateProperties()
             end
         end
      -- Kill glowmaps
-        local texturingProperty = node:getProperty(0x4)
+        local texturingProperty = node.texturingProperty
         local newTextureFilepath = "Textures\\tx_black_01.dds"
         if (texturingProperty and texturingProperty.maps[4]) then
         texturingProperty.maps[4].texture = niSourceTexture.createFromPath(newTextureFilepath)
@@ -877,7 +897,8 @@ function this.calculateTeaBuffDuration(maxDuration, waterHeat)
     local coldEffect = isCold and 0.5 or 1.0
     return maxDuration * skillMulti * coldEffect
 end
-
+---@param reference tes3reference
+---@param playSound boolean|nil
 function this.pickUp(reference, playSound)
     local function stealActivateEvent(e)
         event.unregister("activate", stealActivateEvent)
@@ -904,37 +925,125 @@ end
 --Check if there is a heat source below ref
 --Based on mesh nodes, can be a fire (which can cook food)
 --or a candle (which can warm tea)
+local HEAT_CACHE_MAX_AGE = 0.5
+local HEAT_CACHE_MAX_MOVE = 5
+local function isPotteryRef(ref)
+    if not ref or not ref.object then
+        return false
+    end
+    local obj = ref.baseObject or ref.object
+    local potteryModule = package.loaded["mer.ashfall.clay.PotteryRecipe"]
+    if potteryModule and potteryModule.isPotteryItem and potteryModule.isFiredPotteryItem then
+        return potteryModule.isPotteryItem(obj) or potteryModule.isFiredPotteryItem(obj)
+    end
+    if obj.objectType ~= tes3.objectType.miscItem then
+        return false
+    end
+    local id = obj.id and obj.id:lower()
+    if not id then
+        return false
+    end
+    return (id:find("clay", 1, true) ~= nil) or (id:find("brick", 1, true) ~= nil)
+end
 function this.getHeatFromBelow(ref, requiredHeatType)
+    if not ref then
+        return
+    end
+    if ref.disabled or not ref.sceneNode then
+        if heatCacheManager.references[ref] then
+            heatCacheManager:removeReference(ref)
+        end
+        return
+    end
+    local cache = heatCacheManager.references[ref]
+    if not cache then
+        heatCacheManager:addReference(ref)
+        cache = heatCacheManager.references[ref]
+    end
+    if cache then
+        local now = tes3.getSimulationTimestamp()
+        local ageOk = cache.time and (now - cache.time) <= HEAT_CACHE_MAX_AGE
+        local cellOk = cache.cell == ref.cell
+        local posOk = false
+        if cache.pos then
+            local dx = ref.position.x - cache.pos.x
+            local dy = ref.position.y - cache.pos.y
+            local dz = ref.position.z - cache.pos.z
+            posOk = (dx * dx + dy * dy + dz * dz) <= (HEAT_CACHE_MAX_MOVE * HEAT_CACHE_MAX_MOVE)
+        end
+        if ageOk and cellOk and posOk then
+            local cachedHeatType = cache.heatType
+            if cachedHeatType and (not requiredHeatType or cachedHeatType == requiredHeatType) then
+                local cachedHandle = cache.heatSource
+                if cachedHandle and cachedHandle:valid() then
+                    return cachedHandle:getObject(), cachedHeatType
+                end
+            else
+                return
+            end
+        end
+    end
+
     local ignoreList = {ref}
     --Ignore frying pans
     this.iterateRefType("fryingPan", function(fryingPan)
         table.insert(ignoreList, fryingPan)
     end)
-    local result = this.getGroundBelowRef{
-        ref = ref,
-        ignoreList = ignoreList,
-        maxDistance = 200
-    }
+    --Ignore heated items to allow stacking in kilns.
+    this.iterateRefType("heatedItem", function(heatedItem)
+        table.insert(ignoreList, heatedItem)
+    end)
+
+    local result
+    local maxPasses = 10
+    for _ = 1, maxPasses do
+        result = this.getGroundBelowRef{
+            ref = ref,
+            ignoreList = ignoreList,
+            maxDistance = 100,
+            accurateSkinned = false
+        }
+        if not result or not result.reference then
+            break
+        end
+        if isPotteryRef(result.reference) then
+            table.insert(ignoreList, result.reference)
+            result = nil
+        else
+            break
+        end
+    end
     if not result then return end
     if not result.reference then return end
     local nodes = {
         ATTACH_GRILL = "strong",
         ASHFALL_GRILLER = "strong",
         TEA_WARMER = "weak",
+        COOLING_AREA = "weak",
         ASHFALL_FIREBASE = "strong",
     }
     local node = result.object
     local heatType
     while node and node.parent and node.name and heatType == nil do
-        heatType = nodes[node.name:upper()]
+        heatType = nodes[node.name]
         node = node.parent
     end
 
     if heatType then
         if ( not requiredHeatType) or (heatType == requiredHeatType ) then
+            cache.time = tes3.getSimulationTimestamp()
+            cache.pos = { x = ref.position.x, y = ref.position.y, z = ref.position.z }
+            cache.cell = ref.cell
+            cache.heatType = heatType
+            cache.heatSource = tes3.makeSafeObjectHandle(result.reference)
             return result.reference, heatType
         end
     end
+    cache.time = tes3.getSimulationTimestamp()
+    cache.pos = { x = ref.position.x, y = ref.position.y, z = ref.position.z }
+    cache.cell = ref.cell
+    cache.heatType = nil
+    cache.heatSource = nil
 end
 
 function this.isModifierKeyPressed()
@@ -949,10 +1058,21 @@ function this.getLetter(keyCode)
     for letter, code in pairs(tes3.scanCode) do
         if code == keyCode then
             local returnString = tes3.scanCodeToNumber[code] or letter
-            return string.upper(returnString)
+            return this.toCamelCase(returnString)
         end
     end
     return nil
+end
+
+function this.toCamelCase(str)
+    local function capFirst(s)
+        return s:sub(1,1):upper() .. s:sub(2):lower()
+    end
+    local words = {}
+    for word in str:gmatch("%S+") do
+        table.insert(words, capFirst(word))
+    end
+    return table.concat(words)
 end
 
 function this.getComboString(keyCombo)
@@ -1027,17 +1147,31 @@ end
 ---@field blend number The amount of blending between the ground and decal texture
 ---@field texturingProperty niTexturingProperty
 ---@field object any
+---@field intersection tes3vector3
+---@field normal tes3vector3|nil
 
+---@class Ashfall.getGroundTextureInfo.params
+---@field position tes3vector3|number[]?
+---@field direction tes3vector3|number[]?
+---@field maxDistance number?
+
+---@param e Ashfall.getGroundTextureInfo.params
 ---@return Ashfall.GroundTextureInfo|nil
 function this.getGroundTextureInfo(e)
     local rayhit = tes3.rayTest({
         position = e.position or tes3.getPlayerEyePosition(),
         direction = e.direction or tes3.getPlayerEyeVector(),
         returnColor = true,
-        root = tes3.game.worldLandscapeRoot
+        returnNormal = true,
+        maxDistance = e.maxDistance or 1000,
+        accurateSkinned = true
     })
     -- ignore misses
     if not rayhit then
+        return
+    end
+    -- Anything with a reference is not terrain
+    if rayhit.reference then
         return
     end
     -- ignore untextured things
@@ -1046,9 +1180,11 @@ function this.getGroundTextureInfo(e)
         return
     end
     return {
-        blend = rayhit.color,
+        blend = rayhit.color.a / 255,
         object = rayhit.object,
-        texturingProperty = texProp
+        texturingProperty = texProp,
+        intersection = rayhit.intersection,
+        normal = rayhit.normal
     }
 end
 

@@ -6,6 +6,8 @@ local thirstController = require('mer.ashfall.needs.thirstController')
 local foodConfig = common.staticConfigs.foodConfig
 local itemTooltips = require("mer.ashfall.ui.itemTooltips")
 local LiquidContainer = require("mer.ashfall.liquid.LiquidContainer")
+local Bellows = require("mer.ashfall.camping.Bellows")
+local CampfireUI = require("mer.ashfall.camping.campfire.CampfireUI")
 
 local function updateFoodTile(e)
     if foodConfig.getGrillValues(e.item) then
@@ -156,23 +158,22 @@ local function createNeedsTooltip(e)
         }
     end
     --Bellows
-    local bellowsData = common.staticConfigs.bellows[e.object.id:lower()]
-    if bellowsData then
+     if Bellows.isBellows(e.object.id) then
         common.helper.addLabelToTooltip(tooltip,
-            string.format("%sx Fuel burn", bellowsData.burnRateEffect) )
+            string.format("%sx Fuel burn", Bellows.MAX_FUEL_DRAIN) )
         common.helper.addLabelToTooltip(tooltip,
-            string.format("%sx Heat", bellowsData.heatEffect) )
+            string.format("%sx Heat", Bellows.MAX_HEAT_EFFECT) )
     end
+
     --Fuel Consumers
     if e.itemData and e.itemData.data.fuelLevel then
-        common.helper.addLabelToTooltip(tooltip,
-            string.format("Fuel: %.1f hours", e.itemData.data.fuelLevel) )
+        CampfireUI.createTooltip(e.reference, tooltip)
     end
 end
 
 event.register('uiObjectTooltip', createNeedsTooltip)
 
-
+---Tea tooltips inside inventory select menu
 local function teaBrewingTooltip(e)
     local tooltip = e.tooltip:getContentElement()
 

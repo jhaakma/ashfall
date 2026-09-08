@@ -31,10 +31,15 @@ return {
     enableRequirements = function(reference)
         local liquidContainer = LiquidContainer.createFromReference(reference)
         if not liquidContainer then return false end
-        return not (liquidContainer:isBoiling())
+        if not liquidContainer:isBoiling() then
+            return true
+        end
+        local isKettle = CampfireUtil.refIsKettle(reference)
+        local isCookingPot = CampfireUtil.refIsCookingPot(reference)
+        return not (isKettle or isCookingPot)
     end,
     tooltipDisabled = {
-        text = "It is too hot to drink. Wait for it to cool down or transfer to a container first."
+        text = "It is too hot to drink. Wait for it to cool down or transfer to a smaller vessel first."
     },
     ---@param reference tes3reference
     callback = function(reference)

@@ -1,3 +1,9 @@
+--TODO fix all this
+local Activator = require("mer.ashfall.activators.Activator")
+--Required to register activators before ids get added later.
+--This is why it needs refactoring
+local activatorConfig = require("mer.ashfall.activators.config.activatorConfig")
+
 ---@class Ashfall.UtensilConfig
 ---@field type string
 ---@field holdsStew boolean
@@ -15,12 +21,12 @@
 ---@class Ashfall.StaticConfigs
 local this = {}
 
-this.activatorConfig = require("mer.ashfall.activators.config.activatorConfig")
 this.conditionConfig = require("mer.ashfall.conditions.conditionConfig")
 this.foodConfig = require("mer.ashfall.config.foodConfig")
 this.teaConfig = require("mer.ashfall.config.teaConfig")
 this.campfireConfig = require("mer.ashfall.config.campfireConfig")
 
+---@class Ashfall.ItemIDs
 this.objectIds = {
     firewood = "ashfall_firewood",
     campfire = "ashfall_campfire",
@@ -57,7 +63,6 @@ this.stewWaterCooldownAmount = 100
 this.stewIngredientCooldownAmount = 20
 this.stewIngredAddAmount = 25 -- out of pot capacity, not 100
 this.firewoodFuelMulti = 1.5
-this.maxWoodInFire = 15
 this.capacities = {
     --cookingPot = 120,
     kettle = 100,
@@ -578,10 +583,10 @@ this.cookingPots = {}
 for id, data in pairs(this.utensils) do
     if data.type == "kettle" then
         this.kettles[id] = data
-        this.activatorConfig.list.kettle:addId(id)
+        Activator.registeredActivators.kettle:addId(id)
     elseif data.type == "cookingPot" then
         this.cookingPots[id] = data
-        this.activatorConfig.list.cookingPot:addId(id)
+        Activator.registeredActivators.cookingPot:addId(id)
     end
 end
 
@@ -636,12 +641,19 @@ this.grills = {
     },
 }
 
+---@class Ashfall.Bellows.Data
+---@field type string UtensilType "bellows"
+---@field meshOverride string Path to mesh override
+
+---@type table<string, Ashfall.Bellows.Data>
 this.bellows = {
     misc_de_bellows10 = {
         type = "bellows",
-        --meshOverride
-        burnRateEffect = 1.5,
-        heatEffect = 2.0
+        meshOverride = "ashfall\\anim\\bellows10.nif",
+    },
+    ashfall_bellows_01 = {
+        type = "bellows",
+        meshOverride = "ashfall\\anim\\bellows_01.nif",
     }
 }
 

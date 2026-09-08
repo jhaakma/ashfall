@@ -6,10 +6,13 @@ local BedRoll = require("mer.ashfall.items.bedroll")
 local WaterFilter = require("mer.ashfall.items.waterFilter")
 local CrabPot = require("mer.ashfall.items.crabpot")
 local WoodStack = require("mer.ashfall.items.woodStack")
+local BrickShed = require("mer.ashfall.items.brickShed")
 local Workbench = require("mer.ashfall.items.workbench")
 local Planter = require("mer.ashfall.items.planter.Planter")
 local Material = require("CraftingFramework").Material
+local PotteryWheel = require("mer.ashfall.clay.PotteryWheel")
 local config = require("mer.ashfall.config").config
+local FeatureFlags = require("mer.ashfall.bushcrafting.featureFlags")
 local common = require("mer.ashfall.common.common")
 local logger = common.createLogger("bushcraftingconfig")
 
@@ -37,6 +40,7 @@ local CRAFT_TIMES = {
 ---@field outdoorsOnly CraftingFramework.CustomRequirement.data
 ---@field wildernessOnly CraftingFramework.CustomRequirement.data
 ---@field workbenchNearby CraftingFramework.CustomRequirement.data
+---@field experimentalBrickWall CraftingFramework.CustomRequirement.data
 this.customRequirements = {
     outdoorsOnly = {
         getLabel = function()
@@ -50,7 +54,7 @@ this.customRequirements = {
             if isOutdoors or canCampIndoors then
                 return true
             else
-                return false, "You must be outdoors to craft this"
+                return false, "Must be outdoors"
             end
         end
     },
@@ -65,7 +69,7 @@ this.customRequirements = {
             if isWilderness or canCampInSettlements then
                 return true
             else
-                return false, "You must be outside of towns/settlements to craft this"
+                return false, "Must be outside of towns/settlements"
             end
         end
     },
@@ -76,6 +80,10 @@ this.customRequirements = {
         check = Workbench.isNearby
     }
 }
+
+this.customRequirements.experimentalBrickWall = FeatureFlags.createRequirement(
+    "brickWall", "Experimental: Brick Wall"
+)
 
 ---@type CraftingFramework.Tool.data[]
 this.tools = {
@@ -125,6 +133,12 @@ this.categories = {
     tools = "Tools",
     weapons = "Weapons",
     planters = "Planters",
+
+    roofs = "Roofs",
+    walls = "Walls",
+    floors = "Floors",
+    stairs = "Stairs",
+
 }
 
 this.tanningRacks = {
@@ -172,7 +186,7 @@ this.menuOptions = {
         end
     },
     workbenchMenu = {
-        text = "Craft",
+        text = "Crafting",
         callback = function()
             event.trigger("Ashfall:ActivateWorkbench")
         end
@@ -263,7 +277,7 @@ this.materials = {
     },
     {
         id = "rope",
-        name = "Rope",
+        name = "Cordage",
         ids = {
             "ashfall_rope",
             "t_de_coiledrope_01",
@@ -601,6 +615,18 @@ local bushCraftingRecipes = {
             recoverEquipmentMaterials = true,
             timeTaken = CRAFT_TIMES.tiny,
         },
+        {
+            id = "bushcraft:ashfall_mallet",
+            craftableId = "ashfall_mallet",
+            description = "A simple wooden mallet.",
+            materials = {
+                { material = "wood", count = 2 },
+            },
+            category = this.categories.tools,
+            soundType = "wood",
+            recoverEquipmentMaterials = true,
+            timeTaken = CRAFT_TIMES.tiny,
+        }
     },
     novice = {
         {
@@ -807,7 +833,7 @@ local bushCraftingRecipes = {
             category = this.categories.weapons,
             soundType = "wood",
             recoverEquipmentMaterials = true,
-            previewScale = 1.2,
+            -- previewScale = 1.2,
             timeTaken = CRAFT_TIMES.tiny,
         },
         {
@@ -855,8 +881,76 @@ local bushCraftingRecipes = {
             scale = 1.3,
             timeTaken = CRAFT_TIMES.medium,
         },
+        {
+            id = "bushcraft:ashfall_spin_wheel_01",
+            craftableId = "ashfall_spin_wheel_01",
+            description = "A spinning wheel for molding clay.",
+            materials = {
+                { material = "wood", count = 8 },
+                { material = "rope", count = 4 },
+                { material = "stone", count = 1 },
+            },
+            category = this.categories.structures,
+            soundType = "wood",
+            customRequirements = {
+                this.customRequirements.wildernessOnly
+            },
+            timeTaken = CRAFT_TIMES.medium,
+            additionalMenuOptions = PotteryWheel.buttons,
+            previewHeight = 10,
+        },
+        {
+            id = "bushcraft:ashfall_bellows_01",
+            craftableId = "ashfall_bellows_01",
+            description = "Attach to a campfire to allow it to reach temperatures suitable for firing pottery.",
+            materials = {
+                { material = "wood", count = 3 },
+                { material = "leather", count = 1 },
+                { material = "resin", count = 1 },
+            },
+            category = this.categories.survival,
+            soundType = "wood",
+            timeTaken = CRAFT_TIMES.medium,
+        },
+
     },
     apprentice = {
+
+        {
+            id = "bushcraft:ashfall_screen_fabric",
+            craftableId = "ashfall_screen_fabric",
+            description = "A partition made of fabric.",
+            materials = {
+                { material = "fabric", count = 2 },
+                { material = "wood", count = 2 },
+                { material = "rope", count = 1 },
+            },
+            category = this.categories.structures,
+            soundType = "fabric",
+            timeTaken = CRAFT_TIMES.medium,
+        },
+        {
+            id = "bushcraft:ashfall_brick_shed",
+            craftableId = "ashfall_brick_shed",
+            description = itemDescriptions.ashfall_brick_shed,
+            materials = {
+                { material = "wood", count = 14 },
+                { material = "straw", count = 12 }
+            },
+            category = this.categories.structures,
+            soundType = "wood",
+            customRequirements = {
+                this.customRequirements.wildernessOnly
+            },
+            additionalMenuOptions = {
+                BrickShed.buttons.craft,
+                BrickShed.buttons.addBricks,
+                BrickShed.buttons.takeBricks,
+            },
+            destroyCallback = BrickShed.destroyCallback,
+            timeTaken = CRAFT_TIMES.medium,
+        },
+
         {
             id = "bushcraft:ashfall_satchel_01",
             craftableId = "ashfall_satchel_01",
@@ -1105,6 +1199,49 @@ local bushCraftingRecipes = {
         }
     },
     journeyman = {
+
+        {
+            id = "bushcraft:ashfall_hammock",
+            craftableId = "ashfall_hammock",
+            maxSteepness = 0,
+            quickActivateCallback = function(_, e) BedRoll.buttons.sleep.callback(e) end,
+            additionalMenuOptions = {
+                BedRoll.buttons.sleep,
+                BedRoll.buttons.layDown,
+            },
+            description = "A hammock for sleeping out in the rough.",
+            materials = {
+                { material = "wood", count = 4 },
+                { material = "rope", count = 1 },
+                { material = "fabric", count = 4 },
+                { material = "straw", count = 4 },
+                { material = "pillow", count = 1 },
+            },
+            category = this.categories.beds,
+            soundType = "wood",
+        },
+         {
+            id = "bushcraft:ashfall_screen_leather",
+            craftableId = "ashfall_screen_leather",
+            description = "A partition made of leather.",
+            materials = {
+                { material = "leather", count = 2 },
+                { material = "wood", count = 2 },
+                { material = "rope", count = 1 },
+            },
+            category = this.categories.structures,
+            soundType = "leather",
+        },
+        {
+            id = "bushcraft:ashfall_chest_02",
+            craftableId = "ashfall_chest_02",
+            description = "A large wooden chest that can be placed on the ground and used as storage.",
+            materials = {
+                { material = "wood", count = 10 },
+            },
+            category = this.categories.containers,
+            soundType = "wood",
+        },
         {
             id = "bushcraft:ashfall_basket_01",
             craftableId = "ashfall_basket_01",
@@ -1180,12 +1317,33 @@ local bushCraftingRecipes = {
             additionalMenuOptions = {
                 CrabPot.buttons.collect,
             },
-            previewScale = 4,
-            previewHeight = -80,
+            -- previewScale = 4,
+            -- previewHeight = -80,
             timeTaken = CRAFT_TIMES.medium,
         },
     },
     expert = {
+
+        {
+            id = "bushcraft:ashfall_bed_fur",
+            craftableId = "ashfall_bed_fur",
+            maxSteepness = 0,
+            quickActivateCallback = function(_, e) BedRoll.buttons.sleep.callback(e) end,
+            additionalMenuOptions = {
+                BedRoll.buttons.sleep,
+                BedRoll.buttons.layDown,
+            },
+            description = "A sturdy bed covered in warm furs.",
+            materials = {
+                { material = "wood", count = 6 },
+                { material = "rope", count = 1 },
+                { material = "fabric", count = 2 },
+                { material = "fur", count = 2 },
+                { material = "pillow", count = 1 },
+            },
+            category = this.categories.beds,
+            soundType = "wood",
+        },
         {
             id = "bushcraft:ashfall_cov_ashl",
             craftableId = "ashfall_cov_ashl",
@@ -1217,6 +1375,27 @@ local bushCraftingRecipes = {
         },
     },
     master = {
+
+        {
+            id =  "bushcraft:ashfall_cbroll_active",
+            craftableId = "ashfall_cbroll_active",
+            description = "A covered bedroll which provides protection from the elements while sleeping.",
+            additionalMenuOptions = {
+                BedRoll.buttons.sleep,
+                BedRoll.buttons.layDown,
+            },
+            maxSteepness = 0,
+            materials = {
+                { material = "straw", count = 4 },
+                { material = "wood", count = 3 },
+                { material = "rope", count = 2 },
+                { material = "fabric", count = 4},
+                { material = "leather", count = 2 },
+            },
+            category = this.categories.beds,
+            soundType = "leather",
+            -- previewScale = 1.25,
+        },
         {
             --Nordic backpack
             id = "bushcraft:ashfall_pack_06",
@@ -1339,7 +1518,7 @@ local carvingRecipes = {
                 }
             },
             category = this.categories.cutlery,
-            previewScale = 4,
+            -- previewScale = 4,
             timeTaken = CRAFT_TIMES.small,
         },
         {
@@ -1356,7 +1535,7 @@ local carvingRecipes = {
                 }
             },
             category = this.categories.cutlery,
-            previewScale = 4,
+            -- previewScale = 4,
             timeTaken = CRAFT_TIMES.small,
         },
         {
@@ -1464,7 +1643,7 @@ local carvingRecipes = {
                 }
             },
             category = this.categories.cutlery,
-            previewScale = 4,
+            -- previewScale = 4,
             timeTaken = CRAFT_TIMES.small,
         },
         {
@@ -1485,7 +1664,7 @@ local carvingRecipes = {
                 }
             },
             category = this.categories.utensils,
-            previewScale = 4,
+            -- previewScale = 4,
             timeTaken = CRAFT_TIMES.small,
         },
     },
@@ -1652,16 +1831,31 @@ local workbenchRecipes = {
     beginner = {},
     novice = {},
     apprentice = {
-        { --platform
+        {
             id = "bushcraft:ashfall_platform_01",
             craftableId = "ashfall_platform_01",
             name = "Wooden Platform",
-            description = "A wooden platform that can be placed on the ground.",
+            description = "A wooden floor with supports that can be placed on the ground.",
             materials = {
                 { material = "wood", count = 5 },
                 { material = "rope", count = 2 },
             },
-            category = this.categories.structures,
+            category = this.categories.floors,
+            soundType = "wood",
+            maxSteepness = 0,
+            timeTaken = CRAFT_TIMES.medium,
+            previewHeight = 40,
+        },
+        {
+            id = "bushcraft:ashfall_floor_01",
+            craftableId = "ashfall_floor_01",
+            name = "Wooden Floor",
+            description = "A wooden floor that can be placed on the ground.",
+            materials = {
+                { material = "wood", count = 3 },
+                { material = "rope", count = 1 },
+            },
+            category = this.categories.floors,
             soundType = "wood",
             maxSteepness = 0,
             timeTaken = CRAFT_TIMES.medium,
@@ -1674,7 +1868,7 @@ local workbenchRecipes = {
             materials = {
                 { material = "wood", count = 2 },
             },
-            category = this.categories.structures,
+            category = this.categories.stairs,
             soundType = "wood",
             maxSteepness = 0,
             timeTaken = CRAFT_TIMES.medium,
@@ -1687,12 +1881,12 @@ local workbenchRecipes = {
             materials = {
                 { material = "wood", count = 3 },
             },
-            category = this.categories.structures,
+            category = this.categories.stairs,
             soundType = "wood",
             maxSteepness = 0,
             timeTaken = CRAFT_TIMES.medium,
         },
-        {  --steps large
+        {
             id = "bushcraft:ashfall_overhang_01",
             craftableId = "ashfall_overhang_01",
             name = "Overhang",
@@ -1702,23 +1896,10 @@ local workbenchRecipes = {
                 { material = "wood", count = 4 },
                 { material = "rope", count = 4 },
             },
-            category = this.categories.structures,
+            category = this.categories.roofs,
             soundType = "wood",
             maxSteepness = 0,
             timeTaken = CRAFT_TIMES.large,
-        },
-        {  --steps large
-            id = "bushcraft:ashfall_screen_fabric",
-            craftableId = "ashfall_screen_fabric",
-            description = "A partition made of fabric.",
-            materials = {
-                { material = "fabric", count = 2 },
-                { material = "wood", count = 2 },
-                { material = "rope", count = 1 },
-            },
-            category = this.categories.structures,
-            soundType = "fabric",
-            timeTaken = CRAFT_TIMES.medium,
         },
         {  --fence
             id = "bushcraft:ashfall_fence_01",
@@ -1728,7 +1909,7 @@ local workbenchRecipes = {
             materials = {
                 { material = "wood", count = 4 },
             },
-            category = this.categories.structures,
+            category = this.categories.walls,
             soundType = "wood",
             maxSteepness = 0.1,
             timeTaken = CRAFT_TIMES.medium,
@@ -1745,16 +1926,15 @@ local workbenchRecipes = {
                 { material = "wood", count = 2 },
                 { material = "rope", count = 2 },
             },
-            category = this.categories.structures,
+            category = this.categories.roofs,
             soundType = "wood",
             maxSteepness = 0,
             timeTaken = CRAFT_TIMES.medium,
-            scale = 0.95,
         },
         --OAAB Awning
         {
-            id = "bushcraft:ab_ex_ashlawning_03",
-            craftableId = "ab_ex_ashlawning_03",
+            id = "bushcraft:ashfall_awning_lg_01",
+            craftableId = "ashfall_awning_lg_01",
             name = "Awning (Large)",
             description = "A leather awning that can be placed on the ground.",
             materials = {
@@ -1762,12 +1942,10 @@ local workbenchRecipes = {
                 { material = "wood", count = 4 },
                 { material = "rope", count = 4 },
             },
-            category = this.categories.structures,
+            category = this.categories.roofs,
             soundType = "wood",
             maxSteepness = 0,
             timeTaken = CRAFT_TIMES.medium,
-            placementSetting = "free",
-            scale = 0.9
         },
         --OAAB Barricade
         {
@@ -1784,24 +1962,48 @@ local workbenchRecipes = {
             maxSteepness = 0,
             timeTaken = CRAFT_TIMES.medium,
         },
-        --OAAB wALL
         {
-            id = "bushcraft:ab_ex_descaffold01",
-            craftableId = "ab_ex_descaffold01",
+            id = "bushcraft:ashfall_wall_wood_01",
+            craftableId = "ashfall_wall_wood_01",
             name = "Wooden Wall",
-            description = "A large wooden WALL.",
+            description = "A large wooden wall.",
             materials = {
                 { material = "wood", count = 5 },
             },
-            category = this.categories.structures,
+            category = this.categories.walls,
             soundType = "wood",
             maxSteepness = 0,
             timeTaken = CRAFT_TIMES.small,
-            scale = 0.75,
+        },
+        {
+            id = "bushcraft:ashfall_doorway_01",
+            craftableId = "ashfall_doorway_01",
+            name = "Wooden Doorway",
+            description = "A wooden doorway.",
+            materials = {
+                { material = "wood", count = 5 },
+            },
+            category = this.categories.walls,
+            soundType = "wood",
+            maxSteepness = 0,
+            timeTaken = CRAFT_TIMES.small,
+        },
+                {
+            id = "bushcraft:ashfall_window_01",
+            craftableId = "ashfall_window_01",
+            name = "Wooden Window",
+            description = "A wooden window.",
+            materials = {
+                { material = "wood", count = 5 },
+            },
+            category = this.categories.walls,
+            soundType = "wood",
+            maxSteepness = 0,
+            timeTaken = CRAFT_TIMES.small,
         },
         --Roof Small
         {
-            id = "ashfall_roof_01",
+            id = "bushcraft:ashfall_roof_01",
             craftableId = "ashfall_roof_01",
             name = "Thatch Roof (Small)",
             description = "A small thatch roof for a wooden structure.",
@@ -1810,11 +2012,9 @@ local workbenchRecipes = {
                 { material = "wood", count = 2 },
                 { material = "rope", count = 2 },
             },
-            category = this.categories.structures,
+            category = this.categories.roofs,
             soundType = "wood",
             timeTaken = CRAFT_TIMES.medium,
-            placementSetting = "free",
-            scale = 1.2
         },
         --Roof Larger
         {
@@ -1827,10 +2027,9 @@ local workbenchRecipes = {
                 { material = "wood", count = 4 },
                 { material = "rope", count = 4 },
             },
-            category = this.categories.structures,
+            category = this.categories.roofs,
             soundType = "wood",
             timeTaken = CRAFT_TIMES.large,
-            placementSetting = "free",
         },
         --OAAB Market Stand
         {
@@ -1843,38 +2042,14 @@ local workbenchRecipes = {
                 { material = "rope", count = 2 },
                 { material = "fabric", count = 4 },
             },
-            category = this.categories.structures,
+            category = this.categories.roofs,
             soundType = "wood",
             maxSteepness = 0,
             timeTaken = CRAFT_TIMES.large,
         },
     },
     journeyman = {
-        {  --steps large
-            id = "bushcraft:ashfall_screen_leather",
-            craftableId = "ashfall_screen_leather",
-            description = "A partition made of leather.",
-            materials = {
-                { material = "leather", count = 2 },
-                { material = "wood", count = 2 },
-                { material = "rope", count = 1 },
-            },
-            category = this.categories.structures,
-            soundType = "leather",
-        },
-        {
-            id = "bushcraft:ashfall_chest_02",
-            craftableId = "ashfall_chest_02",
-            description = "A large wooden chest that can be placed on the ground and used as storage.",
-            materials = {
-                { material = "wood", count = 10 },
-            },
-            category = this.categories.containers,
-            soundType = "wood",
-            -- additionalMenuOptions = {
-            --     this.menuOptions.rename
-            -- },
-        },
+
         {
             id = "bushcraft:ashfall_stool_01",
             name = "Wooden Stool",
@@ -1896,26 +2071,6 @@ local workbenchRecipes = {
                 { material = "wood", count = 8 },
             },
             category = this.categories.furniture,
-            soundType = "wood",
-        },
-        {
-            id = "bushcraft:ashfall_hammock",
-            craftableId = "ashfall_hammock",
-            maxSteepness = 0,
-            quickActivateCallback = function(_, e) BedRoll.buttons.sleep.callback(e) end,
-            additionalMenuOptions = {
-                BedRoll.buttons.sleep,
-                BedRoll.buttons.layDown,
-            },
-            description = "A hammock for sleeping out in the rough.",
-            materials = {
-                { material = "wood", count = 4 },
-                { material = "rope", count = 1 },
-                { material = "fabric", count = 4 },
-                { material = "straw", count = 4 },
-                { material = "pillow", count = 1 },
-            },
-            category = this.categories.beds,
             soundType = "wood",
         },
     },
@@ -1947,49 +2102,44 @@ local workbenchRecipes = {
             maxSteepness = 0,
             soundType = "straw",
         },
-        {
-            id = "bushcraft:ashfall_bed_fur",
-            craftableId = "ashfall_bed_fur",
-            maxSteepness = 0,
-            quickActivateCallback = function(_, e) BedRoll.buttons.sleep.callback(e) end,
-            additionalMenuOptions = {
-                BedRoll.buttons.sleep,
-                BedRoll.buttons.layDown,
-            },
-            description = "A sturdy bed covered in warm furs.",
-            materials = {
-                { material = "wood", count = 6 },
-                { material = "rope", count = 1 },
-                { material = "fabric", count = 2 },
-                { material = "fur", count = 2 },
-                { material = "pillow", count = 1 },
-            },
-            category = this.categories.beds,
-            soundType = "wood",
-        },
     },
     master = {
-        {
-            id =  "bushcraft:ashfall_cbroll_active",
-            craftableId = "ashfall_cbroll_active",
-            description = "A covered bedroll which provides protection from the elements while sleeping.",
-            additionalMenuOptions = {
-                BedRoll.buttons.sleep,
-                BedRoll.buttons.layDown,
-            },
-            maxSteepness = 0,
-            materials = {
-                { material = "straw", count = 4 },
-                { material = "wood", count = 3 },
-                { material = "rope", count = 2 },
-                { material = "fabric", count = 4},
-                { material = "leather", count = 2 },
-            },
-            category = this.categories.beds,
-            soundType = "leather",
-            previewScale = 1.25,
-        },
     },
+}
+
+this.deprecated = {
+    {
+        id = "bushcraft:ab_ex_descaffold01",
+        craftableId = "ab_ex_descaffold01",
+        name = "Wooden Wall",
+        description = "A large wooden WALL.",
+        materials = {
+            { material = "wood", count = 5 },
+        },
+        category = this.categories.structures,
+        soundType = "wood",
+        maxSteepness = 0,
+        timeTaken = CRAFT_TIMES.small,
+        scale = 0.75,
+    },
+            {
+        id = "bushcraft:ab_ex_ashlawning_03",
+        craftableId = "ab_ex_ashlawning_03",
+        name = "Awning (Large)",
+        description = "A leather awning that can be placed on the ground.",
+        materials = {
+            { material = "leather", count = 3 },
+            { material = "wood", count = 4 },
+            { material = "rope", count = 4 },
+        },
+        category = this.categories.structures,
+        soundType = "wood",
+        maxSteepness = 0,
+        timeTaken = CRAFT_TIMES.medium,
+        placementSetting = "free",
+        scale = 0.9
+    },
+
 }
 
 
@@ -2013,7 +2163,6 @@ this.menuActivators = {
         recipeLists = {
             bushCraftingRecipes,
             materialRecipes,
-            workbenchRecipes
         },
     },
     tanningRack = {
@@ -2059,6 +2208,7 @@ this.menuActivators = {
             end,
             defaultCraftTime = CRAFT_TIMES.small,
             defaultCraftSoundType = "wood",
+            useLiveCrafting = true
         },
         recipeLists = {
             workbenchRecipes,
