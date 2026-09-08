@@ -7,19 +7,20 @@ this.defaultValues = require ("mer.ashfall.MCM.defaultConfig")
 this.messages = require("mer.ashfall.messages.messages")
 local config = require("mer.ashfall.config").config
 --set up logger
-local logger = require("logging.logger")
----@type mwseLogger
+local logger = require("CraftingFramework.components.logger")
+---@type CFLogger
 this.log = logger.new{
     name = "Ashfall",
+    modName = "Ashfall",
+    moduleName = "Common",
     --outputFile = "Ashfall.log",
     logLevel = config.logLevel,
 }
 this.loggers = {this.log}
 this.createLogger = function(serviceName)
     local logger = logger.new{
-        name = string.format("Ashfall - %s", serviceName),
+        name = "Ashfall:" .. serviceName,
         logLevel = config.logLevel,
-        includeTimestamp = true,
     }
     table.insert(this.loggers, logger)
     return logger
@@ -29,7 +30,10 @@ this.helper.logger = this.createLogger("Helper")
 --[[
     Skills
 ]]
----@type table<string, SkillsModule.Skill>
+---@class Ashfall.config.skills
+---@field survival SkillsModule.Skill
+---@field bushcrafting SkillsModule.Skill
+---@field pottery SkillsModule.Skill
 this.skills = {}
 
 local function initData()
@@ -43,6 +47,26 @@ local function initData()
     data.woodAxesForBackpack = data.woodAxesForBackpack or {}
     data.sacks = data.sacks or {}
     data.sunshades = data.sunshades or {}
+    data.clayDepositProcessedCells = data.clayDepositProcessedCells or {}
+end
+
+-- common.data is read/written many times per frame. Running initData() (which does a
+-- userdata write plus 8 sub-table checks) on every access was pure overhead. The
+-- Ashfall data table is only ever created (never replaced or cleared) within a
+-- session, so cache its reference and only re-run initData() when the reference
+-- actually changes. The identity check against the live tes3.player.data.Ashfall is
+-- self-correcting across loads / new games (the player, and thus its data table, is a
+-- different reference each save) without depending on load-event ordering.
+local cachedData
+local function getData()
+    if not (tes3.player and tes3.player.data) then return nil end
+    local data = tes3.player.data.Ashfall
+    if data ~= nil and data == cachedData then
+        return data
+    end
+    initData()
+    cachedData = tes3.player.data.Ashfall
+    return cachedData
 end
 
 ---@class Ashfall.playerData
@@ -98,21 +122,22 @@ end
 ---@field woodAxesForBackpack table<string, boolean> a map of woodaxe objects which are to be registered for backpack display on load
 ---@field inventorySelectStew boolean True while in the inventory select menu for adding ingredients to stew
 ---@field inventorySelectTrinket boolean True while in the inventory select menu for adding trinkets to the trinket bag
+---@field clayDepositProcessedCells table<string, boolean> A mapping of terrain data to clay deposit activators
 this.data = setmetatable({}, {
     __index = function(t, key)
-        if not ( tes3.player and tes3.player.data) then
+        local data = getData()
+        if not data then
             return nil
         end
-        initData()
-        return tes3.player.data.Ashfall[key]
+        return data[key]
     end,
     __newindex = function(t, key, value)
-        if not ( tes3.player and tes3.player.data) then
+        local data = getData()
+        if not data then
             logger:error("Could not save data to player, tes3.player not available")
             return
         end
-        initData()
-        tes3.player.data.Ashfall[key] = value
+        data[key] = value
     end
 })
 

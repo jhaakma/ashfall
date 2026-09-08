@@ -102,6 +102,14 @@ this.controllers = {
             return grillConfig and grillConfig.fryingPan
         end
     },
+    heatedItem = ReferenceController:new{
+        requirements = function(_, ref)
+            return ref
+                and ref.supportsLuaData
+                and ref.data
+                and ref.data.Ashfall_HeatedItem ~= nil
+        end
+    },
     grillableFood = ReferenceController:new{
         ---@param ref tes3reference
         requirements = function(_, ref)
@@ -129,8 +137,10 @@ this.controllers = {
 }
 
 local function onRefPlaced(e)
-    for _, controller in pairs(this.controllers) do
+    for controllerId, controller in pairs(this.controllers) do
         if controller:requirements(e.reference) then
+            mwse.log("Ashfall ReferenceController: Adding reference %s to controller %s",
+                e.reference.object.id,controllerId)
             controller:addReference(e.reference)
         end
     end

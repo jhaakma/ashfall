@@ -57,10 +57,10 @@ do -- initialise recipes
         logger:debug("Registering Tool: %s", tool.id)
         CraftingFramework.Tool:new(tool)
     end
-    for _, activatorConfig in pairs(craftingConfig.menuActivators) do
-        local menuActivatorData = activatorConfig.menuActivator
+    for _, menuActivatorConfig in pairs(craftingConfig.menuActivators) do
+        local menuActivatorData = menuActivatorConfig.menuActivator
         logger:debug("Registering Menu Activator: %s", menuActivatorData.name)
-        local recipes, containerIds = initialiseRecipeList(activatorConfig.recipeLists)
+        local recipes, containerIds = initialiseRecipeList(menuActivatorConfig.recipeLists)
         logger:debug("Recipes: " .. inspect(recipes))
         menuActivatorData.recipes = recipes
         CraftingFramework.MenuActivator:new(menuActivatorData)
@@ -85,4 +85,9 @@ for _, tanningRackId in ipairs(craftingConfig.tanningRacks) do
             event.trigger(craftingConfig.tanningEvent)
         end
     }
+end
+
+--register deprecated recipes so they can still be used
+for _, recipe in ipairs(craftingConfig.deprecated ) do
+    CraftingFramework.Recipe:new(recipe)
 end

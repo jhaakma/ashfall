@@ -1,3 +1,4 @@
+---@class Ashfall.Branch.Config
 local this = {}
 
 local daysToRefresh = 3

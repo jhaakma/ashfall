@@ -12,7 +12,7 @@
 local common = require ("mer.ashfall.common.common")
 local logger = common.createLogger("campfireInit")
 local campfireConfig = common.staticConfigs.campfireConfig
-local activatorConfig = common.staticConfigs.activatorConfig
+local Activator = require("mer.ashfall.activators.Activator")
 
 local function registerDataValues(campfire)
     logger:debug("registerDataValues %s", campfire.object.id)
@@ -80,18 +80,18 @@ local function registerCampfire(e)
                 capacity, e.reference.data.utensilId)
         end
     end
-    local dynamicConfig = campfireConfig.getConfig(e.reference.object.id)
-    local isActivator = activatorConfig.list.campfire:isActivator(e.reference)
-    local initialised = e.reference.data and e.reference.data.campfireInitialised
-    if dynamicConfig and isActivator and not initialised then
-        local campfire = e.reference
-        logger:debug("registerCampfire %s", campfire.object.id)
-        campfire.data.campfireInitialised = true
-        campfire.data.dynamicConfig = dynamicConfig
+    -- local dynamicConfig = campfireConfig.getConfig(e.reference.object.id)
+    -- local isActivator = Activator.registeredActivators.campfire:isActivator(e.reference)
+    -- local initialised = e.reference.data and e.reference.data.campfireInitialised
+    -- if dynamicConfig and isActivator and not initialised then
+    --     local campfire = e.reference
+    --     logger:debug("registerCampfire %s", campfire.object.id)
+    --     campfire.data.campfireInitialised = true
+    --     campfire.data.dynamicConfig = dynamicConfig
 
-        registerDataValues(campfire)
-        event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})
-        event.trigger("Ashfall:registerReference", { reference = campfire})
-    end
+    --     registerDataValues(campfire)
+    --     event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})
+    --     event.trigger("Ashfall:registerReference", { reference = campfire})
+    -- end
 end
 event.register("referenceActivated", registerCampfire)

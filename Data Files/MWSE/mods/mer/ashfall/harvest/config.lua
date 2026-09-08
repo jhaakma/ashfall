@@ -61,7 +61,7 @@ config.activatorHarvestData = {
             { id = "ashfall_firewood", count = 8, chance = 1.0 },
         },
         sound = "ashfall\\chopshort.wav",
-        swingsNeeded = 2,
+        swingsNeeded = 1.5,  -- Quick harvest: 1-2 swings depending on weapon
         destructionLimitConfig = {
             min = 8,
             minHeight = 300,
@@ -112,7 +112,7 @@ config.activatorHarvestData = {
             { id = "ashfall_firewood", count = 8, chance = 1.0 },
         },
         sound = "ashfall\\chopshort.wav",
-        swingsNeeded = 2,
+        swingsNeeded = 1.5,  -- Quick harvest: 1-2 swings depending on weapon
         destructionLimitConfig = {
             min = 8,
             minHeight = 300,
@@ -162,7 +162,7 @@ config.activatorHarvestData = {
             { id = "ingred_resin_01", count = 3, chance = 0.3 },
         },
         sound = "ashfall\\chopshort.wav",
-        swingsNeeded = 2,
+        swingsNeeded = 1.5,  -- Quick harvest: 1-2 swings depending on weapon
         destructionLimitConfig = {
             min = 10,
             minHeight = 500,
@@ -249,7 +249,7 @@ config.activatorHarvestData = {
             { id = "ashfall_plant_fibre", count = 15, chance = 1.0 },
         },
         sound ="ashfall\\chopveg.wav",
-        swingsNeeded = 1,
+        swingsNeeded = 0.5,  -- Instant harvest: always 1 swing
         destructionLimitConfig = {
             min = 8,
             minHeight = 50,
@@ -293,7 +293,7 @@ config.activatorHarvestData = {
             { id = "ashfall_flint", count = 2, chance = 0.3 },
         },
         sound = "Fx\\Heavy Armor Hit.wav",
-        swingsNeeded = 3,
+        swingsNeeded = 2.5,  -- Moderate harvest: 2-3 swings depending on weapon
     },
 
     --For Danae's Madness mod
@@ -330,7 +330,7 @@ config.activatorHarvestData = {
             { id = "T_IngMine_Moonstone_01", count = 1, chance = 1.0 },
         },
         sound = "Fx\\Heavy Armor Hit.wav",
-        swingsNeeded = 3,
+        swingsNeeded = 2.5,  -- Moderate harvest: 2-3 swings depending on weapon
         destructionLimitConfig = {
             min = 2,
             minHeight = 50,

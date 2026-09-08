@@ -18,6 +18,7 @@ refController.registerReferenceController{
 }
 
 MaterialStorage:new{
+    id = "Woodstack",
     isStorage = function(self, reference)
         return isWoodStack(reference)
     end,
@@ -68,9 +69,10 @@ function WoodStack.getWoodAmount(reference)
 end
 
 ---@param recipe CraftingFramework.Recipe
+---@param e CraftingFramework.Craftable.callback.params
 function WoodStack.destroyCallback(recipe, e)
     local reference = e.reference
-    if reference.data and reference.data.woodAmount and reference.data.woodAmount > 0 then
+    if reference and reference.data and reference.data.woodAmount and reference.data.woodAmount > 0 then
         local count = reference.data.woodAmount
         local firewood = common.staticConfigs.objectIds.firewood
         tes3.addItem{

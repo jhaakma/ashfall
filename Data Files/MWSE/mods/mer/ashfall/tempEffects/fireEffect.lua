@@ -8,8 +8,8 @@ local this = {}
 local common = require("mer.ashfall.common.common")
 local HeatUtil = require("mer.ashfall.heat.HeatUtil")
 local staticConfigs = common.staticConfigs
-local activatorConfig = common.staticConfigs.activatorConfig
 local ReferenceController = require("mer.ashfall.referenceController")
+local Activator = require("mer.ashfall.activators.Activator")
 ---CONFIGS----------------------------------------
 --max distance where fire has an effect
 
@@ -55,8 +55,8 @@ ReferenceController.registerReferenceController{
         if ref.disabled then return false end
         if isLight(ref) then
             return getHeatSourceValue(ref) ~= nil
-                and not activatorConfig.list.fire:isActivator(ref)
-                and not activatorConfig.list.campfire:isActivator(ref)
+                and not Activator.registeredActivators.fire:isActivator(ref)
+                and not Activator.registeredActivators.campfire:isActivator(ref)
         end
         return false
     end
@@ -66,8 +66,8 @@ ReferenceController.registerReferenceController{
     id = "flame",
     requirements = function(_, ref)
         if ref.disabled then return false end
-        return activatorConfig.list.fire:isActivator(ref) == true
-            and not activatorConfig.list.campfire:isActivator(ref)
+        return Activator.registeredActivators.fire:isActivator(ref) == true
+            and not Activator.registeredActivators.campfire:isActivator(ref)
     end
 }
 
@@ -109,69 +109,77 @@ end
 ]]
 
 
+-- Hoisted out of calculateFireEffect so the three per-reference callbacks aren't
+-- reallocated every tick. totalHeat/closeEnough are module-level accumulators reset
+-- at the start of each calculateFireEffect() call (the callbacks read/write them as
+-- upvalues, exactly as the old inner closures did).
+local totalHeat = 0
+local closeEnough
+
+local function doCampfireHeat(ref)
+
+    local isValid, distance = common.helper.getPlayerNearLitCampfire{
+        reference = ref,
+        maxDistance = maxDistance
+    }
+    if isValid then
+        --For survival skill
+        common.data.nearCampfire = true
+        local fuel = HeatUtil.getHeat(ref)
+        local isNegativeHeat = fuel < 0
+        fuel = math.abs(fuel)
+        local heatAtMaxDistance = math.clamp(math.remap(fuel, 0, 10, 0, 60), 0, 60)
+        checkWarmHands()
+        if warmingHands then
+            heatAtMaxDistance = heatAtMaxDistance * warmHandsBonus
+        end
+        local heatAtThisDistance = getHeatAtDistance(heatAtMaxDistance, distance)
+        if isNegativeHeat then
+            heatAtThisDistance = -heatAtThisDistance
+        end
+        totalHeat = totalHeat + heatAtThisDistance
+
+        closeEnough = true
+    end
+end
+
+local function doFlameHeat(ref)
+    local distance = getDistance(ref)
+    local isValid = distance < maxDistance
+        and (not ref.disabled)
+        and (not common.helper.isUnlit(ref))
+    if isValid then
+        local heatAtMaxDistance = maxFirepitHeat
+        checkWarmHands()
+        if warmingHands then
+            heatAtMaxDistance = heatAtMaxDistance * warmHandsBonus
+        end
+        local heatAtThisDistance = getHeatAtDistance(heatAtMaxDistance, distance)
+        totalHeat = totalHeat + heatAtThisDistance
+        closeEnough = true
+    end
+end
+
+local function doOtherHeat(ref)
+    local distance = getDistance(ref)
+    local isValid = distance < maxDistance
+        and (not ref.disabled)
+        and (not common.helper.isUnlit(ref))
+    if isValid then
+        local heatAtMaxDistance = getHeatSourceValue(ref)
+        local heatAtThisDistance = getHeatAtDistance(heatAtMaxDistance, distance)
+        totalHeat = totalHeat + heatAtThisDistance
+    end
+end
+
 function this.calculateFireEffect()
     if not staticConfigs.conditionConfig.temp:isActive() then return end
-    local totalHeat = 0
-    local closeEnough
+    totalHeat = 0
+    closeEnough = nil
     common.data.nearCampfire = false
 
-    local function doCampfireHeat(ref)
-
-        local isValid, distance = common.helper.getPlayerNearLitCampfire{
-            reference = ref,
-            maxDistance = maxDistance
-        }
-        if isValid then
-            --For survival skill
-            common.data.nearCampfire = true
-            local fuel = HeatUtil.getHeat(ref)
-            local isNegativeHeat = fuel < 0
-            fuel = math.abs(fuel)
-            local heatAtMaxDistance = math.clamp(math.remap(fuel, 0, 10, 0, 60), 0, 60)
-            checkWarmHands()
-            if warmingHands then
-                heatAtMaxDistance = heatAtMaxDistance * warmHandsBonus
-            end
-            local heatAtThisDistance = getHeatAtDistance(heatAtMaxDistance, distance)
-            if isNegativeHeat then
-                heatAtThisDistance = -heatAtThisDistance
-            end
-            totalHeat = totalHeat + heatAtThisDistance
-
-            closeEnough = true
-        end
-    end
     ReferenceController.iterateReferences("fuelConsumer", doCampfireHeat)
-
-    local function doFlameHeat(ref)
-        local distance = getDistance(ref)
-        local isValid = distance < maxDistance
-            and (not ref.disabled)
-            and (not common.helper.isUnlit(ref))
-        if isValid then
-            local heatAtMaxDistance = maxFirepitHeat
-            checkWarmHands()
-            if warmingHands then
-                heatAtMaxDistance = heatAtMaxDistance * warmHandsBonus
-            end
-            local heatAtThisDistance = getHeatAtDistance(heatAtMaxDistance, distance)
-            totalHeat = totalHeat + heatAtThisDistance
-            closeEnough = true
-        end
-    end
     ReferenceController.iterateReferences("flame", doFlameHeat)
-
-    local function doOtherHeat(ref)
-        local distance = getDistance(ref)
-        local isValid = distance < maxDistance
-            and (not ref.disabled)
-            and (not common.helper.isUnlit(ref))
-        if isValid then
-            local heatAtMaxDistance = getHeatSourceValue(ref)
-            local heatAtThisDistance = getHeatAtDistance(heatAtMaxDistance, distance)
-            totalHeat = totalHeat + heatAtThisDistance
-        end
-    end
     ReferenceController.iterateReferences("heatSource", doOtherHeat)
 
     if not closeEnough then

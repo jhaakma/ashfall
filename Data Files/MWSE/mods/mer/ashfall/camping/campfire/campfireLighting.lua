@@ -9,6 +9,7 @@ local common = require ("mer.ashfall.common.common")
 local skillConfigs = require("mer.ashfall.config.skillConfigs")
 local logger = common.createLogger("campfireLighting")
 local ReferenceController = require("mer.ashfall.referenceController")
+local Bellows = require("mer.ashfall.camping.Bellows")
 
 local function initialiseCampfireSoundAndFlame()
     local function doUpdate(campfire)
@@ -36,6 +37,7 @@ local function initialiseCampfireSoundAndFlame()
                     tes3.playSound{
                         sound = "Fire",
                         reference = campfire,
+                        loop = true
                     }
                 end
             end
@@ -81,7 +83,7 @@ local function loaded()
     }
     initialiseCampfireSoundAndFlame()
 end
-event.register("loaded", loaded)
+event.register("loaded", loaded, { priority = -100 })
 
 
 
@@ -116,6 +118,7 @@ local function extinguish(e)
         --Reduce fuel level by 0.5, min of 0
         campfire.data.fuelLevel = math.max(0, campfire.data.fuelLevel - 0.5)
     end
+    Bellows.reset(campfire)
 
     event.trigger("Ashfall:UpdateAttachNodes", { reference = campfire})
     --event.trigger("Ashfall:Campfire_Update_Visuals", { campfire = campfire, all = true})
@@ -131,6 +134,13 @@ end
 local function lightFire(e)
     local fuelConsumer = e.fuelConsumer
     local lighterData = e.lighterData
+
+    if fuelConsumer.data.kilnOpen then
+        tes3.messageBox("Close the kiln before lighting it.")
+        return
+    end
+
+
     logger:debug("Lighting Fire %s", fuelConsumer.object.id)
     tes3.playSound{ reference = tes3.player, sound = "ashfall_light_fire"  }
 
@@ -149,6 +159,7 @@ end
 event.register("Ashfall:fuelConsumer_Alight", lightFire)
 
 
+---@param ref tes3reference|tes3light
 local function createLightFromRef(ref)
     local lightNode = niPointLight.new()
     lightNode.name = "LIGHTNODE"
@@ -161,23 +172,27 @@ local function createLightFromRef(ref)
         )--[[@as niColor]]
     else
         lightNode.ambient = tes3vector3.new(0,0,0) --[[@as niColor]]
-        lightNode.diffuse = tes3vector3.new(255, 255, 255) --[[@as niColor]]
+        lightNode.diffuse = tes3vector3.new(255/255, 150/255, 40/255) --[[@as niColor]]
     end
-    lightNode:setAttenuationForRadius(ref.object.radius)
+    lightNode:setAttenuationForRadius(ref.object.radius or 512)
 
     return lightNode
 end
 
 local function addLighting(e)
+    logger:debug("Adding lighting to campfire %s", e.campfire.object.id)
     local campfire = e.campfire
-    local lightNode = createLightFromRef(campfire)
     local attachLight = campfire.sceneNode:getObjectByName("attachLight")
     if attachLight then
+        local lightNode = createLightFromRef(campfire)
+        logger:debug("Attaching light node to campfire %s", campfire.object.id)
         attachLight:attachChild(lightNode)
         campfire.sceneNode:update()
         campfire.sceneNode:updateNodeEffects()
         campfire:deleteDynamicLightAttachment()
         campfire:getOrCreateAttachedDynamicLight(lightNode, 1.0)
+    else
+        logger:warn("No attachLight node found on campfire %s", campfire.object.id)
     end
 end
 event.register("Ashfall:Campfire_Enablelight", addLighting)

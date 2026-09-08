@@ -1,5 +1,6 @@
 local skinningConfig = require("mer.ashfall.skinning.config")
 local HarvestService = require("mer.ashfall.harvest.service")
+local DestructionManager = require("mer.ashfall.harvest.destructionManager")
 local SkinningService = require("mer.ashfall.skinning.service")
 local CraftingFramework = include("CraftingFramework")
 local common = require("mer.ashfall.common.common")
@@ -119,29 +120,29 @@ event.register("attackHit", function(e)
     local weaponBroke = HarvestService.degradeWeapon(weapon, 1, 1)
     if weaponBroke then return end
 
-    logger:debug("Swings needed: %s, current swings: %s",
-    skinningConfig.SWINGS_NEEDED, HarvestService.getCurrentSwings(target))
+    logger:debug("Strength threshold: %s, current accumulated strength: %s",
+    skinningConfig.SWINGS_NEEDED, HarvestService.getAccumulatedStrength(target))
 
-    --Accumulate swings and check if it's enough to harvest
+    --Accumulate strength and check if it's enough to harvest
 
-    local didHarvest = HarvestService.attemptSwing(1, target, skinningConfig.SWINGS_NEEDED)
+    local didHarvest = HarvestService.accumulateStrength(1, target, skinningConfig.SWINGS_NEEDED)
 
     if not didHarvest then return end
     logger:debug("Harvesting")
     SkinningService.harvest(target, ingredients)
 
-    local destructionLimit = HarvestService.getDestructionLimit(target)
+    local destructionLimit = DestructionManager.getDestructionLimit(target)
     if not destructionLimit then
         destructionLimit = SkinningService.calculateDestructionLimit(target)
         logger:debug("initialising destructionLimit to %s", destructionLimit)
-        HarvestService.setDestructionLimit(target, destructionLimit)
+        DestructionManager.setDestructionLimit(target, destructionLimit)
     end
 
-    if HarvestService.isExhausted(target, destructionLimit) then
+    if DestructionManager.isExhausted(target, destructionLimit) then
         logger:debug("Exhausted, deleting ref")
-        HarvestService.demolish{
+        DestructionManager.demolish{
             reference = target,
-            harvestableHeight = HarvestService.getRefHeight(target),
+            harvestableHeight = DestructionManager.getRefHeight(target),
             fallSpeed = 1,
             callback = function(reference)
                 logger:debug("Deleting ref")

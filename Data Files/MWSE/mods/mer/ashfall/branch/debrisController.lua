@@ -1,8 +1,14 @@
+local common = require("mer.ashfall.common.common")
+local logger = common.createLogger("DebrisController")
 local Debris = require("mer.ashfall.branch.Debris")
 
 event.register("cellChanged", function(e)
-    if e.cell.isInterior then return end
+    if e.cell.isInterior then
+        logger:debug("new cell is interior cell, not entering debris")
+        return
+    end
     local cameFromInterior = e.previousCell and e.previousCell.isInterior
+    logger:debug("cell id: %s, cameFromInterior: %s", e.cell.id, cameFromInterior)
     Debris:enterCell{
         immediate = cameFromInterior,
     }

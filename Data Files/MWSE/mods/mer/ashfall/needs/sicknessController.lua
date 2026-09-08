@@ -222,6 +222,13 @@ function this.calculate(scriptInterval, forceUpdate)
     end
 end
 
+--The survival stack no longer ticks during a menu-mode vanilla rest/wait. Sickness
+--math doesn't depend on resting state, so applying calculate() once with the elapsed
+--hours reproduces the per-frame accumulation (illness drain/recovery, blight, flu).
+event.register("Ashfall:RestFinished", function(e)
+    this.calculate(e.hours)
+end)
+
 --[[
     Check whether the player's face is covered to protect against the blight
 ]]

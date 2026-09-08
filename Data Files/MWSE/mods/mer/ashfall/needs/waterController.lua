@@ -11,7 +11,6 @@ local logger = common.createLogger("waterController")
 local config = require("mer.ashfall.config").config
 local foodConfig = common.staticConfigs.foodConfig
 local teaConfig = common.staticConfigs.teaConfig
-local activatorConfig = common.staticConfigs.activatorConfig
 
 local thirst = common.staticConfigs.conditionConfig.thirst
 local hunger = common.staticConfigs.conditionConfig.hunger
@@ -142,7 +141,7 @@ event.register(
         end
         callWaterMenu()
     end,
-    { filter = activatorConfig.types.waterSource }
+    { filter = "waterSource" }
 )
 
 event.register(
@@ -150,7 +149,7 @@ event.register(
     function()
         callWaterMenu({ waterType = "dirty" })
     end,
-    { filter = activatorConfig.types.dirtyWaterSource }
+    { filter = "dirtyWaterSource" }
 )
 
 

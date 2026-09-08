@@ -4,6 +4,17 @@ local DropConfig = {
         "tea"
     },
     node = {
+        WHEEL = {
+            "attachClay"
+        },
+        ASHFALL_KILN = {
+            "firewood",
+            "douse",
+            "lightFire",
+            "groundUtensil",
+            "supports",
+            "heatWater",
+        },
         ASHFALL_PLANTER  = {
             "waterPlant",
             "plantSeedling",

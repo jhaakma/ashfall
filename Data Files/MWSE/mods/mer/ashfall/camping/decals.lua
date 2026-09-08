@@ -33,7 +33,8 @@ end
 preloadTextures()
 
 
-
+---@param property niTexturingProperty
+---@param decalState string?
 local function addDecal(property, decalState)
     local decal
     if decalState then
@@ -85,9 +86,8 @@ local function updateIngredient(e)
     for node in traverseNIF{ reference.sceneNode} do
         local success, texturingProperty, alphaProperty = pcall(function() return node:getProperty(0x4), node:getProperty(0x0) end)
         if (success and texturingProperty) then
-            local clonedProperty = node:detachProperty(0x4):clone()
-            node:attachProperty(clonedProperty)
-            addDecal(clonedProperty, decalState)
+            node.texturingProperty = node.texturingProperty:clone()
+            addDecal(node.texturingProperty, decalState)
             node:updateProperties()
         end
     end

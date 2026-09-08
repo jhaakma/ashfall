@@ -46,16 +46,6 @@ end
 
 local function callUpdates()
     if not tes3.player then return end
-
-    statsEffect.calculate()
-    -- --temp effects
-    raceEffects.calculateRaceEffects()
-    torch.calculateTorchTemp()
-    fireEffect.calculateFireEffect()
-    hazardEffects.calculateHazards()
-    conditions.updateConditions() --1fps
-    frostBreath.doFrostBreath()
-
     local hoursPassed = getHoursPassed()
     local interval = getInterval(hoursPassed)
     common.data.lastTimeScriptsUpdated = hoursPassed
@@ -63,11 +53,35 @@ local function callUpdates()
     for _, script in pairs(needs) do
         script.calculate(interval)
     end
-    event.trigger("Ashfall:UpdateNeedsUI")
-    event.trigger("Ashfall:UpdateHUD")
     temperatureController.calculate(interval)
 end
-event.register("enterFrame", callUpdates)
+-- The survival stack used to run on `enterFrame` (~60Hz, and even while paused
+-- in menus). It's now driven by a simulate timer (~10Hz, paused in menus). The
+-- needs/temperature math is interval-driven by game hours, so a lower tick rate
+-- accumulates identically; the non-interval temp effects (fire/torch/etc.) only
+-- recompute the current state, which can't change while the game is paused.
+-- Timers are cancelled right before each `loaded`, so re-starting here on every
+-- load does not stack.
+event.register("loaded", function()
+    timer.start{
+        type = timer.simulate,
+        duration = 0.1,
+        iterations = -1,
+        persist = false,
+        callback = callUpdates,
+    }
+end)
+
+-- The simulate timer doesn't tick during a vanilla rest/wait (menu mode), so the
+-- needs that would have accumulated over those hours are applied once at the rest
+-- boundary via the Ashfall:RestFinished event (see the needs controllers). Without
+-- this, the first tick after the rest would see the whole rest as a single interval
+-- and double-apply those needs at the normal rate. Re-baseline the interval clock so
+-- that catch-up tick is a no-op. (The real timer keeps ticking through the rest, so
+-- lastTimeTimerScriptsUpdated is left untouched.)
+event.register("Ashfall:RestFinished", function()
+    common.data.lastTimeScriptsUpdated = getHoursPassed()
+end)
 
 event.register("loaded", function()
     timer.start{
@@ -79,13 +93,25 @@ event.register("loaded", function()
             local interval = getTimerInterval(hoursPassed)
             common.data.lastTimeTimerScriptsUpdated = hoursPassed
 
+            --Timer based effects
+            statsEffect.calculate()
+            raceEffects.calculateRaceEffects()
+            torch.calculateTorchTemp()
+            hazardEffects.calculateHazards()
+            fireEffect.calculateFireEffect()
+            conditions.updateConditions()
+            frostBreath.doFrostBreath()
             magicEffects.calculateMagicEffects(interval)
             weather.calculateWeatherEffect(interval)
             sunEffect.calculate(interval)
             wetness.calculateWetTemp(interval)
             needs.hunger.processMealBuffs(interval)
+
             tes3.player.data.Ashfall.valuesInitialised = true
 
+            --UI events
+            event.trigger("Ashfall:UpdateNeedsUI")
+            event.trigger("Ashfall:UpdateHUD")
         end
     }
 end)

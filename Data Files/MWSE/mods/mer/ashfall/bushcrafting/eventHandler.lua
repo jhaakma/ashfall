@@ -83,6 +83,14 @@ local function customNameTooltip(e)
 end
 event.register("uiObjectTooltip", customNameTooltip)
 
+---Chisel tooltips
+event.register("uiObjectTooltip", function(e)
+    local chisel = CraftingFramework.Tool.getTool("chisel")
+    if chisel and chisel:itemIsTool(e.object) then
+        common.helper.addLabelToTooltip(e.tooltip, "Equip: Carving Menu")
+    end
+end)
+
 event.register("loaded", function()
     for sack in pairs(common.data.sacks) do
         CraftingFramework.Material:new{

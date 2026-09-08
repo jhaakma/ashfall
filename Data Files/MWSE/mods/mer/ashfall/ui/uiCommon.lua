@@ -34,6 +34,7 @@ function uiCommon.createOrUpdateTooltipMenu(headerText)
     tooltipMenu:destroyChildren()
     tooltipMenu.absolutePosAlignX = 0.5
     tooltipMenu.absolutePosAlignY = 0.03
+    tooltipMenu.borderTop = 20
     tooltipMenu.autoHeight = true
     tooltipMenu.autoWidth = true
     local labelBackground = tooltipMenu:createRect({color = {0, 0, 0}}) ---@diagnostic disable-line

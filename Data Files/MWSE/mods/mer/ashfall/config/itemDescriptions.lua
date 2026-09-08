@@ -63,5 +63,6 @@ local itemDescriptions = {
     ashfall_notebook_01  = "A notebook for storing documents (and other non-magic texts).",
     ashfall_potion_box_01 = "A box for storing potions.",
     ashfall_trinket_box_01 = "A box for storing jewelry.",
+    ashfall_brick_shed = "A shed for storing raw clay bricks. Attach a brick mould to enable mass brick production. Bricks stored here can be used in crafting recipes when standing nearby."
 }
 return itemDescriptions
