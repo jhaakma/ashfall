@@ -215,6 +215,12 @@ local activatorConfigs = {
         ids = {},
     },
     {
+        id = "brickShed",
+        name = "Brick Shed",
+        type = "brickShed",
+        ids = {}
+    },
+    {
         id = "moonStone",
         name = "Moonstone",
         type = "moonStone",

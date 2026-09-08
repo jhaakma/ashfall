@@ -4,6 +4,7 @@ local Bellows = require("mer.ashfall.camping.Bellows")
 local Campfire = require("mer.ashfall.camping.campfire.Campfire")
 local Activator = require("mer.ashfall.activators.Activator")
 local FuelModel = require("mer.ashfall.camping.FuelModel")
+local HeatUtil = require("mer.ashfall.heat.HeatUtil")
 
 ---@class Ashfall.HeatCurve
 local HeatCurve = {}
@@ -22,10 +23,13 @@ local HeatCurve = {}
 
 ---@param heatSource tes3reference
 ---@return Ashfall.HeatCurve.Snapshot
-function HeatCurve.snapshotFuelConsumer(heatSource)
+function HeatCurve.snapshotFuelConsumer(heatSource, heatType)
     local fuelSnap = FuelModel.snapshot(heatSource)
 
     local isWeak = Activator.registeredActivators.teaWarmer:isActivator(heatSource)
+    if heatType == "weak" then
+        isWeak = true
+    end
     local weakEffect = isWeak and 0.1 or 1.0
 
     local isColdEffect = (heatSource and heatSource.data and heatSource.data.hasColdFlame) and -1 or 1

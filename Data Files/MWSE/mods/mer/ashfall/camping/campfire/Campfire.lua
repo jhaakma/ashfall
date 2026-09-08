@@ -20,7 +20,7 @@ local Campfire = {
     },
     ---Unified stages configuration with minTemp, name, and color
     ---Stages are ordered from lowest to highest temperature
-    ---@type table< string, Ashfall.Campfire.STAGE>
+    ---@type table<Ashfall.Campfire.FiringStage, Ashfall.Campfire.STAGE>
     STAGES = {
         cooking = {
             minTemp = 1,
@@ -39,6 +39,11 @@ local Campfire = {
         },
     },
 }
+
+---@alias Ashfall.Campfire.FiringStage
+---| "cooking"
+---| "firing"
+---| "glazing"
 
 ---@class Ashfall.Campfire.STAGE
 ---@field minTemp number Minimum temperature for this stage

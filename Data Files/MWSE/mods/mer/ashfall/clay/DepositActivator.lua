@@ -41,28 +41,62 @@ function DepositActivator.onActivate(e)
     end
 end
 
+
+
+
 function DepositActivator.harvestClay(depositRef)
+    -- Initialize clay amount if not set (for old deposits)
+    ClayDeposit.initialiseClayAmount(depositRef)
+
+    local remainingClay = depositRef.data.ashfallClayRemaining
+    local harvestAmount = math.random(ClayDeposit.minClayPerHarvest, ClayDeposit.maxClayPerHarvest) + (remainingClay * 0.1)
+    harvestAmount = math.min(harvestAmount, remainingClay)
+
     playDiggingSound()
-    --disable halfway through
-    timer.start({
-        type = timer.real,
-        duration = ClayDeposit.harvestRealSeconds * 0.5,
-        callback = function()
-            depositRef:disable()
-        end
-    })
+
     common.helper.fadeTimeOut(ClayDeposit.harvestHours,
         ClayDeposit.harvestRealSeconds,
         function()
-            depositRef.data.ashfallClayDepositHarvestTime = tes3.getSimulationTimestamp()
+            depositRef.data.ashfallClayRemaining = depositRef.data.ashfallClayRemaining - harvestAmount
+
             tes3.addItem{
                 reference = tes3.player,
                 item = ClayDeposit.pickRandomClayMiscId(),
-                count = math.random(ClayDeposit.minClayPerHarvest, ClayDeposit.maxClayPerHarvest),
+                count = harvestAmount,
                 showMessage = true,
             }
+
+            -- Only disable and mark harvest time if deposit is depleted
+            if depositRef.data.ashfallClayRemaining <= 0 then
+                logger:info("Clay deposit depleted, disabling")
+                depositRef.data.ashfallClayDepositHarvestTime = tes3.getSimulationTimestamp()
+                depositRef:disable()
+            else
+                logger:info("Clay deposit has %d clay remaining", depositRef.data.ashfallClayRemaining)
+            end
         end
     )
 end
 
+local tooltipStates = {
+    { minAmount = ClayDeposit.initialClayAmountMax * 0.8, text = "Abundant" },
+    { minAmount = ClayDeposit.initialClayAmountMax * 0.5, text = "Plentiful" },
+    { minAmount = ClayDeposit.initialClayAmountMax * 0.2, text = "Scarce" },
+    { minAmount = 0, text = "Depleted" },
+}
+---@param e uiObjectTooltipEventData
+function DepositActivator.uiObjectTooltip(e)
+
+    if e.reference and ClayDeposit.isClayDeposit(e.reference) then
+        ClayDeposit.initialiseClayAmount(e.reference)
+        local remaining = e.reference.data.ashfallClayRemaining or 0
+        for _, state in ipairs(tooltipStates) do
+            if remaining >= state.minAmount then
+                local label = e.tooltip:createLabel{ text = state.text }
+                label.color = {0.8, 0.7, 0.2}
+                break
+            end
+        end
+    end
+end
 return DepositActivator

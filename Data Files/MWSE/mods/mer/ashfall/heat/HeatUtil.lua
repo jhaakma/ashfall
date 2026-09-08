@@ -9,7 +9,9 @@ local HeatUtil = {}
 --[[
     Get heat based on fuel level and modifiers
 ]]
-function HeatUtil.getHeat(reference)
+---@param reference tes3reference
+---@param heatType "strong"|"weak"?
+function HeatUtil.getHeat(reference, heatType)
     if not reference then return 0 end
 
     local data = reference.data
@@ -17,6 +19,9 @@ function HeatUtil.getHeat(reference)
     local isLit = data.isLit
     local fuelLevel = data.fuelLevel or 0
     local isWeak = Activator.registeredActivators.teaWarmer:isActivator(reference)
+    if heatType == "weak" then
+        isWeak = true
+    end
     local weakEffect = isWeak and 0.1 or 1.0
 
     local campfireData = Campfire.getCampfire(reference.object.id)
@@ -84,6 +89,7 @@ local function calculateHeatEffect(liquidContainer)
 
             logger:trace("BOILER heatEffect: %s", heatEffect)
         else
+
             logger:trace("Looking for heat source underneath. Strong heat only heats utensils, weak heat doesn't work on pots")
             local heater, heatType = common.helper.getHeatFromBelow(liquidContainer.reference)
             local heaterIsLit = heater and heater.data.isLit

@@ -9,44 +9,20 @@ local PotteryTooltips = {}
 ---@field unfired "unfired"
 ---@field fired "fired"
 
----Temperature stages for unfired pottery (firing-specific language).
----@type { minTemp: number, name: string, color: number[] }[]
-PotteryTooltips.COLOR_STAGES_UNFIRED = {
-    {
-        minTemp = Campfire.STAGES.glazing.minTemp,
-        name = "Glazing",
-        color = Campfire.STAGES.glazing.color,
-    },
-    {
-        minTemp = Campfire.STAGES.firing.minTemp,
-        name = "Firing",
-        color = {1.0, 0.3, 0.3},
-    },
-    {
-        minTemp = 0,
-        name = "Heating Up",
-        color = {1.0, 0.8, 0.4},
-    },
+---Temperature stage names for unfired pottery (firing-specific language).
+---@type table<string, string>
+PotteryTooltips.STAGE_NAMES_UNFIRED = {
+    glazing = "Glaze Firing",
+    firing = "Bisque Firing",
+    cooking = "Hot",
 }
 
----Temperature stages for fired pottery (no firing/glazing language).
----@type { minTemp: number, name: string, color: number[] }[]
-PotteryTooltips.COLOR_STAGES_FIRED = {
-    {
-        minTemp = Campfire.STAGES.glazing.minTemp,
-        name = "Hot",
-        color = Campfire.STAGES.glazing.color,
-    },
-    {
-        minTemp = Campfire.STAGES.firing.minTemp,
-        name = "Hot",
-        color = {1.0, 0.3, 0.3},
-    },
-    {
-        minTemp = 0,
-        name = "Warm",
-        color = {1.0, 0.8, 0.4},
-    },
+---Temperature stage names for fired pottery (no firing/glazing language).
+---@type table<string, string>
+PotteryTooltips.STAGE_NAMES_FIRED = {
+    glazing = "Very Hot",
+    firing = "Very Hot", --Can't pick up, likely to crack if cooled too quickly
+    cooking = "Hot", --Can't pick up, but maybe safe to extinguish fire and let cool
 }
 
 ---@param tooltip tes3uiElement
@@ -70,12 +46,9 @@ function PotteryTooltips.getCrackedLabel(cracked, text)
     end
 end
 
----@param tempered boolean?
----@return {text: string, color: number[]}|nil
-function PotteryTooltips.getTemperedLabel(tempered)
-    if tempered then
-        return {text = "Tempered", color = {0.6, 0.9, 0.7}}
-    end
+---@return {text: string, color: number[]}
+function PotteryTooltips.getTemperedLabel()
+    return {text = "Tempered", color = {0.6, 0.9, 0.7}}
 end
 
 ---@param quality number?
@@ -90,6 +63,12 @@ function PotteryTooltips.getQualityLabel(quality, opts)
     return string.format("Quality: %d", qualityPercent)
 end
 
+function PotteryTooltips.getDecorationLabel(decoration)
+    if decoration then
+        return { text = decoration.name, color = {0.8, 0.6, 1.0} }
+    end
+end
+
 ---Get the temperature state and color based on current temperature.
 ---@param heated Ashfall.Clay.HeatedItem?
 ---@param opts { kind: "unfired"|"fired" }?
@@ -97,8 +76,6 @@ end
 ---@return number[]|nil color The RGB color
 function PotteryTooltips.getTemperatureState(heated, opts)
     local currentTemp = heated and (heated.data.currentTemperature or 0) or 0
-    local targetHeat = heated and (heated.data.targetHeat or 0) or 0
-    local isWarming = currentTemp < targetHeat
 
     -- No tooltip if completely cold
     if currentTemp <= 0 then
@@ -106,23 +83,23 @@ function PotteryTooltips.getTemperatureState(heated, opts)
     end
 
     local kind = opts and opts.kind or "unfired"
-    local stages = (kind == "fired") and PotteryTooltips.COLOR_STAGES_FIRED or PotteryTooltips.COLOR_STAGES_UNFIRED
+    local stageNames = (kind == "fired") and PotteryTooltips.STAGE_NAMES_FIRED or PotteryTooltips.STAGE_NAMES_UNFIRED
 
-    local stageName = stages[#stages].name
-    local color = stages[#stages].color
-
-    for _, stage in ipairs(stages) do
-        if currentTemp >= stage.minTemp then
-            stageName = stage.name
-            color = stage.color
-            break
-        end
+    -- Find the current stage from Campfire.ORDERED_STAGES
+    local currentStage = Campfire.getStageForHeat(currentTemp)
+    if not currentStage then
+        return nil, nil
     end
 
-    -- Override with "Cooling Down" if below firing temp and cooling
-    if currentTemp < Campfire.STAGES.firing.minTemp and not isWarming then
-        stageName = "Cooling Down"
-        color = {0.5, 0.7, 1.0}
+    -- Map the stage to the appropriate name and color
+    local stageName = stageNames.cooking -- fallback
+    local color = currentStage.color
+
+    for key, stage in pairs(Campfire.STAGES) do
+        if stage == currentStage then
+            stageName = stageNames[key] or currentStage.name
+            break
+        end
     end
 
     return stageName, color

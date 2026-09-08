@@ -11,8 +11,10 @@ local ClayDeposit = {
     respawnHours = 24 * 3,
     harvestHours = 0.25,
     harvestRealSeconds = 2,
-    minClayPerHarvest = 8,
-    maxClayPerHarvest = 16,
+    minClayPerHarvest = 10,
+    maxClayPerHarvest = 20,
+    initialClayAmountMin = 80,
+    initialClayAmountMax = 100,
 }
 
 ---@class Ashfall.Clay.DecalData
@@ -57,7 +59,8 @@ function ClayDeposit.createClayDepositAtTerrain(terrainData)
         orientation = terrainData.trishape.worldTransform.rotation:toEulerXYZ(),
     }
     deposit.data.ashfallZOffsets = getZOffsets(terrainData.trishape)
-    logger:info("Created clay deposit at terrain in cell (%s)", cell.editorName)
+    deposit.data.ashfallClayRemaining = ClayDeposit.calculateInitialClayAmount()
+    logger:info("Created clay deposit at terrain in cell (%s) with %d clay", cell.editorName, deposit.data.ashfallClayRemaining)
 end
 
 
@@ -178,6 +181,7 @@ function ClayDeposit.setClayDepositMesh(activator)
                 logger:info("Respawning clay deposit: %s", activator.id)
                 activator:enable()
                 activator.data.ashfallClayDepositHarvestTime = nil
+                activator.data.ashfallClayRemaining = ClayDeposit.calculateInitialClayAmount()
             end
         end
     end
@@ -200,7 +204,15 @@ function ClayDeposit.setClayDepositMesh(activator)
     end
 end
 
+function ClayDeposit.initialiseClayAmount(reference)
+    if not reference.data.ashfallClayRemaining then
+        reference.data.ashfallClayRemaining = ClayDeposit.calculateInitialClayAmount()
+    end
+end
 
+function ClayDeposit.calculateInitialClayAmount()
+    return math.random(ClayDeposit.initialClayAmountMin, ClayDeposit.initialClayAmountMax)
+end
 
 --- Return all terrain shapes in the cell that have at least one vert above and one below water
 ---@return table<tes3cell, Ashfall.ClayDeposit.TerrainData[]>

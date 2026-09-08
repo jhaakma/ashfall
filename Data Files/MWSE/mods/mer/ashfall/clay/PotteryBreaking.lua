@@ -2,12 +2,12 @@ local common = require("mer.ashfall.common.common")
 local logger = common.createLogger("PotteryBreaking")
 local PotteryRecipe = require("mer.ashfall.clay.PotteryRecipe")
 local RawClay = require("mer.ashfall.clay.RawClay")
-local PotteryDecals = require("mer.ashfall.clay.PotteryDecals")
+local PotteryDecals = require("mer.ashfall.clay.Visuals.PotteryDecals")
 
 ---Module for handling pottery breaking mechanics shared between unfired and fired pottery
 ---@class Ashfall.PotteryBreaking
 local PotteryBreaking = {
-    POTTERY_COLLECTED = 5,
+    POTTERY_COLLECTED = 4,
 }
 
 ---Crack a pottery item, setting cracked status and applying visual effects
@@ -54,32 +54,35 @@ function PotteryBreaking.setDecals(reference, data)
 end
 
 ---Break a pottery item, replacing it with animated broken clay activator
----@param reference tes3reference The pottery reference to break
----@param recipe Ashfall.PotteryRecipe The pottery recipe
----@param shouldNotifyPlayer boolean Whether to play sound effects for the player
-function PotteryBreaking.breakPottery(reference, recipe, shouldNotifyPlayer)
-    if not reference then
+---@param e { reference: tes3reference, recipe: Ashfall.PotteryRecipe|nil, shouldNotifyPlayer: boolean, decals: nil|Ashfall.Clay.PotteryDecals[] }
+function PotteryBreaking.breakPottery(e)
+    if not e.reference then
         logger:warn("PotteryBreaking.breakPottery() called but no reference present")
         return
     end
 
     logger:trace("PotteryBreaking.breakPottery() called - pottery has broken")
 
-    if shouldNotifyPlayer then
+    if e.shouldNotifyPlayer then
         tes3.playSound{
             soundPath = "ashfall/potbreak.wav",
         }
     end
 
-    if recipe and recipe.brokenId then
+    if e.recipe and e.recipe.brokenId then
         local brokenActivator = tes3.createReference{
-            object = recipe.brokenId,
-            position = reference.position,
-            orientation = reference.orientation,
-            cell = reference.cell,
+            object = e.recipe.brokenId,
+            position = e.reference.position,
+            orientation = e.reference.orientation,
+            cell = e.reference.cell,
         }
-
         if brokenActivator then
+            if e.decals then
+                for _, decal in ipairs(e.decals) do
+                    decal:applyDecal(brokenActivator.sceneNode)
+                end
+            end
+
             brokenActivator.hasNoCollision = true
             tes3.playAnimation{
                 reference = brokenActivator,
@@ -88,7 +91,7 @@ function PotteryBreaking.breakPottery(reference, recipe, shouldNotifyPlayer)
                 loopCount = 0
             }
         end
-        reference:delete()
+        e.reference:delete()
     end
 end
 
@@ -122,6 +125,7 @@ end
 
 ---When hitting fired clay with a blunt weapon, crack or break it
 function PotteryBreaking.onHit(target)
+    if not target then return end
     -- Lazy require to avoid circular dependency
     local FiredPottery = require("mer.ashfall.clay.FiredPottery")
 
@@ -140,7 +144,12 @@ function PotteryBreaking.onHit(target)
     if pottery.data.cracked then
         logger:trace("Pottery is already cracked, breaking it")
         local recipe = PotteryRecipe.getRecipeByFiredItemId(target.baseObject.id)
-        PotteryBreaking.breakPottery(target, recipe, true)
+        PotteryBreaking.breakPottery{
+            reference = target,
+            recipe = recipe,
+            shouldNotifyPlayer = true,
+            decals = pottery:getDecals(),
+        }
     else
         logger:trace("Pottery is not cracked, cracking it")
         PotteryBreaking.crackPottery(target, pottery.data, true)

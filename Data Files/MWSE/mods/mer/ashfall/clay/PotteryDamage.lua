@@ -1,6 +1,7 @@
 local common = require("mer.ashfall.common.common")
 local logger = common.createLogger("PotteryDamage")
 local PotteryBreaking = require("mer.ashfall.clay.PotteryBreaking")
+local Campfire = require("mer.ashfall.camping.campfire.Campfire")
 
 ---Shared break/crack mechanics used by multiple pottery types.
 ---
@@ -11,9 +12,6 @@ local PotteryDamage = {}
 
 -- Shared tuning constants (keep these centralized to avoid magic numbers in logic).
 -- Temperatures are in the same units used by Ashfall (Campfire stage temps).
-
---- Pickup safety constant, fraction of firing min temp.
-local SAFE_PICKUP_TEMP_FACTOR = 0.35
 
 -- Underfiring constants (UnfiredPottery break model).
 local UNDERFIRE_TEMP_DEFICIT_SCALE = 1.5
@@ -33,18 +31,17 @@ local THERMAL_SHOCK_TEMPER_RISK_FACTOR = 0.75
 -- Thermal shock uses a *rate per hour* (hazard rate), then converts to probability over time.
 -- This avoids "nothing ever happens" when updates are frequent and hoursElapsed is small.
 -- At max heat+delta, this yields near-guaranteed cracking on the next update.
-local THERMAL_SHOCK_BASE_RATE_PER_HOUR = 80.0
-local THERMAL_SHOCK_MAX_RATE_PER_HOUR = 200.0
+local THERMAL_SHOCK_BASE_RATE_PER_HOUR = 8.0
+local THERMAL_SHOCK_MAX_RATE_PER_HOUR = 20.0
 
 -- Roll helper constants.
 local MAX_PER_HOUR_PROBABILITY = 0.99
 
 ---Temperature at/under which it is safe to pick up a hot pottery item.
----Kept in sync with thermal-shock "safe" threshold so pickup is either blocked or safe.
----@param firingMinTemp number
+---Items at cooking stage or higher are too hot to pick up.
 ---@return number
-function PotteryDamage.getSafePickupTemperature(firingMinTemp)
-    return (firingMinTemp or 0) * SAFE_PICKUP_TEMP_FACTOR
+function PotteryDamage.getSafePickupTemperature()
+    return Campfire.STAGES.cooking.minTemp - 0.01 -- Just below cooking stage
 end
 
 ---@class Ashfall.Clay.PotteryDamage.ApplyParams
@@ -52,6 +49,7 @@ end
 ---@field data table -- must contain `cracked` boolean?
 ---@field recipe Ashfall.PotteryRecipe|nil
 ---@field shouldNotifyPlayer boolean
+---@field decals Ashfall.Clay.PotteryDecals[]
 
 ---If already cracked, break; otherwise crack.
 ---@param e Ashfall.Clay.PotteryDamage.ApplyParams
@@ -62,7 +60,12 @@ function PotteryDamage.applyCrackOrBreak(e)
     end
 
     if e.data and e.data.cracked then
-        PotteryBreaking.breakPottery(e.reference, e.recipe, e.shouldNotifyPlayer)
+        PotteryBreaking.breakPottery{
+            reference = e.reference,
+            recipe = e.recipe,
+            shouldNotifyPlayer = e.shouldNotifyPlayer,
+            decals = e.decals,
+        }
         return "broken"
     end
 
@@ -183,7 +186,7 @@ function PotteryDamage.calculateThermalShockRatePerHour(e)
     local targetTemp = e.targetTemperature or 0
 
     -- Only while cooling and still hot.
-    local safeTemp = PotteryDamage.getSafePickupTemperature(minTemp)
+    local safeTemp = PotteryDamage.getSafePickupTemperature()
     if currentTemp <= safeTemp then
         return 0
     end

@@ -395,5 +395,6 @@ interop.registerActivators{
     ab_furn_woodstack02 = "woodStack",
 
     ashfall_kiln_01 = "kiln",
+    ashfall_brick_shed = "brickShed",
 }
 

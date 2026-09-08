@@ -6,6 +6,7 @@ local ActivatorController = require "mer.ashfall.activators.activatorController"
 --[[
     Adds additional tooltips based on what node the player is looking at
 ]]
+---@param e { reference: tes3reference?, parentNode: tes3uiElement?, tooltip: tes3uiElement}
 local function addAdditionalTooltip(e)
     logger:trace("Activator tooltip")
     local reference = e.reference

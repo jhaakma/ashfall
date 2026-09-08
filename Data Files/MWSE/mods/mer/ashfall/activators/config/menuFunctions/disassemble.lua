@@ -2,6 +2,7 @@ local common = require ("mer.ashfall.common.common")
 local logger = common.createLogger("DisassembleMenuFunction")
 local Campfire = require("mer.ashfall.camping.campfire.Campfire")
 local CraftingFramework = require("CraftingFramework")
+local Kiln = require("mer.ashfall.clay.Kiln")
 
 --Destroy and recover all materials from placed craftable
 return {
@@ -11,6 +12,9 @@ return {
         return Campfire.canDisassemble(reference)
             and reference.supportsLuaData
             and not reference.data.isLit
+            and not reference.data.bellowsId
+            and not (reference.data.dynamicConfig and reference.data.dynamicConfig.campfire == "static")
+            and Kiln.isKiln(reference.baseObject.id)
     end,
     ---@param reference tes3reference
     callback = function(reference)

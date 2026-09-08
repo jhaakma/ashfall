@@ -75,19 +75,18 @@ end
 
 --Open the clay working menu
 function ClayWorking.openCraftMenu(reference)
-    local tempered = Temper:new{ reference = reference }
-    local isTempered = tempered and tempered:hasTemper() or false
+    local isTempered = Temper.isTempered{ reference = reference }
 
     ShapingMenu:new{
         title = "Clay Working",
         clayId = RawClay.rawClayId,
         recipes = PotteryRecipe.getAllRecipesByMethod("hand"),
+        clayAmount = 1,
         okayCallback = function(results)
             tes3.playSound{
                 reference = reference,
                 sound = "corpDRAG"
             }
-
             timer.start{
                 type = timer.real,
                 duration = ClayWorking.SHAPING_SECONDS_TAKEN * 0.5,
@@ -123,10 +122,7 @@ end
 ---@param e activateEventData
 function ClayWorking.onActivate(e)
     if tes3ui.menuMode() then return end
-
-    if common.helper.isModifierKeyPressed() then
-        return
-    end
+    if common.helper.isModifierKeyPressed() then return end
 
     local clayRef = e.target
     if not ClayWorking.isClay(clayRef) then
@@ -145,8 +141,7 @@ function ClayWorking.onActivate(e)
                     ClayWorking.addTemper(clayRef)
                 end,
                 showRequirements = function()
-                    local tempered = Temper:new{ reference = clayRef }
-                    return not (tempered and tempered:hasTemper())
+                    return not Temper.isTempered{ reference = clayRef }
                 end,
                 enableRequirements = function()
                     local hasTemper = Temper.getPlayerTemperCount() > 0

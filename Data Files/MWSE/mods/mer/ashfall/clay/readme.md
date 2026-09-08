@@ -1,61 +1,93 @@
-# Ashfall Pottery Mechanics
+# Perfefecter Placement
+- Decal color for snap mode - DONE
+- Remove pinToWall setting, change to wall placement setting - DONE
+- Update UI immediately when changing placement mode - DONE
+- Add axis rotation
 
+# Ashfall Pottery Mechanics
 ## Planned:
-- Remove temperature on pickup
-- Drying mechanic
-    - Items gain a dampness level once shaped
-    - Dampness massively increases risk of cracking
-    - Dries over time, can be sped up by placing on weak fire
-    - Consider "near fire" check
+- Allow stacking fire items (getHeat should check fire items below it)
+- brick clamp (mass brick firing)
+
+- Simplified firing
+    - For things like bricks, have a firing method that
+        clears all data once fired, to allow stacking
+- Fired Brick Crafting
+    - Walls
+    - Kiln (also available in raw brick menu)
+- Check all places pottery skill should increase
+- Crack before firing stage if damp
+- Fix decal order (MWSE setDecalMap fix)
+- Dynamic Glaze Icons
+- Fired clay value
+- Flatten UVs on bricks
+- Decorations
+    - Recipes:
+        - Paints:
+            Slip (base texture replacement)
+        - Charcoal Slip - done
+        - Ash Wash - done
+        - Fire/Frost/Void Salt Glaze
+    - Dynamic icon generation
+- Pottery Recipes
+    - Cup (done)
+    - Brick (done)
+    - Flask
+    - Goblet
+    - Bowl
+    - Plate
+    - Cooking pot
+    - Teapot
+    - Oil lamp
+    - Amphora (storage container)
+    - Plant pot
+    - Water container
+- Campfire registration
+    - Rewrite reference managers to use registered refs instead of node searching
 - Bushcraftable shelves (for drying and anything else)
+
+## Future
+Baking:
+    - Clay Oven
+    - Quern (hand mill)
+    - Grind wickwheat into flour
+    - Flour storage
+    - Dough: flour + water
+    - Dough placed on heat source turns into bread
+        - Shapekeys, set phase according to bake time, animates dough into bread
+        - Animate decal texture change setting alpha controller on decal without alpha properties (verified this works!)
+- Update cooking decals to use alpha controller for cook decal
+
+## Completed:
+- Wiki:
+    - Harvesting Clay
+    - Tempering
+    - Shaping
+    - Drying
+    - Glazing
+    - Firing
+    - Pottery Skill
+- Kiln starts off raw
+    - Once fired, change texture and on deconstruct return fired bricks instead
+- Tempering while attached to pottery wheel
+- Decorations
+    - Equip raw clay item
+    - Crafting Menu:
+        - Select decoration(engraving, glaze etc)
+        - Preview window shows glazed fired item
+- Fixed small table meshes
+- Drying mechanic
+    - Speed up by placing on fire
+    - If reaches firing temp, risks cracking
+- Boil liquids away in hot pottery
 - Fired clay has heat
     - Heatable component, raw and fired items registered
     - Heatable applies glow material
     - Heatables block picking up if too hot
-- Flatten UVs on bricks
-- Glazing
-    - Recipes:
-        - Charcoal Slip
-        - Ash Wash
-        - Fire/Frost/Void Salt Glaze
-    - Glazing process:
-        - Equip raw clay item
-        - Crafting Menu:
-            - Select glaze
-            - Preview window shows glaze texture
-            - Water requirement?
-    - Dynamic icon generation
-- Pottery Recipes
-    - Finalise workflow for creating assets
-    - Assets:
-        - Shaping animation ( now required for throwing and handmolding)
-        - Raw clay mesh
-        - Shatter animation
-            - Remove
-        - Fired mesh
-            - Ashfall nodes - water/tea/stew etc
-            - UV mapped to fit all glazes
-    - CS Objects
-        - Raw item
-        - Shattering activator
-        - Fired item
-    - Recipes:
-        - Cup (done)
-        - Brick (done)
-        - Flask
-        - Goblet
-        - Bowl
-        - Plate
-        - Cooking pot
-        - Teapot
-        - Oil lamp
-        - Amphora (storage container)
-        - Plant pot
-
-- Campfire registration
-
-
-## Completed:
+- Drying mechanic
+    - Items gain a dampness level once shaped
+    - Dampness increases risk of cracking
+    - Dries over time
 - Fix thermal shock issues
     - Long time between updates
     - Breaking as a result of heat source cooling down

@@ -1,6 +1,6 @@
 local common = require("mer.ashfall.common.common")
 local logger = common.createLogger("Temper")
-local Decals = require("mer.ashfall.clay.PotteryDecals")
+local Decals = require("mer.ashfall.clay.Visuals.PotteryDecals")
 local CraftingFramework = require("CraftingFramework")
 local ItemInstance = require("CraftingFramework.carryableContainers.components.ItemInstance")
 local PotteryTooltips = require("mer.ashfall.clay.PotteryTooltips")
@@ -27,10 +27,9 @@ function Temper:new(e)
 
     logger:trace("Temper:new() called for item: %s", item.id)
     if not Temper.isCompatible(item.id) then
-        logger:error("Attempted to create Temper from incompatible item: %s", item.id)
+        logger:trace("Item %s is not temper compatible", item.id)
         return nil
     end
-
     local tempered = ItemInstance:new{
         item = item,
         itemData = e.itemData,
@@ -46,33 +45,23 @@ end
 ---@param itemId string The item ID to register
 function Temper.registerTemperCompatibleItem(itemId)
     Temper.registeredTemperCompatibleItems[itemId:lower()] = true
-    CraftingFramework.Indicator.register{
-        objectId = itemId,
-        additionalUI = function(indicator, parent)
-            logger:debug("Adding temper indicator UI for item: %s", itemId)
-            local tempered = Temper:new{
-                item = indicator.item,
-                itemData = indicator.dataHolder,
-                reference = indicator.reference,
-            }
-            if not tempered or not tempered:hasTemper() then
-                return
-            end
+end
 
-            local text = "Tempered"
-            local label = parent:createLabel{ text = text }
-            local temperedLabel = PotteryTooltips.getTemperedLabel(true)
-            label.color = temperedLabel and temperedLabel.color or tes3ui.getPalette(tes3.palette.bigNormalColor)
-        end
+---If pottery, add firing info to tooltip
+---@param e uiObjectTooltipEventData
+function Temper.onUiObjectTooltip(e)
+    local temper = Temper:new{
+        item = e.object,
+        itemData = e.itemData,
+        reference = e.reference
     }
+    if temper and temper:hasTemper() then
+        local temperedLabel = PotteryTooltips.getTemperedLabel()
+        common.helper.addLabelToTooltip(e.tooltip, temperedLabel.text, temperedLabel.color)
+    end
 end
 
----Check if an item can have temper applied
----@param id string The item ID to check
----@return boolean
-function Temper.isCompatible(id)
-    return Temper.registeredTemperCompatibleItems[id:lower()] == true
-end
+
 
 ---Check if this instance has temper applied
 ---@return boolean
@@ -107,6 +96,24 @@ function Temper:removeTemper()
     end
 end
 
+
+---Check if an item can have temper applied
+---@param id string The item ID to check
+---@return boolean
+function Temper.isCompatible(id)
+    return Temper.registeredTemperCompatibleItems[id:lower()] == true
+end
+
+---@param e  { reference?: tes3reference, item?: tes3item, itemData?: table }
+function Temper.isTempered(e)
+    local tempered = Temper:new{
+        item = e.item,
+        itemData = e.itemData,
+        reference = e.reference
+    }
+    return tempered and tempered:hasTemper()
+end
+
 ---Return how much temper player has in inventory
 ---@return number
 function Temper.getPlayerTemperCount()
@@ -116,23 +123,25 @@ function Temper.getPlayerTemperCount()
     }
 end
 
-function Temper.onReferenceActivated(reference)
-    local isCompatible = reference and Temper.isCompatible(reference.object.id)
+---@param e referenceActivatedEventData
+function Temper.onReferenceActivated(e)
+    local isCompatible = e.reference and Temper.isCompatible(e.reference.object.id)
     if not isCompatible then
+        logger:trace("Reference %s is not temper compatible", e.reference.id)
         return
     end
-    local tempered = Temper:new{ reference = reference }
-    if not tempered or not tempered:hasTemper() then
+    local tempered = Temper.isTempered{ reference = e.reference }
+    if not tempered then
+        logger:trace("Reference %s does not have temper", e.reference.id)
         return
     end
-    logger:debug("Reapplying temper decal to reference %s", reference.id)
-    Decals.get("temper"):applyDecal(reference.sceneNode)
+    logger:debug("Reapplying temper decal to reference %s", e.reference.id)
+    Decals.get("temper"):applyDecal(e.reference.sceneNode)
 end
 
 function Temper.initialise()
-    event.register("ReferenceActivated", Temper.onReferenceActivated)
+    event.register("referenceActivated", Temper.onReferenceActivated)
     logger:debug("Temper system initialised")
-
 end
 
 return Temper

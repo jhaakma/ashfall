@@ -26,7 +26,7 @@ local ShapingMenu = {}
 
 local common = require("mer.ashfall.common.common")
 local logger = common.createLogger("ShapingMenu")
-local Decals = require("mer.ashfall.clay.PotteryDecals")
+local Decals = require("mer.ashfall.clay.Visuals.PotteryDecals")
 logger.logLevel = "TRACE"
 
 local PreviewPane = require("CraftingFramework.components.PreviewPane")
@@ -45,6 +45,7 @@ local PreviewPane = require("CraftingFramework.components.PreviewPane")
 ---@class Ashfall.Clay.ShapingMenu.newParams
 ---@field title string
 ---@field clayId string
+---@field clayAmount number
 ---@field recipes Ashfall.PotteryRecipe[]
 ---@field okayCallback fun(e: Ashfall.Clay.ShapingMenu.results)
 ---@field hasTemper boolean
@@ -72,6 +73,7 @@ function ShapingMenu:new(e)
         results = {},
         elements = {},
         clayId = e.clayId,
+        clayAmount = e.clayAmount,
         hasTemper = e.hasTemper,
     }
     setmetatable(obj, self)
@@ -124,13 +126,12 @@ function ShapingMenu:show()
     self:createConfirmButton(buttonContainer)
     self:createCancelButton(buttonContainer)
 
-
     self:update()
 end
 
 function ShapingMenu:createCancelButton(row)
     logger:debug("ShapingMenu:createCancelButton() called")
-    local cancelButton = row:createButton{ id = "Ashfall:PotteryWheelCancelButton", text = "Cancel" }
+    local cancelButton = row:createButton{ id = "Ashfall:ShapingMenuCancelButton", text = "Cancel" }
     cancelButton:register("mouseClick", function()
         logger:debug("Cancel button clicked, closing menu")
         -- Clean up preview pane before destroying menu
@@ -138,7 +139,7 @@ function ShapingMenu:createCancelButton(row)
             self.previewPane:destroy()
             self.previewPane = nil
         end
-        local menu = tes3ui.findMenu("Ashfall:PotteryWheelMenu")
+        local menu = tes3ui.findMenu("Ashfall:ShapingMenu")
         if menu then
             menu:destroy()
             tes3ui.leaveMenuMode()
@@ -152,7 +153,7 @@ end
 
 function ShapingMenu:createConfirmButton(row)
     logger:debug("ShapingMenu:createConfirmButton() called")
-    local confirmButton = row:createButton{ id = "Ashfall:PotteryWheelConfirmButton", text = "Confirm" }
+    local confirmButton = row:createButton{ id = "Ashfall:ShapingMenuConfirmButton", text = "Confirm" }
     confirmButton:register("mouseClick", function()
         logger:debug("Confirm button clicked")
 
@@ -169,7 +170,7 @@ function ShapingMenu:createConfirmButton(row)
             self.previewPane:destroy()
             self.previewPane = nil
         end
-        local menu = tes3ui.findMenu("Ashfall:PotteryWheelMenu")
+        local menu = tes3ui.findMenu("Ashfall:ShapingMenu")
         if menu then
             menu:destroy()
             tes3ui.leaveMenuMode()
@@ -251,10 +252,17 @@ function ShapingMenu:createShapeList(column)
 
 
     for _, recipe in ipairs(self.recipes) do
+        local requiresCorrectAmount = recipe.clayAmount == self.clayAmount
         local shapeButton = shapeList:createTextSelect{
              id = "Ashfall:PotteryShapeButton_" .. recipe.id,
              text = recipe.name
         }
+
+        if not requiresCorrectAmount then
+            shapeButton.color = tes3ui.getPalette(tes3.palette.disabledColor)
+            shapeButton.widget.state = tes3.uiState.disabled
+        end
+
         shapeButton:register("mouseClick", function()
             logger:debug("Selected shape: %s", recipe.id)
             self.results.selectedShapeId = recipe.id
@@ -286,7 +294,7 @@ end
 
 function ShapingMenu:createRow(menu)
     logger:debug("ShapingMenu:createRow() called")
-    local row = menu:createBlock{ id = "Ashfall:PotteryWheelRow" }
+    local row = menu:createBlock{ id = "Ashfall:ShapingMenuRow" }
     row.flowDirection = "left_to_right"
     row.widthProportional = 1.0
     row.autoWidth = true
@@ -297,7 +305,7 @@ end
 
 function ShapingMenu:createColumn(row)
     logger:debug("ShapingMenu:createColumn() called")
-    local column = row:createThinBorder{ id = "Ashfall:PotteryWheelColumn" }
+    local column = row:createThinBorder{ id = "Ashfall:ShapingMenuColumn" }
     column.flowDirection = "top_to_bottom"
     column.autoWidth = true
     column.autoHeight = true
@@ -308,7 +316,7 @@ end
 
 function ShapingMenu:createMenu()
     logger:debug("ShapingMenu:createMenu() called")
-    local menu = tes3ui.createMenu{ id = "Ashfall:PotteryWheelMenu", fixedFrame = true }
+    local menu = tes3ui.createMenu{ id = "Ashfall:ShapingMenu", fixedFrame = true }
     tes3ui.enterMenuMode(menu.id)
 
     menu.absolutePosAlignX = 0.5
@@ -390,6 +398,11 @@ function ShapingMenu:checkRequirements()
         return false
     end
 
+    --Check clay amount matches recipe requirement
+    if recipe.clayAmount ~= self.clayAmount then
+        return false
+    end
+
     --Check pottery skill requirement
     local potterySkill = common.skills.pottery.current
     if potterySkill < recipe.difficulty then
@@ -428,7 +441,14 @@ function ShapingMenu:updateRequirementsStats()
             local shapeLabel = stats:createLabel{ text = "Requirements:" }
             shapeLabel.color = tes3ui.getPalette(tes3.palette.headerColor)
 
-            local clayLabel = stats:createLabel{ text = self.hasTemper and "Tempered Clay" or "Raw Clay" }
+            local clayName = self.hasTemper and "Tempered Clay" or "Raw Clay"
+            local clayText = string.format("%s x%s", clayName, recipe.clayAmount)
+            local clayLabel = stats:createLabel{ text = clayText }
+
+            local hasClay = (recipe.clayAmount == self.clayAmount)
+            if not hasClay then
+                clayLabel.color = tes3ui.getPalette(tes3.palette.disabledColor)
+            end
 
             local difficulty = recipe.difficulty or 0
             local currentSkill = common.skills.pottery.current

@@ -102,6 +102,14 @@ this.controllers = {
             return grillConfig and grillConfig.fryingPan
         end
     },
+    heatedItem = ReferenceController:new{
+        requirements = function(_, ref)
+            return ref
+                and ref.supportsLuaData
+                and ref.data
+                and ref.data.Ashfall_HeatedItem ~= nil
+        end
+    },
     grillableFood = ReferenceController:new{
         ---@param ref tes3reference
         requirements = function(_, ref)

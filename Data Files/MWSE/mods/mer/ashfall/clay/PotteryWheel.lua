@@ -1,6 +1,5 @@
 local common = require("mer.ashfall.common.common")
 local logger = common.createLogger("PotteryWheel")
-logger.logLevel = "TRACE"
 local ItemInstance = require("CraftingFramework.carryableContainers.components.ItemInstance")
 local UnfiredPottery = require("mer.ashfall.clay.UnfiredPottery")
 local PotteryRecipe = require("mer.ashfall.clay.PotteryRecipe")
@@ -10,7 +9,8 @@ local CarryableContainer = CraftingFramework.CarryableContainer
 local RawClay = require("mer.ashfall.clay.RawClay")
 local ShapingMenu = require("mer.ashfall.clay.ShapingMenu")
 local Temper = require("mer.ashfall.clay.Temper")
-local Decals = require("mer.ashfall.clay.PotteryDecals")
+local Decals = require("mer.ashfall.clay.Visuals.PotteryDecals")
+local DampVisuals = require("mer.ashfall.clay.Dampness.DampVisuals")
 ---@class Ashfall.PotteryWheel: ItemInstance
 ---@field data Ashfall.SpinningWheelData
 ---@field registeredSpinningWheels table<string, boolean>
@@ -18,6 +18,7 @@ local PotteryWheel = {
     registeredSpinningWheels = {},
     ATTACH_NODE_NAME = "WHEEL_ATTACH",
     CLAY_BASE_MESH = "ashfall\\clay\\clay_base.nif",
+    CLAY_BASE_2_MESH = "ashfall\\clay\\clay_base_2.nif",
     SPIN_DURATION = 10
 }
 
@@ -53,6 +54,11 @@ function PotteryWheel:new(reference)
     }
     setmetatable(potteryWheel, self)
     self.__index = self
+
+    CraftingFramework.Indicator.register{
+        objectId = reference.baseObject.id,
+    }
+
     return potteryWheel --[[@as Ashfall.PotteryWheel]]
 end
 
@@ -83,13 +89,17 @@ end
 ---Add clay from the player's inventory to the spinning wheel
 function PotteryWheel:addClayFromPlayer()
     logger:debug("Adding clay from player to spinning wheel: %s", self.reference.id)
+    local temperedFilter = nil
+    if self:getClayAmount() > 0 then
+        temperedFilter = self.data.isClayTempered == true
+    end
     RawClay.openSelectMenu(function(e)
         if not e.item then return end
-        local tempered = Temper:new{
+        local tempered = Temper.isTempered{
             item = e.item,
             itemData = e.itemData,
         }
-        self.data.isClayTempered = tempered and tempered:hasTemper() or false
+        self.data.isClayTempered = tempered
         self:addClay(1)
         CarryableContainer.removeItem{
             reference = tes3.player,
@@ -99,8 +109,9 @@ function PotteryWheel:addClayFromPlayer()
             playSound = false,
         }
         logger:debug("Added clay to spinning wheel. Current clay amount: %d", self:getClayAmount())
-
-    end)
+    end, {
+        tempered = temperedFilter
+    })
 end
 
 ---@return niNode?
@@ -122,21 +133,30 @@ function PotteryWheel:updateVisuals()
     local attachedClay = attachNode:getObjectByName("Ashfall_ClayMesh")
     local hasClay = self:getClayAmount() > 0
     if hasClay then
-        if not attachedClay then
+
             logger:debug("Adding clay mesh to spinning wheel: %s", self.reference.id)
-            local clayMesh = tes3.loadMesh(PotteryWheel.CLAY_BASE_MESH):clone()
+
+            local attachClayId = self:getClayAmount() > 1 and PotteryWheel.CLAY_BASE_2_MESH or PotteryWheel.CLAY_BASE_MESH
+            local clayMesh = tes3.loadMesh(attachClayId):clone()
             clayMesh.name = "Ashfall_ClayMesh"
+            attachNode:detachAllChildren()
             attachNode:attachChild(clayMesh)
 
-            local decals = Decals.get("temper") --[[@as Ashfall.Clay.PotteryDecals]]
-            if self.data.isClayTempered then
-                decals:applyDecal(attachNode)
-            else
-                decals:removeDecal(attachNode)
-            end
+            -- Apply dampness visuals to clay mesh (always wet-looking)
+            DampVisuals.update(clayMesh, 1.0)
+
+            visualsChanged = true
+
+        -- Apply or remove temper decal based on current temper state
+        local decals = Decals.get("temper") --[[@as Ashfall.Clay.PotteryDecals]]
+        if self.data.isClayTempered then
+            logger:debug("Applying temper decal to clay mesh on spinning wheel: %s", self.reference.id)
+            decals:applyDecal(attachNode)
             visualsChanged = true
         else
-            logger:debug("Spinning wheel already has clay mesh: %s", self.reference.id)
+            logger:debug("Removing temper decal from clay mesh on spinning wheel: %s", self.reference.id)
+            decals:removeDecal(attachNode)
+            visualsChanged = true
         end
     else
         if attachedClay then
@@ -165,13 +185,16 @@ function PotteryWheel:attachAnimNode(recipe)
         attachNode:update()
         attachNode:updateEffects()
         if self.data.isClayTempered then
-                       local decals = Decals.get("temper") --[[@as Ashfall.Clay.PotteryDecals]]
+            local decals = Decals.get("temper") --[[@as Ashfall.Clay.PotteryDecals]]
             if self.data.isClayTempered then
                 decals:applyDecal(attachNode)
             else
                 decals:removeDecal(attachNode)
             end
         end
+
+        -- Apply dampness visuals to animation mesh (always wet-looking)
+        DampVisuals.update(animMesh, 1.0)
     end
 end
 
@@ -213,7 +236,7 @@ function PotteryWheel:getAttachNodeGlobalPosition()
     return self.reference.position:copy()
 end
 
-local NormalsHack = require("mer.ashfall.clay.NormalsHack")
+local NormalsHack = require("mer.ashfall.clay.Util.NormalsHack")
 
 ---@param recipe Ashfall.PotteryRecipe
 function PotteryWheel:startSpinning(recipe)
@@ -301,6 +324,7 @@ function PotteryWheel:openMoldingMenu()
         title = "Pottery Wheel",
         clayId = RawClay.rawClayId,
         isTempered = self.data.isClayTempered,
+        clayAmount = self:getClayAmount(),
         recipes = PotteryRecipe.getAllRecipesByMethod("wheel"),
         okayCallback = function(results)
             timer.delayOneFrame(function()
@@ -347,6 +371,7 @@ function PotteryWheel:takeClay()
         end
     end
 
+    self.data.isClayTempered = nil
     self:updateVisuals()
     logger:debug("Removed clay from spinning wheel")
 end
@@ -383,16 +408,22 @@ ReferenceManager:new{
     end,
 }
 
-function PotteryWheel:canAddClay()
-    return self:getClayAmount() < 1
+---@param isTempered boolean|nil Whether the clay being added is tempered. If provided, must match the temper state of the clay already on the whee
+function PotteryWheel:canAddClay(isTempered)
+    local temperMatches = (isTempered == nil)
+        or (self.data.isClayTempered == nil)
+        or isTempered == (self.data.isClayTempered == true)
+
+    return self:getClayAmount() < 2
         and self:getItemBeingProcessed() == nil
+        and temperMatches
 end
 
 
 ---@type craftingFrameworkMenuButtonData[]
 PotteryWheel.buttons = {
     {
-        text = "Use",
+        text = "Shape",
         showRequirements = function(e)
             local potteryWheel = PotteryWheel:new(e.reference)
             if not potteryWheel then
@@ -428,6 +459,73 @@ PotteryWheel.buttons = {
             local potteryWheel = PotteryWheel:new(e.reference)
             if not potteryWheel then return end
             potteryWheel:addClayFromPlayer()
+        end
+    },
+    {
+        text = "Add Temper",
+        showRequirements = function(e)
+            local potteryWheel = PotteryWheel:new(e.reference)
+            if not potteryWheel then return false end
+            return potteryWheel:getClayAmount() > 0
+                and not potteryWheel.data.isClayTempered
+                and potteryWheel:getItemBeingProcessed() == nil
+        end,
+        enableRequirements = function(e)
+            local potteryWheel = PotteryWheel:new(e.reference)
+            if not potteryWheel then return false end
+            local clayAmount = potteryWheel:getClayAmount()
+            local hasTemper = Temper.getPlayerTemperCount() >= clayAmount
+            local hasMortarAndPestle = require("mer.ashfall.clay.MortarAndPestle").playerHasMortarAndPestle()
+            return hasTemper and hasMortarAndPestle
+        end,
+        tooltip = function(e)
+            local potteryWheel = PotteryWheel:new(e.reference)
+            if not potteryWheel then return nil end
+            local clayAmount = potteryWheel:getClayAmount()
+            return {
+                header = "Requirements:",
+                text = string.format("- %dx Broken Pottery\n- Mortar and Pestle", clayAmount),
+            }
+        end,
+        tooltipDisabled = function(e)
+            local potteryWheel = PotteryWheel:new(e.reference)
+            if not potteryWheel then return nil end
+            local clayAmount = potteryWheel:getClayAmount()
+            return {
+                header = "Requirements:",
+                text = string.format("- %dx Broken Pottery\n- Mortar and Pestle", clayAmount),
+            }
+        end,
+        callback = function(e)
+            local potteryWheel = PotteryWheel:new(e.reference)
+            if not potteryWheel then return end
+
+            local clayAmount = potteryWheel:getClayAmount()
+            CarryableContainer.removeItem{
+                reference = tes3.player,
+                item = Temper.temperId,
+                count = clayAmount,
+                playSound = false,
+            }
+            tes3.playSound{
+                reference = e.reference,
+                sound = "corpDRAG"
+            }
+
+            timer.start{
+                type = timer.real,
+                duration = 1.5,
+                callback = function()
+                    potteryWheel.data.isClayTempered = true
+                    potteryWheel:updateVisuals()
+                    tes3.playSound{
+                        reference = e.reference,
+                        sound = "corpDRAG"
+                    }
+                    logger:debug("Added temper to clay on pottery wheel: %s", e.reference.id)
+                end
+            }
+            common.helper.fadeTimeOut(0.2, 3, function() end)
         end
     },
     {
@@ -492,6 +590,42 @@ function PotteryWheel.registerSpinningWheel(id)
     PotteryWheel.registeredSpinningWheels[id:lower()] = true
     PotteryWheel.registerIndicator(id)
     logger:info("Registered spinning wheel: %s", id)
+end
+
+
+function PotteryWheel.getOnDropConfig()
+    return {
+        dropText = function()
+            return "Add Clay"
+        end,
+        canDrop = function(reference, item, itemData)
+            if item.id:lower() ~= RawClay.rawClayId then
+                return false
+            end
+            local isTempered = Temper.isTempered{
+                item = item,
+                itemData = itemData,
+            }
+            local potteryWheel = PotteryWheel:new(reference)
+            if not potteryWheel then return false end
+            return potteryWheel:canAddClay(isTempered == true)
+        end,
+        onDrop = function(wheelRef, clayRef)
+            local potteryWheel = PotteryWheel:new(wheelRef)
+            if not potteryWheel then return end
+
+            potteryWheel.data.isClayTempered = Temper.isTempered{ reference = clayRef}
+            potteryWheel:addClay(1)
+
+            local stackCount = common.helper.getStackCount(clayRef)
+            if stackCount == 1 then
+                clayRef:delete()
+            else
+                clayRef.attachments.variables.count = clayRef.attachments.variables.count - 1
+                common.helper.pickUp(clayRef)
+            end
+        end
+    }
 end
 
 return PotteryWheel

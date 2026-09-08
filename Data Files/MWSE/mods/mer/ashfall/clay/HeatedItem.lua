@@ -2,13 +2,10 @@ local common = require("mer.ashfall.common.common")
 local logger = common.createLogger("HeatedItem")
 local ItemInstance = require("CraftingFramework.carryableContainers.components.ItemInstance")
 local Campfire = require("mer.ashfall.camping.campfire.Campfire")
-local HeatUtil = require("mer.ashfall.heat.HeatUtil")
-local Glow = require("mer.ashfall.clay.Glow")
-
--- Pickup safety constant, fraction of firing min temp.
--- Duplicated from pottery-damage tuning to keep HeatedItem independent
--- (avoids circular dependencies via PotteryBreaking/FiredPottery).
-local SAFE_PICKUP_TEMP_FACTOR = 0.35
+local GlowVisuals = require("mer.ashfall.clay.Visuals.GlowVisuals")
+local TimeGapSimulator = require("CraftingFramework.components.TimeGapSimulator")
+local PotteryTooltips = require("mer.ashfall.clay.PotteryTooltips")
+local PotteryRecipe = require("mer.ashfall.clay.PotteryRecipe")
 
 ---Shared class for heat + glow mechanics (used by unfired and fired pottery).
 ---This is an ItemInstance with its own dataKey so heat persists independently.
@@ -39,17 +36,29 @@ local HeatedItem = {
 function HeatedItem:new(e)
     if e.reference and not e.reference.supportsLuaData then return end
 
+    local hadHeatData = e.reference
+        and e.reference.supportsLuaData
+        and e.reference.data
+        and e.reference.data[HeatedItem.DATA_KEY] ~= nil
+
     local heated = ItemInstance:new{
         item = e.item,
         itemData = e.itemData,
         reference = e.reference,
         dataKey = HeatedItem.DATA_KEY,
-        logger = e.logger or logger,
     }
     setmetatable(heated, self)
     self.__index = self
     ---@cast heated Ashfall.Clay.HeatedItem
-    heated._tempChangeRate = e.tempChangeRate
+    heated._tempChangeRate = e.tempChangeRate or self.TEMP_CHANGE_RATE
+    if e.reference
+        and e.reference.supportsLuaData
+        and not hadHeatData
+        and e.reference.data
+        and e.reference.data[HeatedItem.DATA_KEY] ~= nil
+    then
+        event.trigger("Ashfall:registerReference", { reference = e.reference })
+    end
     return heated --[[@as Ashfall.Clay.HeatedItem]]
 end
 
@@ -58,16 +67,9 @@ function HeatedItem:getTempChangeRate()
     return self._tempChangeRate or self.TEMP_CHANGE_RATE
 end
 
----Attach glow material to this reference's sceneNode.
-function HeatedItem:attachGlow()
-    if not self.reference or not self.reference.sceneNode then
-        return
-    end
-    Glow.attachToNode(self.reference.sceneNode)
-end
 
 ---Updates the diffuse material color from white to red based on current temperature.
-function HeatedItem:updateGlow()
+function HeatedItem:updateVisuals()
     if not self.reference or not self.reference.sceneNode then
         return
     end
@@ -77,15 +79,7 @@ function HeatedItem:updateGlow()
         0, 1.0
     )
     local strength = math.clamp(temperatureRatio, 0, 1)
-
-    -- If the glow controller hasn't been attached yet (e.g., manager didn't fire
-    -- onActivated for this reference), attach and retry.
-    local updated = Glow.setStrength(self.reference.sceneNode, strength)
-    if (not updated) and strength > 0 then
-        logger:error("Glow controller not found; attaching glow and retrying")
-        self:attachGlow()
-        Glow.setStrength(self.reference.sceneNode, strength)
-    end
+    GlowVisuals.update(self.reference.sceneNode, strength)
 end
 
 ---@return number
@@ -94,16 +88,16 @@ function HeatedItem:getCurrentTemperature()
 end
 
 ---@class Ashfall.Clay.HeatedItem.PickupGuardOptions
----@field firingMinTemp number
 ---@field message string?
 
 ---Returns false to block activation if this item is too hot to pick up.
----@param opts Ashfall.Clay.HeatedItem.PickupGuardOptions
+---Items at cooking stage (1 degree) or higher are too hot.
+---@param opts Ashfall.Clay.HeatedItem.PickupGuardOptions?
 ---@return boolean|nil False to block activation
 function HeatedItem:blockPickupIfTooHot(opts)
-    local firingMinTemp = opts and opts.firingMinTemp or 0
-    local safeTemp = firingMinTemp * SAFE_PICKUP_TEMP_FACTOR
-    if self:getCurrentTemperature() > safeTemp then
+    local currentTemp = self:getCurrentTemperature()
+    -- Too hot if at or above cooking stage
+    if currentTemp >= Campfire.STAGES.cooking.minTemp then
         tes3.messageBox((opts and opts.message) or "It is too hot to pick up.")
         return false
     end
@@ -124,6 +118,23 @@ function HeatedItem:clearData()
     self.data.targetHeat = nil
     self.data.lastHadHeatSource = nil
     self.data.lastHeatSourceSnapshot = nil
+end
+
+---If all data field are nil or false, remove the Ashfall_HeatedItem table entirely
+---to allow item stacking
+function HeatedItem:clearDataIfEmpty()
+    if self.data and (
+        self.data.currentTemperature or
+        self.data.highestTemperature or
+        self.data.lastTemperatureUpdate or
+        self.data.targetHeat or
+        self.data.lastHadHeatSource or
+        self.data.lastHeatSourceSnapshot
+    ) then
+        return
+    end
+    logger:trace("Clearing empty data table for %s", self.item.id)
+    self.dataHolder.data[HeatedItem.DATA_KEY] = nil
 end
 
 ---Calculate what the new temperature would be given a target temperature.
@@ -198,6 +209,7 @@ function HeatedItem:setHeatData(heatData)
     self.data.targetHeat = heatData.targetHeat
     self.data.lastHadHeatSource = heatData.lastHadHeatSource
     self.data.lastHeatSourceSnapshot = heatData.lastHeatSourceSnapshot
+    event.trigger("Ashfall:RegisterReference", { reference = self.reference })
 end
 
 ---@class Ashfall.Clay.HeatedItem.UpdateEvent
@@ -209,42 +221,6 @@ end
 ---@class Ashfall.Clay.HeatedItem.UpdateOptions
 ---@field onHeatUpdated fun(heated: Ashfall.Clay.HeatedItem, e: Ashfall.Clay.HeatedItem.UpdateEvent)?
 
----Update towards a target heat, firing callbacks if provided.
----@param targetHeat number
----@param opts Ashfall.Clay.HeatedItem.UpdateOptions?
-function HeatedItem:updateToTargetHeat(targetHeat, opts)
-    local oldTemp = self.data.currentTemperature or 0
-    self.data.targetHeat = targetHeat
-
-    local newTemp = self:calculateNewTemperature(targetHeat)
-    -- Mirror previous behavior: always update the timestamp.
-    self:setTemperature(newTemp)
-
-    if opts and opts.onHeatUpdated then
-        opts.onHeatUpdated(self, {
-            oldTemperature = oldTemp,
-            newTemperature = newTemp,
-            targetHeat = targetHeat,
-            dtHours = nil,
-        })
-    end
-end
-
----Update towards heat from a heat source reference.
----@param heatSource tes3reference|nil
----@param opts Ashfall.Clay.HeatedItem.UpdateOptions?
-function HeatedItem:updateFromHeatSource(heatSource, opts)
-    local heat = HeatUtil.getHeat(heatSource) or 0
-    self:updateToTargetHeat(heat, opts)
-end
-
----Step temperature one discrete in-game hour toward a target heat.
----Used by pottery firing simulation where other per-hour mechanics also run.
----@param targetHeat number
----@param opts Ashfall.Clay.HeatedItem.UpdateOptions?
-function HeatedItem:stepTowardTargetHeatOneHour(targetHeat, opts)
-    self:stepTowardTargetHeat(targetHeat, 1.0, opts)
-end
 
 ---Step temperature toward a target heat over an arbitrary time slice.
 ---Uses the same “differenceEffect” acceleration as calculateNewTemperature,
@@ -311,56 +287,39 @@ end
 ---@param hoursElapsed number
 ---@param opts Ashfall.Clay.HeatedItem.AdvanceOptions
 function HeatedItem:advance(hoursElapsed, opts)
-    local total = math.max(hoursElapsed or 0, 0)
-    if total <= 0 then
-        return
-    end
-
-    local stepHours = (opts and opts.stepHours) or 0.25
-    if stepHours <= 0 then
-        stepHours = total
-    end
-
-    local targetHeatAt = opts and opts.targetHeatAt
-    if type(targetHeatAt) ~= "function" then
+    if not opts or type(opts.targetHeatAt) ~= "function" then
         logger:error("HeatedItem:advance() requires opts.targetHeatAt")
         return
     end
 
-    local onStep = opts and opts.onStep
-    local updateOptions = opts and opts.updateOptions
+    local updateOptions = opts.updateOptions
+    local startTimestamp = opts.startTimestamp or self.data.lastTemperatureUpdate or tes3.getSimulationTimestamp()
 
-    -- Establish a virtual time origin so multi-slice advancement leaves a coherent
-    -- `lastTemperatureUpdate` that matches the simulated progression.
-    local startTimestamp = (opts and opts.startTimestamp) or self.data.lastTemperatureUpdate or tes3.getSimulationTimestamp()
+    TimeGapSimulator.advance(hoursElapsed, {
+        stepHours = opts.stepHours,
+        targetValueAt = opts.targetHeatAt,
+        startTimestamp = startTimestamp,
+        getCurrentValue = function()
+            return self.data.currentTemperature or 0
+        end,
 
-    local remaining = total
-    local t = 0
-    while remaining > 0 do
-        local dt = math.min(stepHours, remaining)
+        stepTowardTarget = function(currentTemp, targetHeat, dt, timestamp)
+            self:stepTowardTargetHeat(targetHeat, dt, updateOptions, timestamp)
+        end,
 
-        local targetHeat = targetHeatAt(t)
-        local oldTemp = self.data.currentTemperature or 0
-        local stepTimestamp = startTimestamp + t + dt
-        self:stepTowardTargetHeat(targetHeat, dt, updateOptions, stepTimestamp)
-        local newTemp = self.data.currentTemperature or 0
-
-        if onStep then
-            local continue = onStep(self, {
-                tHours = t,
-                dtHours = dt,
-                oldTemperature = oldTemp,
-                newTemperature = newTemp,
-                targetHeat = targetHeat,
-            })
-            if continue == false then
-                break
+        onStep = function(e)
+            if opts.onStep then
+                -- Adapt the generic event to HeatedItem's legacy format
+                return opts.onStep(self, {
+                    tHours = e.tHours,
+                    dtHours = e.dtHours,
+                    oldTemperature = e.oldValue,
+                    newTemperature = e.newValue,
+                    targetHeat = e.targetValue,
+                })
             end
-        end
-
-        remaining = remaining - dt
-        t = t + dt
-    end
+        end,
+    })
 end
 
 ---Check if a reference is a heated item
@@ -384,7 +343,40 @@ function HeatedItem.onActivate(e)
         return
     end
     local heated = HeatedItem:new{ reference = e.target }
-    if heated then return heated:blockPickupIfTooHot{ firingMinTemp = Campfire.STAGES.firing.minTemp } end
+    if heated then return heated:blockPickupIfTooHot() end
+end
+
+---@param e uiObjectTooltipEventData
+function HeatedItem.onUiObjectTooltip(e)
+    if not e or not e.object then
+        return
+    end
+
+    local hasHeatData = false
+    if e.itemData and e.itemData.data and e.itemData.data[HeatedItem.DATA_KEY] then
+        hasHeatData = true
+    elseif e.reference and HeatedItem.isHeatedItem(e.reference) then
+        hasHeatData = true
+    end
+
+    if not hasHeatData then
+        return
+    end
+
+    local heated = HeatedItem:new{ item = e.object, itemData = e.itemData, reference = e.reference }
+    if not heated then
+        return
+    end
+
+    local kind = "fired"
+    if PotteryRecipe.isPotteryItem(e.object) then
+        kind = "unfired"
+    end
+
+    local tempLabel = PotteryTooltips.getTemperatureLabel(heated, { kind = kind })
+    if tempLabel then
+        PotteryTooltips.addLabelsToTooltip(e.tooltip, { tempLabel })
+    end
 end
 
 return HeatedItem

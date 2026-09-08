@@ -11,7 +11,7 @@ Bellows.BELLOWS_EFFECT_DURATION_HOURS = 5.0
 Bellows.MAX_FIRE_SCALE = 1.4
 Bellows.ANIMATION_DURATION = 3.333
 Bellows.MAX_HEAT_EFFECT = 1.75
-Bellows.MAX_FUEL_DRAIN = 1.25
+Bellows.MAX_FUEL_DRAIN = 1.15
 
 
 local bellowsRefManager = ReferenceManager:new{
@@ -30,7 +30,7 @@ event.register("simulate", function(e)
                 local attachNode = Bellows.getAttachNode(reference)
                 if attachNode then
                     ---@param node niNode
-                    for node in table.traverse{ attachNode } do
+                    for node in attachNode:traverse() do
                         if node.controller and node.controller:isInstanceOfType(ni.type.NiGeomMorpherController) then
                             node.controller.lastScaledTime = timeElapsed
                         end
@@ -168,8 +168,7 @@ function Bellows.use(reference)
         end
     end
 
-    local fuelLevel = reference.data.fuelLevel or 0
-    if fuelLevel > 0 then
+    if reference.data.isLit then
         tes3.playSound{
             reference = tes3.player,
             soundPath = "ashfall/bellows.wav"

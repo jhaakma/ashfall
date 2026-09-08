@@ -134,6 +134,13 @@ end
 local function lightFire(e)
     local fuelConsumer = e.fuelConsumer
     local lighterData = e.lighterData
+
+    if fuelConsumer.data.kilnOpen then
+        tes3.messageBox("Close the kiln before lighting it.")
+        return
+    end
+
+
     logger:debug("Lighting Fire %s", fuelConsumer.object.id)
     tes3.playSound{ reference = tes3.player, sound = "ashfall_light_fire"  }
 

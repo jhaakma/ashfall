@@ -96,11 +96,14 @@ ActivatorMenuConfig.nodeMapping = {
     },
     ASHFALL_KILN =  {
         menuCommands = {
+
             -- --actions
             "lightFire",
             -- --attach
             "addFirewood",
             "placeUtensil",
+            "openKiln",
+            "closeKiln",
             -- --destroy
             "extinguish",
             "disassemble",

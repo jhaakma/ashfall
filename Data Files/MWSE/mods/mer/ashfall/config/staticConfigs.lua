@@ -26,6 +26,7 @@ this.foodConfig = require("mer.ashfall.config.foodConfig")
 this.teaConfig = require("mer.ashfall.config.teaConfig")
 this.campfireConfig = require("mer.ashfall.config.campfireConfig")
 
+---@class Ashfall.ItemIDs
 this.objectIds = {
     firewood = "ashfall_firewood",
     campfire = "ashfall_campfire",

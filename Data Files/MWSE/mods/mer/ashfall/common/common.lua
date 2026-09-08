@@ -7,8 +7,8 @@ this.defaultValues = require ("mer.ashfall.MCM.defaultConfig")
 this.messages = require("mer.ashfall.messages.messages")
 local config = require("mer.ashfall.config").config
 --set up logger
-local logger = require("mer.ashfall.common.logger")
----@type mwseLogger
+local logger = require("CraftingFramework.components.logger")
+---@type CFLogger
 this.log = logger.new{
     name = "Ashfall",
     modName = "Ashfall",

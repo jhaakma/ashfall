@@ -15,7 +15,7 @@ local ActivatorController = require "mer.ashfall.activators.activatorController"
 ---@field attachPlant function Attaches a plant to the planter.
 ---@field waterPlanter function Water the planter.
 ---@field lastUpdated number The last time the planter was updated.
----@field logger mwseLogger
+---@field logger CFLogger
 local Planter = {
     ATTACH_NODE = "ATTACH_PLANT",
     GH_SWITCH_ID = "HerbalismSwitch",
@@ -116,10 +116,8 @@ function Planter:updateDirtWater()
         g = strength,
         b = strength,
     }
-    local materialProperty = dirtNode:detachProperty(0x2):clone()
----@diagnostic disable-next-line: param-type-mismatch
-    dirtNode:attachProperty(materialProperty)
-    materialProperty.emissive = colours
+    dirtNode.materialProperty = dirtNode.materialProperty:clone()
+    dirtNode.materialProperty.emissive = colours
     dirtNode:updateProperties()
 end
 
@@ -147,9 +145,7 @@ function Planter:updateDirtTexture()
                         self.logger:trace("fileName: %s", groundTextureInfo.texturingProperty.maps[1].texture.fileName)
                         if string.find(map.texture.fileName:lower(), pattern) then
                             self.logger:trace("updating texture to %s", map.texture.fileName)
-                            local clonedProp = dirtNode:detachProperty(0x4):clone()
-                            ---@diagnostic disable-next-line: param-type-mismatch
-                            dirtNode:attachProperty(clonedProp)
+                            dirtNode.texturingProperty = dirtNode.texturingProperty:clone()
                             dirtNode.texturingProperty.baseMap.texture = map.texture
                             dirtNode:updateProperties()
                             return

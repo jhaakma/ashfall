@@ -1,5 +1,6 @@
 local common = require("mer.ashfall.common.common")
 local logger = common.createLogger("Pottery")
+local FeatureFlags = require("mer.ashfall.bushcrafting.featureFlags")
 local defaultPotteryRecipeValues = {
     clayAmount = 1,
     craftingMethod = "wheel",
@@ -11,17 +12,21 @@ local defaultPotteryRecipeValues = {
 ---@class Ashfall.PotteryRecipe.data
 ---@field name string The name displayed when choosing a pottery item to craft
 ---@field id string The item ID of the pottery item before firing
----@field brokenId string The ID of the activator used when the pottery breaks
+---@field brokenId? string The ID of the activator used when the pottery breaks
 ---@field firedItemId? string The item ID of the pottery item after firing
+---@field isBasic? boolean If true, fired items skip FiredPottery data (no cracks/decoration/damage); heat data may be kept only until pickup
 ---@field clayAmount number (Default: 1) The amount of clay required to make the pottery item. Small items: 1, large items: 2
 ---@field animationMesh? string Path to the mesh used for the pottery animation. Required if crafting method is "wheel"
----@field craftingMethod? "hand"|"wheel" (Default: "wheel") The method used to craft the pottery item
+---@field craftingMethod? "hand"|"wheel"|"none" (Default: "wheel") The method used to craft the pottery item
 ---@field breakResistance? number (Default: 0.0) A value from 0.0 to 1.0 representing how resistant the item is to breaking during firing. 0.0 = always breaks, 1.0 = never breaks
 ---@field difficulty? number (Default: 10) A value between 1 and 100 representing the difficulty of crafting this item. Determines pottery skill requirement, progress gained on crafting/firing, damage chance, and value of resulting item
+---@field featureFlag? string Ashfall experimental feature flag required to show this pottery recipe
+---@field canDecorate? boolean (Default: false) If true The pottery is able to be decorated with engravings, washes and glazes
+---@field soundPath? string The soundPath to use when crafting
 
 ---@class Ashfall.PotteryRecipe : Ashfall.PotteryRecipe.data
 ---@field clayAmount number The amount of clay required to make the pottery item
----@field craftingMethod "hand"|"wheel" The method used to craft the pottery item
+---@field craftingMethod "hand"|"wheel"|"none" The method used to craft the pottery item
 ---@field breakResistance number A value from 0.0 to 1.0 representing how resistant the item is to breaking during firing
 ---@field difficulty number  A value between 1 and 100 representing the difficulty of crafting this item
 local PotteryRecipe = {
@@ -100,7 +105,7 @@ end
 function PotteryRecipe.getAllRecipesByMethod(method)
     local recipes = {}
     for _, recipe in pairs(PotteryRecipe.registeredRecipes) do
-        if recipe.craftingMethod == method then
+        if recipe.craftingMethod == method and recipe:isFeatureEnabled() then
             table.insert(recipes, recipe)
         end
     end
@@ -122,8 +127,15 @@ function PotteryRecipe:new(data)
     self.__index = self
     return obj --[[@as Ashfall.PotteryRecipe]]
 end
+---@return boolean
+function PotteryRecipe:isFeatureEnabled()
+    return not self.featureFlag or FeatureFlags.isEnabled(self.featureFlag)
+end
 
 function PotteryRecipe:canCraft()
+    if not self:isFeatureEnabled() then
+        return false
+    end
     if not tes3.player then
         logger:warn("No player reference found when checking pottery recipe craftability")
         return false
@@ -150,5 +162,6 @@ function PotteryRecipe:getFiredItem()
     logger:assert(item ~= nil, "Pottery recipe fired item not found: %s", self.firedItemId)
     return item
 end
+
 
 return PotteryRecipe

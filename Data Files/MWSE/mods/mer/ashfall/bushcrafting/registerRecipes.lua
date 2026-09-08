@@ -86,3 +86,8 @@ for _, tanningRackId in ipairs(craftingConfig.tanningRacks) do
         end
     }
 end
+
+--register deprecated recipes so they can still be used
+for _, recipe in ipairs(craftingConfig.deprecated ) do
+    CraftingFramework.Recipe:new(recipe)
+end
