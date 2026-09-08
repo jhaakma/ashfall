@@ -1,9 +1,3 @@
-local config = require("CraftingFramework.config")
-
-if not config.experimental.enableSnapping then
-    return
-end
-
 local SnapRegistry = require("CraftingFramework.components.Positioner.SnapRegistry")
 
 local snapConfigs = {
