@@ -308,7 +308,11 @@ local grillFoodProcessor = StaggeredRefProcessor.new{
     callback = function(ref)
         grillFoodItem(ref)
     end,
-    interval = 0.01,
+    -- Cooking is delta-integrated (cookedAmount += difference * multipliers), so
+    -- frequency doesn't change the result. 0.01 fired every frame (~100Hz) and the
+    -- set drained nearly every tick, spinning fillProcessor -> iterateReferences in a
+    -- tight loop. Matches the sibling heatSourceProcessor at 0.1. (See HANDOVER step 3c.)
+    interval = 0.1,
     refsPerFrame = 5,
     removeAfterProcessing = false,
     onEmpty = fillProcessor,

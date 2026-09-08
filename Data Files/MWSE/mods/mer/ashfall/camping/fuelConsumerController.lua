@@ -5,6 +5,7 @@
 local common = require ("mer.ashfall.common.common")
 local logger = common.createLogger("fuelConsumerController")
 local ReferenceController = require("mer.ashfall.referenceController")
+
 local Bellows = require("mer.ashfall.camping.Bellows")
 local Campfire = require("mer.ashfall.camping.campfire.Campfire")
 local FuelModel = require("mer.ashfall.camping.FuelModel")

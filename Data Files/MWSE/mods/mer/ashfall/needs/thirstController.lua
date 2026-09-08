@@ -66,6 +66,40 @@ function this.update()
     this.calculate(0, true)
 end
 
+--[[
+    The survival stack no longer ticks during a menu-mode vanilla rest/wait, so the
+    thirst that would have accumulated over those hours is applied once here from the
+    measured delta. Mirrors calculate()'s sleeping/normal branches: resting uses the
+    restingNeedsMultiplier, waiting uses the base rate. The value is capped at
+    "dehydrated" so a long rest can't push the player past it (replacing the old
+    per-frame mid-rest wake-and-cap in sleepController).
+]]
+local function applyRestThirst(hours, isResting)
+    if hours <= 0 then return end
+    if not thirst:isActive() then return end
+    if common.data.drinkingRain then return end
+    if common.data.blockNeeds or common.data.blockThirst then return end
+
+    local thirstRate = config.thirstRate / 10
+    local temp = conditionConfig.temp
+    local heatEffect = math.clamp(temp:getValue(), temp.states.warm.min, temp.states.scorching.max)
+    heatEffect = math.remap(heatEffect, temp.states.warm.min, temp.states.scorching.max, 1.0, heatMulti)
+    local dysentryEffect = conditionConfig.dysentery:isAffected() and dysentryMulti or 1.0
+    local restMulti = isResting and config.restingNeedsMultiplier or 1.0
+
+    local newThirst = thirst:getValue() + ( hours * thirstRate * heatEffect * dysentryEffect * restMulti )
+    local capped = newThirst >= thirst.states.dehydrated.min
+    newThirst = math.min(newThirst, thirst.states.dehydrated.min)
+    thirst:setValue(newThirst)
+    common.data.thirstEffect = math.remap(newThirst, 0, 100, THIRST_EFFECT_HIGH, THIRST_EFFECT_LOW)
+    if capped then
+        tes3.messageBox({ message = "You are dehydrated.", buttons = { "Okay" } })
+    end
+end
+event.register("Ashfall:RestFinished", function(e)
+    applyRestThirst(e.hours, e.isResting)
+end)
+
 function this.getBottleData(id)
     return common.staticConfigs.bottleList[id and string.lower(id)]
 end
