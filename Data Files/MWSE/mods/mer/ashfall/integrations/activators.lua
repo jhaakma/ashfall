@@ -391,6 +391,7 @@ interop.registerActivators{
 	ashfall_t_imp_setgcpoor_frplc_1 = "fireplace",
 	ashfall_t_imp_setkvarur_frplc_1 = "fireplace",
 	ashfall_t_imp_setstr_frplc_01 = "fireplace",
+	ashfall_t_rga_SetReach_frplc_1 = "fireplace",
     --stove
     ashfall_stove_01 = "stove",
 	ashfall_t_de_setdres_stove_01 = "stove",
